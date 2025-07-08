@@ -4,9 +4,9 @@ export const logoutService = async () => {
   try {
     const res = await fetch(`/api/auth/logout`, {
       method: "POST",
-       credentials: "include",
+      credentials: "include",
       headers: { "Content-Type": "application/json" },
-      // body: JSON.stringify({ refreshToken }),
+      
     });
 
     if (!res.ok) {

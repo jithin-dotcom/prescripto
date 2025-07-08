@@ -51,7 +51,7 @@ const DoctorDashboard: React.FC = () => {
         <div className='flex items-center gap-2 bg-white p-4 min-w-52 rounded-xl border-2 border-gray-100 cursor-pointer hover:scale-105 transition-all hover:bg-[#5F6FFF] hover:text-white'>
           <img className='w-14' src={assets.appointments_icon} alt="" />
           <div>
-            <p className='text-xl font-semibold '>1</p>
+            <p className='text-xl font-semibold '>0</p>
             <p >Appointments</p>
           </div>
         </div>

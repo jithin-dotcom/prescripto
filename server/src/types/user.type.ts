@@ -1,8 +1,5 @@
 
 
-
-import mongoose,{Types} from "mongoose";
-
 export interface IUser {
  
   name: string;

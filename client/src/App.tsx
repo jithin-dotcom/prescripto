@@ -26,7 +26,6 @@ import UserProfile from "./pages/user/UserProfile";
 import DoctorProfile from "./pages/doctor/DoctorProfile";
 import EditUserProfile from "./pages/user/EditUserProfile";
 import EditDoctorProfile from "./pages/doctor/EditDoctorProfile";
-// import axios from "axios";
 
 
 const App: React.FC = () => {
@@ -35,8 +34,6 @@ const App: React.FC = () => {
   const isAuthenticated = !!accessToken;
   const hasHydrated = useAuthStore((state) => state.hasHydrated);
   
-
-
   const getDashboardRoute = () => {
     if (role === "doctor") return "/doctor-dashboard";
     if (role === "admin") return "/admin-dashboard";

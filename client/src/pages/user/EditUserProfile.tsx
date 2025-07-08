@@ -232,7 +232,7 @@ const EditUserProfile = () => {
                     value={form.name}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                    
                   />
                   <input
                     name="email"
@@ -241,7 +241,7 @@ const EditUserProfile = () => {
                     value={form.email}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                    
                   />
                   <input
                     name="password"
@@ -311,40 +311,32 @@ const EditUserProfile = () => {
                     className="border rounded px-3 py-2"
                    
                   />
-                  {/* <input
+                 
+
+                  <select
                     name="country"
-                    placeholder="Country"
-                    type="text"
                     value={form.country}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    
-                  /> */}
-
-                     <select
-  name="country"
-  value={form.country}
-  onChange={handleChange}
-  className="border rounded px-3 py-2"
->
-  <option value="">Select Country</option>
-  {[
-    "India",
-    "United States",
-    "United Kingdom",
-    "Canada",
-    "Australia",
-    "Germany",
-    "France",
-    "Japan",
-    "China",
-    "Brazil"
-  ].map((country) => (
-    <option key={country} value={country}>
-      {country}
-    </option>
-  ))}
-</select>
+                  >
+                  <option value="">Select Country</option>
+                 {[
+                  "India",
+                  "United States",
+                  "United Kingdom",
+                  "Canada",
+                  "Australia",
+                  "Germany",
+                  "France",
+                  "Japan",
+                  "China",
+                  "Brazil"
+                ].map((country) => (
+               <option key={country} value={country}>
+                 {country}
+               </option>
+               ))}
+              </select>
 
 
                   <input

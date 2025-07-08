@@ -3,12 +3,11 @@ import { Request, Response, NextFunction } from "express";
 import { IPatientProfileController } from "../interface/IPatientProfileController";
 import { IPatientProfileService } from "../../services/interface/IPatientService";
 import { patientProfileSchema } from "../../validations/patientProfile.schema";
-import { ZodError } from "zod";
+
 
 
 export class PatientProfileController implements IPatientProfileController {
     constructor (private _patientProfileService: IPatientProfileService){};
-
 
     async createProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
        try{
@@ -35,8 +34,6 @@ export class PatientProfileController implements IPatientProfileController {
     }
 
 
-
-    
     async editProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
       try{
         const { patientId } = req.params;
@@ -52,6 +49,7 @@ export class PatientProfileController implements IPatientProfileController {
       }
     }
 
+
     async deleteProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
      try {
         const { patientId } = req.params;
@@ -60,21 +58,22 @@ export class PatientProfileController implements IPatientProfileController {
         }
         await this._patientProfileService.deletePatientProfile(patientId);
         res.status(200).json({message: "patient profile deleted successfully"});
-     } catch (error: any) {
+      }catch (error: any) {
         res.status(400).json({message: error.message || "something went wrong"});
-     }
+      }
 
     }
 
-     async uploadPhoto (req: Request, res: Response, next: NextFunction): Promise<void> {
+
+  async uploadPhoto (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-        // console.log("request.user :", req.user);
+        
         
       const userId = req.user?.id; 
        if (!userId) {
        res.status(401).json({ message: "Unauthorized: No user found" });
        return;
-    }
+      }
       if (!req.file) {
          res.status(400).json({ message: "No file uploaded" });
          return;
@@ -82,9 +81,9 @@ export class PatientProfileController implements IPatientProfileController {
 
       const updatedUser = await this._patientProfileService.uploadProfilePhoto(userId, req.file);
       res.status(200).json({ message: "Photo uploaded", user: updatedUser });
-    } catch (error) {
+    }catch (error) {
       next(error);
     }
-  };
+  }
 
 }

@@ -3,7 +3,6 @@
 import { OtpModel } from "../../models/otp.models";
 import { IOtp } from "../../types/otp.type";
 import { IOtpRepository } from "../interface/IOtpRepository";
-import { IUser } from "../../types/user.type";
 import { Document } from "mongoose";
 
 

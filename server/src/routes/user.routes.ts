@@ -27,21 +27,12 @@ router.get("/user-profile/:id",userController.getProfile.bind(userController));
 
 router.put(
   '/update-user/:id',
-  (req, res, next) => {
-    console.log("🔹 Route hit at", new Date().toISOString());
-    next();
-  },
   upload.fields([
     { name: "photo", maxCount: 1 },
     { name: "proofDocument", maxCount: 5 }
   ]),
-   (req, res, next) => {
-    console.log("🔹 Multer parsed files:", req.files);
-    next();
-  },
   userController.updateUserOrDoctor.bind(userController)
 );
-
 
 
 export default router

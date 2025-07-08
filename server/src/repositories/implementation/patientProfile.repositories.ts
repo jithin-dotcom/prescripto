@@ -4,7 +4,7 @@ import { PatientProfileModel } from "../../models/patient/patientProfile.models"
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
 import { Document } from "mongoose";
 import { IPatientProfileRepository } from "../interface/IPatientProfileRepository";
-import mongoose, {FilterQuery} from "mongoose";
+import mongoose from "mongoose";
 
 export class PatientProfileRepository extends BaseRepository<IPatientProfile & Document> implements IPatientProfileRepository {
   constructor() {
@@ -21,8 +21,5 @@ export class PatientProfileRepository extends BaseRepository<IPatientProfile & D
     const id = typeof patientId === "string" ? new mongoose.Types.ObjectId(patientId) : patientId;
     return await this.model.findOneAndUpdate({ patientId: id }, data, { new: true });
   }
-
-  
-
 
 }

@@ -244,7 +244,7 @@ const AddUser = () => {
                     value={form.dob}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                    
                   />
                  
                   
@@ -294,15 +294,7 @@ const AddUser = () => {
                     className="border rounded px-3 py-2"
                    
                   />
-                  {/* <input
-                    name="country"
-                    placeholder="Country"
-                    type="text"
-                    value={form.country}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                    required
-                  /> */}
+                 
 
                   <select
                     name="country"
@@ -335,7 +327,7 @@ const AddUser = () => {
                     value={form.pinCode}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                   
                   />
                 </div>
               </div>

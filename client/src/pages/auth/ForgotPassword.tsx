@@ -35,7 +35,7 @@ const ForgotPassword: React.FC = () => {
           placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          required
+          
         />
         <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg">Send OTP</button>
       </form>

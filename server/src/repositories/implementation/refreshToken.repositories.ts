@@ -1,5 +1,5 @@
 
-// repositories/refreshToken.repository.ts
+
 import { RefreshTokenModel } from "../../models/refreshToken/refreshToken.model";
 import { IRefreshTokenRepository } from "../interface/IRefreshTokenRepository";
 

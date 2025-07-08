@@ -2,7 +2,6 @@ import { z } from "zod";
 import mongoose from "mongoose";
 
 
-
 export const objectIdSchema = z
   .string()
   .refine((val) => mongoose.Types.ObjectId.isValid(val), {
@@ -10,10 +9,7 @@ export const objectIdSchema = z
   })
   .transform((val) => new mongoose.Types.ObjectId(val));
 
-
-
 export const doctorProfileSchema = z.object({
-  
   doctorId: objectIdSchema,
   educationDetails: z.string().min(1, "Education details are required"),
   specialization: z.string().min(1, "Specialization is required"),

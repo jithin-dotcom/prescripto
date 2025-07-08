@@ -12,9 +12,8 @@ export class DoctorProfileRepository extends BaseRepository<IDoctorProfile & Doc
 
  
   async findByDoctorId(doctorId: string) {
-    // return await this.model.findOne({ doctorId });
     const id = typeof doctorId === "string" ? new mongoose.Types.ObjectId(doctorId) : doctorId;
-        return await this.model.findOne({ doctorId: id });
+    return await this.model.findOne({ doctorId: id });
   }
 
   async updateByDoctorId(doctorId: string | mongoose.Types.ObjectId, data: Partial<IDoctorProfile>) {

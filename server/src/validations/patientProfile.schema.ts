@@ -10,10 +10,7 @@ export const objectIdSchema = z
   })
   .transform((val) => new mongoose.Types.ObjectId(val));
 
-
-
 export const patientProfileSchema = z.object({
-
   patientId: objectIdSchema,
   dateOfBirth: z
     .string()

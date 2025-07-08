@@ -1,6 +1,4 @@
 
-
-
 import React, { useState, useEffect } from "react";
 import axios, { isAxiosError } from "axios";
 import { toast } from "react-toastify";
@@ -64,7 +62,7 @@ const ResetPassword: React.FC = () => {
           placeholder="New password"
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
-          required
+          
         />
         <div className="mb-4 h-2 rounded bg-gray-200">
           <div
@@ -87,7 +85,7 @@ const ResetPassword: React.FC = () => {
           placeholder="Re-enter new password"
           value={reenterPassword}
           onChange={(e) => setReenterPassword(e.target.value)}
-          required
+          
         />
         <button
           type="submit"

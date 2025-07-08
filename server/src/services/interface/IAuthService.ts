@@ -1,5 +1,5 @@
 import {IUser} from '../../types/user.type'
-import { Document } from 'mongoose';
+
 
 export interface AuthResult {
   user: {

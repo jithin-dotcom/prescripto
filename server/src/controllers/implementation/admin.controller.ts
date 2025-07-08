@@ -2,9 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import { IAdminController } from "../interface/IAdminController";
 import { IAdminService } from "../../services/interface/IAdminService";
-import { createUserOrDoctorSchema } from "../../validations/createUserOrDoctor.schema";
 import {uploadToCloudinary} from "../../config/cloudinary";
-import { data } from "react-router-dom";
 
 
 export class AdminController implements IAdminController {
@@ -13,7 +11,7 @@ export class AdminController implements IAdminController {
     async getUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
        try {
           let userId = req.params.id;
-          // console.log("req.header : ",req.headers.authorization);
+          
           if(!userId){
              res.status(400).json({message: "userId is missing"});
              return;
@@ -38,43 +36,37 @@ export class AdminController implements IAdminController {
 
 
     async getUsersByRole(req: Request, res: Response, next: NextFunction): Promise<void> {
-  try {
-    let role = req.query.role as string;
-    if (!role) role = "user"; 
+     try {
+       let role = req.query.role as string;
+       if (!role) role = "user"; 
 
-    // console.log(`page : ${req.query.page}`);
-    // console.log(`limit : ${req.query.limit}`);
-    // console.log(`search : ${req.query.search}`);
-    // console.log(`specialty : ${req.query.specialty}`)
-    let page = parseInt(req.query.page as string) || 1;
-    let limit = parseInt(req.query.limit as string) || 10;
-    let search = typeof req.query.search === "string" ? req.query.search : "";
-    let specialty = typeof req.query.specialty === "string" ? req.query.specialty : "";
+   
+       let page = parseInt(req.query.page as string) || 1;
+       let limit = parseInt(req.query.limit as string) || 10;
+       let search = typeof req.query.search === "string" ? req.query.search : "";
+       let specialty = typeof req.query.specialty === "string" ? req.query.specialty : "";
 
-    if (page < 1) page = 1;
-    if (limit < 1) limit = 10;
+       if (page < 1) page = 1;
+       if (limit < 1) limit = 10;
 
-    const result = await this._adminService.getAllByRole(role, page, limit, search, specialty);
+       const result = await this._adminService.getAllByRole(role, page, limit, search, specialty);
 
-    res.status(200).json({
-      success: true,
-      message: `${role.charAt(0).toUpperCase() + role.slice(1)}s fetched successfully`,
-      data: result,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
+       res.status(200).json({
+         success: true,
+         message: `${role.charAt(0).toUpperCase() + role.slice(1)}s fetched successfully`,
+         data: result,
+       });
+     }catch (error) {
+       next(error);
+     }
+   }
 
 
 
 
 async createUserOrDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    // console.log("entered into controller");
-    // console.log("Files:", req.files);
-    // console.log("request body at admin controller: ", req.body);
-
+  
     const { userData, profileData } = req.body;
     if (!userData || !profileData) {
       res.status(400).json({ success: false, message: "userData and profileData are required" });
@@ -84,14 +76,12 @@ async createUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
     const parsedUserData = JSON.parse(userData);
     const parsedProfileData = JSON.parse(profileData);
 
-    // Upload profile photo
     const photoFile = (req.files as any)?.photo?.[0];
     if (photoFile) {
       const photoUrl = await uploadToCloudinary(photoFile.buffer, "profile_photos");
       parsedProfileData.photo = photoUrl;
     }
 
-    // Upload proof documents
     const proofFiles = (req.files as any)?.proofDocument || [];
     const proofUrls = [];
 
@@ -138,7 +128,6 @@ async updateUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
       parsedProfileData.photo = photoUrl;
     }
 
-    
     const proofFiles = (req.files as any)?.proofDocument || [];
     const proofUrls = [];
 
@@ -157,7 +146,7 @@ async updateUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
       success: true,
       message,
     });
-  } catch (err) {
+  }catch (err) {
     next(err);
   }
 }
@@ -181,6 +170,7 @@ async deleteUserOrDoctor(req: Request, res: Response, next: NextFunction) {
   }
 }
 
+
 async toggleBlockUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
        const userId = req.params.id;
@@ -201,6 +191,7 @@ async toggleBlockUser(req: Request, res: Response, next: NextFunction): Promise<
        }
     }
 }
+
 
 async toggleVerifyUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {

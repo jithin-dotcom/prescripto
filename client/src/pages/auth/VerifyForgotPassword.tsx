@@ -125,7 +125,7 @@ const VerifyForgotPassword: React.FC = () => {
             const val = e.target.value.replace(/\D/g, "");
             setOtp(val);
           }}
-          required
+          
         />
 
        

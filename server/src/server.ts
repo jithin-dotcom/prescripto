@@ -41,16 +41,6 @@ app.use("/api", cloudinaryRoutes);
 
 app.use(errorHandler);
 
-// app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-//   // console.error(" Global Error:", err);
-//   logger.error(err);
-
-//   const statusCode = err.statusCode || 500;
-//   const message = err.message || "Something went wrong";
-
-//   res.status(statusCode).json({ message });
-// });
-
 const PORT = env.PORT||8000;
 connectDB();
 

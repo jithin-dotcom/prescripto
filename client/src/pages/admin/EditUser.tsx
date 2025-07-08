@@ -45,7 +45,6 @@ const EditUser = () => {
         const response = await axiosInstance.get(`/admin/get-user/${id}`);
 
         console.log("User fetch response:", response);
-        // const { user, profile } = data;
          const user = response.data.data;
          const profile = user.profile?.[0];
 
@@ -181,21 +180,13 @@ const EditUser = () => {
             <div className="bg-white px-6 py-8 border rounded-xl shadow-sm w-full">
               <div className="flex items-center gap-4 mb-8 text-gray-500">
                 <label htmlFor="photo">
-                  {/* <img
-                    className="w-16 h-16 object-cover bg-gray-100 rounded-full cursor-pointer"
-                    src={
-                      profilePhoto
-                        ? URL.createObjectURL(profilePhoto)
-                        : assets.upload_area
-                    }
-                    alt="Upload user"
-                  /> */}
+                  
                   <img
                     className="w-16 h-16 object-cover bg-gray-100 rounded-full cursor-pointer"
                     src={
                       profilePhoto
-                      ? URL.createObjectURL(profilePhoto)  // if user selected a new photo
-                      : photoPreview || assets.upload_area // fallback to existing photo or placeholder
+                      ? URL.createObjectURL(profilePhoto)  
+                      : photoPreview || assets.upload_area 
                     }
                     alt="Upload user"
                   />
@@ -223,7 +214,7 @@ const EditUser = () => {
                     value={form.name}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                   
                   />
                   <input
                     name="email"
@@ -232,7 +223,7 @@ const EditUser = () => {
                     value={form.email}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                   
                   />
                   <input
                     name="password"
@@ -302,40 +293,32 @@ const EditUser = () => {
                     className="border rounded px-3 py-2"
                    
                   />
-                  {/* <input
+                  
+
+                  <select
                     name="country"
-                    placeholder="Country"
-                    type="text"
                     value={form.country}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    
-                  /> */}
-
-                                       <select
-  name="country"
-  value={form.country}
-  onChange={handleChange}
-  className="border rounded px-3 py-2"
->
-  <option value="">Select Country</option>
-  {[
-    "India",
-    "United States",
-    "United Kingdom",
-    "Canada",
-    "Australia",
-    "Germany",
-    "France",
-    "Japan",
-    "China",
-    "Brazil"
-  ].map((country) => (
-    <option key={country} value={country}>
-      {country}
-    </option>
-  ))}
-</select>
+                  >
+                  <option value="">Select Country</option>
+                  {[
+                    "India",
+                    "United States",
+                    "United Kingdom",
+                    "Canada",
+                    "Australia",
+                    "Germany",
+                    "France",
+                    "Japan",
+                    "China",
+                    "Brazil"
+                  ].map((country) => (
+                <option key={country} value={country}>
+                  {country}
+                </option>
+                ))}
+               </select>
                   <input
                     name="pinCode"
                     placeholder="PIN Code"

@@ -1,6 +1,5 @@
 
 
-// interfaces/repositories/IRefreshTokenRepository.ts
 export interface IRefreshTokenRepository {
   create(data: { userId: string; token: string }): Promise<any>;
   findByToken(token: string): Promise<any>;

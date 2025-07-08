@@ -6,7 +6,6 @@ import { IUserController } from "../interface/IUserController"
 import {uploadToCloudinary} from "../../config/cloudinary";
 
 
-
 export class UserController implements IUserController {
     constructor (private _userService: IUserService){}
 
@@ -20,43 +19,31 @@ export class UserController implements IUserController {
         }
 
     }
-    //   async getAllDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
-    //     try {
-    //         const result = await this._userService.getAllDoctors();
-    //         res.status(200).json({message: "doctors fetched successfully", data: result});
-    //         return;
-    //     } catch (error) {
-    //         next(error);
-    //     }
+   
 
-    // }
+   async getAllDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
+     try {
+       const page = parseInt(req.query.page as string) || 1;
+       const limit = parseInt(req.query.limit as string) || 4;
+       const search = (req.query.search as string) || "";
+       const sort = (req.query.sort as string) || "createdAt";
+       const specialty = (req.query.specialty as string) || "";
+       const result = await this._userService.getAllDoctors(page, limit, search, sort, specialty);
 
-    async getAllDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
-  try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 4;
-    const search = (req.query.search as string) || "";
-    const sort = (req.query.sort as string) || "createdAt";
-    const specialty = (req.query.specialty as string) || "";
-
-    console.log("specialty : ", req.query.specialty);
-
-    const result = await this._userService.getAllDoctors(page, limit, search, sort, specialty);
-
-    res.status(200).json({
-      message: "Doctors fetched successfully",
-      data: result.data,
-      page: result.page,
-      total: result.total,
-      totalPages: result.totalPages
-    });
-  } catch (error) {
-    next(error);
-  }
-}
+       res.status(200).json({
+         message: "Doctors fetched successfully",
+         data: result.data,
+         page: result.page,
+         total: result.total,
+         totalPages: result.totalPages
+       });
+     }catch (error) {
+       next(error);
+     }
+   }
 
 
-      async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.params.id;
             const result = await this._userService.getProfile(userId);
@@ -82,14 +69,13 @@ export class UserController implements IUserController {
         const parsedUserData = JSON.parse(userData);
         const parsedProfileData = JSON.parse(profileData);
     
-        // Handle profile photo update
         const photoFile = (req.files as any)?.photo?.[0];
         if (photoFile) {
           const photoUrl = await uploadToCloudinary(photoFile.buffer, "profile_photos");
           parsedProfileData.photo = photoUrl;
         }
     
-        // Handle proof document updates (optional)
+        
         const proofFiles = (req.files as any)?.proofDocument || [];
         const proofUrls = [];
     

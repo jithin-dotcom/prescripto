@@ -9,20 +9,6 @@ import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
 import type { DoctorProfileData } from "../../interfaces/IDoctorProfile";
 
-// interface DoctorProfileData {
-//   name?: string;
-//   email?: string;
-//   profilePhoto?: string;
-//   specialization?: string;
-//   educationDetails?: string;
-//   registrationNumber?: string;
-//   registrationYear?: string;
-//   yearOfExperience?: number;
-//   fee?: number;
-//   about?: string;
-//   proofDocument?: string;
-// }
-
 const DoctorProfile = () => {
   const navigate = useNavigate();
   const doctorId = useAuthStore((state) => state.user?._id);
@@ -71,8 +57,6 @@ const DoctorProfile = () => {
   }, [doctorId]);
 
 
-
-
   if (!profile) return <div className="p-8 text-gray-600">Loading profile...</div>;
 
   return (
@@ -80,12 +64,12 @@ const DoctorProfile = () => {
       <Navbar />
 
       <div className="flex flex-1">
-        {/* Sidebar */}
+        
         <aside className="w-full md:w-64 bg-white border-r border-gray-200">
           <Sidebar />
         </aside>
 
-        {/* Main Content */}
+       
         <main className="flex-1 p-4 md:p-6 lg:p-8">
           <div className="flex flex-col sm:flex-row justify-between items-center mb-8">
             <h1 className="text-2xl font-semibold text-gray-700">My Profile</h1>
@@ -148,7 +132,7 @@ const DoctorProfile = () => {
                 <div className="md:col-span-2 mt-2">
                   <p className="text-sm text-[#5C5C5C] mb-1">Proof Document</p>
                   <a
-                    // href={profile.proofDocument}
+                   
                     href={`/api/proxy-image?url=${encodeURIComponent(profile.proofDocument)}`}
                     target="_blank"
                     rel="noopener noreferrer"

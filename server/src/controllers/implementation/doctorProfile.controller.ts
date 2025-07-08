@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { IDoctorProfileController } from "../interface/IDoctorProfileController";
 import { IDoctorProfileService } from "../../services/interface/IDoctorService";
 import { doctorProfileSchema } from "../../validations/doctorProfile.schema";
-import { ZodError } from "zod";
+
 
 
 export class DoctorProfileController implements IDoctorProfileController {
@@ -59,7 +59,7 @@ export class DoctorProfileController implements IDoctorProfileController {
         }
         await this._doctorProfileService.deleteDoctorProfile(doctorId);
         res.status(200).json({message: "Doctor profile deleted successfully"});
-     } catch (error: any) {
+     }catch (error: any) {
         res.status(400).json({message: error.message || "something went wrong"});
      }
 

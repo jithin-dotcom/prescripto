@@ -62,6 +62,7 @@ export  class PatientProfileService implements IPatientProfileService{
        }
     }
 
+
     async deletePatientProfile(patientId: string): Promise<void> {
         try {
             const existing = await this._patientRepo.findByPatientId(patientId);
@@ -76,15 +77,15 @@ export  class PatientProfileService implements IPatientProfileService{
         }
     }
 
+
     async uploadProfilePhoto(userId: string, file: Express.Multer.File) {
     try {
-
 
        const url = await uploadToCloudinary(file.buffer, "telecare/profile_photos");
        const updatedUser = await this._userRepo.updatePhoto(userId, url);
        return updatedUser;
       
-    } catch (error: any) {
+    }catch (error: any) {
       console.error("Error uploading profile photo:", error);
       throw new Error("Failed to upload profile photo");
     }

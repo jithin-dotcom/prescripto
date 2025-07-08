@@ -211,7 +211,7 @@ const AddDoctor = () => {
                     value={form.name}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                  
                   />
                   <input
                     name="email"
@@ -220,7 +220,7 @@ const AddDoctor = () => {
                     value={form.email}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                  
                   />
                   <input
                     name="password"
@@ -229,7 +229,7 @@ const AddDoctor = () => {
                     value={form.password}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                  
                   />
                    <input
                     name="rePassword"
@@ -238,7 +238,7 @@ const AddDoctor = () => {
                     value={form.rePassword}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                  
                   />
                   <input
                     name="educationDetails"
@@ -246,7 +246,7 @@ const AddDoctor = () => {
                     value={form.educationDetails}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                  
                   />
                   <input
                     name="yearOfExperience"
@@ -255,7 +255,7 @@ const AddDoctor = () => {
                     value={form.yearOfExperience}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                  
                   />
                 
                 </div>
@@ -271,7 +271,7 @@ const AddDoctor = () => {
                       placeholder="Doctor fees"
                       value={form.fee}
                       onChange={handleChange}
-                      required
+                   
                     />
                   </div>
                   
@@ -280,7 +280,7 @@ const AddDoctor = () => {
                     value={form.specialization}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                  
                   >
                     <option value="">Select Speciality</option>
                     {[
@@ -303,7 +303,7 @@ const AddDoctor = () => {
                     value={form.registrationNumber}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                  
                   />
                   <input
                     name="registrationYear"
@@ -311,7 +311,7 @@ const AddDoctor = () => {
                     value={form.registrationYear}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                   
                   />
 
                   <label className="mt-2 text-sm text-gray-600 font-medium">
@@ -336,7 +336,7 @@ const AddDoctor = () => {
                   className="w-full px-4 pt-2 border rounded"
                   rows={5}
                   placeholder="Write about doctor"
-                  required
+                 
                 ></textarea>
               </div>
 

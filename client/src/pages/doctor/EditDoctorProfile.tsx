@@ -55,7 +55,7 @@ const EditDoctorProfile = () => {
         });
 
         if (user.photo) {
-          setProfilePhoto(user.photo); // URL string
+          setProfilePhoto(user.photo); 
         }
       } catch (error) {
         console.error(error);
@@ -73,11 +73,12 @@ const EditDoctorProfile = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Form validations
+    
     if (form.password !== form.rePassword) return toast.error("Passwords do not match.");
+    if(form.password === "") return toast.error("password cannot be empty");
     if (!form.name.match(/^[A-Za-z\s]*$/)) return toast.error("Name must only contain letters and spaces.");
     if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return toast.error("Enter a valid email.");
-    // if (!form.password.match( /^(?=.*[A-Za-z])(?=.*\d).+$/) return toast.error("Password must contain letters and numbers.");
+    if (!form.password.match( /^(?=.*[A-Za-z])(?=.*\d).+$/)) return toast.error("Password must contain letters and numbers.");
     if (!form.educationDetails.match(/^[A-Z\s]+$/)) return toast.error("Education should be uppercase letters only.");
     if (!form.registrationNumber.match(/^[a-zA-Z0-9]+$/)) return toast.error("Invalid registration number.");
     if (!form.registrationYear.match(/^\d{4}$/)) return toast.error("Registration year must be 4 digits.");
@@ -174,24 +175,32 @@ const EditDoctorProfile = () => {
               <div className="flex flex-col lg:flex-row items-start gap-10 text-gray-600">
                 {/* Left */}
                 <div className="w-full lg:flex-1 flex flex-col gap-4">
-                  <input name="name" placeholder="Name" value={form.name} onChange={handleChange} className="border rounded px-3 py-2" required />
-                  <input name="email" placeholder="Email" value={form.email} onChange={handleChange} className="border rounded px-3 py-2" required />
+                  <input name="name" placeholder="Name" value={form.name} onChange={handleChange} className="border rounded px-3 py-2"  />
+                  <input name="email" placeholder="Email" value={form.email} onChange={handleChange} className="border rounded px-3 py-2"  />
                   <input name="password" placeholder="Password" type="password" value={form.password} onChange={handleChange} className="border rounded px-3 py-2"  />
                   <input name="rePassword" placeholder="Re-enter Password" type="password" value={form.rePassword} onChange={handleChange} className="border rounded px-3 py-2"  />
-                  <input name="educationDetails" placeholder="Education (MBBS, MD, etc)" value={form.educationDetails} onChange={handleChange} className="border rounded px-3 py-2" required />
-                  <input name="yearOfExperience" placeholder="Years of Experience" value={form.yearOfExperience} onChange={handleChange} className="border rounded px-3 py-2" required />
+                  <input name="educationDetails" placeholder="Education (MBBS, MD, etc)" value={form.educationDetails} onChange={handleChange} className="border rounded px-3 py-2"  />
+                  <input name="yearOfExperience" placeholder="Years of Experience" value={form.yearOfExperience} onChange={handleChange} className="border rounded px-3 py-2"  />
                 </div>
 
                 {/* Right */}
                 <div className="w-full lg:flex-1 flex flex-col gap-4">
-                  <select name="specialization" value={form.specialization} onChange={handleChange} className="border rounded px-3 py-2" required>
+                  <select name="specialization" value={form.specialization} onChange={handleChange} className="border rounded px-3 py-2" >
                     <option value="">Select Speciality</option>
                     {["General physician", "Gynecologist", "Dermatologist", "Pediatricians", "Neurologist", "Gastroenterologist"].map((spec) => (
                       <option key={spec} value={spec}>{spec}</option>
                     ))}
                   </select>
-                  <input name="registrationNumber" placeholder="Registration Number" value={form.registrationNumber} onChange={handleChange} className="border rounded px-3 py-2" required />
-                  <input name="registrationYear" placeholder="Registration Year" value={form.registrationYear} onChange={handleChange} className="border rounded px-3 py-2" required />
+                  <input name="registrationNumber" placeholder="Registration Number" value={form.registrationNumber} onChange={handleChange} className="border rounded px-3 py-2"  />
+                  <input name="registrationYear" placeholder="Registration Year" value={form.registrationYear} onChange={handleChange} className="border rounded px-3 py-2"  />
+                  <input
+  name="fee"
+  placeholder="Consultation Fee"
+  value={form.fee}
+  onChange={handleChange}
+  className="border rounded px-3 py-2"
+/>
+
                   <label className="mt-2 text-sm text-gray-600 font-medium">Upload proof documents (PDF or image)</label>
                   <input type="file" accept=".pdf,image/*" multiple onChange={(e) => setProofDocuments(e.target.files)} className="border px-2 py-2 rounded" />
                 </div>
@@ -199,7 +208,7 @@ const EditDoctorProfile = () => {
 
               <div className="mt-6">
                 <p className="mb-2">About Doctor</p>
-                <textarea name="about" value={form.about} onChange={handleChange} className="w-full px-4 pt-2 border rounded" rows={5} placeholder="Write about doctor" required />
+                <textarea name="about" value={form.about} onChange={handleChange} className="w-full px-4 pt-2 border rounded" rows={5} placeholder="Write about doctor"  />
               </div>
 
               <button type="submit" className="bg-[#5F6FFF] px-10 py-3 mt-6 text-white rounded-full hover:bg-[#4a53cc] hover:scale-105 transition">

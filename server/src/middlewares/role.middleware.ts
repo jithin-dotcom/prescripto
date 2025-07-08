@@ -1,6 +1,6 @@
 
 
-import { UserRepository } from "../repositories/implementation/user.repositories"; // adjust path
+import { UserRepository } from "../repositories/implementation/user.repositories"; 
  import { Request, Response, NextFunction } from "express";
 
 export const checkRole = (requiredRole: string) => {
@@ -11,7 +11,7 @@ export const checkRole = (requiredRole: string) => {
        return;
     }
 
-    const userRepo = new UserRepository(); // or inject it elsewhere
+    const userRepo = new UserRepository(); 
     const user = await userRepo.findById(userId);
     if (!user || user.role !== requiredRole) {
        res.status(403).json({ message: "Forbidden: Insufficient permissions" });

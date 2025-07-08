@@ -11,12 +11,12 @@ export interface CreateUserOrDoctorInput {
 export interface IAdminService {
 
 
-   getAllByRole(role: string, page: number, limit: number, search: string, specialty: string): Promise<{
-  items: IUser[];
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-}>;
+  getAllByRole(role: string, page: number, limit: number, search: string, specialty: string): Promise<{
+    items: IUser[];
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+  }>;
 
   createUserOrDoctor(input: CreateUserOrDoctorInput): Promise<{
     message: string;
@@ -27,18 +27,14 @@ export interface IAdminService {
   userId: string,
   userData: Partial<IUser>,
   profileData?: Partial<IPatientProfile> | Partial<IDoctorProfile>
-): Promise<string>;
+  ): Promise<string>;
 
 
-deleteUserOrDoctor(userId: string): Promise<{ message: string }>;
-
-toggleBlockUser(userId: string): Promise<{message: string; isBlocked: boolean}>;
-
-toggleVerifyUser(userId: string): Promise<{message: string; isVerified: boolean | undefined }>;
-
-getUserById(userId: string): Promise<object>;
-
-getAllUsers(): Promise<{userCount:number,doctorCount:number}>;
+ deleteUserOrDoctor(userId: string): Promise<{ message: string }>;
+ toggleBlockUser(userId: string): Promise<{message: string; isBlocked: boolean}>;
+ toggleVerifyUser(userId: string): Promise<{message: string; isVerified: boolean | undefined }>;
+ getUserById(userId: string): Promise<object>;
+ getAllUsers(): Promise<{userCount:number,doctorCount:number}>;
 
 }
 

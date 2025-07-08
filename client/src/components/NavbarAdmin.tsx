@@ -74,7 +74,7 @@ const Navbar = () => {
      
     try {
       const response = await axiosInstance.post(
-        "/patient-profile/upload-photo",
+        "/patient/upload-photo",
         formData,
         {
           headers: {

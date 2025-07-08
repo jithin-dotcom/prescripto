@@ -1,6 +1,6 @@
 
 
-// models/refreshToken.model.ts
+
 import mongoose,{ Schema, model, Types } from "mongoose";
 import { IRefreshToken } from "./IRefreshToken";
 

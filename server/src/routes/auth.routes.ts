@@ -5,7 +5,6 @@ import { Router } from "express";
 import { AuthController } from "../controllers/implementation/auth.controller";
 import { AuthService } from "../services/implementation/auth.services";
 import { UserRepository } from "../repositories/implementation/user.repositories";
-// import { IUserRepository } from "../repositories/interface/IUserRepository";
 import { OtpRepository } from "../repositories/implementation/otp.repositories";
 import { RefreshTokenRepository } from "../repositories/implementation/refreshToken.repositories";
 import passport from "passport";
@@ -52,8 +51,6 @@ router.get(
 );
 
 router.post("/google-login", authController.loginWithGoogle.bind(authController));
-
-
 
 
 

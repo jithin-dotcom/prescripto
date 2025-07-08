@@ -21,51 +21,27 @@ const adminService = new AdminService(adminRepository, patientProfileRepository,
 const adminController = new AdminController(adminService);
 
 router.use(verifyAccessToken);
-// const roleMiddleware: RequestHandler = checkRole("admin");
-// router.use(roleMiddleware);
-
-
 
 
 router.post(
   '/create-users',
-  (req, res, next) => {
-    console.log("🔹 Route hit at", new Date().toISOString());
-    next();
-  },
   upload.fields([
     { name: "photo", maxCount: 1 },
     { name: "proofDocument", maxCount: 5 }
   ]),
-   (req, res, next) => {
-    console.log("🔹 Multer parsed files:", req.files);
-    next();
-  },
   adminController.createUserOrDoctor.bind(adminController)
 );
 
-
 router.put(
   '/update-user/:id',
-  (req, res, next) => {
-    console.log("🔹 Route hit at", new Date().toISOString());
-    next();
-  },
   upload.fields([
     { name: "photo", maxCount: 1 },
     { name: "proofDocument", maxCount: 5 }
   ]),
-   (req, res, next) => {
-    console.log("🔹 Multer parsed files:", req.files);
-    next();
-  },
   adminController.updateUserOrDoctor.bind(adminController)
 );
 
-// router.get("/users", adminController.getAllUser.bind(adminController));
 router.get('/users', adminController.getUsersByRole.bind(adminController));
-// router.post('/create-users', adminController.createUserOrDoctor.bind(adminController));
-// router.post('/update-users/:id',adminController.updateUserOrDoctor.bind(adminController));
 router.delete('/delete-users/:id',adminController.deleteUserOrDoctor.bind(adminController));
 router.patch('/block-toggle/:id',adminController.toggleBlockUser.bind(adminController));
 router.patch('/verify-toggle/:id',adminController.toggleVerifyUser.bind(adminController));

@@ -5,19 +5,10 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
 import axios from "axios";
-// import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
 import type { GoogleCredentialResponse } from "../../interfaces/IGoogleCredentials";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
 
-
-
-
-// interface GoogleCredentialResponse {
-//   credential?: string;
-//   clientId?: string;
-//   select_by?: string;
-// }
 
 declare global {
   interface Window {
@@ -52,15 +43,11 @@ const Login: React.FC = () => {
     setLoading(true);
     try {
       const res = await axios.post("/api/auth/login", { email, password });
-      console.log("Login response data:", res.data);
+      console.log("Login response data:", res);
       const { accessToken, user } = res.data;
       setAuth({ accessToken, user });
-      // const { tokens, user } = res.data;
-      // const accessToken = tokens.accessToken;
-      setAuth({ accessToken, user });
-
-      toast.success("Login successful!");
-
+      
+      // setAuth({ accessToken, user });
       switch (user.role) {
         case "user":
           navigate("/user-dashboard", { replace: true });
@@ -74,12 +61,13 @@ const Login: React.FC = () => {
         default:
           navigate("/", { replace: true });
       }
+      toast.success("Login successful!");
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         toast.error(err.response?.data?.message || "Invalid credentials. Please try again.");
       } else {
         console.error("Login unknown error:", err);
-        toast.error("An unexpected error occurred.");
+        toast.error("Invalid Email or Password ");
       }
     } finally {
       setLoading(false);
@@ -89,8 +77,7 @@ const Login: React.FC = () => {
   const handleGoogleLogin = async (credential: string) => {
     try {
       const res = await axios.post("/api/auth/google-login", { credential });
-      // const { accessToken, user } = res.data;
-      // setAuth({ accessToken, user });
+      
       console.log("response: ",res);
       const { tokens, user } = res.data;
       const accessToken = tokens.accessToken;
@@ -116,7 +103,7 @@ const Login: React.FC = () => {
           navigate("/", { replace: true });
       }
     } catch (err) {
-      // toast.error("Google login failed.");
+      
       if(err instanceof Error){
         toast.error(err.message || "Google login failed");
       }else{
@@ -144,7 +131,7 @@ const Login: React.FC = () => {
       document.getElementById("google-login-button"),
       { theme: "outline", size: "large", width: "100%" }
     );
-  },[]);       //[]
+  },[]);       
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-white px-4">
@@ -161,7 +148,7 @@ const Login: React.FC = () => {
               type="email"
               placeholder="you@example.com"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+            
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -172,7 +159,6 @@ const Login: React.FC = () => {
               type="password"
               placeholder="••••••••"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />

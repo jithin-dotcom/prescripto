@@ -1,9 +1,9 @@
 
 
 import { Request, Response, NextFunction } from "express";
-import { AuthService } from "../../services/implementation/auth.services";
+
 import { IAuthService } from "../../services/interface/IAuthService";
-import  jwt  from "jsonwebtoken";
+
 import {
   signupSchema,
   loginSchema,
@@ -12,18 +12,17 @@ import {
   verifyNewPasswordSchema,
 } from "../../validations/auth.schema";
 import { IAuthController } from "../interface/IAuthController";
-import passport from "passport";
+
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IAuthService) {}
-
 
   async googleAuth(req: Request, res: Response, next: NextFunction) {
   try {
     const userObj = req.user as any;
     const { user, accessToken, refreshToken } = await this._authService.googleAuth(userObj);
 
-    const redirectUrl = new URL(`${process.env.CLIENT_URL}/auth/google/callback`); //"http://localhost:3000/auth/google/callback"
+    const redirectUrl = new URL(`${process.env.CLIENT_URL}/auth/google/callback`);
     redirectUrl.searchParams.set("accessToken", accessToken);
     redirectUrl.searchParams.set("refreshToken", refreshToken);
     redirectUrl.searchParams.set("user", JSON.stringify(user));
@@ -48,7 +47,7 @@ export class AuthController implements IAuthController {
       });
       res.status(200).json(data);
       return;
-    } catch (error: any) {
+    }catch (error: any) {
       if (error?.statusCode) {
         res.status(error.statusCode).json({ message: error.message });
         return;
@@ -83,10 +82,9 @@ export class AuthController implements IAuthController {
     res.status(200).json({ accessToken, user });
   } catch (error) {
     next(error);
+    console.log("error in controller : ",error);
   }
 }
-
-
 
 
 async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
@@ -96,10 +94,8 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
        res.status(400).json({ message: "Missing credential token" });
        return;
     }
-
-    // const { tokens, user } = await this.authService.loginWithGoogle(credential);
-     
-     const result = await this._authService.loginWithGoogle(credential);
+ 
+    const result = await this._authService.loginWithGoogle(credential);
     const tokens = (result as any)?.tokens;
     const user = (result as any)?.user;
 
@@ -108,18 +104,14 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
        return;
     }
 
-   
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true,
       secure: false, 
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, 
     });
-
-    // console.log("tokens ooo: " ,tokens);
     
     res.status(200).json({
-    
       tokens,
       user,
     });
@@ -131,9 +123,6 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
 }
 
 
-
-  
-
   async verifyOtpAndRegister(req: Request, res: Response, next: NextFunction) {
     try {
       const validated = verifyOtpSchema.parse(req.body);
@@ -142,7 +131,6 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
         validated.otp
       );
       
-      // console.log("result: ",result);
       res.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
       secure: false, 
@@ -152,7 +140,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
     
       res.status(200).json(result);
       return;
-    } catch (error) {
+    }catch (error) {
       next(error);
     }
   }
@@ -179,6 +167,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
     }
   }
 
+
   async verifyForgotPasswordOtp(
     req: Request,
     res: Response,
@@ -196,6 +185,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
       next(error);
     }
   }
+
 
   async updateNewPassword(
     req: Request,
@@ -217,7 +207,6 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
   }
 
 
-
 async refreshToken(req: Request, res: Response, next: NextFunction) {
   try {
     const refreshToken = req.cookies?.refreshToken;
@@ -230,7 +219,6 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
     const { accessToken, refreshToken: newRefreshToken, user } =
       await this._authService.refreshToken(refreshToken);
 
-    // Set new refresh token in HTTP-only cookie
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       secure: false,
@@ -252,13 +240,9 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
 
  async logout(req: Request, res: Response, next: NextFunction){
   try {
-    // const { refreshToken } = req.body;
-
-    // console.log("entered into logout ");
-    // console.log("req.cookie: ",req.cookies);
-     const refreshToken = req.cookies?.refreshToken;  
    
-
+    const refreshToken = req.cookies?.refreshToken;  
+   
     if (!refreshToken) {
        res.status(400).json({ message: "Refresh token is required" });
        return;
@@ -275,7 +259,7 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
 
      res.json({ message: "Logged out successfully" });
      return;
-  } catch (error) {
+  }catch (error) {
     next(error);
   }
 };
@@ -284,7 +268,7 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
 
 async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    // console.log("enter into get me ");
+ 
     const userId = (req as any).user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
@@ -296,14 +280,12 @@ async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
       res.status(404).json({ message: "User not found" });
       return;
     }
-    // console.log("user me : ",user);
+   
     res.status(200).json(user);
   } catch (err) {
     console.error("Error in getMe:", err);
     res.status(500).json({ message: "Server error" });
   }
 }
-
-
 
 }

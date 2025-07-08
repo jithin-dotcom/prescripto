@@ -3,8 +3,6 @@
 import { IAdminService } from "../interface/IAdminService";
 import { IAdminRepository } from "../../repositories/interface/IAdminRepository";
 import { IUser } from "../../types/user.type";
-import { PatientProfileModel } from "../../models/patient/patientProfile.models";
-import { DoctorProfileModel } from "../../models/doctor/doctorProfile.models";
 import { IPatientProfileRepository } from "../../repositories/interface/IPatientProfileRepository";
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 import  mongoose  from "mongoose";
@@ -12,8 +10,6 @@ import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
 import { CreateUserOrDoctorInput } from "../interface/IAdminService";
 import bcrypt from "bcrypt";
-
-
 
 
 
@@ -77,23 +73,7 @@ async getAllByRole(
     const safePage = Math.max(1, page);
     const safeLimit = Math.max(1, limit);
     const skip = (safePage - 1) * safeLimit;
-    // role = "";
-    console.log("role : ", role);
-    
-    // if(role === ""){
-    //     const data = await this._adminRepo.findAll();
-    //     let userCount = 0;
-    //     let doctorCount = 0;
-    //     data.forEach((obj) => {
-    //        if(obj.role === "user")  userCount++;
-    //        else if(obj.role === "doctor") doctorCount++
-    //     })
-    //     console.log("userCount : ",userCount);
-    //     console.log("doctorCount : ",doctorCount);
-        
-    // }
-
-    // If specialty filter is NOT applied (works for both user and doctor)
+       
     if (specialty === "") {
       const [items, totalItems] = await Promise.all([
         this._adminRepo.getAllByRole(role, safeLimit, skip, search),
@@ -122,7 +102,6 @@ async getAllByRole(
       };
     }
 
-    // If specialty filter is applied and role is 'doctor'
     if (role === "doctor" && specialty !== "") {
       const profiles = await this._doctorProfileRepo.findAll({ specialization: specialty });
 
@@ -156,7 +135,6 @@ async getAllByRole(
       };
     }
 
-    // If specialty is applied but role is 'user' (ignore specialty safely)
     if (role === "user") {
       const [items, totalItems] = await Promise.all([
         this._adminRepo.getAllByRole(role, safeLimit, skip, search),
@@ -182,7 +160,6 @@ async getAllByRole(
       };
     }
 
-    // Fallback return (should never reach here)
     return { items: [], currentPage: 1, totalPages: 0, totalItems: 0 };
   } catch (error) {
     console.error(`Error fetching ${role}s:`, error);
@@ -192,249 +169,11 @@ async getAllByRole(
 
 
 
-
-
-// async getAllByRole(role: string, page = 1, limit = 10, search = "", specialty = "") {
-//     try {
-//       const safePage = Math.max(1, page);
-//       const safeLimit = Math.max(1, limit);
-//       const skip = (safePage - 1) * safeLimit;
-//       console.log("specialty services:  ", specialty);
-
-//       if(specialty === "" ){
-//          const [items, totalItems] = await Promise.all([
-//          this._adminRepo.getAllByRole(role, safeLimit, skip, search),
-//          this._adminRepo.countByRole(role),
-//         ]);
-
-      
-//       const itemsWithProfiles = await Promise.all(
-//         items.map(async (user) => {
-//           let profile = null;
-
-//           if (role === "user") {
-//             // profile = await PatientProfileModel.findOne({ patientId: user._id }).lean();
-//             profile = await this._patientProfileRepo.findAll({patientId: user._id});
-//           } else if (role === "doctor") {
-//             // profile = await DoctorProfileModel.findOne({ doctorId: user._id }).lean();
-//             profile = await this._doctorProfileRepo.findAll({doctorId: user._id});
-            
-//           }
-
-
-//           // console.log("profile in service : ",profile);
-
-//           return {
-//             ...user.toObject(),
-//             profile, 
-//           };
-//         })
-//       );
-
-      
-//       const totalPages = Math.ceil(totalItems / safeLimit);
-
-//       return {
-//         items: itemsWithProfiles,
-//         currentPage: safePage,
-//         totalPages,
-//         totalItems,
-//       };
-
-//       }else{
-        
-//         let  profile = await this._doctorProfileRepo.findAll({specialization: specialty});
-//         // console.log("special : ",profile);
-
-//         const itemsWithProfiles = await Promise.all(
-//   profile.map(async (item) => {
-//     const user = await this._adminRepo.findOne({ _id: item.doctorId });
-//       if (!user) return null;
-//     return {
-//       ...user.toObject?.(), 
-//       profile: [item], 
-//     };
-//   })
-// );
-
-// console.log("item with profile : ", itemsWithProfiles);
-
-// const totalItems = itemsWithProfiles.length;
-// const totalPages = Math.ceil(totalItems / safeLimit);
-
-// return {
-//   items: itemsWithProfiles,
-//   currentPage: safePage,
-//   totalPages,
-//   totalItems,
-// };
-          
-//       }
-
-//     } catch (error) {
-//       console.error(`Error fetching ${role}s:`, error);
-//       throw new Error(`Failed to fetch ${role}s`);
-//     }
-//   }
-
-
-
-// async getAllByRole(role: string, page = 1, limit = 10, search = "", specialty = "") {
-//     try {
-//       const safePage = Math.max(1, page);
-//       const safeLimit = Math.max(1, limit);
-//       const skip = (safePage - 1) * safeLimit;
-//       console.log("specialty services:  ", specialty);
-
-//       const [items, totalItems] = await Promise.all([
-//         this._adminRepo.getAllByRole(role, safeLimit, skip, search),
-//         this._adminRepo.countByRole(role),
-//       ]);
-
-      
-//       const itemsWithProfiles = await Promise.all(
-//         items.map(async (user) => {
-//           let profile = null;
-
-//           if (role === "user") {
-//             // profile = await PatientProfileModel.findOne({ patientId: user._id }).lean();
-//             profile = await this._patientProfileRepo.findAll({patientId: user._id});
-//           } else if (role === "doctor") {
-//             // profile = await DoctorProfileModel.findOne({ doctorId: user._id }).lean();
-//             profile = await this._doctorProfileRepo.findAll({doctorId: user._id});
-            
-//           }
-
-
-//           // console.log("profile in service : ",profile);
-
-//           return {
-//             ...user.toObject(),
-//             profile, 
-//           };
-//         })
-//       );
-//       console.log("items with profile : ", itemsWithProfiles);
-//      let finalItems = itemsWithProfiles;
-
-// if (specialty !== "") {
-//   finalItems = itemsWithProfiles.filter((item) =>
-//     item.profile?.some(
-//       (p: any) => p.specialization?.toLowerCase() === specialty.toLowerCase()
-//     )
-//   );
-//         const totalFiltered = finalItems.length;
-//       const totalPages = Math.ceil(totalFiltered / safeLimit);
-
-// return {
-//   items: finalItems,
-//   currentPage: safePage,
-//   totalPages,
-//   totalItems: totalFiltered,
-// };
-// }
-
-
-  //     const totalPages = Math.ceil(totalItems / safeLimit);
-
-  //     return {
-  //       items: itemsWithProfiles,
-  //       currentPage: safePage,
-  //       totalPages,
-  //       totalItems,
-  //     };
-  //   } catch (error) {
-  //     console.error(`Error fetching ${role}s:`, error);
-  //     throw new Error(`Failed to fetch ${role}s`);
-  //   }
-  // }
-
-
-
-
-// async getAllByRole(role: string, page = 1, limit = 10, search = "", specialty = "") {
-//   try {
-//     const safePage = Math.max(1, page);
-//     const safeLimit = Math.max(1, limit);
-//     const skip = (safePage - 1) * safeLimit;
-//     console.log("specialty services: ", specialty);
-
-//     // Step 1: Get all doctors by role and name (basic filter)
-//     const [items, totalItems] = await Promise.all([
-//       this._adminRepo.getAllByRole(role, safeLimit, skip, search),
-//       this._adminRepo.countByRole(role, search),
-//     ]);
-
-//     // Step 2: Map users with matching profiles
-//     const itemsWithProfiles = await Promise.all(
-//       items.map(async (user) => {
-//         let profile = null;
-
-//         if (role === "user") {
-//           profile = await this._patientProfileRepo.findAll({ patientId: user._id });
-//         } else if (role === "doctor") {
-//           if (specialty) {
-//             // Only fetch profile that matches the specialization
-//             profile = await this._doctorProfileRepo.findAll({
-//               doctorId: user._id,
-//               specialization: specialty,
-//             });
-//           } else {
-//             // No specialty filter — return any profile
-//             profile = await this._doctorProfileRepo.findAll({ doctorId: user._id });
-//           }
-//         }
-
-//         // ✅ If specialty filter is active and no matching profile, skip this doctor
-//         if (specialty && (!profile || profile.length === 0)) {
-//           return null; // Mark for filtering
-//         }
-
-//         return {
-//           ...user.toObject(),
-//           profile,
-//         };
-//       })
-//     );
-
-//     // Step 3: Remove nulls
-//     const filteredItems = itemsWithProfiles.filter(Boolean);
-
-//     // Step 4: Recalculate total and paginate the filtered items
-//     const paginatedItems = filteredItems.slice(0, safeLimit); // client-side pagination
-//     const totalFiltered = filteredItems.length;
-//     const totalPages = Math.ceil(totalFiltered / safeLimit);
-
-//     return {
-//       items: paginatedItems,
-//       currentPage: safePage,
-//       totalPages,
-//       totalItems: totalFiltered, // return filtered count
-//     };
-//   } catch (error) {
-//     console.error(`Error fetching ${role}s:`, error);
-//     throw new Error(`Failed to fetch ${role}s`);
-//   }
-// }
-
-
-
-
-
-
-
-
-
-
-  
-
-  async createUserOrDoctor({ userData, profileData }: CreateUserOrDoctorInput): Promise<{ message: string, userId: string }> {
+async createUserOrDoctor({ userData, profileData }: CreateUserOrDoctorInput): Promise<{ message: string, userId: string }> {
   try {
     if (!userData.role || !["user", "doctor"].includes(userData.role)) {
       throw new Error("Invalid role. Only 'user' or 'doctor' are allowed.");
     }
-
-   
 
     if (userData.password) {
       const saltRounds = 10;
@@ -442,7 +181,6 @@ async getAllByRole(
       userData.password = hashedPassword;
     }
 
-  
     const user = await this._adminRepo.create(userData);
     const userId = user._id as unknown as string;
 
@@ -451,18 +189,13 @@ async getAllByRole(
       delete profileData.photo;  
     }
 
-    
     if (userData.role === "user") {
       await this._patientProfileRepo.create({
         patientId: new mongoose.Types.ObjectId(userId),
         ...profileData,
       });
     } else if (userData.role === "doctor") {
-      // console.log("Creating doctor profile with:", {
-      //   doctorId: new mongoose.Types.ObjectId(userId),
-      //   ...profileData,
-      // });
-
+      
       await this._doctorProfileRepo.create({
         doctorId: new mongoose.Types.ObjectId(userId),
         ...profileData,
@@ -543,9 +276,6 @@ async updateUserOrDoctor(
 }
 
 
-
-
-
 async deleteUserOrDoctor(userId: string): Promise<{ message: string }> {
   try {
     const user = await this._adminRepo.findById(userId);
@@ -584,10 +314,11 @@ async toggleBlockUser(userId: string): Promise<{ message: string; isBlocked: boo
          message: `User ${updatedUser?.isBlocked ? "blocked" : "unblocked"} successfully`,
          isBlocked: updatedUser!.isBlocked,
         };
-    } catch (error) {
-        throw (error);
+    }catch (error) {
+      throw (error);
     }
 }
+
 
 async toggleVerifyUser(userId: string): Promise<{ message: string; isVerified: boolean | undefined;}> {
     try {
@@ -602,9 +333,6 @@ async toggleVerifyUser(userId: string): Promise<{ message: string; isVerified: b
     } catch (error) {
         throw (error);
     }
-}
-
-
-
+ }
 
 }
