@@ -69,7 +69,7 @@ async getAllByRole(
   specialty = ""
 ) {
   try {
-    console.log("entered into getAllByRoal");
+   
     const safePage = Math.max(1, page);
     const safeLimit = Math.max(1, limit);
     const skip = (safePage - 1) * safeLimit;

@@ -5,8 +5,7 @@ import { AdminRepository } from "../repositories/implementation/admin.repository
 import { AdminService } from "../services/implementation/admin.services";
 import { AdminController } from "../controllers/implementation/admin.controller";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
-import { checkRole } from "../middlewares/role.middleware";
-import { RequestHandler } from "express";
+
 import { PatientProfileRepository } from "../repositories/implementation/patientProfile.repositories";
 import { DoctorProfileRepository } from "../repositories/implementation/doctorProfile.repositories";
 

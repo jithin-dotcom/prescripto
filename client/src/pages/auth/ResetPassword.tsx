@@ -4,6 +4,7 @@ import axios, { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
+
 const calculatePasswordStrength = (password: string) => {
   let score = 0;
   if (password.length >= 8) score++;
@@ -55,6 +56,7 @@ const ResetPassword: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-blue-50 p-4">
       <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-xl p-8 max-w-md w-full">
+        
         <h2 className="text-2xl font-bold text-blue-600 mb-4">Reset Password</h2>
         <input
           type="password"

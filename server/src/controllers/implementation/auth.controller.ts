@@ -162,7 +162,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
       const result = await this._authService.forgotPassword(validated.email);
       res.status(200).json(result);
       return;
-    } catch (error) {
+    }catch (error) {
       next(error);
     }
   }

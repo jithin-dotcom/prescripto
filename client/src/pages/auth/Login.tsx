@@ -1,6 +1,5 @@
 
 
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore } from "../../store/authStore";
@@ -8,6 +7,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import type { GoogleCredentialResponse } from "../../interfaces/IGoogleCredentials";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
+import logo from'../../assets/Screenshot 2025-07-08 170708.png';
 
 
 declare global {
@@ -137,8 +137,13 @@ const Login: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-white px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 space-y-6">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-blue-600">Welcome Back</h2>
-          <p className="text-sm text-gray-500 mt-2">Please login to your account</p>
+          <img
+            src={logo}
+            alt="Logo"
+            className="w-40 h-12 mx-auto mb-0" 
+          />
+          {/* <h2 className="text-3xl font-bold text-blue-600">Welcome Back</h2> */}
+          <p className="text-sm text-gray-500 mt-0">Please login to your account</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">

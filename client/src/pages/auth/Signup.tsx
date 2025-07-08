@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import logo from "../../assets/Screenshot 2025-07-08 170708.png"
 
 
 const calculatePasswordStrength = (password: string) => {
@@ -95,8 +96,13 @@ const Signup = () => {
     <div className="min-h-screen flex items-center justify-center bg-blue-50 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-md p-8 space-y-6">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-blue-600">Create your account</h2>
-          <p className="text-sm text-gray-500 mt-2">Join us and explore the platform</p>
+           <img
+            src={logo}
+            alt="Logo"
+            className="w-40 h-12 mx-auto mb-0" 
+          />
+          {/* <h2 className="text-3xl font-bold text-blue-600">Create your account</h2> */}
+          <p className="text-sm text-gray-500 mt-0">Join us and explore the platform</p>
         </div>
         <form className="space-y-4" onSubmit={handleSignup}>
           <div>
