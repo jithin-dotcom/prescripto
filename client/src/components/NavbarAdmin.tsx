@@ -59,10 +59,6 @@ const Navbar = () => {
     };
   }, [dropdownOpen]);
 
-  // const handleLogout = () => {
-  //   logout();
-  //   navigate("/login", { replace: true });
-  // };
 
   const handleImageClick = () =>{
     fileInputRef.current?.click();
@@ -115,7 +111,7 @@ const Navbar = () => {
   return (
     <header className="w-full bg-white border-b shadow-sm px-4 sm:px-10 py-3">
       <div className="flex items-center justify-between">
-        {/* Logo + Role */}
+        
         <div className="flex items-center gap-3">
           <img
             src={assets.admin_logo}
@@ -130,7 +126,7 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Right side */}
+      
         <div className="relative flex items-center gap-4">
           {!accessToken ? (
             <button

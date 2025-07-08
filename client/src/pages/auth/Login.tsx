@@ -7,17 +7,17 @@ import { useAuthStore } from "../../store/authStore";
 import axios from "axios";
 // import { FcGoogle } from "react-icons/fc";
 import { toast } from "react-toastify";
-
+import type { GoogleCredentialResponse } from "../../interfaces/IGoogleCredentials";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
 
 
 
 
-interface GoogleCredentialResponse {
-  credential?: string;
-  clientId?: string;
-  select_by?: string;
-}
+// interface GoogleCredentialResponse {
+//   credential?: string;
+//   clientId?: string;
+//   select_by?: string;
+// }
 
 declare global {
   interface Window {

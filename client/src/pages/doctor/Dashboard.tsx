@@ -9,7 +9,7 @@
 import React from "react";
 import { assets } from "../../assets/assets2";
 import Sidebar from "../../components/SideBarAdmin";
-import Navbar from "../../components/Navbar2";
+import Navbar from "../../components/NavbarAdmin";
 // import { useAuthStore } from "../../store/authStore";
 // import { fetchCurrentUser } from "../../services/authService";
 

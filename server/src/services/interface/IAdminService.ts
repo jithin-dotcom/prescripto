@@ -11,7 +11,7 @@ export interface CreateUserOrDoctorInput {
 export interface IAdminService {
 
 
-   getAllByRole(role: string, page: number, limit: number): Promise<{
+   getAllByRole(role: string, page: number, limit: number, search: string, specialty: string): Promise<{
   items: IUser[];
   currentPage: number;
   totalPages: number;
@@ -37,6 +37,8 @@ toggleBlockUser(userId: string): Promise<{message: string; isBlocked: boolean}>;
 toggleVerifyUser(userId: string): Promise<{message: string; isVerified: boolean | undefined }>;
 
 getUserById(userId: string): Promise<object>;
+
+getAllUsers(): Promise<{userCount:number,doctorCount:number}>;
 
 }
 

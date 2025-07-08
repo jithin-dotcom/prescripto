@@ -8,8 +8,8 @@ import {uploadToCloudinary} from "../../config/cloudinary";
 
 export  class PatientProfileService implements IPatientProfileService{
     constructor( 
-      private patientRepo : IPatientProfileRepository,
-      private userRepo: IUserRepository
+      private _patientRepo : IPatientProfileRepository,
+      private _userRepo: IUserRepository
     ) {}
 
  
@@ -22,7 +22,7 @@ export  class PatientProfileService implements IPatientProfileService{
                throw new Error("Patient ID is required");
            }
 
-           const existing = await this.patientRepo.findByPatientId(patientId);
+           const existing = await this._patientRepo.findByPatientId(patientId);
            if (existing) {
                throw new Error("Profile already exists");
            }
@@ -32,7 +32,7 @@ export  class PatientProfileService implements IPatientProfileService{
                patientId: new mongoose.Types.ObjectId(patientId),
            };
 
-           const createProfile = await this.patientRepo.create(profileData);
+           const createProfile = await this._patientRepo.create(profileData);
            return createProfile;
 
         }catch (error) {
@@ -44,12 +44,12 @@ export  class PatientProfileService implements IPatientProfileService{
 
     async editPatientProfile(patientId: string, data: Partial<IPatientProfile>): Promise<IPatientProfile> {
        try {
-         const existing = await this.patientRepo.findByPatientId(patientId);
+         const existing = await this._patientRepo.findByPatientId(patientId);
          if (!existing) {
            throw new Error("Profile not found");
          }
 
-         const updated = await this.patientRepo.updateByPatientId(patientId, data);
+         const updated = await this._patientRepo.updateByPatientId(patientId, data);
          if (!updated) {
            throw new Error("Failed to update profile");
          }
@@ -64,11 +64,11 @@ export  class PatientProfileService implements IPatientProfileService{
 
     async deletePatientProfile(patientId: string): Promise<void> {
         try {
-            const existing = await this.patientRepo.findByPatientId(patientId);
+            const existing = await this._patientRepo.findByPatientId(patientId);
             if(!existing){
                 throw new Error("Patient profile not found");
             }
-            await this.patientRepo.deleteById(existing._id  as mongoose.Types.ObjectId);
+            await this._patientRepo.deleteById(existing._id  as mongoose.Types.ObjectId);
 
         } catch (error) {
             console.error("error deleting the patient : ",error);
@@ -81,7 +81,7 @@ export  class PatientProfileService implements IPatientProfileService{
 
 
        const url = await uploadToCloudinary(file.buffer, "telecare/profile_photos");
-       const updatedUser = await this.userRepo.updatePhoto(userId, url);
+       const updatedUser = await this._userRepo.updatePhoto(userId, url);
        return updatedUser;
       
     } catch (error: any) {

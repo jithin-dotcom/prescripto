@@ -12,13 +12,10 @@ import { fetchCurrentUser } from "../services/authService";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  // const { user, accessToken, logout, setUser } = useAuthStore();
-//   const name = useAuthStore((state) => state.user?.name);
-// const photo = useAuthStore((state) => state.user?.photo);
-const user = useAuthStore((state) => state.user);
-const accessToken = useAuthStore((state) => state.accessToken);
-const logout = useAuthStore((state) => state.logout);
-const setUser = useAuthStore((state) => state.setUser);
+  const user = useAuthStore((state) => state.user);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const logout = useAuthStore((state) => state.logout);
+  const setUser = useAuthStore((state) => state.setUser);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -84,10 +81,10 @@ useEffect(() => {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <div className="flex justify-between items-center px-6 py-4 border-b border-b-[#ADADAD]">
-        {/* Logo */}
+       
         <img className="w-40 cursor-pointer hover:scale-105 transition " src={assets.logo} alt="logo" onClick={() => navigate("/")} />
 
-        {/* Desktop nav links */}
+       
         <ul className="hidden md:flex items-center gap-6 text-sm font-medium text-[#262626]">
           {["/", "/all-doctors", "/about", "/contact"].map((path, idx) => (
             <NavLink
@@ -160,7 +157,7 @@ useEffect(() => {
             </div>
           )}
 
-          {/* Mobile menu toggle */}
+         
           <button
             className="md:hidden text-[#262626]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -170,7 +167,7 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Mobile dropdown nav */}
+     
       {mobileMenuOpen && (
         <ul className="md:hidden flex flex-col gap-2 p-4 text-sm font-medium text-[#262626] bg-white shadow-sm border-t border-gray-200">
           {["/", "/all-doctors", "/about", "/contact"].map((path, idx) => (

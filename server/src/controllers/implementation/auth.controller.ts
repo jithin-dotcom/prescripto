@@ -15,14 +15,13 @@ import { IAuthController } from "../interface/IAuthController";
 import passport from "passport";
 
 export class AuthController implements IAuthController {
-  constructor(private authService: IAuthService) {}
-
+  constructor(private _authService: IAuthService) {}
 
 
   async googleAuth(req: Request, res: Response, next: NextFunction) {
   try {
     const userObj = req.user as any;
-    const { user, accessToken, refreshToken } = await this.authService.googleAuth(userObj);
+    const { user, accessToken, refreshToken } = await this._authService.googleAuth(userObj);
 
     const redirectUrl = new URL(`${process.env.CLIENT_URL}/auth/google/callback`); //"http://localhost:3000/auth/google/callback"
     redirectUrl.searchParams.set("accessToken", accessToken);
@@ -40,7 +39,7 @@ export class AuthController implements IAuthController {
   async signup(req: Request, res: Response, next: NextFunction) {
     try {
       const validated = signupSchema.parse(req.body);
-      const data = await this.authService.signup({
+      const data = await this._authService.signup({
         name: validated.name,
         email: validated.email,
         password: validated.password,
@@ -69,7 +68,7 @@ export class AuthController implements IAuthController {
  async login(req: Request, res: Response, next: NextFunction) {
   try {
     const validated = loginSchema.parse(req.body);
-    const { accessToken, refreshToken, user } = await this.authService.login(
+    const { accessToken, refreshToken, user } = await this._authService.login(
       validated.email,
       validated.password
     );
@@ -100,7 +99,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
 
     // const { tokens, user } = await this.authService.loginWithGoogle(credential);
      
-     const result = await this.authService.loginWithGoogle(credential);
+     const result = await this._authService.loginWithGoogle(credential);
     const tokens = (result as any)?.tokens;
     const user = (result as any)?.user;
 
@@ -117,7 +116,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
       maxAge: 7 * 24 * 60 * 60 * 1000, 
     });
 
-    console.log("tokens ooo: " ,tokens);
+    // console.log("tokens ooo: " ,tokens);
     
     res.status(200).json({
     
@@ -138,12 +137,12 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
   async verifyOtpAndRegister(req: Request, res: Response, next: NextFunction) {
     try {
       const validated = verifyOtpSchema.parse(req.body);
-      const result = await this.authService.verifyOtpAndRegister(
+      const result = await this._authService.verifyOtpAndRegister(
         validated.email,
         validated.otp
       );
       
-      console.log("result: ",result);
+      // console.log("result: ",result);
       res.cookie("refreshToken", result.refreshToken, {
       httpOnly: true,
       secure: false, 
@@ -161,7 +160,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
   async resendOtp(req: Request, res: Response, next: NextFunction) {
     try {
       const validated = verifyForgotPasswordSchema.parse(req.body);
-      const result = await this.authService.resendOtp(validated.email);
+      const result = await this._authService.resendOtp(validated.email);
       res.status(200).json(result);
       return;
     } catch (error) {
@@ -172,7 +171,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
   async forgotPassword(req: Request, res: Response, next: NextFunction) {
     try {
       const validated = verifyForgotPasswordSchema.parse(req.body);
-      const result = await this.authService.forgotPassword(validated.email);
+      const result = await this._authService.forgotPassword(validated.email);
       res.status(200).json(result);
       return;
     } catch (error) {
@@ -187,7 +186,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
   ): Promise<void> {
     try {
       const validated = verifyOtpSchema.parse(req.body);
-      const result = await this.authService.verifyForgotPasswordOtp(
+      const result = await this._authService.verifyForgotPasswordOtp(
         validated.email,
         validated.otp
       );
@@ -205,7 +204,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
   ): Promise<void> {
     try {
       const validated = verifyNewPasswordSchema.parse(req.body);
-      const result = await this.authService.updateNewPassword(
+      const result = await this._authService.updateNewPassword(
         validated.email,
         validated.newPassword,
         validated.reenterNewPassword
@@ -222,14 +221,14 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
 async refreshToken(req: Request, res: Response, next: NextFunction) {
   try {
     const refreshToken = req.cookies?.refreshToken;
-
+    
     if (!refreshToken) {
        res.status(401).json({ message: "Refresh token missing" });
        return;
     }
 
     const { accessToken, refreshToken: newRefreshToken, user } =
-      await this.authService.refreshToken(refreshToken);
+      await this._authService.refreshToken(refreshToken);
 
     // Set new refresh token in HTTP-only cookie
     res.cookie("refreshToken", newRefreshToken, {
@@ -255,8 +254,8 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
   try {
     // const { refreshToken } = req.body;
 
-    console.log("entered into logout ");
-    console.log("req.cookie: ",req.cookies);
+    // console.log("entered into logout ");
+    // console.log("req.cookie: ",req.cookies);
      const refreshToken = req.cookies?.refreshToken;  
    
 
@@ -265,7 +264,7 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
        return;
     }
 
-    await this.authService.logout(refreshToken);
+    await this._authService.logout(refreshToken);
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
@@ -285,19 +284,19 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
 
 async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    console.log("enter into get me ");
+    // console.log("enter into get me ");
     const userId = (req as any).user?.id;
     if (!userId) {
       res.status(401).json({ message: "Unauthorized" });
       return;
     }
 
-    const user = await this.authService.findUserById(userId);
+    const user = await this._authService.findUserById(userId);
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
     }
-    console.log("user me : ",user);
+    // console.log("user me : ",user);
     res.status(200).json(user);
   } catch (err) {
     console.error("Error in getMe:", err);

@@ -4,7 +4,8 @@ import { UserModel } from "../../models/user.models";
 import { IUser } from "../../types/user.type";
 import { IUserRepository } from "../interface/IUserRepository";
 import { BaseRepository } from "./base.repositories";
-import { Document } from "mongoose";
+import { Document, SortOrder } from "mongoose";
+
 
 export class UserRepository
   extends BaseRepository<IUser & Document>
@@ -31,8 +32,21 @@ export class UserRepository
   }
 
   async findTopDoctors(limit: number = 4): Promise<(IUser & Document)[] | null> {
-    return await this.model.find({ role: "doctor", isBlocked: false }).limit(limit);
+    return await this.model.find({ role: "doctor", isBlocked: false }).sort({createdAt:-1}).limit(limit);
   }
+
+  async findAll(
+  filter: Partial<IUser>,
+  skip = 0,
+  limit = 8,
+  sort: Record<string, SortOrder> = { createdAt: -1 }
+): Promise<(IUser & Document)[]> {
+  return await this.model.find(filter).skip(skip).limit(limit).sort(sort);
+}
+
+async count(filter: Partial<IUser>): Promise<number> {
+  return await this.model.countDocuments(filter);
+}
 
   
 }

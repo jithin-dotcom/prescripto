@@ -6,20 +6,19 @@ import { createUserOrDoctorSchema } from "../../validations/createUserOrDoctor.s
 import {uploadToCloudinary} from "../../config/cloudinary";
 import { data } from "react-router-dom";
 
+
 export class AdminController implements IAdminController {
-    constructor(private adminService: IAdminService){}
-
-   
-
+    constructor(private _adminService: IAdminService){}
 
     async getUserById(req: Request, res: Response, next: NextFunction): Promise<void> {
        try {
           let userId = req.params.id;
+          // console.log("req.header : ",req.headers.authorization);
           if(!userId){
              res.status(400).json({message: "userId is missing"});
              return;
           }
-          const result = await this.adminService.getUserById(userId);
+          const result = await this._adminService.getUserById(userId);
           res.status(200).json({message: "success", data: result});
           return;
        } catch (error) {
@@ -27,19 +26,35 @@ export class AdminController implements IAdminController {
        }
     }
 
+    async getAllUser(req: Request, res: Response, next: NextFunction): Promise<void>{
+      try {
+        const result = await this._adminService.getAllUsers();
+        res.status(200).json(result);
+      }catch (error) {
+        next(error);
+      }
+    }
+
+
 
     async getUsersByRole(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     let role = req.query.role as string;
     if (!role) role = "user"; 
 
+    // console.log(`page : ${req.query.page}`);
+    // console.log(`limit : ${req.query.limit}`);
+    // console.log(`search : ${req.query.search}`);
+    // console.log(`specialty : ${req.query.specialty}`)
     let page = parseInt(req.query.page as string) || 1;
     let limit = parseInt(req.query.limit as string) || 10;
+    let search = typeof req.query.search === "string" ? req.query.search : "";
+    let specialty = typeof req.query.specialty === "string" ? req.query.specialty : "";
 
     if (page < 1) page = 1;
     if (limit < 1) limit = 10;
 
-    const result = await this.adminService.getAllByRole(role, page, limit);
+    const result = await this._adminService.getAllByRole(role, page, limit, search, specialty);
 
     res.status(200).json({
       success: true,
@@ -56,9 +71,9 @@ export class AdminController implements IAdminController {
 
 async createUserOrDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    console.log("entered into controller");
-    console.log("Files:", req.files);
-    console.log("request body at admin controller: ", req.body);
+    // console.log("entered into controller");
+    // console.log("Files:", req.files);
+    // console.log("request body at admin controller: ", req.body);
 
     const { userData, profileData } = req.body;
     if (!userData || !profileData) {
@@ -87,7 +102,7 @@ async createUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
 
     parsedProfileData.proofDocuments = proofUrls;
 
-    const result = await this.adminService.createUserOrDoctor({
+    const result = await this._adminService.createUserOrDoctor({
       userData: parsedUserData,
       profileData: parsedProfileData,
     });
@@ -136,7 +151,7 @@ async updateUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
       parsedProfileData.proofDocuments = proofUrls;
     }
 
-    const message = await this.adminService.updateUserOrDoctor(userId, parsedUserData, parsedProfileData);
+    const message = await this._adminService.updateUserOrDoctor(userId, parsedUserData, parsedProfileData);
 
     res.status(200).json({
       success: true,
@@ -152,7 +167,7 @@ async deleteUserOrDoctor(req: Request, res: Response, next: NextFunction) {
   try {
     const userId = req.params.id;
 
-    const result = await this.adminService.deleteUserOrDoctor(userId);
+    const result = await this._adminService.deleteUserOrDoctor(userId);
 
     res.status(200).json({
       success: true,
@@ -169,7 +184,7 @@ async deleteUserOrDoctor(req: Request, res: Response, next: NextFunction) {
 async toggleBlockUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
        const userId = req.params.id;
-       const result = await this.adminService.toggleBlockUser(userId);
+       const result = await this._adminService.toggleBlockUser(userId);
 
        res.status(200).json({
          success: true,
@@ -190,7 +205,7 @@ async toggleBlockUser(req: Request, res: Response, next: NextFunction): Promise<
 async toggleVerifyUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
        const userId = req.params.id;
-       const result = await this.adminService.toggleVerifyUser(userId);
+       const result = await this._adminService.toggleVerifyUser(userId);
 
        res.status(200).json({
          success: true,

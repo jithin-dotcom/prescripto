@@ -1,8 +1,6 @@
 
-
-
 import React, { useState } from "react";
-import Navbar from "../../components/Navbar2";
+import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
@@ -136,7 +134,7 @@ const AddUser = () => {
 
       toast.success("User added successfully!");
 
-      // Reset form
+      
       setForm({
         name: "",
         email: "",
@@ -173,7 +171,7 @@ const AddUser = () => {
             <p className="mb-6 text-2xl font-semibold text-gray-700">Add User</p>
 
             <div className="bg-white px-6 py-8 border rounded-xl shadow-sm w-full">
-              {/* Image Upload */}
+              
               <div className="flex items-center gap-4 mb-8 text-gray-500">
                 <label htmlFor="photo">
                   <img
@@ -198,9 +196,9 @@ const AddUser = () => {
                 </p>
               </div>
 
-              {/* Form Fields */}
+              
               <div className="flex flex-col lg:flex-row items-start gap-10 text-gray-600">
-                {/* Left Column */}
+                
                 <div className="w-full lg:flex-1 flex flex-col gap-4">
                   <input
                     name="name"
@@ -209,7 +207,7 @@ const AddUser = () => {
                     value={form.name}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                    
                   />
                   <input
                     name="email"
@@ -218,7 +216,7 @@ const AddUser = () => {
                     value={form.email}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    // required
+                    
                   />
                   <input
                     name="password"
@@ -227,7 +225,7 @@ const AddUser = () => {
                     value={form.password}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                    
                   />
                   <input
                     name="rePassword"
@@ -236,21 +234,9 @@ const AddUser = () => {
                     value={form.rePassword}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                   
                   />
-                  {/* <select
-                    name="role"
-                    value={form.role}
-                    onChange={handleChange}
-                    className="border rounded px-2 py-2"
-                    required
-                  >
-                    {["user", "doctor", "admin"].map((role) => (
-                      <option key={role} value={role}>
-                        {role}
-                      </option>
-                    ))}
-                  </select> */}
+                  
                   <label htmlFor="">Date of Birth</label>
                   <input
                     name="dob"
@@ -264,22 +250,15 @@ const AddUser = () => {
                   
                 </div>
 
-                {/* Right Column */}
+               
                 <div className="w-full lg:flex-1 flex flex-col gap-4">
-                  {/* <input
-                    name="dob"
-                    type="date"
-                    value={form.dob}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                    required
-                  /> */}
+                 
                   <select
                     name="gender"
                     value={form.gender}
                     onChange={handleChange}
                     className="border rounded px-2 py-2"
-                    required
+                    
                   >
                     {["male", "female", "other"].map((g) => (
                       <option key={g} value={g}>
@@ -287,7 +266,7 @@ const AddUser = () => {
                       </option>
                     ))}
                   </select>
-                  {/* Address Fields */}
+                  
                   <input
                     name="houseName"
                     placeholder="House Name"
@@ -295,7 +274,7 @@ const AddUser = () => {
                     value={form.houseName}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                   
                   />
                   <input
                     name="city"
@@ -304,7 +283,7 @@ const AddUser = () => {
                     value={form.city}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                   
                   />
                   <input
                     name="state"
@@ -313,9 +292,9 @@ const AddUser = () => {
                     value={form.state}
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
-                    required
+                   
                   />
-                  <input
+                  {/* <input
                     name="country"
                     placeholder="Country"
                     type="text"
@@ -323,7 +302,32 @@ const AddUser = () => {
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
                     required
-                  />
+                  /> */}
+
+                  <select
+                    name="country"
+                    value={form.country}
+                    onChange={handleChange}
+                    className="border rounded px-3 py-2"
+                  >
+                  <option value="">Select Country</option>
+                  {[
+                    "India",
+                    "United States",
+                    "United Kingdom",
+                    "Canada",
+                    "Australia",
+                    "Germany",
+                    "France",
+                    "Japan",
+                    "China",
+                    "Brazil"
+                  ].map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                  ))}
+                </select>
                   <input
                     name="pinCode"
                     placeholder="PIN Code"

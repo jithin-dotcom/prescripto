@@ -15,12 +15,15 @@ import { verifyAccessToken as authMiddleware} from "../middlewares/auth.middlewa
 
 
 
+
 const router = Router();
 const userRepository = new UserRepository();
 const otpRepository = new OtpRepository();
 const refreshTokenRepository = new RefreshTokenRepository();
 const authService = new AuthService(userRepository, otpRepository, refreshTokenRepository);
 const authController = new AuthController(authService);
+
+
 
 
 router.use(passport.initialize());

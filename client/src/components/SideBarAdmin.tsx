@@ -11,7 +11,7 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
-  // Admin navigation with added User and User List
+  
   const adminNavItems = [
     { to: '/admin-dashboard', label: 'Dashboard', icon: assets.home_icon },
     { to: '/all-appointments', label: 'Appointments', icon: assets.appointment_icon },
@@ -80,7 +80,7 @@ const Sidebar = () => {
             }`
           }
         >
-          {/* Use either asset icon or inline SVG */}
+          
           {typeof item.icon === 'string' ? (
             <img src={item.icon} alt={item.label} className={iconStyles} />
           ) : (
@@ -98,14 +98,13 @@ const Sidebar = () => {
 
   return (
     <>
-      {/* Mobile Toggle Button */}
+      
       <div className="md:hidden p-3">
         <button onClick={toggleMobileMenu}>
           {isMobileOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
       </div>
 
-      {/* Desktop Sidebar */}
       <aside
         className={`hidden md:flex flex-col min-h-screen bg-white border-r transition-all duration-300 ease-in-out 
         ${isCollapsed ? 'w-16' : 'w-60'}`}
@@ -118,7 +117,7 @@ const Sidebar = () => {
         {sidebarContent}
       </aside>
 
-      {/* Mobile Sidebar */}
+      
       {isMobileOpen && (
         <div
           className="fixed inset-0 bg-black bg-opacity-40 z-40 md:hidden"

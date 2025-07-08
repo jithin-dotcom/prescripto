@@ -7,8 +7,7 @@ import { ZodError } from "zod";
 
 
 export class DoctorProfileController implements IDoctorProfileController {
-    constructor (private doctorProfileService: IDoctorProfileService){};
-
+    constructor (private _doctorProfileService: IDoctorProfileService){};
 
     async createProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
        try{
@@ -19,7 +18,7 @@ export class DoctorProfileController implements IDoctorProfileController {
                doctorId
            });
 
-           const profile = await this.doctorProfileService.createDoctorProfile(doctorId, validatedData);
+           const profile = await this._doctorProfileService.createDoctorProfile(doctorId, validatedData);
            res.status(201).json(profile);
 
        }catch (error: any) {
@@ -45,7 +44,7 @@ export class DoctorProfileController implements IDoctorProfileController {
             return;
         }
         const validatedData = doctorProfileSchema.partial().parse(req.body); 
-        const updated = await this.doctorProfileService.editDoctorProfile(doctorId, validatedData);
+        const updated = await this._doctorProfileService.editDoctorProfile(doctorId, validatedData);
         res.status(200).json(updated);
       }catch (error: any) {
         res.status(400).json({ message: error.message || "Error updating profile" });
@@ -58,7 +57,7 @@ export class DoctorProfileController implements IDoctorProfileController {
         if(!doctorId){
             res.send(400).json({message: "doctorId is missing"});
         }
-        await this.doctorProfileService.deleteDoctorProfile(doctorId);
+        await this._doctorProfileService.deleteDoctorProfile(doctorId);
         res.status(200).json({message: "Doctor profile deleted successfully"});
      } catch (error: any) {
         res.status(400).json({message: error.message || "something went wrong"});

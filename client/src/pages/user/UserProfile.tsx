@@ -383,19 +383,20 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
+import type { Profile } from "../../interfaces/IUserProfile";
 
-interface Profile {
-  name: string;
-  email: string;
-  profilePhoto: string;
-  dateOfBirth: string;
-  gender: string;
-  houseName: string;
-  city: string;
-  state: string;
-  country: string;
-  pin: number;
-}
+// interface Profile {
+//   name: string;
+//   email: string;
+//   profilePhoto: string;
+//   dateOfBirth: string;
+//   gender: string;
+//   houseName: string;
+//   city: string;
+//   state: string;
+//   country: string;
+//   pin: number;
+// }
 
 const UserProfile = () => {
   const navigate = useNavigate();

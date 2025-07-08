@@ -1,7 +1,7 @@
 
 
 import React, { useState, useEffect } from "react";
-import Navbar from "../../components/Navbar2";
+import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
@@ -73,10 +73,11 @@ const EditDoctor = () => {
     e.preventDefault();
 
     // Form validations
-    if (form.password !== form.rePassword) return toast.error("Passwords do not match.");
+    if (form.password !== form.rePassword  ) return toast.error("Passwords do not match.");
+    if(form.password === "") return toast.error("password cannot be empty")
     if (!form.name.match(/^[A-Za-z\s]*$/)) return toast.error("Name must only contain letters and spaces.");
     if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return toast.error("Enter a valid email.");
-    // if (!form.password.match( /^(?=.*[A-Za-z])(?=.*\d).+$/) return toast.error("Password must contain letters and numbers.");
+    if (!form.password.match( /^(?=.*[A-Za-z])(?=.*\d).+$/)) return toast.error("Password must contain letters and numbers.");
     if (!form.educationDetails.match(/^[A-Z\s]+$/)) return toast.error("Education should be uppercase letters only.");
     if (!form.registrationNumber.match(/^[a-zA-Z0-9]+$/)) return toast.error("Invalid registration number.");
     if (!form.registrationYear.match(/^\d{4}$/)) return toast.error("Registration year must be 4 digits.");

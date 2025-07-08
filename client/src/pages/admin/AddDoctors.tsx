@@ -1,11 +1,8 @@
 
-
-
 import React, { useState } from "react";
-import Navbar from "../../components/Navbar2";
+import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
-// import axios from "axios";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
@@ -183,7 +180,7 @@ const AddDoctor = () => {
             <p className="mb-6 text-2xl font-semibold text-gray-700">Add Doctor</p>
 
             <div className="bg-white px-6 py-8 border rounded-xl shadow-sm w-full">
-              {/* Image Upload */}
+              
               <div className="flex items-center gap-4 mb-8 text-gray-500">
                 <label htmlFor="photo">
                   <img
@@ -205,7 +202,7 @@ const AddDoctor = () => {
               </div>
 
               <div className="flex flex-col lg:flex-row items-start gap-10 text-gray-600">
-                {/* Left */}
+                
                 <div className="w-full lg:flex-1 flex flex-col gap-4">
                   <input
                     name="name"
@@ -263,7 +260,7 @@ const AddDoctor = () => {
                 
                 </div>
 
-                {/* Right */}
+                
                 <div className="w-full lg:flex-1 flex flex-col gap-4">
                  <div className="flex flex-col gap-1">
                     <p>Fees</p>

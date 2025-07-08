@@ -30,6 +30,8 @@ const EditUserProfile = () => {
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const navigate = useNavigate();
+  
+
 
   const { accessToken } = useAuthStore();
   const { id } = useParams();
@@ -172,6 +174,9 @@ const EditUserProfile = () => {
     }
   };
 
+ 
+
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <Navbar />
@@ -198,8 +203,8 @@ const EditUserProfile = () => {
                     className="w-16 h-16 object-cover bg-gray-100 rounded-full cursor-pointer"
                     src={
                       profilePhoto
-                      ? URL.createObjectURL(profilePhoto)  // if user selected a new photo
-                      : photoPreview || assets.upload_area // fallback to existing photo or placeholder
+                      ? URL.createObjectURL(profilePhoto)  
+                      : photoPreview || assets.upload_area 
                     }
                     alt="Upload user"
                   />
@@ -306,7 +311,7 @@ const EditUserProfile = () => {
                     className="border rounded px-3 py-2"
                    
                   />
-                  <input
+                  {/* <input
                     name="country"
                     placeholder="Country"
                     type="text"
@@ -314,7 +319,34 @@ const EditUserProfile = () => {
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
                     
-                  />
+                  /> */}
+
+                     <select
+  name="country"
+  value={form.country}
+  onChange={handleChange}
+  className="border rounded px-3 py-2"
+>
+  <option value="">Select Country</option>
+  {[
+    "India",
+    "United States",
+    "United Kingdom",
+    "Canada",
+    "Australia",
+    "Germany",
+    "France",
+    "Japan",
+    "China",
+    "Brazil"
+  ].map((country) => (
+    <option key={country} value={country}>
+      {country}
+    </option>
+  ))}
+</select>
+
+
                   <input
                     name="pinCode"
                     placeholder="PIN Code"
@@ -342,3 +374,6 @@ const EditUserProfile = () => {
 };
 
 export default EditUserProfile;
+
+
+

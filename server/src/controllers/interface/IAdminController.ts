@@ -9,4 +9,5 @@ export interface IAdminController {
     toggleBlockUser(req: Request, res: Response, next: NextFunction): Promise<void>;
     toggleVerifyUser(req: Request, res: Response, next: NextFunction): Promise<void>;
     getUserById(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getAllUser(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

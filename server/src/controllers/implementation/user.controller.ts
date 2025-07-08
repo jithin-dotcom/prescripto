@@ -8,11 +8,11 @@ import {uploadToCloudinary} from "../../config/cloudinary";
 
 
 export class UserController implements IUserController {
-    constructor (private userService: IUserService){}
+    constructor (private _userService: IUserService){}
 
     async getTopDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const result = await this.userService.getTopDoctors();
+            const result = await this._userService.getTopDoctors();
             res.status(200).json({message: "doctors fetched successfully", data: result});
             return;
         } catch (error) {
@@ -20,21 +20,46 @@ export class UserController implements IUserController {
         }
 
     }
-      async getAllDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
-        try {
-            const result = await this.userService.getAllDoctors();
-            res.status(200).json({message: "doctors fetched successfully", data: result});
-            return;
-        } catch (error) {
-            next(error);
-        }
+    //   async getAllDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
+    //     try {
+    //         const result = await this._userService.getAllDoctors();
+    //         res.status(200).json({message: "doctors fetched successfully", data: result});
+    //         return;
+    //     } catch (error) {
+    //         next(error);
+    //     }
 
-    }
+    // }
+
+    async getAllDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 4;
+    const search = (req.query.search as string) || "";
+    const sort = (req.query.sort as string) || "createdAt";
+    const specialty = (req.query.specialty as string) || "";
+
+    console.log("specialty : ", req.query.specialty);
+
+    const result = await this._userService.getAllDoctors(page, limit, search, sort, specialty);
+
+    res.status(200).json({
+      message: "Doctors fetched successfully",
+      data: result.data,
+      page: result.page,
+      total: result.total,
+      totalPages: result.totalPages
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 
       async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = req.params.id;
-            const result = await this.userService.getProfile(userId);
+            const result = await this._userService.getProfile(userId);
             res.status(200).json({message: "profile fetched successfully", data: result});
             return;
         } catch (error) {
@@ -77,7 +102,7 @@ export class UserController implements IUserController {
           parsedProfileData.proofDocuments = proofUrls;
         }
     
-        const data = await this.userService.updateUserOrDoctor(userId, parsedUserData, parsedProfileData);
+        const data = await this._userService.updateUserOrDoctor(userId, parsedUserData, parsedProfileData);
     
         res.status(200).json({
           success: true,

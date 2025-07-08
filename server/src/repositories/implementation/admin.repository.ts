@@ -11,9 +11,8 @@ export class AdminRepository extends BaseRepository<IUser & Document> implements
         super(UserModel);
     }
 
-
-    async getAllByRole(role: string, limit: number, skip: number): Promise<(IUser & Document)[]> {
-      return await this.model.find({ role }).skip(skip).limit(limit).select("-password -refreshToken");
+    async getAllByRole(role: string, limit: number, skip: number, search: string): Promise<(IUser & Document)[]> {
+      return await this.model.find({ role, name: { $regex: search, $options: "i" } }).skip(skip).limit(limit).sort({createdAt:-1}).select("-password -refreshToken");
     }
 
     async countByRole(role: string): Promise<number> {

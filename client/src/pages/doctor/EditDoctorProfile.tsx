@@ -1,7 +1,7 @@
 
 
 import React, { useState, useEffect } from "react";
-import Navbar from "../../components/Navbar2";
+import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";

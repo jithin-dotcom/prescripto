@@ -5,7 +5,7 @@ import { IDoctorProfileService } from "../interface/IDoctorService";
 import mongoose from "mongoose";
 
 export  class DoctorProfileService implements IDoctorProfileService{
-    constructor( private DoctorRepo : IDoctorProfileRepository) {}
+    constructor( private _DoctorRepo : IDoctorProfileRepository) {}
 
  
     async createDoctorProfile(
@@ -17,7 +17,7 @@ export  class DoctorProfileService implements IDoctorProfileService{
                throw new Error("Doctor ID is required");
            }
 
-           const existing = await this.DoctorRepo.findByDoctorId(DoctorId);
+           const existing = await this._DoctorRepo.findByDoctorId(DoctorId);
            if (existing) {
                throw new Error("Profile already exists");
            }
@@ -27,7 +27,7 @@ export  class DoctorProfileService implements IDoctorProfileService{
                DoctorId: new mongoose.Types.ObjectId(DoctorId),
            };
 
-           const createProfile = await this.DoctorRepo.create(profileData);
+           const createProfile = await this._DoctorRepo.create(profileData);
            return createProfile;
 
         }catch (error) {
@@ -39,12 +39,12 @@ export  class DoctorProfileService implements IDoctorProfileService{
 
     async editDoctorProfile(DoctorId: string, data: Partial<IDoctorProfile>): Promise<IDoctorProfile> {
        try {
-         const existing = await this.DoctorRepo.findByDoctorId(DoctorId);
+         const existing = await this._DoctorRepo.findByDoctorId(DoctorId);
          if (!existing) {
            throw new Error("Profile not found");
          }
 
-         const updated = await this.DoctorRepo.updateByDoctorId(DoctorId, data);
+         const updated = await this._DoctorRepo.updateByDoctorId(DoctorId, data);
          if (!updated) {
            throw new Error("Failed to update profile");
          }
@@ -59,11 +59,11 @@ export  class DoctorProfileService implements IDoctorProfileService{
 
     async deleteDoctorProfile(DoctorId: string): Promise<void> {
         try {
-            const existing = await this.DoctorRepo.findByDoctorId(DoctorId);
+            const existing = await this._DoctorRepo.findByDoctorId(DoctorId);
             if(!existing){
                 throw new Error("Doctor profile not found");
             }
-            await this.DoctorRepo.deleteById(existing._id  as mongoose.Types.ObjectId);
+            await this._DoctorRepo.deleteById(existing._id  as mongoose.Types.ObjectId);
 
         } catch (error) {
             console.error("error deleting the Doctor : ",error);

@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import Navbar from "../../components/Navbar2";
+import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
@@ -101,7 +101,7 @@ const EditUser = () => {
       return;
     }
 
-    if (form.password && !passwordRegex.test(form.password)) {
+    if ((form.password && !passwordRegex.test(form.password)) || form.password === "") {
       toast.error("Password must contain at least one letter and one number.");
       return;
     }
@@ -302,7 +302,7 @@ const EditUser = () => {
                     className="border rounded px-3 py-2"
                    
                   />
-                  <input
+                  {/* <input
                     name="country"
                     placeholder="Country"
                     type="text"
@@ -310,7 +310,32 @@ const EditUser = () => {
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
                     
-                  />
+                  /> */}
+
+                                       <select
+  name="country"
+  value={form.country}
+  onChange={handleChange}
+  className="border rounded px-3 py-2"
+>
+  <option value="">Select Country</option>
+  {[
+    "India",
+    "United States",
+    "United Kingdom",
+    "Canada",
+    "Australia",
+    "Germany",
+    "France",
+    "Japan",
+    "China",
+    "Brazil"
+  ].map((country) => (
+    <option key={country} value={country}>
+      {country}
+    </option>
+  ))}
+</select>
                   <input
                     name="pinCode"
                     placeholder="PIN Code"

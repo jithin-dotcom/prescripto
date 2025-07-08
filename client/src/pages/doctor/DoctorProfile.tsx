@@ -3,24 +3,25 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../../components/Navbar2";
+import Navbar from "../../components/NavbarAdmin";
 import Sidebar from "../../components/SideBarAdmin";
 import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
+import type { DoctorProfileData } from "../../interfaces/IDoctorProfile";
 
-interface DoctorProfileData {
-  name?: string;
-  email?: string;
-  profilePhoto?: string;
-  specialization?: string;
-  educationDetails?: string;
-  registrationNumber?: string;
-  registrationYear?: string;
-  yearOfExperience?: number;
-  fee?: number;
-  about?: string;
-  proofDocument?: string;
-}
+// interface DoctorProfileData {
+//   name?: string;
+//   email?: string;
+//   profilePhoto?: string;
+//   specialization?: string;
+//   educationDetails?: string;
+//   registrationNumber?: string;
+//   registrationYear?: string;
+//   yearOfExperience?: number;
+//   fee?: number;
+//   about?: string;
+//   proofDocument?: string;
+// }
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
@@ -68,6 +69,9 @@ const DoctorProfile = () => {
 
     fetchDoctorProfile();
   }, [doctorId]);
+
+
+
 
   if (!profile) return <div className="p-8 text-gray-600">Loading profile...</div>;
 
@@ -144,7 +148,8 @@ const DoctorProfile = () => {
                 <div className="md:col-span-2 mt-2">
                   <p className="text-sm text-[#5C5C5C] mb-1">Proof Document</p>
                   <a
-                    href={profile.proofDocument}
+                    // href={profile.proofDocument}
+                    href={`/api/proxy-image?url=${encodeURIComponent(profile.proofDocument)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-block bg-[#5F6FFF] text-white px-5 py-2 rounded-lg hover:bg-[#4a54e1] transition text-sm font-medium"
@@ -153,6 +158,7 @@ const DoctorProfile = () => {
                   </a>
                 </div>
               )}
+
             </div>
           </div>
         </main>

@@ -70,6 +70,7 @@ router.delete('/delete-users/:id',adminController.deleteUserOrDoctor.bind(adminC
 router.patch('/block-toggle/:id',adminController.toggleBlockUser.bind(adminController));
 router.patch('/verify-toggle/:id',adminController.toggleVerifyUser.bind(adminController));
 router.get('/get-user/:id',adminController.getUserById.bind(adminController));
+router.get('/users-count',adminController.getAllUser.bind(adminController));
 
 export default router;
 
