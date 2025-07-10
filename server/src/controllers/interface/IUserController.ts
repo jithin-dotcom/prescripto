@@ -6,4 +6,5 @@ export interface IUserController {
     getAllDoctors(req: Request, res: Response, next: NextFunction): Promise<void>;
     getProfile(req: Request, res: Response, next: NextFunction): Promise<void>; 
     updateUserOrDoctor(req: Request, res: Response, next: NextFunction): Promise<void>;
+    changePassword(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

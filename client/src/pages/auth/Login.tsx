@@ -42,6 +42,10 @@ const Login: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     try {
+      if(email === "" || password === ""){
+        toast.error("Email and Password cannot be empty");
+        return;
+      }
       const res = await axios.post("/api/auth/login", { email, password });
       console.log("Login response data:", res);
       const { accessToken, user } = res.data;

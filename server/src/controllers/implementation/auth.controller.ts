@@ -1,8 +1,10 @@
 
 
 import { Request, Response, NextFunction } from "express";
-
 import { IAuthService } from "../../services/interface/IAuthService";
+import { StatusCode } from "../../constants/statusCode.enum";
+import { StatusMessage } from "../../constants/statusMessage";
+
 
 import {
   signupSchema,
@@ -45,7 +47,7 @@ export class AuthController implements IAuthController {
         role: validated.role,
         isBlocked: false,
       });
-      res.status(200).json(data);
+      res.status(StatusCode.OK).json(data);
       return;
     }catch (error: any) {
       if (error?.statusCode) {
@@ -54,7 +56,7 @@ export class AuthController implements IAuthController {
       }
       if (error.name === "ZodError") {
         res
-          .status(400)
+          .status(StatusCode.BAD_REQUEST)
           .json({ message: error.errors.map((e: any) => e.message).join(", ") });
         return;
       }
@@ -79,10 +81,10 @@ export class AuthController implements IAuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000, 
     });
 
-    res.status(200).json({ accessToken, user });
+    res.status(StatusCode.OK).json({ accessToken, user });
   } catch (error) {
     next(error);
-    console.log("error in controller : ",error);
+    
   }
 }
 
@@ -91,7 +93,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
   try {
     const { credential } = req.body;
     if (!credential) {
-       res.status(400).json({ message: "Missing credential token" });
+       res.status(StatusCode.BAD_REQUEST).json({ message: "Missing credential token" });
        return;
     }
  
@@ -100,7 +102,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
     const user = (result as any)?.user;
 
     if (!tokens || !user) {
-       res.status(500).json({ message: "Failed to retrieve user or tokens" });
+       res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: "Failed to retrieve user or tokens" });
        return;
     }
 
@@ -111,7 +113,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
       maxAge: 7 * 24 * 60 * 60 * 1000, 
     });
     
-    res.status(200).json({
+    res.status(StatusCode.OK).json({
       tokens,
       user,
     });
@@ -138,7 +140,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
       maxAge: 7 * 24 * 60 * 60 * 1000, 
      });
     
-      res.status(200).json(result);
+      res.status(StatusCode.OK).json(result);
       return;
     }catch (error) {
       next(error);
@@ -149,7 +151,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
     try {
       const validated = verifyForgotPasswordSchema.parse(req.body);
       const result = await this._authService.resendOtp(validated.email);
-      res.status(200).json(result);
+      res.status(StatusCode.OK).json(result);
       return;
     } catch (error) {
       next(error);
@@ -160,7 +162,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
     try {
       const validated = verifyForgotPasswordSchema.parse(req.body);
       const result = await this._authService.forgotPassword(validated.email);
-      res.status(200).json(result);
+      res.status(StatusCode.OK).json(result);
       return;
     }catch (error) {
       next(error);
@@ -179,7 +181,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
         validated.email,
         validated.otp
       );
-      res.status(200).json(result);
+      res.status(StatusCode.OK).json(result);
       return;
     } catch (error) {
       next(error);
@@ -199,7 +201,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
         validated.newPassword,
         validated.reenterNewPassword
       );
-      res.status(200).json(result);
+      res.status(StatusCode.OK).json(result);
       return;
     } catch (error) {
       next(error);
@@ -212,7 +214,7 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
     const refreshToken = req.cookies?.refreshToken;
     
     if (!refreshToken) {
-       res.status(401).json({ message: "Refresh token missing" });
+       res.status(StatusCode.UNAUTHORIZED).json({ message: "Refresh token missing" });
        return;
     }
 
@@ -226,13 +228,13 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
       maxAge: 7 * 24 * 60 * 60 * 1000, 
     });
 
-      res.status(200).json({
+      res.status(StatusCode.OK).json({
       accessToken,
       user,
       });
       return;
   } catch (error) {
-     res.status(403).json({ message: "Invalid or expired refresh token" });
+     res.status(StatusCode.FORBIDDEN).json({ message: "Invalid or expired refresh token" });
      return;
   }
 }
@@ -244,7 +246,7 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
     const refreshToken = req.cookies?.refreshToken;  
    
     if (!refreshToken) {
-       res.status(400).json({ message: "Refresh token is required" });
+       res.status(StatusCode.BAD_REQUEST).json({ message: "Refresh token is required" });
        return;
     }
 
@@ -271,20 +273,20 @@ async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
  
     const userId = (req as any).user?.id;
     if (!userId) {
-      res.status(401).json({ message: "Unauthorized" });
+      res.status(StatusCode.UNAUTHORIZED).json({ message: StatusMessage.UNAUTHORIZED});
       return;
     }
 
     const user = await this._authService.findUserById(userId);
     if (!user) {
-      res.status(404).json({ message: "User not found" });
+      res.status(StatusCode.NOT_FOUND).json({ message: StatusMessage.NOT_FOUND });
       return;
     }
    
-    res.status(200).json(user);
+    res.status(StatusCode.OK).json(user);
   } catch (err) {
-    console.error("Error in getMe:", err);
-    res.status(500).json({ message: "Server error" });
+    
+    res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
   }
 }
 

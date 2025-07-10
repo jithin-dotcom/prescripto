@@ -3,6 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import { IAdminController } from "../interface/IAdminController";
 import { IAdminService } from "../../services/interface/IAdminService";
 import {uploadToCloudinary} from "../../config/cloudinary";
+import { StatusCode } from "../../constants/statusCode.enum";
+import { StatusMessage } from "../../constants/statusMessage";
 
 
 export class AdminController implements IAdminController {
@@ -13,11 +15,11 @@ export class AdminController implements IAdminController {
           let userId = req.params.id;
           
           if(!userId){
-             res.status(400).json({message: "userId is missing"});
+             res.status(StatusCode.BAD_REQUEST).json({message: "userId is missing"});
              return;
           }
           const result = await this._adminService.getUserById(userId);
-          res.status(200).json({message: "success", data: result});
+          res.status(StatusCode.OK).json({message: StatusMessage.OK, data: result});
           return;
        } catch (error) {
           next(error);
@@ -27,7 +29,7 @@ export class AdminController implements IAdminController {
     async getAllUser(req: Request, res: Response, next: NextFunction): Promise<void>{
       try {
         const result = await this._adminService.getAllUsers();
-        res.status(200).json(result);
+        res.status(StatusCode.OK).json(result);
       }catch (error) {
         next(error);
       }
@@ -51,7 +53,7 @@ export class AdminController implements IAdminController {
 
        const result = await this._adminService.getAllByRole(role, page, limit, search, specialty);
 
-       res.status(200).json({
+       res.status(StatusCode.OK).json({
          success: true,
          message: `${role.charAt(0).toUpperCase() + role.slice(1)}s fetched successfully`,
          data: result,
@@ -69,7 +71,7 @@ async createUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
   
     const { userData, profileData } = req.body;
     if (!userData || !profileData) {
-      res.status(400).json({ success: false, message: "userData and profileData are required" });
+      res.status(StatusCode.BAD_REQUEST).json({ success: false, message: StatusMessage.MISSING_DATA });
       return;
     }
 
@@ -97,7 +99,7 @@ async createUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
       profileData: parsedProfileData,
     });
 
-    res.status(201).json({
+    res.status(StatusCode.CREATED).json({
       success: true,
       message: result.message,
       userId: result.userId,
@@ -114,7 +116,7 @@ async updateUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
     const { userData, profileData } = req.body;
 
     if (!userData || !profileData) {
-      res.status(400).json({ success: false, message: "userData and profileData are required" });
+      res.status(StatusCode.BAD_REQUEST).json({ success: false, message: StatusMessage.MISSING_DATA });
       return;
     }
 
@@ -142,7 +144,7 @@ async updateUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
 
     const message = await this._adminService.updateUserOrDoctor(userId, parsedUserData, parsedProfileData);
 
-    res.status(200).json({
+    res.status(StatusCode.OK).json({
       success: true,
       message,
     });
@@ -158,12 +160,12 @@ async deleteUserOrDoctor(req: Request, res: Response, next: NextFunction) {
 
     const result = await this._adminService.deleteUserOrDoctor(userId);
 
-    res.status(200).json({
+    res.status(StatusCode.OK).json({
       success: true,
       message: result.message,
     });
   } catch (error: any) {
-    res.status(400).json({
+    res.status(StatusCode.BAD_REQUEST).json({
       success: false,
       message: error.message || "Failed to delete user/doctor",
     });
@@ -176,7 +178,7 @@ async toggleBlockUser(req: Request, res: Response, next: NextFunction): Promise<
        const userId = req.params.id;
        const result = await this._adminService.toggleBlockUser(userId);
 
-       res.status(200).json({
+       res.status(StatusCode.OK).json({
          success: true,
          message: result.message,
          isBlocked: result.isBlocked
@@ -185,9 +187,9 @@ async toggleBlockUser(req: Request, res: Response, next: NextFunction): Promise<
     } catch (error) {
        console.error("Error in toggleBlockUser:", error);
        if(error instanceof Error){
-         res.status(500).json({ success: false, message: error.message });
+         res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
        }else{
-         res.status(500).json({success: false, message: "something went wrong"});
+         res.status(StatusCode.INTERNAL_SERVER_ERROR).json({success: false, message: StatusMessage.INTERNAL_SERVER_ERROR});
        }
     }
 }
@@ -198,7 +200,7 @@ async toggleVerifyUser(req: Request, res: Response, next: NextFunction): Promise
        const userId = req.params.id;
        const result = await this._adminService.toggleVerifyUser(userId);
 
-       res.status(200).json({
+       res.status(StatusCode.OK).json({
          success: true,
          message: result.message,
          isVerified: result.isVerified
@@ -207,9 +209,9 @@ async toggleVerifyUser(req: Request, res: Response, next: NextFunction): Promise
     } catch (error) {
        console.error("Error in toggleVerifyUser:", error);
        if(error instanceof Error){
-         res.status(500).json({ success: false, message: error.message });
+         res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
        }else{
-         res.status(500).json({success: false, message: "something went wrong"});
+         res.status(StatusCode.INTERNAL_SERVER_ERROR).json({success: false, message: StatusMessage.INTERNAL_SERVER_ERROR});
        }
     }
 }

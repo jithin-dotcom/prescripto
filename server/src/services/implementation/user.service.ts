@@ -5,10 +5,11 @@ import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorPr
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { IUser } from "../../types/user.type";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
-import { Document } from "mongoose";
+
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
+import { UserModel } from "../../models/user.models";
 
 
 export class UserService implements IUserService {
@@ -222,6 +223,70 @@ async updateUserOrDoctor(
     console.error("Error in updateUserOrDoctor:", error);
     throw new Error(error.message || "Something went wrong while updating the user or doctor.");
   }
+}
+
+async changePassword(userId: string, oldPassword: string, newPassword: string):Promise<void>{
+   try {
+      
+      const user = await this._userRepo.findById(userId);
+      if(!user){
+         throw new Error("User not found");
+      }
+      if(!user.password){
+        throw new Error("Password missing in dataBase");
+      }
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if(!isMatch){
+        throw new Error("oldPassword don't match the password in dataBase");
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword,10);
+
+      await this._userRepo.updateById(userId,{password:hashedPassword});
+
+   }catch (error) {
+      if(error instanceof Error){
+         throw new Error(error.message);
+      }else{
+         throw new Error("Something went wrong");
+      }
+   }
+   
+  
+}
+
+async changeEmail(userId: string, password: string, newEmail: string):Promise<void>{
+    try {
+        
+        const user = await UserModel.findById(userId);
+        if(!user){
+           throw new Error("User not found");
+        }
+        if(!user.password){
+           throw new Error("Password missing in Database");
+        }
+       
+        const isMatch = await bcrypt.compare(password,user.password);
+        if(!isMatch){
+           throw new Error("Password doesn't match");
+        }
+
+        const existing = await this._userRepo.findOne({email:newEmail});
+       
+        if(existing && (existing?._id as mongoose.Types.ObjectId).toString() !== userId){
+           throw new Error("Email not available");
+        }
+       
+        await this._userRepo.updateById(userId,{email:newEmail});
+
+    }catch (error) {
+       if(error instanceof Error){
+          throw new Error(error.message);
+       }else{
+          throw new Error("Something went wrong");
+       }
+    }
 }
 
 

@@ -6,6 +6,7 @@ import Pagination from "../../components/Pagination";
 import axiosInstance from "../../utils/axios";
 import type { Doctor } from "../../interfaces/IDoctor";
 import { Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const specialties = [
   "Clear Filter",
@@ -26,7 +27,7 @@ const AllDoctors = () => {
   const [searchInput, setSearchInput] = useState("");
   const [specialty, setSpecialty] = useState("")
   const [debouncedSearchInput, setDebouncedSearchInput] = useState(searchInput);
-
+  const navigate = useNavigate();
 
 
 useEffect(() => {
@@ -116,6 +117,7 @@ const fetchDoctors = async () => {
                   return (
                     <div
                       key={doctor._id}
+                      onClick={() => navigate(`/appointment/${doctor._id}`) }
                       className="flex flex-col border border-[#C9D8FF] rounded-xl bg-white shadow-sm overflow-hidden transition group hover:shadow-lg hover:scale-[1.03] cursor-pointer "
                     >
                       <div className="w-full aspect-[4/3] bg-[#EAEFFF] hover:bg-[#5F6FFF] transition duration-300">

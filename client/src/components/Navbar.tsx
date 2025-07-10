@@ -145,6 +145,17 @@ useEffect(() => {
                     >
                       Profile
                     </button>
+
+                      <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        navigate("/my-appointments");
+                      }}
+                      className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
+                    >
+                       Appointments
+                    </button>
+                    
                     <button
                       onClick={handleLogout}
                       className="block w-full px-4 py-2 text-left text-red-500 hover:bg-[#5F6FFF] hover:text-white"

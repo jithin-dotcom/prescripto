@@ -3,7 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import { IDoctorProfileController } from "../interface/IDoctorProfileController";
 import { IDoctorProfileService } from "../../services/interface/IDoctorService";
 import { doctorProfileSchema } from "../../validations/doctorProfile.schema";
-
+import { StatusCode } from "../../constants/statusCode.enum";
+import { StatusMessage } from "../../constants/statusMessage";
 
 
 export class DoctorProfileController implements IDoctorProfileController {
@@ -19,17 +20,17 @@ export class DoctorProfileController implements IDoctorProfileController {
            });
 
            const profile = await this._doctorProfileService.createDoctorProfile(doctorId, validatedData);
-           res.status(201).json(profile);
+           res.status(StatusCode.CREATED).json(profile);
 
        }catch (error: any) {
            if (error?.name === "ZodError") {
-               res.status(400).json({
+               res.status(StatusCode.BAD_REQUEST).json({
                    message: error.errors.map((e: any) => e.message).join(", ")
                });
                return;
            }
 
-           res.status(400).json({ message: error.message || "Failed to create profile" });
+           res.status(StatusCode.BAD_REQUEST).json({ message: error.message || "Failed to create profile" });
       }
     }
 
@@ -40,14 +41,14 @@ export class DoctorProfileController implements IDoctorProfileController {
       try{
         const { doctorId } = req.params;
         if(!doctorId){
-            res.send(400).json({ message: "doctorId missing"});
+            res.send(StatusCode.BAD_REQUEST).json({ message: StatusMessage.MISSING_ID});
             return;
         }
         const validatedData = doctorProfileSchema.partial().parse(req.body); 
         const updated = await this._doctorProfileService.editDoctorProfile(doctorId, validatedData);
-        res.status(200).json(updated);
+        res.status(StatusCode.OK).json(updated);
       }catch (error: any) {
-        res.status(400).json({ message: error.message || "Error updating profile" });
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message || "Error updating profile" });
       }
     }
 
@@ -55,12 +56,12 @@ export class DoctorProfileController implements IDoctorProfileController {
      try {
         const { doctorId } = req.params;
         if(!doctorId){
-            res.send(400).json({message: "doctorId is missing"});
+            res.send(StatusCode.BAD_REQUEST).json({message: StatusMessage.MISSING_ID});
         }
         await this._doctorProfileService.deleteDoctorProfile(doctorId);
-        res.status(200).json({message: "Doctor profile deleted successfully"});
+        res.status(StatusCode.NO_CONTENT).json({message: StatusMessage.NO_CONTENT});
      }catch (error: any) {
-        res.status(400).json({message: error.message || "something went wrong"});
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: error.message || StatusMessage.INTERNAL_SERVER_ERROR});
      }
 
     }

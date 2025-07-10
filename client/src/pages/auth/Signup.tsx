@@ -42,6 +42,11 @@ const Signup = () => {
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if(form.name === "" || form.email === "" || form.password === "" || form.confirmPassword === ""){
+      toast.error("Fields cannot be empty");
+      return;
+    }
+
     if(!nameRegex.test(form.name)){
       toast.error("Name must only have Alphabets");
       return;

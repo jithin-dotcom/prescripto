@@ -22,10 +22,16 @@ export interface IUserService {
      totalPages: number;
      page: number;
     }>;
+
     getProfile(userId: string): Promise<{user: IUser, profile: IPatientProfile | IDoctorProfile | null}|null>;
+    
     updateUserOrDoctor(
       userId: string,
       userData: Partial<IUser>,
       profileData?: Partial<IPatientProfile> | Partial<IDoctorProfile>
-    ): Promise<string>
+    ): Promise<string>;
+
+    changePassword(userId: string, oldPassword: string, newPassword: string):Promise<void>;
+
+    changeEmail(userId: string, password: string, newEmail: string):Promise<void>;
 }

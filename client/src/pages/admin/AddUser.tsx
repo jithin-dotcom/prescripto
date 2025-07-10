@@ -1,12 +1,18 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
+
+type country = {
+   name : {
+     common: string,
+   }
+}
 
 const AddUser = () => {
   const [form, setForm] = useState({
@@ -25,6 +31,7 @@ const AddUser = () => {
   });
 
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
+  const [countries, setCountries] = useState<string[]>([]);
 
   const { accessToken } = useAuthStore();
   const nameRegex = /^[A-Za-z\s]*$/;
@@ -33,6 +40,24 @@ const AddUser = () => {
   const dobDate = new Date(form.dob);
   const today = new Date();
   const numberRegex = /^\d+$/;
+
+  useEffect(() => {
+  const fetchCountries = async () => {
+    try {
+      const response = await axios.get("https://restcountries.com/v3.1/all?fields=name");
+      const countryNames = response.data
+        .map((country: country) => country.name.common)
+        .sort(); // optional: alphabetical sort
+
+      setCountries(countryNames);
+    } catch (error) {
+      toast.error("Failed to load countries");
+      console.error(error);
+    }
+  };
+
+  fetchCountries();
+}, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -302,7 +327,13 @@ const AddUser = () => {
                     onChange={handleChange}
                     className="border rounded px-3 py-2"
                   >
-                  <option value="">Select Country</option>
+                      <option value="">Select Country</option>
+  {countries.map((country) => (
+    <option key={country} value={country}>
+      {country}
+    </option>
+  ))}
+                  {/* <option value="">Select Country</option>
                   {[
                     "India",
                     "United States",
@@ -318,7 +349,7 @@ const AddUser = () => {
                   <option key={country} value={country}>
                     {country}
                   </option>
-                  ))}
+                  ))} */}
                 </select>
                   <input
                     name="pinCode"

@@ -22,7 +22,8 @@ router.use(verifyAccessToken);
 router.get("/top-doctors",userController.getTopDoctors.bind(userController));
 router.get("/all-doctors",userController.getAllDoctors.bind(userController));
 router.get("/user-profile/:id",userController.getProfile.bind(userController));
-
+router.post("/change-password",userController.changePassword.bind(userController));
+router.post("/change-email",userController.changeEmail.bind(userController));
 
 
 router.put(
@@ -35,6 +36,6 @@ router.put(
 );
 
 
-export default router
+export default router;
 
 

@@ -3,7 +3,8 @@ import { Request, Response, NextFunction } from "express";
 import { IPatientProfileController } from "../interface/IPatientProfileController";
 import { IPatientProfileService } from "../../services/interface/IPatientService";
 import { patientProfileSchema } from "../../validations/patientProfile.schema";
-
+import { StatusCode } from "../../constants/statusCode.enum";
+import { StatusMessage } from "../../constants/statusMessage";
 
 
 export class PatientProfileController implements IPatientProfileController {
@@ -19,17 +20,17 @@ export class PatientProfileController implements IPatientProfileController {
            });
 
            const profile = await this._patientProfileService.createPatientProfile(patientId, validatedData);
-           res.status(201).json(profile);
+           res.status(StatusCode.CREATED).json(profile);
 
        }catch (error: any) {
            if (error?.name === "ZodError") {
-               res.status(400).json({
+               res.status(StatusCode.BAD_REQUEST).json({
                    message: error.errors.map((e: any) => e.message).join(", ")
                });
                return;
            }
 
-           res.status(400).json({ message: error.message || "Failed to create profile" });
+           res.status(StatusCode.BAD_REQUEST).json({ message: error.message || "Failed to create profile" });
       }
     }
 
@@ -38,14 +39,14 @@ export class PatientProfileController implements IPatientProfileController {
       try{
         const { patientId } = req.params;
         if(!patientId){
-            res.send(400).json({ message: "patientId missing"});
+            res.send(StatusCode.BAD_REQUEST).json({ message: StatusMessage.MISSING_ID});
             return;
         }
         const validatedData = patientProfileSchema.partial().parse(req.body); 
         const updated = await this._patientProfileService.editPatientProfile(patientId, validatedData);
-        res.status(200).json(updated);
+        res.status(StatusCode.OK).json(updated);
       }catch (error: any) {
-        res.status(400).json({ message: error.message || "Error updating profile" });
+        res.status(StatusCode.BAD_REQUEST).json({ message: error.message || "Error updating profile" });
       }
     }
 
@@ -54,12 +55,12 @@ export class PatientProfileController implements IPatientProfileController {
      try {
         const { patientId } = req.params;
         if(!patientId){
-            res.send(400).json({message: "PatientId is missing"});
+            res.send(StatusCode.BAD_REQUEST).json({message: StatusMessage.MISSING_ID});
         }
         await this._patientProfileService.deletePatientProfile(patientId);
-        res.status(200).json({message: "patient profile deleted successfully"});
+        res.status(StatusCode.NO_CONTENT).json({message: StatusMessage.NO_CONTENT});
       }catch (error: any) {
-        res.status(400).json({message: error.message || "something went wrong"});
+        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: error.message || StatusMessage.INTERNAL_SERVER_ERROR});
       }
 
     }
@@ -71,16 +72,16 @@ export class PatientProfileController implements IPatientProfileController {
         
       const userId = req.user?.id; 
        if (!userId) {
-       res.status(401).json({ message: "Unauthorized: No user found" });
+       res.status(StatusCode.UNAUTHORIZED).json({ message: StatusMessage.UNAUTHORIZED });
        return;
       }
       if (!req.file) {
-         res.status(400).json({ message: "No file uploaded" });
+         res.status(StatusCode.BAD_REQUEST).json({ message: "No file uploaded" });
          return;
       }
 
       const updatedUser = await this._patientProfileService.uploadProfilePhoto(userId, req.file);
-      res.status(200).json({ message: "Photo uploaded", user: updatedUser });
+      res.status(StatusCode.OK).json({ message: "Photo uploaded", user: updatedUser });
     }catch (error) {
       next(error);
     }

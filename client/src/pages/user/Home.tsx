@@ -13,7 +13,7 @@ const Dashboard: React.FC = () => {
  
 
   return (
-    <div className="p-6">
+    <div className="px-6">
       
       <Navbar/>
       <Header/>
