@@ -147,7 +147,7 @@ const App: React.FC = () => {
         />
 
         <Route
-          path="/appointment/:id"
+          path="/appointment/:doctorId"
           element={isAuthenticated && role === "user" ? <Appointment /> : <Navigate to="/login" replace />}
         />
 
