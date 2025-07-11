@@ -41,6 +41,7 @@ const Sidebar = () => {
     { to: '/doctor-dashboard', label: 'Dashboard', icon: assets.home_icon },
     { to: '/doctor-appointments', label: 'Appointments', icon: assets.appointment_icon },
     { to: '/doctor-profile', label: 'Profile', icon: assets.people_icon },
+   
   ];
 
   const navItems = role === 'admin' ? adminNavItems : role === 'doctor' ? doctorNavItems : [];

@@ -1,6 +1,12 @@
 
 import mongoose, { Document } from "mongoose";
 
+export interface IAvailabilitySlot {
+    day: string;
+    from: string;
+    to: string;
+}
+
 export interface IDoctorProfile extends Document {
     doctorId: mongoose.Types.ObjectId;
     educationDetails: string;
@@ -13,4 +19,7 @@ export interface IDoctorProfile extends Document {
     about: string;
     createdAt: Date;
     updatedAt: Date;
+
+    availability?: IAvailabilitySlot[];
+    slotDuration?: number;
 }

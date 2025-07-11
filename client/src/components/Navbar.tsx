@@ -19,9 +19,9 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-useEffect(() => {
-  console.log("User in Navbar:", user);
-}, [user]);
+// useEffect(() => {
+//   console.log("User in Navbar:", user);
+// }, [user]);
 
    useEffect(() => {
       const getUser = async () => {
