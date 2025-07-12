@@ -100,19 +100,19 @@ import { appointmentSchema } from "../../validations/appointment.schema";
 import { StatusCode } from "../../constants/statusCode.enum";
 import { StatusMessage } from "../../constants/statusMessage";
 import mongoose from "mongoose";
+import { read } from "fs";
 
 export class AppointmentController implements IAppointmentController {
   constructor(private readonly _appointmentService: IAppointmentService) {}
 
   async createAppointment(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user?.id; // extracted from token
+      const userId = req.user?.id; 
       if (!userId) {
         res.status(StatusCode.UNAUTHORIZED).json({ message: StatusMessage.UNAUTHORIZED });
         return;
       }
 
-      // validate input using zod schema
       const validatedData = appointmentSchema.parse({
         ...req.body,
         userId,
@@ -130,17 +130,49 @@ export class AppointmentController implements IAppointmentController {
       });
 
       res.status(StatusCode.CREATED).json(appointment);
-    } catch (error: any) {
-      if (error?.name === "ZodError") {
-        res.status(StatusCode.BAD_REQUEST).json({
-          message: error.errors.map((e: any) => e.message).join(", "),
-        });
-        return;
-      }
+    }catch (error) {
+       next(error);
+    //   if (error?.name === "ZodError") {
+    //     res.status(StatusCode.BAD_REQUEST).json({
+    //       message: error.errors.map((e: any) => e.message).join(", "),
+    //     });
+    //     return;
+    //   }
 
-      res
-        .status(StatusCode.INTERNAL_SERVER_ERROR)
-        .json({ message: error.message || StatusMessage.INTERNAL_SERVER_ERROR });
+    //   res
+    //     .status(StatusCode.INTERNAL_SERVER_ERROR)
+    //     .json({ message: error.message || StatusMessage.INTERNAL_SERVER_ERROR });
+    // }
+  }
+
+}
+
+  async getUserAppointments(req: Request, res: Response, next: NextFunction): Promise<void>{
+    try {
+       const userId = req.user?.id;
+       if(!userId){
+          res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+          return;
+       }
+       const result = await this._appointmentService.getAppointmentsByUser(userId);
+       res.status(StatusCode.OK).json(result);
+    } catch (error) {
+       next(error);
     }
   }
+
+  async getDoctorAppointments(req: Request, res: Response, next: NextFunction): Promise<void>{
+     try {
+        const doctorId = req.user?.id;
+        if(!doctorId){
+           res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+           return;
+        }
+        const result = await this._appointmentService.getAppointmentsByDoctor(doctorId);
+        res.status(StatusCode.OK).json(result);
+     } catch (error) {
+        next(error);
+     }
+  }
+
 }

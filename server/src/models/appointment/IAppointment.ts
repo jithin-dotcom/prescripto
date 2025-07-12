@@ -9,7 +9,7 @@ export interface IAppointment extends Document {
     transactionId?: mongoose.Types.ObjectId;
     date: string;
     time: string;
-    status: "pending" | "confirmed" | "cancelled";
+    status: "pending" | "confirmed" | "cancelled" | "completed";
     createdAt: Date;
     updatedAt: Date; 
 }

@@ -12,11 +12,11 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
     }
 
      async findByUserId(userId: mongoose.Types.ObjectId): Promise<IAppointment[]> {
-    return AppointmentModel.find({ userId }).populate("doctorId").exec();
-  }
+      return AppointmentModel.find({ userId }).populate("doctorId").exec();
+    }
 
-  async findByDoctorId(doctorId: mongoose.Types.ObjectId): Promise<IAppointment[]> {
-    return AppointmentModel.find({ doctorId }).populate("userId").exec();
-  }
+    async findByDoctorId(doctorId: mongoose.Types.ObjectId): Promise<IAppointment[]> {
+      return AppointmentModel.find({ doctorId }).populate("userId").exec();
+    }
 
 }

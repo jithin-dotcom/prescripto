@@ -1644,6 +1644,268 @@
 
 
 
+// import React, { useEffect, useState } from "react";
+// import { useParams } from "react-router-dom";
+// import Navbar from "../../components/Navbar";
+// import { assets } from "../../assets/assets1";
+// import axiosInstance from "../../utils/axios";
+// import { motion } from "framer-motion";
+// import { toast } from "react-toastify";
+
+// interface Slot {
+//   day: string;
+//   date: string;
+//   times: string[];
+// }
+
+// interface Availability {
+//   day: string;
+//   from: string;
+//   to: string;
+// }
+
+// interface DoctorProfile {
+//   name: string;
+//   profilePhoto: string;
+//   specialization: string;
+//   educationDetails: string;
+//   fee: number;
+//   about: string;
+//   isVerified: boolean;
+//   yearOfExperience: number;
+//   availability: Availability[];
+//   slotDuration: number;
+// }
+
+// function formatTime24to12(time: string): string {
+//   const [hourStr, minuteStr] = time.split(":");
+//   let hour = parseInt(hourStr);
+//   const minute = parseInt(minuteStr);
+//   const ampm = hour >= 12 ? "PM" : "AM";
+//   hour = hour % 12 || 12;
+//   return `${hour}:${minute.toString().padStart(2, "0")} ${ampm}`;
+// }
+
+// function generateSlots(availability: Availability[], slotDuration: number): Slot[] {
+//   const today = new Date();
+//   const result: Slot[] = [];
+
+//   for (let i = 0; i < 7; i++) {
+//     const currentDate = new Date();
+//     currentDate.setDate(today.getDate() + i);
+//     const dayName = currentDate.toLocaleDateString("en-US", { weekday: "long" });
+
+//     const available = availability.find((a) => a.day === dayName);
+//     if (!available) continue;
+
+//     const slots: string[] = [];
+
+//     const [fromHour, fromMinute] = available.from.split(":").map(Number);
+//     const [toHour, toMinute] = available.to.split(":").map(Number);
+
+//     let from = new Date(currentDate);
+//     from.setHours(fromHour, fromMinute, 0, 0);
+
+//     const to = new Date(currentDate);
+//     to.setHours(toHour, toMinute, 0, 0);
+
+//     while (from < to) {
+//       slots.push(
+//         formatTime24to12(
+//           `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
+//         )
+//       );
+//       from = new Date(from.getTime() + slotDuration * 60000);
+//     }
+
+//     result.push({
+//       day: dayName,
+//       date: currentDate.toLocaleDateString("en-GB"),
+//       times: slots,
+//     });
+//   }
+
+//   return result;
+// }
+
+// const Appointment: React.FC = () => {
+//   const { doctorId } = useParams();
+//   const [doctor, setDoctor] = useState<DoctorProfile | null>(null);
+//   const [slots, setSlots] = useState<Slot[]>([]);
+//   const [activeSlotIndex, setActiveSlotIndex] = useState(0);
+//   const [activeTime, setActiveTime] = useState("");
+
+
+//   const handleBooking = async () => {
+//   if (!doctorId || !slots[activeSlotIndex] || !activeTime) return;
+
+//   const selectedSlot = slots[activeSlotIndex];
+//   try {
+//     const res = await axiosInstance.post("/create-appointment", {
+//       doctorId,
+//       date: selectedSlot.date,     
+//       time: activeTime,             
+//     });
+//     console.log("response : ",res);
+//     toast.success("Appointment booked successfully!");
+//     // Optionally redirect or reset state
+//   } catch (err) {
+//     console.error("Failed to book appointment:", err);
+//     toast.error("Something went wrong. Please try again.");
+//   }
+// };
+
+
+//   useEffect(() => {
+//     async function fetchDoctorProfile() {
+//       try {
+//         const res = await axiosInstance.get(`/user/user-profile/${doctorId}`);
+//         const { user, profile } = res.data.data;
+
+//         const transformedDoctor: DoctorProfile = {
+//           name: user.name,
+//           profilePhoto: user.photo,
+//           specialization: profile.specialization,
+//           educationDetails: profile.educationDetails,
+//           fee: profile.fee,
+//           about: profile.about,
+//           isVerified: user.isVerified,
+//           yearOfExperience: profile.yearOfExperience || 0,
+//           availability: profile.availability || [],
+//           slotDuration: profile.slotDuration || 30,
+//         };
+
+//         setDoctor(transformedDoctor);
+
+//         const generatedSlots = generateSlots(profile.availability, profile.slotDuration);
+//         setSlots(generatedSlots);
+//         if (generatedSlots.length > 0 && generatedSlots[0].times.length > 0) {
+//           setActiveTime(generatedSlots[0].times[0]);
+//         }
+//       } catch (err) {
+//         console.error("Failed to fetch doctor profile:", err);
+//       }
+//     }
+
+//     if (doctorId) {
+//       fetchDoctorProfile();
+//     }
+//   }, [doctorId]);
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex flex-col">
+//       <Navbar />
+//       <main className="flex-1 px-4 sm:px-6 md:px-10 py-8 max-w-6xl mx-auto w-full">
+//         {doctor ? (
+//           <>
+//             {/* Doctor Info Card */}
+//             <motion.div
+//               initial={{ opacity: 0, y: 40 }}
+//               animate={{ opacity: 1, y: 0 }}
+//               transition={{ duration: 0.6 }}
+//               className="glass-effect shadow-2xl rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 bg-white hover:scale-105  transition duration-300"
+//             >
+//               <img
+//                 src={doctor.profilePhoto}
+//                 alt="Doctor"
+//                 className="w-36 h-36 sm:w-40 sm:h-40 rounded-full border-4 border-indigo-200 object-cover"
+//               />
+//               <div className="flex-1 text-gray-800 space-y-2 text-center md:text-left">
+//                 <div className="flex items-center justify-center md:justify-start gap-2">
+//                   <h1 className="text-2xl sm:text-3xl font-semibold">{doctor.name}</h1>
+//                   {doctor.isVerified && (
+//                     <img
+//                       src={assets.verified_icon}
+//                       alt="Verified"
+//                       className="w-5 h-5"
+//                       title="Verified Doctor"
+//                     />
+//                   )}
+//                 </div>
+//                 <p className="text-sm text-gray-500">
+//                   {doctor.educationDetails} - {doctor.specialization}
+//                   <span className="py-0.5 px-2 border text-xs rounded-full ml-2">
+//                     {doctor.yearOfExperience} years
+//                   </span>
+//                 </p>
+//                 <p className="text-gray-600 text-sm">{doctor.about}</p>
+//                 <p className="text-gray-700 font-medium pt-2">
+//                   Consultation Fee: ₹{doctor.fee}
+//                 </p>
+//               </div>
+//             </motion.div>
+
+//             {/* Slots Section */}
+//             {slots.length > 0 ? (
+//               <div className="mt-10">
+//                 <h2 className="text-lg font-semibold text-gray-700 mb-4">Available Slots</h2>
+
+//                 <div className="flex gap-3 overflow-x-auto sm:justify-start pb-2 scrollbar-hide  ">
+//                   {slots.map((slot, index) => (
+//                     <div
+//                       key={index}
+//                       className={`min-w-[100px] text-center py-4 px-3 rounded-xl cursor-pointer transition duration-300 ${
+//                         activeSlotIndex === index
+//                           ? "bg-indigo-600 text-white"
+//                           : "bg-white border border-gray-300 text-gray-600 hover:bg-[#4F39F6] hover:text-white"
+//                       }`}
+//                       onClick={() => {
+//                         setActiveSlotIndex(index);
+//                         setActiveTime(slot.times[0]);
+//                       }}
+//                     >
+//                       <p className="text-sm font-medium">{slot.day}</p>
+//                       <p className="text-xs">{slot.date}</p>
+//                     </div>
+//                   ))}
+//                 </div>
+
+//                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-10 gap-3 mt-6">
+//                   {slots[activeSlotIndex]?.times.map((time, idx) => (
+//                     <button
+//                       key={idx}
+//                       onClick={() => setActiveTime(time)}
+//                       className={`w-full px-4 py-2 rounded-full text-sm transition ${
+//                         activeTime === time
+//                           ? "bg-indigo-600 text-white"
+//                           : "bg-white border border-gray-400 text-gray-600 hover:bg-[#4F39F6] hover:text-white"
+//                       }`}
+//                     >
+//                       {time}
+//                     </button>
+//                   ))}
+//                 </div>
+
+//                 <div className="mt-8 text-center">
+//                   <motion.button
+//                     whileHover={{ scale: 1.05 }}
+//                     whileTap={{ scale: 0.95 }}
+//                     onClick={handleBooking}
+//                     className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full shadow-md"
+//                   >
+//                     Book Appointment
+//                   </motion.button>
+//                 </div>
+//               </div>
+//             ) : (
+//               <p className="text-gray-500 mt-10">No appointment slots available.</p>
+//             )}
+//           </>
+//         ) : (
+//           <p className="text-gray-600 text-center mt-20">Loading doctor profile...</p>
+//         )}
+//       </main>
+//     </div>
+//   );
+// };
+
+// export default Appointment;
+
+
+
+
+
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
@@ -1735,26 +1997,23 @@ const Appointment: React.FC = () => {
   const [activeSlotIndex, setActiveSlotIndex] = useState(0);
   const [activeTime, setActiveTime] = useState("");
 
-
   const handleBooking = async () => {
-  if (!doctorId || !slots[activeSlotIndex] || !activeTime) return;
+    if (!doctorId || !slots[activeSlotIndex] || !activeTime) return;
 
-  const selectedSlot = slots[activeSlotIndex];
-  try {
-    const res = await axiosInstance.post("/create-appointment", {
-      doctorId,
-      date: selectedSlot.date,     
-      time: activeTime,             
-    });
-    console.log("response : ",res);
-    toast.success("Appointment booked successfully!");
-    // Optionally redirect or reset state
-  } catch (err) {
-    console.error("Failed to book appointment:", err);
-    toast.error("Something went wrong. Please try again.");
-  }
-};
-
+    const selectedSlot = slots[activeSlotIndex];
+    try {
+      const res = await axiosInstance.post("/create-appointment", {
+        doctorId,
+        date: selectedSlot.date,
+        time: activeTime,
+      });
+      console.log("response : ", res);
+      toast.success("Appointment booked successfully!");
+    } catch (err) {
+      console.error("Failed to book appointment:", err);
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
 
   useEffect(() => {
     async function fetchDoctorProfile() {
@@ -1803,7 +2062,7 @@ const Appointment: React.FC = () => {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="glass-effect shadow-2xl rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 bg-white hover:scale-105  transition duration-300"
+              className="glass-effect shadow-2xl rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-center gap-6 bg-white hover:scale-105 transition duration-300"
             >
               <img
                 src={doctor.profilePhoto}
@@ -1835,12 +2094,16 @@ const Appointment: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Slots Section */}
-            {slots.length > 0 ? (
+            {/* Conditional Rendering based on Verification */}
+            {!doctor.isVerified ? (
+              <div className="mt-10 text-center text-red-700 font-semibold bg-red-100 p-6 rounded-xl">
+                This doctor is not verified. You cannot book appointments.
+              </div>
+            ) : slots.length > 0 ? (
               <div className="mt-10">
                 <h2 className="text-lg font-semibold text-gray-700 mb-4">Available Slots</h2>
 
-                <div className="flex gap-3 overflow-x-auto sm:justify-start pb-2 scrollbar-hide  ">
+                <div className="flex gap-3 overflow-x-auto sm:justify-start pb-2 scrollbar-hide">
                   {slots.map((slot, index) => (
                     <div
                       key={index}

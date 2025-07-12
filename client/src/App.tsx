@@ -28,6 +28,7 @@ import EditUserProfile from "./pages/user/EditUserProfile";
 import EditDoctorProfile from "./pages/doctor/EditDoctorProfile";
 import Appointment from "./pages/user/Appointments";
 import MyAppointments from "./pages/user/MyAppointments";
+import DoctorAppointments from "./pages/doctor/DoctorAppointments";
 
 
 const App: React.FC = () => {
@@ -160,6 +161,11 @@ const App: React.FC = () => {
         <Route
           path="/edit-profile-doctor/:id"
           element={isAuthenticated && role === "doctor" ? <EditDoctorProfile /> : <Navigate to="/login" replace />}
+        />
+
+         <Route
+          path="/doctor-appointments"
+          element={isAuthenticated && role === "doctor" ? <DoctorAppointments /> : <Navigate to="/login" replace />}
         />
 
         
