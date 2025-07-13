@@ -22,9 +22,10 @@ router.use(verifyAccessToken);
 
 
 router.post("/create-appointment",appointmentController.createAppointment.bind(appointmentController));
-
+router.get("/all-createAppointments/:doctorId",appointmentController.getCreateAppointment.bind(appointmentController));
 router.get("/user-appointments/:userId", appointmentController.getUserAppointments.bind(appointmentController));
 router.get("/doctor-appointments", appointmentController.getDoctorAppointments.bind(appointmentController));
+router.get("/all-appointments",appointmentController.getAllAppointments.bind(appointmentController));
 // router.patch("/cancel/:appointmentId", appointmentController.cancelAppointment.bind(appointmentController));
 
 export default router;

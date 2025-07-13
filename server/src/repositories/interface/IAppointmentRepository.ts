@@ -7,4 +7,6 @@ import mongoose from "mongoose";
 export interface IAppointmentRepository extends IBaseRepository<IAppointment>{
     findByUserId(userId: mongoose.Types.ObjectId): Promise<IAppointment[]>;
     findByDoctorId(doctorId: mongoose.Types.ObjectId): Promise<IAppointment[]>;
+    findAllPopulated(): Promise<IAppointment[]>;
+    findDoctor(doctorId: mongoose.Types.ObjectId): Promise<IAppointment[]>;
 }

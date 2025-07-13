@@ -1,6 +1,6 @@
 import { IAppointment } from "../../models/appointment/IAppointment";
 import { IAppointmentRepository } from "../../repositories/interface/IAppointmentRepository";
-import { IAppointmentService, IAppointmentResponse } from "../interface/IAppointmentService";
+import { IAppointmentService, IAppointmentResponse, IDoctorUser, IAppointmentFullResponse, ICreateAppointment, ICreateAppointmentResponse} from "../interface/IAppointmentService";
 import mongoose from "mongoose";
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 import { IAppointmentWithUserResponse } from "../interface/IAppointmentService";
@@ -62,20 +62,88 @@ export class AppointmentService implements IAppointmentService {
   // }
 
 
+   
+  async getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse> {
+  const appointments = await this._appointmentRepo.findDoctor(
+    new mongoose.Types.ObjectId(doctorId)
+  );
+   console.log("appointments : ",appointments);
+  const responses: ICreateAppointment[] = [];
+  const timeArray = [];
+
+  for (const appointment of appointments) {
+    
+      
+      if (!('name' in appointment.doctorId)) {
+      throw new Error("Doctor info not populated");
+    }
+    const doctorUser = appointment.doctorId ;
+    
+
+    // Fetch profile using doctor's user _id
+    const profile = await this._DoctorRepo.findOne({
+      doctorId: doctorUser._id,
+    });
+
+    if(!profile){
+       throw new Error("Profile not found");
+    }
+    timeArray.push(appointment.time);
+    responses.push({
+      _id: (appointment._id as mongoose.Types.ObjectId).toString(),
+      doctor: {
+        _id: doctorUser._id.toString(),
+        name: doctorUser.name,
+        email: doctorUser.email,
+        photo: doctorUser.photo,
+        isVerified: doctorUser.isVerified,
+        educationDetails: profile?.educationDetails,
+        isBlocked: doctorUser.isBlocked,
+        specialization: profile?.specialization || "",
+        yearOfExperience: profile?.yearOfExperience || 0,
+        about: profile?.about || "",
+        fee: profile?.fee || 0,
+        availability: profile?.availability || [],
+      },
+      userId: appointment.userId.toString(),
+      date: appointment.date,
+      time: appointment.time,
+      status: appointment.status,
+      transactionId: appointment.transactionId?.toString(),
+    });
+  }
+
+  return{
+     responses,
+     timeArray
+  } ;
+}
+
+
 
     async createAppointment(data: Partial<IAppointment>): Promise<{message:string}> {
     if (!data.userId || !data.doctorId || !data.date || !data.time) {
       throw new Error("Missing required fields");
     }
 
+    let doctorId: mongoose.Types.ObjectId;
+      // Narrow the type: check if doctorId is already an ObjectId
+  if (data.doctorId instanceof mongoose.Types.ObjectId) {
+    doctorId = data.doctorId;
+  } else {
+    // Assume it's an object with _id field (IDoctorUser)
+    doctorId = new mongoose.Types.ObjectId((data.doctorId as IDoctorUser)._id);
+  }
+
     const appointmentData = {
       ...data,
       userId: new mongoose.Types.ObjectId(data.userId),
-      doctorId: new mongoose.Types.ObjectId(data.doctorId),
+      // doctorId: new mongoose.Types.ObjectId(data.doctorId),
+      doctorId,
       status: "pending" as "pending", 
     };
 
-    const created = await this._appointmentRepo.create(appointmentData);
+     await this._appointmentRepo.create(appointmentData);
     return {
        message: "successfully created"
     }
@@ -94,9 +162,16 @@ export class AppointmentService implements IAppointmentService {
   );
 
   const responses: IAppointmentResponse[] = [];
+  
 
   for (const appointment of appointments) {
-    const doctorUser = appointment.doctorId as any;
+    
+      
+      if (!('name' in appointment.doctorId)) {
+      throw new Error("Doctor info not populated");
+    }
+    const doctorUser = appointment.doctorId ;
+    
 
     // Fetch profile using doctor's user _id
     const profile = await this._DoctorRepo.findOne({
@@ -139,6 +214,7 @@ export class AppointmentService implements IAppointmentService {
 async getAppointmentsByDoctor(
   doctorId: string
 ): Promise<IAppointmentWithUserResponse[]> {
+
   const appointments = await this._appointmentRepo.findByDoctorId(
     new mongoose.Types.ObjectId(doctorId)
   );
@@ -154,6 +230,12 @@ async getAppointmentsByDoctor(
       patientId: user._id,
     });
 
+    const doctorProfile = await this._DoctorRepo.findOne({doctorId});
+    if(!doctorProfile){
+       throw new Error("Doctor profile missing");
+    }
+
+    // console.log("doctor profile : ",doctorProfile);
     responses.push({
       _id: (appointment._id as mongoose.Types.ObjectId).toString(),
       doctorId: appointment.doctorId.toString(),
@@ -173,6 +255,7 @@ async getAppointmentsByDoctor(
         pin: patientProfile?.pin,
         // profilePhoto: patientProfile?.profilePhoto,
       },
+      fee: doctorProfile?.fee,
       date: appointment.date,
       time: appointment.time,
       status: appointment.status,
@@ -182,6 +265,99 @@ async getAppointmentsByDoctor(
 
   return responses;
 }
+
+
+
+async getAllAppointments(): Promise<IAppointmentFullResponse[]> {
+  const appointments = await this._appointmentRepo.findAllPopulated(); // you must implement this in repo
+
+  const responses: IAppointmentFullResponse[] = [];
+  const timeArray = [];
+
+  for (const appointment of appointments) {
+    const doctorUser = appointment.doctorId as any;
+    const patientUser = appointment.userId as any;
+
+    timeArray.push(appointment.time);
+    if (!doctorUser || !doctorUser._id || !patientUser || !patientUser._id) {
+      continue;
+    }
+
+    const doctorProfile = await this._DoctorRepo.findOne({ doctorId: doctorUser._id });
+    const patientProfile = await this._PatientRepo.findOne({ patientId: patientUser._id });
+
+    if (!doctorProfile) continue;
+
+    responses.push({
+      _id: (appointment._id as mongoose.Types.ObjectId).toString(),
+      date: appointment.date,
+      time: appointment.time,
+      status: appointment.status,
+      transactionId: appointment.transactionId?.toString(),
+      timeArray,
+
+      doctor: {
+        _id: doctorUser._id.toString(),
+        name: doctorUser.name,
+        email: doctorUser.email,
+        photo: doctorUser.photo,
+        isVerified: doctorUser.isVerified,
+        isBlocked: doctorUser.isBlocked,
+        educationDetails: doctorProfile.educationDetails,
+        specialization: doctorProfile.specialization || "",
+        yearOfExperience: doctorProfile.yearOfExperience || 0,
+        fee: doctorProfile.fee || 0,
+      },
+
+      user: {
+        _id: patientUser._id.toString(),
+        name: patientUser.name,
+        email: patientUser.email,
+        photo: patientUser.photo,
+        isVerified: patientUser.isVerified,
+        isBlocked: patientUser.isBlocked,
+        dateOfBirth: patientProfile?.dateOfBirth,
+        gender: patientProfile?.gender,
+        houseName: patientProfile?.houseName,
+        city: patientProfile?.city,
+        state: patientProfile?.state,
+        country: patientProfile?.country,
+        // pin: patientProfile?.pin,
+      },
+    });
+  }
+
+  return responses;
+}
+
+
+
+
+//  async getProfile(userId: string): Promise<{user: IUser, profile: IPatientProfile | IDoctorProfile | null}|null> {
+//   try {
+//     const user = await this._userRepo.findById(userId);
+
+//     if (!user) return null;
+
+    
+//     let profile = null;
+//     if(user.role === "user"){
+//        profile = await this._patientRepo.findOne({patientId: userId});
+//     }else if(user.role === "doctor"){
+//         profile = await this._doctorRepo.findOne({doctorId: userId});
+//     }
+    
+
+//     return {
+//        user,
+//        profile
+//     }
+
+//   } catch (error) {
+//     console.error(error);
+//     throw new Error(`Failed to fetch profile`);
+//   }
+// }
 
 
 

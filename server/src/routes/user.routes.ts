@@ -9,11 +9,13 @@ import { DoctorProfileRepository } from "../repositories/implementation/doctorPr
 import { verifyAccessToken } from "../middlewares/auth.middleware";
 import { upload } from "../middlewares/multer.middleware"
 
+
 const router = Router()
 
 const userRepository = new UserRepository();
 const patientProfileRepository = new PatientProfileRepository();
 const doctorProfileRepository = new DoctorProfileRepository();
+
 const userService = new UserService(userRepository, patientProfileRepository, doctorProfileRepository);
 const userController = new UserController(userService);
 

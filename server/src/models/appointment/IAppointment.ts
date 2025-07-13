@@ -1,11 +1,14 @@
 
 
 import mongoose,{ Document } from "mongoose";
+import { IDoctorUser } from "../../services/interface/IAppointmentService";
+
+
 
 export interface IAppointment extends Document {
     
     userId: mongoose.Types.ObjectId;
-    doctorId: mongoose.Types.ObjectId;
+    doctorId: mongoose.Types.ObjectId | IDoctorUser;
     transactionId?: mongoose.Types.ObjectId;
     date: string;
     time: string;

@@ -421,6 +421,7 @@ import Sidebar from "../../components/SideBarAdmin";
 import Navbar from "../../components/NavbarAdmin";
 import axiosInstance from "../../utils/axios";
 import { useDoctorStore } from "../../store/doctorStore";
+// import { useDoctorDataLoader } from "../../hooks/useDoctorDataLoader";
 
 // Utility to calculate age from date string
 const calculateAge = (dob: string): number => {
@@ -453,6 +454,7 @@ interface Appointment {
     pin?: number;
     profilePhoto?: string;
   };
+  fee: number;
   date: string;
   time: string;
   status: "pending" | "confirmed" | "cancelled";
@@ -460,13 +462,17 @@ interface Appointment {
 }
 
 const DoctorAppointments = () => {
+  // useDoctorDataLoader();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const doctorData = useDoctorStore((state) => state.doctorData);
+
+  console.log("doctor data : ",doctorData);
 
   useEffect(() => {
     async function fetchAppointments() {
       try {
         const res = await axiosInstance.get("/doctor-appointments");
+        console.log("appointments : ", res.data);
         setAppointments(res.data);
       } catch (err) {
         console.error("Error fetching appointments:", err);
@@ -543,7 +549,7 @@ const DoctorAppointments = () => {
                 </p>
 
                 {/* Fee */}
-                <p className="text-sm font-medium">₹{doctorData?.fee || 500}</p>
+                <p className="text-sm font-medium">₹{app?.fee || 500}</p>
 
                 {/* Action */}
                 <div className="flex gap-2 justify-center">

@@ -1,4 +1,5 @@
 
+import mongoose from "mongoose";
 import { IAppointment } from "../../models/appointment/IAppointment";
 
 // export interface IAppointmentResponse {
@@ -12,6 +13,37 @@ import { IAppointment } from "../../models/appointment/IAppointment";
 // }
 
 
+
+export interface ICreateAppointment {
+  _id: string;
+    doctor: {
+    _id: string;
+    name: string;
+    email: string;
+    photo?: string;
+    isVerified: boolean;
+    educationDetails: string;
+    isBlocked: boolean;
+    specialization: string ;
+    about: string;
+    yearOfExperience: number;
+    fee: number;
+    availability: object[];
+
+  };
+  userId: string;
+  date: string;           
+  time: string;
+  status: "pending" | "confirmed" | "cancelled" | "completed"; 
+  transactionId?: string;
+}
+
+
+export interface ICreateAppointmentResponse {
+  responses: ICreateAppointment[];
+  timeArray: string[]; 
+}
+
 export interface IAppointmentResponse {
   _id: string;
     doctor: {
@@ -19,7 +51,7 @@ export interface IAppointmentResponse {
     name: string;
     email: string;
     photo?: string;
-    isVerified: string;
+    isVerified: boolean;
     educationDetails: string;
     isBlocked: boolean;
     specialization: string ;
@@ -35,6 +67,15 @@ export interface IAppointmentResponse {
 }
 
 
+export interface IDoctorUser  {
+    _id: string;
+    name: string,
+    email: string;
+    photo: string;
+    isVerified: boolean;
+    educationDetails: string;
+    isBlocked: boolean;
+}
 
 
 export interface IAppointmentWithUserResponse {
@@ -58,14 +99,50 @@ export interface IAppointmentWithUserResponse {
     pin?: number;
     // profilePhoto?: string;
   };
+  fee: number;
   date: string;
   time: string;
   status: string;
   transactionId?: string;
 }
 
+export interface IAppointmentFullResponse {
+  _id: string;
+  date: string;
+  time: string;
+  status: "pending" | "confirmed" | "cancelled" | "completed";
+  transactionId?: string;
+  timeArray: string[];
 
+  doctor: {
+    _id: string;
+    name: string;
+    email: string;
+    photo: string;
+    isVerified: boolean;
+    isBlocked: boolean;
+    educationDetails: string;
+    specialization: string;
+    yearOfExperience: number;
+    fee: number;
+  };
 
+  user: {
+    _id: string;
+    name: string;
+    email: string;
+    photo: string;
+    isVerified: boolean;
+    isBlocked: boolean;
+    dateOfBirth?: string;
+    gender?: string;
+    houseName?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    pin?: string;
+  };
+}
 
 
 export interface IAppointmentService {
@@ -73,5 +150,7 @@ export interface IAppointmentService {
   createAppointment(data: Partial<IAppointment>): Promise<{message:string}>;
   getAppointmentsByUser(userId: string): Promise<IAppointmentResponse[]>;
   getAppointmentsByDoctor(doctorId: string): Promise<IAppointmentWithUserResponse[]>;
+  getAllAppointments(): Promise<IAppointmentFullResponse[]>;
+  getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse>;
 //   cancelAppointment(id: string): Promise<void>;
 }

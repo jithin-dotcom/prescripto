@@ -1,153 +1,897 @@
 
+// // // // import Navbar from "../../components/NavbarAdmin";
+// // // // import SidebarAdmin from "../../components/SideBarAdmin";
+// // // // import { assets } from "../../assets/assets2";
+
+// // // // const mockAppointments = [
+// // // //   {
+// // // //     userData: { name: "John Doe", image: "/user1.jpg", dob: "1990-01-01" },
+// // // //     slotDate: "2025-06-10",
+// // // //     slotTime: "10:30 AM",
+// // // //     docData: { name: "Dr. Smith", image: "/doctor1.jpg" },
+// // // //     amount: "1500",
+// // // //     cancelled: false,
+// // // //     isCompleted: true,
+// // // //   },
+// // // //   {
+// // // //     userData: { name: "Jane Doe", image: "/user2.jpg", dob: "1995-07-20" },
+// // // //     slotDate: "2025-06-12",
+// // // //     slotTime: "02:00 PM",
+// // // //     docData: { name: "Dr. Alice", image: "/doctor2.jpg" },
+// // // //     amount: "1200",
+// // // //     cancelled: true,
+// // // //     isCompleted: false,
+// // // //   },
+// // // // ];
+
+// // // // const AllAppointments = () => {
+// // // //   return (
+// // // //     <div className="min-h-screen bg-gray-100 flex flex-col">
+// // // //       <Navbar />
+
+// // // //       <div className="flex flex-1">
+// // // //         <SidebarAdmin />
+
+// // // //         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+// // // //           <h1 className="text-2xl font-semibold text-gray-700 mb-6">
+// // // //             All Appointments
+// // // //           </h1>
+
+// // // //           <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+// // // //             {/* Desktop Header */}
+// // // //             <div className="hidden sm:grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
+// // // //               <p>#</p>
+// // // //               <p>Patient</p>
+// // // //               <p>Age</p>
+// // // //               <p>Date & Time</p>
+// // // //               <p>Doctor</p>
+// // // //               <p>Fees</p>
+// // // //               <p>Action</p>
+// // // //             </div>
+
+// // // //             {/* Rows */}
+// // // //             {mockAppointments.map((item, index) => (
+// // // //               <div
+// // // //                 key={index}
+// // // //                 className="flex flex-col sm:grid sm:grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] sm:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
+// // // //               >
+// // // //                 {/* Row for small screen */}
+// // // //                 <div className="flex sm:hidden flex-col gap-2">
+// // // //                   <div className="flex items-center gap-2">
+// // // //                     <span className="font-medium w-24">Patient:</span>
+// // // //                     <img
+// // // //                       src={item.userData.image}
+// // // //                       className="w-8 h-8 rounded-full object-cover"
+// // // //                       alt="patient"
+// // // //                     />
+// // // //                     <span>{item.userData.name}</span>
+// // // //                   </div>
+
+// // // //                   <div className="flex gap-2">
+// // // //                     <span className="font-medium w-24">Date & Time:</span>
+// // // //                     <span>
+// // // //                       {item.slotDate}, {item.slotTime}
+// // // //                     </span>
+// // // //                   </div>
+
+// // // //                   <div className="flex items-center gap-2">
+// // // //                     <span className="font-medium w-24">Doctor:</span>
+// // // //                     <img
+// // // //                       src={item.docData.image}
+// // // //                       className="w-8 h-8 rounded-full object-cover"
+// // // //                       alt="doctor"
+// // // //                     />
+// // // //                     <span>{item.docData.name}</span>
+// // // //                   </div>
+
+// // // //                   <div className="flex gap-2">
+// // // //                     <span className="font-medium w-24">Fees:</span>
+// // // //                     <span>₹{item.amount}</span>
+// // // //                   </div>
+
+// // // //                   <div className="flex gap-2">
+// // // //                     <span className="font-medium w-24">Status:</span>
+// // // //                     {item.cancelled ? (
+// // // //                       <span className="text-red-500 font-medium">Cancelled</span>
+// // // //                     ) : item.isCompleted ? (
+// // // //                       <span className="text-green-600 font-medium">Completed</span>
+// // // //                     ) : (
+// // // //                       <img
+// // // //                         src={assets.cancel_icon}
+// // // //                         alt="cancel"
+// // // //                         className="w-6 cursor-pointer"
+// // // //                       />
+// // // //                     )}
+// // // //                   </div>
+// // // //                 </div>
+
+// // // //                 {/* Row for large screen */}
+// // // //                 <p className="hidden sm:block">{index + 1}</p>
+
+// // // //                 <div className="hidden sm:flex items-center gap-2">
+// // // //                   <img
+// // // //                     src={item.userData.image}
+// // // //                     className="w-8 h-8 rounded-full object-cover"
+// // // //                     alt="patient"
+// // // //                   />
+// // // //                   <p>{item.userData.name}</p>
+// // // //                 </div>
+
+// // // //                 <p className="hidden sm:block">30</p>
+
+// // // //                 <p className="hidden sm:block">
+// // // //                   {item.slotDate}, {item.slotTime}
+// // // //                 </p>
+
+// // // //                 <div className="hidden sm:flex items-center gap-2">
+// // // //                   <img
+// // // //                     src={item.docData.image}
+// // // //                     className="w-8 h-8 rounded-full object-cover"
+// // // //                     alt="doctor"
+// // // //                   />
+// // // //                   <p>{item.docData.name}</p>
+// // // //                 </div>
+
+// // // //                 <p className="hidden sm:block">₹{item.amount}</p>
+
+// // // //                 <div className="hidden sm:block">
+// // // //                   {item.cancelled ? (
+// // // //                     <p className="text-red-500 font-medium text-xs">Cancelled</p>
+// // // //                   ) : item.isCompleted ? (
+// // // //                     <p className="text-green-600 font-medium text-xs">
+// // // //                       Completed
+// // // //                     </p>
+// // // //                   ) : (
+// // // //                     <img
+// // // //                       src={assets.cancel_icon}
+// // // //                       alt="cancel"
+// // // //                       className="w-6 cursor-pointer"
+// // // //                     />
+// // // //                   )}
+// // // //                 </div>
+// // // //               </div>
+// // // //             ))}
+// // // //           </div>
+// // // //         </main>
+// // // //       </div>
+// // // //     </div>
+// // // //   );
+// // // // };
+
+// // // // export default AllAppointments;
+
+
+
+
+
+
+
+
+// // // import { useEffect, useState } from "react";
+// // // import Navbar from "../../components/NavbarAdmin";
+// // // import SidebarAdmin from "../../components/SideBarAdmin";
+// // // import axiosInstance from "../../utils/axios";
+// // // // import { assets } from "../../assets/assets2";
+
+// // // interface Appointment {
+// // //   _id: string;
+// // //   date: string;
+// // //   time: string;
+// // //   status: "pending" | "confirmed" | "cancelled" | "completed";
+// // //   doctor: {
+// // //     _id: string;
+// // //     name: string;
+// // //     photo: string;
+// // //   };
+// // //   user: {
+// // //     _id: string;
+// // //     name: string;
+// // //     photo: string;
+// // //     dateOfBirth: string;
+// // //   };
+// // //   fee: number;
+// // // }
+
+// // // const calculateAge = (dob: string) => {
+// // //   const birthDate = new Date(dob);
+// // //   const today = new Date();
+// // //   let age = today.getFullYear() - birthDate.getFullYear();
+// // //   const m = today.getMonth() - birthDate.getMonth();
+// // //   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+// // //   return age;
+// // // };
+
+// // // const AllAppointments = () => {
+// // //   const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+// // //   useEffect(() => {
+// // //     async function fetchAppointments() {
+// // //       try {
+// // //         const res = await axiosInstance.get("/all-appointments");
+// // //         setAppointments(res.data);
+// // //       } catch (err) {
+// // //         console.error("Failed to fetch appointments:", err);
+// // //       }
+// // //     }
+
+// // //     fetchAppointments();
+// // //   }, []);
+
+// // //   return (
+// // //     <div className="min-h-screen bg-gray-100 flex flex-col">
+// // //       <Navbar />
+// // //       <div className="flex flex-1">
+// // //         <SidebarAdmin />
+// // //         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+// // //           <h1 className="text-2xl font-semibold text-gray-700 mb-6">All Appointments</h1>
+// // //           <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+// // //             <div className="hidden sm:grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
+// // //               <p>#</p>
+// // //               <p>Patient</p>
+// // //               <p>Age</p>
+// // //               <p>Date & Time</p>
+// // //               <p>Doctor</p>
+// // //               <p>Fees</p>
+// // //               <p>Status</p>
+// // //             </div>
+
+// // //             {appointments.map((item, index) => (
+// // //               <div
+// // //                 key={item._id}
+// // //                 className="flex flex-col sm:grid sm:grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] sm:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
+// // //               >
+// // //                 {/* Mobile layout */}
+// // //                 <div className="flex sm:hidden flex-col gap-2">
+// // //                   <div className="flex items-center gap-2">
+// // //                     <span className="font-medium w-24">Patient:</span>
+// // //                     <img src={item.user.photo} className="w-8 h-8 rounded-full" alt="patient" />
+// // //                     <span>{item.user.name}</span>
+// // //                   </div>
+
+// // //                   <div className="flex gap-2">
+// // //                     <span className="font-medium w-24">Age:</span>
+// // //                     <span>{calculateAge(item.user.dateOfBirth)}</span>
+// // //                   </div>
+
+// // //                   <div className="flex gap-2">
+// // //                     <span className="font-medium w-24">Date & Time:</span>
+// // //                     <span>{item.date}, {item.time}</span>
+// // //                   </div>
+
+// // //                   <div className="flex items-center gap-2">
+// // //                     <span className="font-medium w-24">Doctor:</span>
+// // //                     <img src={item.doctor.photo} className="w-8 h-8 rounded-full" alt="doctor" />
+// // //                     <span>{item.doctor.name}</span>
+// // //                   </div>
+
+// // //                   <div className="flex gap-2">
+// // //                     <span className="font-medium w-24">Fee:</span>
+// // //                     <span>₹{item.doctor.fee}</span>
+// // //                   </div>
+
+// // //                   <div className="flex gap-2">
+// // //                     <span className="font-medium w-24">Status:</span>
+// // //                     <span
+// // //                       className={
+// // //                         item.status === "completed"
+// // //                           ? "text-green-600 font-medium"
+// // //                           : item.status === "cancelled"
+// // //                           ? "text-red-500 font-medium"
+// // //                           : item.status === "pending"
+// // //                           ? "text-yellow-500 font-medium"
+// // //                           : "text-blue-500 font-medium"
+// // //                       }
+// // //                     >
+// // //                       {item.status}
+// // //                     </span>
+// // //                   </div>
+// // //                 </div>
+
+// // //                 {/* Desktop layout */}
+// // //                 <p className="hidden sm:block">{index + 1}</p>
+// // //                 <div className="hidden sm:flex items-center gap-2">
+// // //                   <img src={item.user.photo} className="w-8 h-8 rounded-full" alt="patient" />
+// // //                   <p>{item.user.name}</p>
+// // //                 </div>
+// // //                 <p className="hidden sm:block">{calculateAge(item.user.dateOfBirth)}</p>
+// // //                 <p className="hidden sm:block">{item.date}, {item.time}</p>
+// // //                 <div className="hidden sm:flex items-center gap-2">
+// // //                   <img src={item.doctor.photo} className="w-8 h-8 rounded-full" alt="doctor" />
+// // //                   <p>{item.doctor.name}</p>
+// // //                 </div>
+// // //                 <p className="hidden sm:block">₹{item.doctor.fee}</p>
+// // //                 <p
+// // //                   className={`hidden sm:block font-medium text-xs ${
+// // //                     item.status === "completed"
+// // //                       ? "text-green-600"
+// // //                       : item.status === "cancelled"
+// // //                       ? "text-red-500"
+// // //                       : item.status === "pending"
+// // //                       ? "text-yellow-500"
+// // //                       : "text-blue-500"
+// // //                   }`}
+// // //                 >
+// // //                   {item.status}
+// // //                 </p>
+                
+// // //               </div>
+// // //             ))}
+// // //           </div>
+// // //         </main>
+// // //       </div>
+// // //     </div>
+// // //   );
+// // // };
+
+// // // export default AllAppointments;
+
+
+
+
+
+
+
+
+
+
+
+
+// // import { useEffect, useState } from "react";
+// // import Navbar from "../../components/NavbarAdmin";
+// // import SidebarAdmin from "../../components/SideBarAdmin";
+// // import { assets } from "../../assets/assets2";
+// // import axiosInstance from "../../utils/axios";
+
+// // interface Appointment {
+// //   _id: string;
+// //   date: string;
+// //   time: string;
+// //   status: "pending" | "cancelled" | "confirmed" | "completed";
+// //   doctor: {
+// //     name: string;
+// //     photo: string;
+// //   };
+// //   user: {
+// //     name: string;
+// //     photo: string;
+// //     dateOfBirth: string;
+// //   };
+// //   fee: number;
+// // }
+
+// // const getStatusButtonStyle = (status: string) => {
+// //   switch (status) {
+// //     case "pending":
+// //       return "bg-yellow-400 text-white";
+// //     case "cancelled":
+// //       return "bg-red-500 text-white";
+// //     case "confirmed":
+// //       return "bg-green-500 text-white";
+// //     case "completed":
+// //       return "bg-gray-500 text-white";
+// //     default:
+// //       return "bg-gray-300 text-black";
+// //   }
+// // };
+
+// // const AllAppointments = () => {
+// //   const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+// //   useEffect(() => {
+// //     const fetchAppointments = async () => {
+// //       try {
+// //         const res = await axiosInstance.get("/all-appointments");
+// //         setAppointments(res.data);
+// //       } catch (err) {
+// //         console.error("Failed to fetch appointments", err);
+// //       }
+// //     };
+// //     fetchAppointments();
+// //   }, []);
+
+// //   const calculateAge = (dob: string) => {
+// //     const birthDate = new Date(dob);
+// //     const ageDifMs = Date.now() - birthDate.getTime();
+// //     return Math.floor(ageDifMs / (1000 * 60 * 60 * 24 * 365.25));
+// //   };
+
+// //   return (
+// //     <div className="min-h-screen bg-gray-100 flex flex-col">
+// //       <Navbar />
+// //       <div className="flex flex-1">
+// //         <SidebarAdmin />
+// //         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+// //           <h1 className="text-2xl font-semibold text-gray-700 mb-6">
+// //             All Appointments
+// //           </h1>
+
+// //           <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+// //             {/* Desktop Header */}
+// //             <div className="hidden sm:grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr_2fr] py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
+// //               <p>#</p>
+// //               <p>Patient</p>
+// //               <p>Age</p>
+// //               <p>Date & Time</p>
+// //               <p>Doctor</p>
+// //               <p>Fees</p>
+// //               <p>Status</p>
+// //               <p>Actions</p>
+// //             </div>
+
+// //             {appointments.map((item, index) => (
+// //               <div
+// //                 key={item._id}
+// //                 className="flex flex-col sm:grid sm:grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr_2fr] sm:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
+// //               >
+// //                 {/* Mobile view */}
+// //                 <div className="flex sm:hidden flex-col gap-2">
+// //                   <div className="flex items-center gap-2">
+// //                     <span className="font-medium w-24">Patient:</span>
+// //                     <img
+// //                       src={item.user.photo}
+// //                       className="w-8 h-8 rounded-full object-cover"
+// //                       alt="patient"
+// //                     />
+// //                     <span>{item.user.name}</span>
+// //                   </div>
+
+// //                   <div className="flex gap-2">
+// //                     <span className="font-medium w-24">Age:</span>
+// //                     <span>{calculateAge(item.user.dateOfBirth)}</span>
+// //                   </div>
+
+// //                   <div className="flex gap-2">
+// //                     <span className="font-medium w-24">Date & Time:</span>
+// //                     <span>{item.date}, {item.time}</span>
+// //                   </div>
+
+// //                   <div className="flex items-center gap-2">
+// //                     <span className="font-medium w-24">Doctor:</span>
+// //                     <img
+// //                       src={item.doctor.photo}
+// //                       className="w-8 h-8 rounded-full object-cover"
+// //                       alt="doctor"
+// //                     />
+// //                     <span>{item.doctor.name}</span>
+// //                   </div>
+
+// //                   <div className="flex gap-2">
+// //                     <span className="font-medium w-24">Fee:</span>
+// //                     <span>₹{item.doctor.fee}</span>
+// //                   </div>
+
+// //                   <div className="flex gap-2">
+// //                     <span className="font-medium w-24">Status:</span>
+// //                     <button
+// //                       className={`py-1 px-3 rounded-full text-xs font-medium ${getStatusButtonStyle(
+// //                         item.status
+// //                       )}`}
+// //                     >
+// //                       {item.status}
+// //                     </button>
+// //                   </div>
+
+// //                   <div className="flex gap-2 mt-2">
+// //                     <button className="bg-red-500 text-white px-3 py-1 text-xs rounded">
+// //                       Cancel
+// //                     </button>
+// //                     <button className="bg-green-500 text-white px-3 py-1 text-xs rounded">
+// //                       Confirm
+// //                     </button>
+// //                   </div>
+// //                 </div>
+
+// //                 {/* Desktop view */}
+// //                 <p className="hidden sm:block">{index + 1}</p>
+
+// //                 <div className="hidden sm:flex items-center gap-2">
+// //                   <img
+// //                     src={item.user.photo}
+// //                     className="w-8 h-8 rounded-full object-cover"
+// //                     alt="patient"
+// //                   />
+// //                   <p>{item.user.name}</p>
+// //                 </div>
+
+// //                 <p className="hidden sm:block">{calculateAge(item.user.dateOfBirth)}</p>
+
+// //                 <p className="hidden sm:block">
+// //                   {item.date}, {item.time}
+// //                 </p>
+
+// //                 <div className="hidden sm:flex items-center gap-2">
+// //                   <img
+// //                     src={item.doctor.photo}
+// //                     className="w-8 h-8 rounded-full object-cover"
+// //                     alt="doctor"
+// //                   />
+// //                   <p>{item.doctor.name}</p>
+// //                 </div>
+
+// //                 <p className="hidden sm:block">₹{item.doctor.fee}</p>
+
+// //                 <div className="hidden sm:block">
+// //                   <button
+// //                     className={`py-1 px-3 rounded-full text-xs font-medium ${getStatusButtonStyle(
+// //                       item.status
+// //                     )}`}
+// //                   >
+// //                     {item.status}
+// //                   </button>
+// //                 </div>
+
+// //                 <div className="hidden sm:flex gap-2 ml-2">
+// //                   <button className="bg-red-500 text-white px-3 py-1 text-xs rounded">
+// //                     Cancel
+// //                   </button>
+// //                   <button className="bg-green-500 text-white px-3 py-1 text-xs rounded">
+// //                     Confirm
+// //                   </button>
+// //                 </div>
+// //               </div>
+// //             ))}
+// //           </div>
+// //         </main>
+// //       </div>
+// //     </div>
+// //   );
+// // };
+
+// // export default AllAppointments;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useEffect, useState } from "react";
+// import Navbar from "../../components/NavbarAdmin";
+// import SidebarAdmin from "../../components/SideBarAdmin";
+// import { assets } from "../../assets/assets2";
+// import axiosInstance from "../../utils/axios";
+
+// interface Doctor {
+//   _id: string;
+//   name: string;
+//   photo: string;
+//   fee: number;
+// }
+
+// interface User {
+//   _id: string;
+//   name: string;
+//   photo: string;
+//   dateOfBirth: string;
+// }
+
+// interface Appointment {
+//   _id: string;
+//   doctor: Doctor;
+//   user: User;
+//   date: string;
+//   time: string;
+//   status: "pending" | "cancelled" | "confirmed" | "completed";
+// }
+
+// const getStatusButtonStyle = (status: string) => {
+//   switch (status) {
+//     case "pending":
+//       return "bg-yellow-300 text-yellow-900";
+//     case "cancelled":
+//       return "bg-red-200 text-red-700";
+//     case "confirmed":
+//       return "bg-green-200 text-green-700";
+//     case "completed":
+//       return "bg-gray-200 text-gray-600";
+//     default:
+//       return "bg-gray-100 text-gray-500";
+//   }
+// };
+
+// const calculateAge = (dob: string): number => {
+//   const birthDate = new Date(dob);
+//   const today = new Date();
+//   let age = today.getFullYear() - birthDate.getFullYear();
+//   const m = today.getMonth() - birthDate.getMonth();
+//   if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+//     age--;
+//   }
+//   return age;
+// };
+
+// const AllAppointments = () => {
+//   const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+//   useEffect(() => {
+//     const fetchAppointments = async () => {
+//       try {
+//         const res = await axiosInstance.get("/all-appointments");
+//         setAppointments(res.data);
+//       } catch (err) {
+//         console.error("Error fetching appointments", err);
+//       }
+//     };
+//     fetchAppointments();
+//   }, []);
+
+//   return (
+//     <div className="min-h-screen bg-gray-100 flex flex-col">
+//       <Navbar />
+//       <div className="flex flex-1">
+//         <SidebarAdmin />
+//         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+//           <h1 className="text-2xl font-semibold text-gray-700 mb-6">All Appointments</h1>
+
+//           <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+//             {/* Table header */}
+//             <div className="hidden sm:grid grid-cols-8 py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
+//               <p className="text-center">#</p>
+//               <p className="text-left">Patient</p>
+//               <p className="text-center">Age</p>
+//               <p className="text-left">Date & Time</p>
+//               <p className="text-left">Doctor</p>
+//               <p className="text-center">Fees</p>
+//               <p className="text-center">Status</p>
+//               <p className="text-center">Actions</p>
+//             </div>
+
+//             {/* Rows */}
+//             {appointments.map((item, index) => (
+//               <div
+//                 key={item._id}
+//                 className="flex flex-col sm:grid sm:grid-cols-8 sm:items-center text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
+//               >
+//                 {/* Mobile view */}
+//                 <div className="sm:hidden flex flex-col gap-2">
+//                   <div className="flex items-center gap-2">
+//                     <span className="font-medium w-24">Patient:</span>
+//                     <img src={item.user.photo} className="w-8 h-8 rounded-full object-cover" alt="patient" />
+//                     <span>{item.user.name}</span>
+//                   </div>
+//                   <div className="flex gap-2">
+//                     <span className="font-medium w-24">Age:</span>
+//                     <span>{calculateAge(item.user.dateOfBirth)}</span>
+//                   </div>
+//                   <div className="flex gap-2">
+//                     <span className="font-medium w-24">Date & Time:</span>
+//                     <span>{item.date}, {item.time}</span>
+//                   </div>
+//                   <div className="flex items-center gap-2">
+//                     <span className="font-medium w-24">Doctor:</span>
+//                     <img src={item.doctor.photo} className="w-8 h-8 rounded-full object-cover" alt="doctor" />
+//                     <span>{item.doctor.name}</span>
+//                   </div>
+//                   <div className="flex gap-2">
+//                     <span className="font-medium w-24">Fee:</span>
+//                     <span>₹{item.doctor.fee}</span>
+//                   </div>
+//                   <div className="flex gap-2">
+//                     <span className="font-medium w-24">Status:</span>
+//                     <button className={`py-1 px-3 rounded-full text-xs font-medium ${getStatusButtonStyle(item.status)}`}>
+//                       {item.status}
+//                     </button>
+//                   </div>
+//                   <div className="flex gap-2">
+//                     <button className="bg-red-500 text-white px-3 py-1 text-xs rounded">Cancel</button>
+//                     <button className="bg-green-500 text-white px-3 py-1 text-xs rounded">Confirm</button>
+//                   </div>
+//                 </div>
+
+//                 {/* Desktop view */}
+//                 <p className="hidden sm:block text-center">{index + 1}</p>
+
+//                 <div className="hidden sm:flex items-center gap-2">
+//                   <img src={item.user.photo} className="w-8 h-8 rounded-full object-cover" alt="patient" />
+//                   <p>{item.user.name}</p>
+//                 </div>
+
+//                 <p className="hidden sm:block text-center">{calculateAge(item.user.dateOfBirth)}</p>
+
+//                 <p className="hidden sm:block">{item.date}, {item.time}</p>
+
+//                 <div className="hidden sm:flex items-center gap-2">
+//                   <img src={item.doctor.photo} className="w-8 h-8 rounded-full object-cover" alt="doctor" />
+//                   <p>{item.doctor.name}</p>
+//                 </div>
+
+//                 <p className="hidden sm:block text-center">₹{item.doctor.fee}</p>
+
+//                 <div className="hidden sm:flex justify-center">
+//                   <button className={`py-1 px-3 rounded-full text-xs font-medium ${getStatusButtonStyle(item.status)}`}>
+//                     {item.status}
+//                   </button>
+//                 </div>
+
+//                 <div className="hidden sm:flex justify-center gap-2">
+//                   <button className="bg-red-500 text-white px-3 py-1 text-xs rounded">Cancel</button>
+//                   <button className="bg-green-500 text-white px-3 py-1 text-xs rounded">Confirm</button>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         </main>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllAppointments;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { useEffect, useState } from "react";
 import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
-import { assets } from "../../assets/assets2";
+// import { assets } from "../../assets/assets2";
+import axiosInstance from "../../utils/axios";
 
-const mockAppointments = [
-  {
-    userData: { name: "John Doe", image: "/user1.jpg", dob: "1990-01-01" },
-    slotDate: "2025-06-10",
-    slotTime: "10:30 AM",
-    docData: { name: "Dr. Smith", image: "/doctor1.jpg" },
-    amount: "1500",
-    cancelled: false,
-    isCompleted: true,
-  },
-  {
-    userData: { name: "Jane Doe", image: "/user2.jpg", dob: "1995-07-20" },
-    slotDate: "2025-06-12",
-    slotTime: "02:00 PM",
-    docData: { name: "Dr. Alice", image: "/doctor2.jpg" },
-    amount: "1200",
-    cancelled: true,
-    isCompleted: false,
-  },
-];
+interface Doctor {
+  _id: string;
+  name: string;
+  photo: string;
+  fee: number;
+}
+
+interface User {
+  _id: string;
+  name: string;
+  photo: string;
+  dateOfBirth: string;
+}
+
+interface Appointment {
+  _id: string;
+  date: string;
+  time: string;
+  status: string;
+  doctor: Doctor;
+  user: User;
+}
+
+const calculateAge = (dob: string): number => {
+  const birthDate = new Date(dob);
+  const diff = Date.now() - birthDate.getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+};
 
 const AllAppointments = () => {
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+  useEffect(() => {
+    async function fetchAppointments() {
+      try {
+        const res = await axiosInstance.get("/all-appointments");
+        setAppointments(res.data);
+      } catch (err) {
+        console.error("Failed to fetch appointments", err);
+      }
+    }
+    fetchAppointments();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <Navbar />
-
       <div className="flex flex-1">
         <SidebarAdmin />
-
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
           <h1 className="text-2xl font-semibold text-gray-700 mb-6">
             All Appointments
           </h1>
 
           <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
-            {/* Desktop Header */}
-            <div className="hidden sm:grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
-              <p>#</p>
-              <p>Patient</p>
-              <p>Age</p>
-              <p>Date & Time</p>
-              <p>Doctor</p>
-              <p>Fees</p>
-              <p>Action</p>
+            {/* Table Header */}
+            <div className="hidden md:grid grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
+              <p className="text-center">#</p>
+              <p className="text-center">Patient</p>
+              <p className="text-center">Age</p>
+              <p className="text-center">Date & Time</p>
+              <p className="text-center">Doctor</p>
+              <p className="text-center">Fees</p>
+              <p className="text-center">Status</p>
+              <p className="text-center">Actions</p>
             </div>
 
-            {/* Rows */}
-            {mockAppointments.map((item, index) => (
+            {/* Appointment Rows */}
+            {appointments.map((item, index) => (
               <div
-                key={index}
-                className="flex flex-col sm:grid sm:grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr_1fr] sm:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
+                key={item._id}
+                className="flex flex-col md:grid md:grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] md:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
               >
-                {/* Row for small screen */}
-                <div className="flex sm:hidden flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium w-24">Patient:</span>
-                    <img
-                      src={item.userData.image}
-                      className="w-8 h-8 rounded-full object-cover"
-                      alt="patient"
-                    />
-                    <span>{item.userData.name}</span>
-                  </div>
+                {/* Index */}
+                <p className="text-center">{index + 1}</p>
 
-                  <div className="flex gap-2">
-                    <span className="font-medium w-24">Date & Time:</span>
-                    <span>
-                      {item.slotDate}, {item.slotTime}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium w-24">Doctor:</span>
-                    <img
-                      src={item.docData.image}
-                      className="w-8 h-8 rounded-full object-cover"
-                      alt="doctor"
-                    />
-                    <span>{item.docData.name}</span>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <span className="font-medium w-24">Fees:</span>
-                    <span>₹{item.amount}</span>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <span className="font-medium w-24">Status:</span>
-                    {item.cancelled ? (
-                      <span className="text-red-500 font-medium">Cancelled</span>
-                    ) : item.isCompleted ? (
-                      <span className="text-green-600 font-medium">Completed</span>
-                    ) : (
-                      <img
-                        src={assets.cancel_icon}
-                        alt="cancel"
-                        className="w-6 cursor-pointer"
-                      />
-                    )}
-                  </div>
-                </div>
-
-                {/* Row for large screen */}
-                <p className="hidden sm:block">{index + 1}</p>
-
-                <div className="hidden sm:flex items-center gap-2">
+                {/* Patient */}
+                <div className="flex items-center gap-2 justify-center">
                   <img
-                    src={item.userData.image}
+                    src={item.user.photo}
                     className="w-8 h-8 rounded-full object-cover"
                     alt="patient"
                   />
-                  <p>{item.userData.name}</p>
+                  <p>{item.user.name}</p>
                 </div>
 
-                <p className="hidden sm:block">30</p>
+                {/* Age */}
+                <p className="text-center">{calculateAge(item.user.dateOfBirth)}</p>
 
-                <p className="hidden sm:block">
-                  {item.slotDate}, {item.slotTime}
+                {/* Date & Time */}
+                <p className="text-center whitespace-nowrap">
+                  {item.date}, {item.time}
                 </p>
 
-                <div className="hidden sm:flex items-center gap-2">
+                {/* Doctor */}
+                <div className="flex items-center gap-2 justify-center">
                   <img
-                    src={item.docData.image}
+                    src={item.doctor.photo}
                     className="w-8 h-8 rounded-full object-cover"
                     alt="doctor"
                   />
-                  <p>{item.docData.name}</p>
+                  <p>{item.doctor.name}</p>
                 </div>
 
-                <p className="hidden sm:block">₹{item.amount}</p>
+                {/* Fees */}
+                <p className="text-center whitespace-nowrap">₹{item.doctor.fee}</p>
 
-                <div className="hidden sm:block">
-                  {item.cancelled ? (
-                    <p className="text-red-500 font-medium text-xs">Cancelled</p>
-                  ) : item.isCompleted ? (
-                    <p className="text-green-600 font-medium text-xs">
-                      Completed
-                    </p>
-                  ) : (
-                    <img
-                      src={assets.cancel_icon}
-                      alt="cancel"
-                      className="w-6 cursor-pointer"
-                    />
-                  )}
+                {/* Status */}
+                <div className="flex justify-center">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      item.status === "pending"
+                        ? "bg-yellow-300 text-yellow-900"
+                        : item.status === "cancelled"
+                        ? "bg-red-200 text-red-700"
+                        : item.status === "confirmed"
+                        ? "bg-green-200 text-green-800"
+                        : "bg-gray-300 text-gray-700"
+                    }`}
+                  >
+                    {item.status}
+                  </span>
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-center gap-2 flex-wrap">
+                  <button
+                    className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full"
+                    onClick={() => {
+                      // TODO: implement cancel logic
+                      console.log("Cancel", item._id);
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full"
+                    onClick={() => {
+                      // TODO: implement confirm logic
+                      console.log("Confirm", item._id);
+                    }}
+                  >
+                    Confirm
+                  </button>
                 </div>
               </div>
             ))}

@@ -15,8 +15,21 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
       return AppointmentModel.find({ userId }).populate("doctorId").exec();
     }
 
+     async findDoctor(doctorId: mongoose.Types.ObjectId): Promise<IAppointment[]> {
+      return AppointmentModel.find({ doctorId }).populate("doctorId").exec();
+    }
+
     async findByDoctorId(doctorId: mongoose.Types.ObjectId): Promise<IAppointment[]> {
       return AppointmentModel.find({ doctorId }).populate("userId").exec();
     }
+
+    async findAllPopulated(): Promise<IAppointment[]> {
+  return this.model
+    .find()
+    .populate("doctorId", "name email photo isVerified isBlocked")
+    .populate("userId", "name email photo isVerified isBlocked")
+    .exec();
+}
+
 
 }

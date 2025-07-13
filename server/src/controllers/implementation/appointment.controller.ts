@@ -147,6 +147,22 @@ export class AppointmentController implements IAppointmentController {
 
 }
 
+  async getCreateAppointment(req: Request, res: Response, next: NextFunction): Promise<void> {
+     try {
+       console.log("entered into getCreateAppointment");
+        const { doctorId }= req.params;
+        if(!doctorId){
+           res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+           return;
+        }
+        const  result = await this._appointmentService.getCreateAppointment(doctorId);
+        res.status(StatusCode.OK).json(result);
+     } catch (error) {
+        next(error);
+     }
+  }
+  
+
   async getUserAppointments(req: Request, res: Response, next: NextFunction): Promise<void>{
     try {
        const userId = req.user?.id;
@@ -173,6 +189,15 @@ export class AppointmentController implements IAppointmentController {
      } catch (error) {
         next(error);
      }
+  }
+
+    async getAllAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const result = await this._appointmentService.getAllAppointments();
+      res.status(StatusCode.OK).json(result);
+    } catch (error) {
+      next(error);
+    }
   }
 
 }

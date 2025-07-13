@@ -6,6 +6,7 @@ import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { IUser } from "../../types/user.type";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
 
+
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
@@ -17,7 +18,8 @@ export class UserService implements IUserService {
     constructor(
         private _userRepo: IUserRepository,
         private _patientRepo: IPatientProfileRepository,
-        private _doctorRepo: IDoctorProfileRepository
+        private _doctorRepo: IDoctorProfileRepository,
+        
     ){}
 
 
