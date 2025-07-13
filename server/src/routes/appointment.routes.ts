@@ -7,6 +7,7 @@ import { AppointmentController } from "../controllers/implementation/appointment
 import { verifyAccessToken } from "../middlewares/auth.middleware";
 import { DoctorProfileRepository } from "../repositories/implementation/doctorProfile.repositories";
 import { PatientProfileRepository } from "../repositories/implementation/patientProfile.repositories";
+import { UserRepository } from "../repositories/implementation/user.repositories";
 
 const router = Router();
 
@@ -14,7 +15,8 @@ const router = Router();
 const appointmentRepository = new AppointmentRepository();
 const doctorProfileRepository = new DoctorProfileRepository();
 const patientProfileRepository = new PatientProfileRepository();
-const appointmentService = new AppointmentService(appointmentRepository,doctorProfileRepository,patientProfileRepository);
+const userRepository = new UserRepository()
+const appointmentService = new AppointmentService(appointmentRepository,doctorProfileRepository,patientProfileRepository, userRepository);
 const appointmentController = new AppointmentController(appointmentService);
 
 

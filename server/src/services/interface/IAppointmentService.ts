@@ -21,7 +21,7 @@ export interface ICreateAppointment {
     name: string;
     email: string;
     photo?: string;
-    isVerified: boolean;
+    isVerified: boolean | undefined;
     educationDetails: string;
     isBlocked: boolean;
     specialization: string ;
