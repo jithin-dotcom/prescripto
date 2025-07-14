@@ -148,8 +148,8 @@ async updateUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
       success: true,
       message,
     });
-  }catch (err) {
-    next(err);
+  }catch (error) {
+    next(error);
   }
 }
 
@@ -164,11 +164,12 @@ async deleteUserOrDoctor(req: Request, res: Response, next: NextFunction) {
       success: true,
       message: result.message,
     });
-  } catch (error: any) {
-    res.status(StatusCode.BAD_REQUEST).json({
-      success: false,
-      message: error.message || "Failed to delete user/doctor",
-    });
+  } catch (error) {
+    next(error);
+    // res.status(StatusCode.BAD_REQUEST).json({
+    //   success: false,
+    //   message: error.message || "Failed to delete user/doctor",
+    // });
   }
 }
 

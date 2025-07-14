@@ -118,7 +118,6 @@ export class AppointmentController implements IAppointmentController {
         userId,
       });
 
-      // Convert string IDs to ObjectId
       const appointment = await this._appointmentService.createAppointment({
         userId: new mongoose.Types.ObjectId(validatedData.userId),
         doctorId: new mongoose.Types.ObjectId(validatedData.doctorId),
@@ -132,18 +131,7 @@ export class AppointmentController implements IAppointmentController {
       res.status(StatusCode.CREATED).json(appointment);
     }catch (error) {
        next(error);
-    //   if (error?.name === "ZodError") {
-    //     res.status(StatusCode.BAD_REQUEST).json({
-    //       message: error.errors.map((e: any) => e.message).join(", "),
-    //     });
-    //     return;
-    //   }
-
-    //   res
-    //     .status(StatusCode.INTERNAL_SERVER_ERROR)
-    //     .json({ message: error.message || StatusMessage.INTERNAL_SERVER_ERROR });
-    // }
-  }
+   }
 
 }
 
@@ -163,41 +151,115 @@ export class AppointmentController implements IAppointmentController {
   }
   
 
-  async getUserAppointments(req: Request, res: Response, next: NextFunction): Promise<void>{
-    try {
-       const userId = req.user?.id;
-       if(!userId){
-          res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
-          return;
-       }
-       const result = await this._appointmentService.getAppointmentsByUser(userId);
-       res.status(StatusCode.OK).json(result);
-    } catch (error) {
-       next(error);
-    }
-  }
+  // async getUserAppointments(req: Request, res: Response, next: NextFunction): Promise<void>{
+  //   try {
+  //      const userId = req.user?.id;
+  //      if(!userId){
+  //         res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+  //         return;
+  //      }
+  //      const result = await this._appointmentService.getAppointmentsByUser(userId);
+  //      res.status(StatusCode.OK).json(result);
+  //   } catch (error) {
+  //      next(error);
+  //   }
+  // }
 
-  async getDoctorAppointments(req: Request, res: Response, next: NextFunction): Promise<void>{
-     try {
-        const doctorId = req.user?.id;
-        if(!doctorId){
-           res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
-           return;
-        }
-        const result = await this._appointmentService.getAppointmentsByDoctor(doctorId);
-        res.status(StatusCode.OK).json(result);
-     } catch (error) {
-        next(error);
-     }
-  }
 
-    async getAllAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const result = await this._appointmentService.getAllAppointments();
-      res.status(StatusCode.OK).json(result);
-    } catch (error) {
-      next(error);
+
+  async getUserAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+      return;
     }
+
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 4;
+    const status = req.query.status as string || "";
+
+    const result = await this._appointmentService.getAppointmentsByUser(userId, page, limit, status);
+
+    res.status(StatusCode.OK).json(result);
+  } catch (error) {
+    next(error);
   }
+}
+
+
+
+
+
+
+
+  // async getDoctorAppointments(req: Request, res: Response, next: NextFunction): Promise<void>{
+  //    try {
+  //       const doctorId = req.user?.id;
+  //       if(!doctorId){
+  //          res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+  //          return;
+  //       }
+  //       const result = await this._appointmentService.getAppointmentsByDoctor(doctorId);
+  //       res.status(StatusCode.OK).json(result);
+  //    } catch (error) {
+  //       next(error);
+  //    }
+  // }
+
+
+  async getDoctorAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const doctorId = req.user?.id;
+    if (!doctorId) {
+      res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+      return;
+    }
+
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const status = (req.query.status as string) || "";
+
+    const result = await this._appointmentService.getAppointmentsByDoctor(
+      doctorId,
+      page,
+      limit,
+      status
+    );
+
+    res.status(StatusCode.OK).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+
+
+
+
+  //   async getAllAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
+  //   try {
+  //     const result = await this._appointmentService.getAllAppointments();
+  //     res.status(StatusCode.OK).json(result);
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
+
+  async getAllAppointments(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const status = req.query.status as string || "";
+   
+    const result = await this._appointmentService.getAllAppointments(page, limit, status);
+
+    res.status(StatusCode.OK).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
 
 }

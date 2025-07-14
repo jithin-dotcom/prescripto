@@ -344,29 +344,97 @@ export class AppointmentService implements IAppointmentService {
 
 
 
-async getAppointmentsByUser(userId: string): Promise<IAppointmentResponse[]> {
+// async getAppointmentsByUser(userId: string): Promise<IAppointmentResponse[]> {
+//   try {
+//     const appointments = await this._appointmentRepo.findByUserId(
+//       new mongoose.Types.ObjectId(userId)
+//     );
+
+//     const responses: IAppointmentResponse[] = [];
+
+//     for (const appointment of appointments) {
+//       if (!("name" in appointment.doctorId)) {
+//         throw new Error("Doctor info not populated");
+//       }
+
+//       const doctorUser = appointment.doctorId;
+
+//       // Fetch profile using doctor's user _id
+//       const profile = await this._doctorRepo.findOne({
+//         doctorId: doctorUser._id,
+//       });
+
+//       if (!profile) {
+//         throw new Error("Profile not found");
+//       }
+
+//       responses.push({
+//         _id: (appointment._id as mongoose.Types.ObjectId).toString(),
+//         doctor: {
+//           _id: doctorUser._id.toString(),
+//           name: doctorUser.name,
+//           email: doctorUser.email,
+//           photo: doctorUser.photo,
+//           isVerified: doctorUser.isVerified,
+//           educationDetails: profile.educationDetails,
+//           isBlocked: doctorUser.isBlocked,
+//           specialization: profile.specialization || "",
+//           yearOfExperience: profile.yearOfExperience || 0,
+//           fee: profile.fee || 0,
+//         },
+//         userId: appointment.userId.toString(),
+//         date: appointment.date,
+//         time: appointment.time,
+//         status: appointment.status,
+//         transactionId: appointment.transactionId?.toString(),
+//       });
+//     }
+
+//     return responses;
+//   } catch (error) {
+//     console.error("Error fetching user appointments:", error);
+//     throw new Error("Failed to fetch user appointments");
+//   }
+// }
+
+
+
+
+async getAppointmentsByUser(
+  userId: string,
+  page: number,
+  limit: number,
+  status?: string
+): Promise<{
+  data: IAppointmentResponse[];
+  totalDocs: number;
+  totalPages: number;
+  page: number;
+  limit: number;
+}> {
   try {
-    const appointments = await this._appointmentRepo.findByUserId(
-      new mongoose.Types.ObjectId(userId)
-    );
+    const skip = (page - 1) * limit;
+    const filter: any = { userId: new mongoose.Types.ObjectId(userId) };
+
+    if (status) {
+      filter.status = status;
+    }
+
+    const totalDocs = await this._appointmentRepo.countAllFiltered(filter);
+    const appointments = await this._appointmentRepo.findUserFilteredPaginated(skip, limit, filter);
 
     const responses: IAppointmentResponse[] = [];
 
     for (const appointment of appointments) {
-      if (!("name" in appointment.doctorId)) {
-        throw new Error("Doctor info not populated");
-      }
+      const doctorUser = appointment.doctorId as any;
 
-      const doctorUser = appointment.doctorId;
+      if (!doctorUser || !doctorUser._id) continue;
 
-      // Fetch profile using doctor's user _id
       const profile = await this._doctorRepo.findOne({
         doctorId: doctorUser._id,
       });
 
-      if (!profile) {
-        throw new Error("Profile not found");
-      }
+      if (!profile) continue;
 
       responses.push({
         _id: (appointment._id as mongoose.Types.ObjectId).toString(),
@@ -376,8 +444,8 @@ async getAppointmentsByUser(userId: string): Promise<IAppointmentResponse[]> {
           email: doctorUser.email,
           photo: doctorUser.photo,
           isVerified: doctorUser.isVerified,
-          educationDetails: profile.educationDetails,
           isBlocked: doctorUser.isBlocked,
+          educationDetails: profile.educationDetails,
           specialization: profile.specialization || "",
           yearOfExperience: profile.yearOfExperience || 0,
           fee: profile.fee || 0,
@@ -390,12 +458,19 @@ async getAppointmentsByUser(userId: string): Promise<IAppointmentResponse[]> {
       });
     }
 
-    return responses;
+    return {
+      data: responses,
+      totalDocs,
+      totalPages: Math.ceil(totalDocs / limit),
+      page,
+      limit,
+    };
   } catch (error) {
     console.error("Error fetching user appointments:", error);
     throw new Error("Failed to fetch user appointments");
   }
 }
+
 
 
 
@@ -518,13 +593,13 @@ async getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse
       throw new Error("Doctor profile not found");
     }
 
-    // Fetch appointments for doctor
+    
     const appointments = await this._appointmentRepo.findDoctor(
       new mongoose.Types.ObjectId(doctorId)
     );
 
     if (appointments.length === 0) {
-      // No appointments — return empty responses but still inject doctor info
+      
       responses.push({
         _id: "",
         doctor: {
@@ -656,12 +731,90 @@ async getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse
 // }
 
 
+// async getAppointmentsByDoctor(
+//   doctorId: string
+// ): Promise<IAppointmentWithUserResponse[]> {
+//   try {
+//     const appointments = await this._appointmentRepo.findByDoctorId(
+//       new mongoose.Types.ObjectId(doctorId)
+//     );
+
+//     const responses: IAppointmentWithUserResponse[] = [];
+
+//     for (const appointment of appointments) {
+//       const user = appointment.userId as any;
+
+//       if (!user || !user._id) continue;
+
+//       const patientProfile = await this._patientRepo.findOne({
+//         patientId: user._id,
+//       });
+
+//       const doctorProfile = await this._doctorRepo.findOne({ doctorId });
+//       if (!doctorProfile) {
+//         throw new Error("Doctor profile missing");
+//       }
+
+//       responses.push({
+//         _id: (appointment._id as mongoose.Types.ObjectId).toString(),
+//         doctorId: appointment.doctorId.toString(),
+//         user: {
+//           _id: user._id.toString(),
+//           name: user.name,
+//           email: user.email,
+//           photo: user.photo,
+//           isVerified: user.isVerified,
+//           isBlocked: user.isBlocked,
+//           dateOfBirth: patientProfile?.dateOfBirth,
+//           gender: patientProfile?.gender,
+//           houseName: patientProfile?.houseName,
+//           city: patientProfile?.city,
+//           state: patientProfile?.state,
+//           country: patientProfile?.country,
+//           pin: patientProfile?.pin,
+//         },
+//         fee: appointment?.fee || doctorProfile.fee,
+//         date: appointment.date,
+//         time: appointment.time,
+//         status: appointment.status,
+//         transactionId: appointment.transactionId?.toString(),
+//       });
+//     }
+
+//     return responses;
+//   } catch (error) {
+//     console.error("Error fetching doctor appointments:", error);
+//     throw new Error("Failed to fetch appointments for doctor");
+//   }
+// }
+
+
+
 async getAppointmentsByDoctor(
-  doctorId: string
-): Promise<IAppointmentWithUserResponse[]> {
+  doctorId: string,
+  page: number,
+  limit: number,
+  status?: string
+): Promise<{
+  data: IAppointmentWithUserResponse[];
+  totalDocs: number;
+  totalPages: number;
+  page: number;
+  limit: number;
+}> {
   try {
-    const appointments = await this._appointmentRepo.findByDoctorId(
-      new mongoose.Types.ObjectId(doctorId)
+    const skip = (page - 1) * limit;
+
+    const filter: any = { doctorId: new mongoose.Types.ObjectId(doctorId) };
+    if (status) {
+      filter.status = status;
+    }
+
+    const totalDocs = await this._appointmentRepo.countAllFiltered(filter);
+    const appointments = await this._appointmentRepo.findDoctorFilteredPaginated(
+      skip,
+      limit,
+      filter
     );
 
     const responses: IAppointmentWithUserResponse[] = [];
@@ -671,14 +824,10 @@ async getAppointmentsByDoctor(
 
       if (!user || !user._id) continue;
 
-      const patientProfile = await this._patientRepo.findOne({
-        patientId: user._id,
-      });
-
+      const patientProfile = await this._patientRepo.findOne({ patientId: user._id });
       const doctorProfile = await this._doctorRepo.findOne({ doctorId });
-      if (!doctorProfile) {
-        throw new Error("Doctor profile missing");
-      }
+
+      if (!doctorProfile) throw new Error("Doctor profile missing");
 
       responses.push({
         _id: (appointment._id as mongoose.Types.ObjectId).toString(),
@@ -698,7 +847,7 @@ async getAppointmentsByDoctor(
           country: patientProfile?.country,
           pin: patientProfile?.pin,
         },
-        fee: appointment?.fee || doctorProfile.fee,
+        fee: appointment.fee || doctorProfile.fee,
         date: appointment.date,
         time: appointment.time,
         status: appointment.status,
@@ -706,12 +855,24 @@ async getAppointmentsByDoctor(
       });
     }
 
-    return responses;
+    return {
+      data: responses,
+      totalDocs,
+      totalPages: Math.ceil(totalDocs / limit),
+      page,
+      limit,
+    };
   } catch (error) {
-    console.error("Error fetching doctor appointments:", error);
+    console.error("Error in getAppointmentsByDoctor:", error);
     throw new Error("Failed to fetch appointments for doctor");
   }
 }
+
+
+
+
+
+
 
 
 
@@ -780,9 +941,188 @@ async getAppointmentsByDoctor(
 
 
 
-async getAllAppointments(): Promise<IAppointmentFullResponse[]> {
+// async getAllAppointments(): Promise<IAppointmentFullResponse[]> {
+//   try {
+//     const appointments = await this._appointmentRepo.findAllPopulated(); // must be implemented in repo
+
+//     const responses: IAppointmentFullResponse[] = [];
+//     const timeArray: string[] = [];
+
+//     for (const appointment of appointments) {
+//       const doctorUser = appointment.doctorId as any;
+//       const patientUser = appointment.userId as any;
+
+//       timeArray.push(appointment.time);
+
+//       if (!doctorUser || !doctorUser._id || !patientUser || !patientUser._id) {
+//         continue;
+//       }
+
+//       const doctorProfile = await this._doctorRepo.findOne({ doctorId: doctorUser._id });
+//       const patientProfile = await this._patientRepo.findOne({ patientId: patientUser._id });
+
+//       if (!doctorProfile) continue;
+
+//       responses.push({
+//         _id: (appointment._id as mongoose.Types.ObjectId).toString(),
+//         date: appointment.date,
+//         time: appointment.time,
+//         status: appointment.status,
+//         transactionId: appointment.transactionId?.toString(),
+//         timeArray,
+
+//         doctor: {
+//           _id: doctorUser._id.toString(),
+//           name: doctorUser.name,
+//           email: doctorUser.email,
+//           photo: doctorUser.photo,
+//           isVerified: doctorUser.isVerified,
+//           isBlocked: doctorUser.isBlocked,
+//           educationDetails: doctorProfile.educationDetails,
+//           specialization: doctorProfile.specialization || "",
+//           yearOfExperience: doctorProfile.yearOfExperience || 0,
+//           fee: doctorProfile.fee || 0,
+//         },
+
+//         user: {
+//           _id: patientUser._id.toString(),
+//           name: patientUser.name,
+//           email: patientUser.email,
+//           photo: patientUser.photo,
+//           isVerified: patientUser.isVerified,
+//           isBlocked: patientUser.isBlocked,
+//           dateOfBirth: patientProfile?.dateOfBirth,
+//           gender: patientProfile?.gender,
+//           houseName: patientProfile?.houseName,
+//           city: patientProfile?.city,
+//           state: patientProfile?.state,
+//           country: patientProfile?.country,
+//           // pin: patientProfile?.pin,
+//         },
+//       });
+//     }
+
+//     return responses;
+//   } catch (error) {
+//     console.error("Error in getAllAppointments:", error);
+//     throw new Error("Failed to fetch all appointments");
+//   }
+// }
+
+
+// async getAllAppointments(page: number, limit: number): Promise<{
+//   data: IAppointmentFullResponse[];
+//   totalDocs: number;
+//   totalPages: number;
+//   page: number;
+//   limit: number;
+// }> {
+//   try {
+//     const skip = (page - 1) * limit;
+
+//     // Get total count
+//     const totalDocs = await this._appointmentRepo.countAll();
+
+//     // Get paginated appointments (must support skip + limit + populate)
+//     const appointments = await this._appointmentRepo.findAllPopulatedPaginated(skip, limit);
+
+//     const responses: IAppointmentFullResponse[] = [];
+//     const timeArray: string[] = [];
+
+//     for (const appointment of appointments) {
+//       const doctorUser = appointment.doctorId as any;
+//       const patientUser = appointment.userId as any;
+
+//       timeArray.push(appointment.time);
+
+//       if (!doctorUser || !doctorUser._id || !patientUser || !patientUser._id) continue;
+
+//       const doctorProfile = await this._doctorRepo.findOne({ doctorId: doctorUser._id });
+//       const patientProfile = await this._patientRepo.findOne({ patientId: patientUser._id });
+
+//       if (!doctorProfile) continue;
+
+//       responses.push({
+//         _id: (appointment._id as mongoose.Types.ObjectId).toString(),
+//         date: appointment.date,
+//         time: appointment.time,
+//         status: appointment.status,
+//         transactionId: appointment.transactionId?.toString(),
+//         timeArray,
+
+//         doctor: {
+//           _id: doctorUser._id.toString(),
+//           name: doctorUser.name,
+//           email: doctorUser.email,
+//           photo: doctorUser.photo,
+//           isVerified: doctorUser.isVerified,
+//           isBlocked: doctorUser.isBlocked,
+//           educationDetails: doctorProfile.educationDetails,
+//           specialization: doctorProfile.specialization || "",
+//           yearOfExperience: doctorProfile.yearOfExperience || 0,
+//           fee: doctorProfile.fee || 0,
+//         },
+
+//         user: {
+//           _id: patientUser._id.toString(),
+//           name: patientUser.name,
+//           email: patientUser.email,
+//           photo: patientUser.photo,
+//           isVerified: patientUser.isVerified,
+//           isBlocked: patientUser.isBlocked,
+//           dateOfBirth: patientProfile?.dateOfBirth,
+//           gender: patientProfile?.gender,
+//           houseName: patientProfile?.houseName,
+//           city: patientProfile?.city,
+//           state: patientProfile?.state,
+//           country: patientProfile?.country,
+//         },
+//       });
+//     }
+
+//     return {
+//       data: responses,
+//       page,
+//       limit,
+//       totalDocs,
+//       totalPages: Math.ceil(totalDocs / limit),
+//     };
+//   } catch (error) {
+//     console.error("Error in getAllAppointments:", error);
+//     throw new Error("Failed to fetch all appointments");
+//   }
+// }
+
+
+
+async getAllAppointments(
+  page: number,
+  limit: number,
+  status?: string,
+  
+): Promise<{
+  data: IAppointmentFullResponse[];
+  totalDocs: number;
+  totalPages: number;
+  page: number;
+  limit: number;
+}> {
   try {
-    const appointments = await this._appointmentRepo.findAllPopulated(); // must be implemented in repo
+    const skip = (page - 1) * limit;
+
+    const filter: any = {};
+    if (status) {
+      filter.status = status;
+    }
+    
+    
+
+    const totalDocs = await this._appointmentRepo.countAllFiltered(filter);
+    const appointments = await this._appointmentRepo.findAllPopulatedPaginatedFiltered(
+      skip,
+      limit,
+      filter
+    );
 
     const responses: IAppointmentFullResponse[] = [];
     const timeArray: string[] = [];
@@ -792,15 +1132,12 @@ async getAllAppointments(): Promise<IAppointmentFullResponse[]> {
       const patientUser = appointment.userId as any;
 
       timeArray.push(appointment.time);
-
-      if (!doctorUser || !doctorUser._id || !patientUser || !patientUser._id) {
-        continue;
-      }
+      if (!doctorUser?._id || !patientUser?._id) continue;
 
       const doctorProfile = await this._doctorRepo.findOne({ doctorId: doctorUser._id });
       const patientProfile = await this._patientRepo.findOne({ patientId: patientUser._id });
-
       if (!doctorProfile) continue;
+      
 
       responses.push({
         _id: (appointment._id as mongoose.Types.ObjectId).toString(),
@@ -836,17 +1173,26 @@ async getAllAppointments(): Promise<IAppointmentFullResponse[]> {
           city: patientProfile?.city,
           state: patientProfile?.state,
           country: patientProfile?.country,
-          // pin: patientProfile?.pin,
         },
       });
     }
 
-    return responses;
+    return {
+      data: responses,
+      page,
+      limit,
+      totalDocs,
+      totalPages: Math.ceil(totalDocs / limit),
+    };
   } catch (error) {
     console.error("Error in getAllAppointments:", error);
     throw new Error("Failed to fetch all appointments");
   }
 }
+
+
+
+
 
 
 

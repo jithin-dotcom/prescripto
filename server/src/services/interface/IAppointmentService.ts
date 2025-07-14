@@ -148,9 +148,41 @@ export interface IAppointmentFullResponse {
 export interface IAppointmentService {
   // createAppointment(data: Partial<IAppointment>): Promise<IAppointmentResponse>;
   createAppointment(data: Partial<IAppointment>): Promise<{message:string}>;
-  getAppointmentsByUser(userId: string): Promise<IAppointmentResponse[]>;
-  getAppointmentsByDoctor(doctorId: string): Promise<IAppointmentWithUserResponse[]>;
-  getAllAppointments(): Promise<IAppointmentFullResponse[]>;
+  // getAppointmentsByUser(userId: string): Promise<IAppointmentResponse[]>;
+  // getAppointmentsByDoctor(doctorId: string): Promise<IAppointmentWithUserResponse[]>;
+   getAppointmentsByDoctor(
+    doctorId: string,
+    page: number,
+    limit: number,
+    status?: string
+  ): Promise<{
+    data: IAppointmentWithUserResponse[];
+    totalDocs: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+  }>
+  // getAllAppointments(): Promise<IAppointmentFullResponse[]>;
   getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse>;
+  getAllAppointments(page: number, limit: number, status:string): Promise<{
+    data: IAppointmentFullResponse[];
+    totalDocs: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+  }>
+
+  getAppointmentsByUser(
+  userId: string,
+  page: number,
+  limit: number,
+  status?: string
+): Promise<{
+  data: IAppointmentResponse[];
+  totalDocs: number;
+  totalPages: number;
+  page: number;
+  limit: number;
+}>
 //   cancelAppointment(id: string): Promise<void>;
 }

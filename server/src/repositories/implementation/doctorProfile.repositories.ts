@@ -22,4 +22,5 @@ export class DoctorProfileRepository extends BaseRepository<IDoctorProfile & Doc
   }
 
 
+
 }

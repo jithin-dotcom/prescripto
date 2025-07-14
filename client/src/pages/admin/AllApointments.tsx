@@ -742,10 +742,547 @@
 
 
 
+// import { useEffect, useState } from "react";
+// import Navbar from "../../components/NavbarAdmin";
+// import SidebarAdmin from "../../components/SideBarAdmin";
+// import axiosInstance from "../../utils/axios";
+
+// interface Doctor {
+//   _id: string;
+//   name: string;
+//   photo: string;
+//   fee: number;
+// }
+
+// interface User {
+//   _id: string;
+//   name: string;
+//   photo: string;
+//   dateOfBirth: string;
+// }
+
+// interface Appointment {
+//   _id: string;
+//   date: string;
+//   time: string;
+//   status: string;
+//   doctor: Doctor;
+//   user: User;
+// }
+
+// const calculateAge = (dob: string): number => {
+//   const birthDate = new Date(dob);
+//   const diff = Date.now() - birthDate.getTime();
+//   return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+// };
+
+// const AllAppointments = () => {
+//   const [appointments, setAppointments] = useState<Appointment[]>([]);
+
+//   useEffect(() => {
+//     async function fetchAppointments() {
+//       try {
+//         const res = await axiosInstance.get("/all-appointments");
+//         setAppointments(res.data);
+//       } catch (err) {
+//         console.error("Failed to fetch appointments", err);
+//       }
+//     }
+//     fetchAppointments();
+//   }, []);
+
+//   return (
+//     <div className="min-h-screen bg-gray-100 flex flex-col">
+//       <Navbar />
+//       <div className="flex flex-1">
+//         <SidebarAdmin />
+//         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+//           <h1 className="text-2xl font-semibold text-gray-700 mb-6">
+//             All Appointments
+//           </h1>
+
+//           <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+//             {/* Table Header */}
+//             <div className="hidden md:grid grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
+//               <p className="text-center">#</p>
+//               <p className="text-center">Patient</p>
+//               <p className="text-center">Age</p>
+//               <p className="text-center">Date & Time</p>
+//               <p className="text-center">Doctor</p>
+//               <p className="text-center">Fees</p>
+//               <p className="text-center">Status</p>
+//               <p className="text-center">Actions</p>
+//             </div>
+
+//             {/* Appointment Rows */}
+//             {appointments.map((item, index) => (
+//               <div
+//                 key={item._id}
+//                 className="flex flex-col md:grid md:grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] md:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
+//               >
+//                 {/* Index */}
+//                 <p className="text-center">{index + 1}</p>
+
+//                 {/* Patient */}
+//                 <div className="flex items-center gap-2 justify-center">
+//                   <img
+//                     src={item.user.photo}
+//                     className="w-8 h-8 rounded-full object-cover"
+//                     alt="patient"
+//                   />
+//                   <p>{item.user.name}</p>
+//                 </div>
+
+//                 {/* Age */}
+//                 <p className="text-center">{calculateAge(item.user.dateOfBirth)}</p>
+
+//                 {/* Date & Time */}
+//                 <p className="text-center whitespace-nowrap">
+//                   {item.date}, {item.time}
+//                 </p>
+
+//                 {/* Doctor */}
+//                 <div className="flex items-center gap-2 justify-center">
+//                   <img
+//                     src={item.doctor.photo}
+//                     className="w-8 h-8 rounded-full object-cover"
+//                     alt="doctor"
+//                   />
+//                   <p>{item.doctor.name}</p>
+//                 </div>
+
+//                 {/* Fees */}
+//                 <p className="text-center whitespace-nowrap">₹{item.doctor.fee}</p>
+
+//                 {/* Status */}
+//                 <div className="flex justify-center">
+//                   <span
+//                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
+//                       item.status === "pending"
+//                         ? "bg-yellow-300 text-yellow-900"
+//                         : item.status === "cancelled"
+//                         ? "bg-red-200 text-red-700"
+//                         : item.status === "confirmed"
+//                         ? "bg-green-200 text-green-800"
+//                         : "bg-gray-300 text-gray-700"
+//                     }`}
+//                   >
+//                     {item.status}
+//                   </span>
+//                 </div>
+
+//                 {/* Actions */}
+//                 <div className="flex justify-center gap-2 flex-wrap">
+//                   <button
+//                     className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full"
+//                     onClick={() => {
+//                       // TODO: implement cancel logic
+//                       console.log("Cancel", item._id);
+//                     }}
+//                   >
+//                     Cancel
+//                   </button>
+//                   <button
+//                     className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full"
+//                     onClick={() => {
+//                       // TODO: implement confirm logic
+//                       console.log("Confirm", item._id);
+//                     }}
+//                   >
+//                     Confirm
+//                   </button>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         </main>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllAppointments;
+
+
+
+
+
+
+
+// import { useEffect, useState } from "react";
+// import Navbar from "../../components/NavbarAdmin";
+// import SidebarAdmin from "../../components/SideBarAdmin";
+// import axiosInstance from "../../utils/axios";
+// import Pagination from "../../components/Pagination"; 
+
+// interface Doctor {
+//   _id: string;
+//   name: string;
+//   photo: string;
+//   fee: number;
+// }
+
+// interface User {
+//   _id: string;
+//   name: string;
+//   photo: string;
+//   dateOfBirth: string;
+// }
+
+// interface Appointment {
+//   _id: string;
+//   date: string;
+//   time: string;
+//   status: string;
+//   doctor: Doctor;
+//   user: User;
+// }
+
+// const calculateAge = (dob: string): number => {
+//   const birthDate = new Date(dob);
+//   const diff = Date.now() - birthDate.getTime();
+//   return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+// };
+
+// const AllAppointments = () => {
+//   const [appointments, setAppointments] = useState<Appointment[]>([]);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [totalPages, setTotalPages] = useState(1);
+//   const [loading, setLoading] = useState(false);
+//   const limit = 5;
+
+//   useEffect(() => {
+//     const fetchAppointments = async () => {
+//       setLoading(true);
+//       try {
+//         const res = await axiosInstance.get(
+//           `/all-appointments?page=${currentPage}&limit=${limit}`
+//         );
+//         setAppointments(res.data.data);
+//         setTotalPages(res.data.totalPages);
+//       } catch (err) {
+//         console.error("Failed to fetch appointments", err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchAppointments();
+//   }, [currentPage]);
+
+//   return (
+//     <div className="min-h-screen bg-gray-100 flex flex-col">
+//       <Navbar />
+//       <div className="flex flex-1">
+//         <SidebarAdmin />
+//         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+//           <h1 className="text-2xl font-semibold text-gray-700 mb-6">
+//             All Appointments
+//           </h1>
+
+//           <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+//             {/* Table Header */}
+//             <div className="hidden md:grid grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
+//               <p className="text-center">#</p>
+//               <p className="text-center">Patient</p>
+//               <p className="text-center">Age</p>
+//               <p className="text-center">Date & Time</p>
+//               <p className="text-center">Doctor</p>
+//               <p className="text-center">Fees</p>
+//               <p className="text-center">Status</p>
+//               <p className="text-center">Actions</p>
+//             </div>
+
+//             {loading ? (
+//               <p className="text-center py-6 text-gray-500">Loading...</p>
+//             ) : appointments.length === 0 ? (
+//               <p className="text-center py-6 text-gray-500">
+//                 No appointments found.
+//               </p>
+//             ) : (
+//               appointments.map((item, index) => (
+//                 <div
+//                   key={item._id}
+//                   className="flex flex-col md:grid md:grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] md:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
+//                 >
+//                   {/* Index */}
+//                   <p className="text-center">
+//                     {(currentPage - 1) * limit + index + 1}
+//                   </p>
+
+//                   {/* Patient */}
+//                   <div className="flex items-center gap-2 justify-center">
+//                     <img
+//                       src={item.user.photo}
+//                       className="w-8 h-8 rounded-full object-cover"
+//                       alt="patient"
+//                     />
+//                     <p>{item.user.name}</p>
+//                   </div>
+
+//                   {/* Age */}
+//                   <p className="text-center">
+//                     {calculateAge(item.user.dateOfBirth)}
+//                   </p>
+
+//                   {/* Date & Time */}
+//                   <p className="text-center whitespace-nowrap">
+//                     {item.date}, {item.time}
+//                   </p>
+
+//                   {/* Doctor */}
+//                   <div className="flex items-center gap-2 justify-center">
+//                     <img
+//                       src={item.doctor.photo}
+//                       className="w-8 h-8 rounded-full object-cover"
+//                       alt="doctor"
+//                     />
+//                     <p>{item.doctor.name}</p>
+//                   </div>
+
+//                   {/* Fees */}
+//                   <p className="text-center whitespace-nowrap">
+//                     ₹{item.doctor.fee}
+//                   </p>
+
+//                   {/* Status */}
+//                   <div className="flex justify-center">
+//                     <span
+//                       className={`px-2 py-1 rounded-full text-xs font-semibold ${
+//                         item.status === "pending"
+//                           ? "bg-yellow-300 text-yellow-900"
+//                           : item.status === "cancelled"
+//                           ? "bg-red-200 text-red-700"
+//                           : item.status === "confirmed"
+//                           ? "bg-green-200 text-green-800"
+//                           : "bg-gray-300 text-gray-700"
+//                       }`}
+//                     >
+//                       {item.status}
+//                     </span>
+//                   </div>
+
+//                   {/* Actions */}
+//                   <div className="flex justify-center gap-2 flex-wrap">
+//                     <button
+//                       className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full"
+//                       onClick={() => {
+//                         console.log("Cancel", item._id);
+//                       }}
+//                     >
+//                       Cancel
+//                     </button>
+//                     <button
+//                       className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full"
+//                       onClick={() => {
+//                         console.log("Confirm", item._id);
+//                       }}
+//                     >
+//                       Confirm
+//                     </button>
+//                   </div>
+//                 </div>
+//               ))
+//             )}
+//           </div>
+
+//           {/* Pagination */}
+//           <Pagination
+//             currentPage={currentPage}
+//             totalPages={totalPages}
+//             onPageChange={(page) => setCurrentPage(page)}
+//           />
+//         </main>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllAppointments;
+
+
+
+
+
+
+
+
+// import { useEffect, useState } from "react";
+// import Navbar from "../../components/NavbarAdmin";
+// import SidebarAdmin from "../../components/SideBarAdmin";
+// import Pagination from "../../components/Pagination";
+// import axiosInstance from "../../utils/axios";
+
+// interface Doctor {
+//   _id: string;
+//   name: string;
+//   photo: string;
+//   fee: number;
+// }
+// interface User {
+//   _id: string;
+//   name: string;
+//   photo: string;
+//   dateOfBirth: string;
+// }
+// interface Appointment {
+//   _id: string;
+//   date: string;
+//   time: string;
+//   status: string;
+//   doctor: Doctor;
+//   user: User;
+// }
+
+// const calculateAge = (dob: string): number => {
+//   const birthDate = new Date(dob);
+//   const diff = Date.now() - birthDate.getTime();
+//   return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+// };
+
+// const AllAppointments = () => {
+//   const [appointments, setAppointments] = useState<Appointment[]>([]);
+//   const [filteredAppointments, setFilteredAppointments] = useState<Appointment[]>([]);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [totalPages, setTotalPages] = useState(1);
+//   const [statusFilter, setStatusFilter] = useState("all");
+//   const limit = 4;
+
+//   useEffect(() => {
+//     const fetchAppointments = async () => {
+//       try {
+//         const res = await axiosInstance.get(`/all-appointments?page=${currentPage}&limit=${limit}`);
+//         setAppointments(res.data.data);
+//         setTotalPages(res.data.totalPages);
+//       } catch (err) {
+//         console.error("Failed to fetch appointments", err);
+//       }
+//     };
+
+//     fetchAppointments();
+//   }, [currentPage]);
+
+//   useEffect(() => {
+//     if (statusFilter === "all") {
+//       setFilteredAppointments(appointments);
+//     } else {
+//       const filtered = appointments.filter(app => app.status === statusFilter);
+//       setFilteredAppointments(filtered);
+//     }
+//   }, [statusFilter, appointments]);
+
+//   return (
+//     <div className="min-h-screen bg-gray-100 flex flex-col">
+//       <Navbar />
+//       <div className="flex flex-1">
+//         <SidebarAdmin />
+//         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+//           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+//             <h1 className="text-2xl font-semibold text-gray-700">All Appointments</h1>
+//             <select
+//               value={statusFilter}
+//               onChange={(e) => setStatusFilter(e.target.value)}
+//               className="border px-3 py-2 rounded text-sm w-48"
+//             >
+//               <option value="all">All Status</option>
+//               <option value="pending">Pending</option>
+//               <option value="confirmed">Confirmed</option>
+//               <option value="cancelled">Cancelled</option>
+//               <option value="completed">Completed</option>
+//             </select>
+//           </div>
+
+//           <div className="bg-white border rounded-xl shadow overflow-hidden">
+//             <div className="hidden md:grid grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
+//               <p className="text-center">#</p>
+//               <p className="text-center">Patient</p>
+//               <p className="text-center">Age</p>
+//               <p className="text-center">Date & Time</p>
+//               <p className="text-center">Doctor</p>
+//               <p className="text-center">Fees</p>
+//               <p className="text-center">Status</p>
+//               <p className="text-center">Actions</p>
+//             </div>
+
+//             {filteredAppointments.length === 0 ? (
+//               <p className="text-center py-6 text-gray-500">No appointments found.</p>
+//             ) : (
+//               filteredAppointments.map((item, index) => (
+//                 <div
+//                   key={item._id}
+//                   className="flex flex-col md:grid md:grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] md:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
+//                 >
+//                   <p className="text-center">{(currentPage - 1) * limit + index + 1}</p>
+//                   <div className="flex items-center gap-2 justify-center">
+//                     <img src={item.user.photo} className="w-8 h-8 rounded-full object-cover" alt="patient" />
+//                     <p>{item.user.name}</p>
+//                   </div>
+//                   <p className="text-center">{calculateAge(item.user.dateOfBirth)}</p>
+//                   <p className="text-center whitespace-nowrap">{item.date}, {item.time}</p>
+//                   <div className="flex items-center gap-2 justify-center">
+//                     <img src={item.doctor.photo} className="w-8 h-8 rounded-full object-cover" alt="doctor" />
+//                     <p>{item.doctor.name}</p>
+//                   </div>
+//                   <p className="text-center whitespace-nowrap">₹{item.doctor.fee}</p>
+//                   <div className="flex justify-center">
+//                     <span
+//                       className={`px-2 py-1 rounded-full text-xs font-semibold ${
+//                         item.status === "pending"
+//                           ? "bg-yellow-300 text-yellow-900"
+//                           : item.status === "cancelled"
+//                           ? "bg-red-200 text-red-700"
+//                           : item.status === "confirmed"
+//                           ? "bg-green-200 text-green-800"
+//                           : "bg-gray-300 text-gray-700"
+//                       }`}
+//                     >
+//                       {item.status}
+//                     </span>
+//                   </div>
+//                   <div className="flex justify-center gap-2 flex-wrap">
+//                     <button
+//                       className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full"
+//                       onClick={() => console.log("Cancel", item._id)}
+//                     >
+//                       Cancel
+//                     </button>
+//                     <button
+//                       className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full"
+//                       onClick={() => console.log("Confirm", item._id)}
+//                     >
+//                       Confirm
+//                     </button>
+//                   </div>
+//                 </div>
+//               ))
+//             )}
+//           </div>
+
+//           <Pagination
+//             currentPage={currentPage}
+//             totalPages={totalPages}
+//             onPageChange={(page) => setCurrentPage(page)}
+//           />
+//         </main>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllAppointments;
+
+
+
+
+
+
+
+
+
 import { useEffect, useState } from "react";
 import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
-// import { assets } from "../../assets/assets2";
+import Pagination from "../../components/Pagination";
 import axiosInstance from "../../utils/axios";
 
 interface Doctor {
@@ -754,14 +1291,12 @@ interface Doctor {
   photo: string;
   fee: number;
 }
-
 interface User {
   _id: string;
   name: string;
   photo: string;
   dateOfBirth: string;
 }
-
 interface Appointment {
   _id: string;
   date: string;
@@ -779,18 +1314,25 @@ const calculateAge = (dob: string): number => {
 
 const AllAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [statusFilter, setStatusFilter] = useState("");
+  const limit = 4;
 
   useEffect(() => {
-    async function fetchAppointments() {
+    const fetchAppointments = async () => {
       try {
-        const res = await axiosInstance.get("/all-appointments");
-        setAppointments(res.data);
+        const res = await axiosInstance.get(`/all-appointments?page=${currentPage}&limit=${limit}&status=${statusFilter}`);
+        console.log("data : ",res.data);
+        setAppointments(res.data.data);
+        setTotalPages(res.data.totalPages);
       } catch (err) {
         console.error("Failed to fetch appointments", err);
       }
-    }
+    };
+
     fetchAppointments();
-  }, []);
+  }, [currentPage, statusFilter]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -798,12 +1340,27 @@ const AllAppointments = () => {
       <div className="flex flex-1">
         <SidebarAdmin />
         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
-          <h1 className="text-2xl font-semibold text-gray-700 mb-6">
-            All Appointments
-          </h1>
+          {/* Header and filter */}
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+            <h1 className="text-2xl font-semibold text-gray-700">All Appointments</h1>
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setCurrentPage(1); // Reset to page 1 when filter changes
+              }}
+              className="border px-3 py-2 rounded text-sm w-48"
+            >
+              <option value="">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="cancelled">Cancelled</option>
+              <option value="completed">Completed</option>
+            </select>
+          </div>
 
-          <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
-            {/* Table Header */}
+          {/* Appointments Table */}
+          <div className="bg-white border rounded-xl shadow overflow-hidden">
             <div className="hidden md:grid grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
               <p className="text-center">#</p>
               <p className="text-center">Patient</p>
@@ -815,87 +1372,66 @@ const AllAppointments = () => {
               <p className="text-center">Actions</p>
             </div>
 
-            {/* Appointment Rows */}
-            {appointments.map((item, index) => (
-              <div
-                key={item._id}
-                className="flex flex-col md:grid md:grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] md:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
-              >
-                {/* Index */}
-                <p className="text-center">{index + 1}</p>
-
-                {/* Patient */}
-                <div className="flex items-center gap-2 justify-center">
-                  <img
-                    src={item.user.photo}
-                    className="w-8 h-8 rounded-full object-cover"
-                    alt="patient"
-                  />
-                  <p>{item.user.name}</p>
+            {appointments.length === 0 ? (
+              <p className="text-center py-6 text-gray-500">No appointments found.</p>
+            ) : (
+              appointments.map((item, index) => (
+                <div
+                  key={item._id}
+                  className="flex flex-col md:grid md:grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] md:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
+                >
+                  <p className="text-center">{(currentPage - 1) * limit + index + 1}</p>
+                  <div className="flex items-center gap-2 justify-center">
+                    <img src={item.user.photo} className="w-8 h-8 rounded-full object-cover" alt="patient" />
+                    <p>{item.user.name}</p>
+                  </div>
+                  <p className="text-center">{calculateAge(item.user.dateOfBirth)}</p>
+                  <p className="text-center whitespace-nowrap">{item.date}, {item.time}</p>
+                  <div className="flex items-center gap-2 justify-center">
+                    <img src={item.doctor.photo} className="w-8 h-8 rounded-full object-cover" alt="doctor" />
+                    <p>{item.doctor.name}</p>
+                  </div>
+                  <p className="text-center whitespace-nowrap">₹{item.doctor.fee}</p>
+                  <div className="flex justify-center">
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                        item.status === "pending"
+                          ? "bg-yellow-300 text-yellow-900"
+                          : item.status === "cancelled"
+                          ? "bg-red-200 text-red-700"
+                          : item.status === "confirmed"
+                          ? "bg-green-200 text-green-800"
+                          : "bg-gray-300 text-gray-700"
+                      }`}
+                    >
+                      {item.status}
+                    </span>
+                  </div>
+                  <div className="flex justify-center gap-2 flex-wrap">
+                    <button
+                      className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full"
+                      onClick={() => console.log("Cancel", item._id)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full"
+                      onClick={() => console.log("Confirm", item._id)}
+                    >
+                      Confirm
+                    </button>
+                  </div>
                 </div>
-
-                {/* Age */}
-                <p className="text-center">{calculateAge(item.user.dateOfBirth)}</p>
-
-                {/* Date & Time */}
-                <p className="text-center whitespace-nowrap">
-                  {item.date}, {item.time}
-                </p>
-
-                {/* Doctor */}
-                <div className="flex items-center gap-2 justify-center">
-                  <img
-                    src={item.doctor.photo}
-                    className="w-8 h-8 rounded-full object-cover"
-                    alt="doctor"
-                  />
-                  <p>{item.doctor.name}</p>
-                </div>
-
-                {/* Fees */}
-                <p className="text-center whitespace-nowrap">₹{item.doctor.fee}</p>
-
-                {/* Status */}
-                <div className="flex justify-center">
-                  <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      item.status === "pending"
-                        ? "bg-yellow-300 text-yellow-900"
-                        : item.status === "cancelled"
-                        ? "bg-red-200 text-red-700"
-                        : item.status === "confirmed"
-                        ? "bg-green-200 text-green-800"
-                        : "bg-gray-300 text-gray-700"
-                    }`}
-                  >
-                    {item.status}
-                  </span>
-                </div>
-
-                {/* Actions */}
-                <div className="flex justify-center gap-2 flex-wrap">
-                  <button
-                    className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full"
-                    onClick={() => {
-                      // TODO: implement cancel logic
-                      console.log("Cancel", item._id);
-                    }}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full"
-                    onClick={() => {
-                      // TODO: implement confirm logic
-                      console.log("Confirm", item._id);
-                    }}
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
+
+          {/* Pagination */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
         </main>
       </div>
     </div>
@@ -903,3 +1439,219 @@ const AllAppointments = () => {
 };
 
 export default AllAppointments;
+
+
+
+
+
+
+
+
+
+
+
+// import { useEffect, useState } from "react";
+// import Navbar from "../../components/NavbarAdmin";
+// import SidebarAdmin from "../../components/SideBarAdmin";
+// import Pagination from "../../components/Pagination";
+// import axiosInstance from "../../utils/axios";
+
+// interface Doctor {
+//   _id: string;
+//   name: string;
+//   photo: string;
+//   fee: number;
+// }
+// interface User {
+//   _id: string;
+//   name: string;
+//   photo: string;
+//   dateOfBirth: string;
+// }
+// interface Appointment {
+//   _id: string;
+//   date: string;
+//   time: string;
+//   status: string;
+//   doctor: Doctor;
+//   user: User;
+// }
+
+// const calculateAge = (dob: string): number => {
+//   const birthDate = new Date(dob);
+//   const diff = Date.now() - birthDate.getTime();
+//   return Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+// };
+
+// const AllAppointments = () => {
+//   const [appointments, setAppointments] = useState<Appointment[]>([]);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [totalPages, setTotalPages] = useState(1);
+//   const [statusFilter, setStatusFilter] = useState("");
+//   const [searchInput, setSearchInput] = useState("");
+//   const [debouncedSearch, setDebouncedSearch] = useState("");
+//   const limit = 4;
+
+//   // Debounce search input
+//   useEffect(() => {
+//     const handler = setTimeout(() => {
+//       setDebouncedSearch(searchInput);
+//       setCurrentPage(1); // Reset to page 1 on new search
+//     }, 500);
+
+//     return () => clearTimeout(handler);
+//   }, [searchInput]);
+
+//   // Fetch Appointments
+//   useEffect(() => {
+//     const fetchAppointments = async () => {
+//       try {
+//         const res = await axiosInstance.get(
+//           `/all-appointments?page=${currentPage}&limit=${limit}&status=${statusFilter}&search=${debouncedSearch}`
+//         );
+//         setAppointments(res.data.data);
+//         setTotalPages(res.data.totalPages);
+//       } catch (err) {
+//         console.error("Failed to fetch appointments", err);
+//       }
+//     };
+
+//     fetchAppointments();
+//   }, [currentPage, statusFilter, debouncedSearch]);
+
+//   return (
+//     <div className="min-h-screen bg-gray-100 flex flex-col">
+//       <Navbar />
+//       <div className="flex flex-1">
+//         <SidebarAdmin />
+//         <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+//           {/* Header and Filters */}
+//           <div className="flex flex-col lg:flex-row justify-between items-center gap-4 mb-6">
+//             <h1 className="text-2xl font-semibold text-gray-700">
+//               All Appointments
+//             </h1>
+
+//             <div className="flex flex-col sm:flex-row gap-4">
+//               <input
+//                 type="text"
+//                 placeholder="Search by doctor name..."
+//                 value={searchInput}
+//                 onChange={(e) => setSearchInput(e.target.value)}
+//                 className="border px-3 py-2 rounded text-sm w-60"
+//               />
+
+//               <select
+//                 value={statusFilter}
+//                 onChange={(e) => {
+//                   setStatusFilter(e.target.value);
+//                   setCurrentPage(1);
+//                 }}
+//                 className="border px-3 py-2 rounded text-sm w-48"
+//               >
+//                 <option value="">All Status</option>
+//                 <option value="pending">Pending</option>
+//                 <option value="confirmed">Confirmed</option>
+//                 <option value="cancelled">Cancelled</option>
+//                 <option value="completed">Completed</option>
+//               </select>
+//             </div>
+//           </div>
+
+//           {/* Appointments Table */}
+//           <div className="bg-white border rounded-xl shadow overflow-hidden">
+//             <div className="hidden md:grid grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] py-4 px-6 bg-[#EAEFFF] text-[#262626] font-medium border-b text-sm">
+//               <p className="text-center">#</p>
+//               <p className="text-center">Patient</p>
+//               <p className="text-center">Age</p>
+//               <p className="text-center">Date & Time</p>
+//               <p className="text-center">Doctor</p>
+//               <p className="text-center">Fees</p>
+//               <p className="text-center">Status</p>
+//               <p className="text-center">Actions</p>
+//             </div>
+
+//             {appointments.length === 0 ? (
+//               <p className="text-center py-6 text-gray-500">
+//                 No appointments found.
+//               </p>
+//             ) : (
+//               appointments.map((item, index) => (
+//                 <div
+//                   key={item._id}
+//                   className="flex flex-col md:grid md:grid-cols-[0.5fr_2.5fr_1fr_2.5fr_2.5fr_1fr_1.5fr_2fr] md:items-center gap-y-3 text-sm text-gray-700 py-4 px-6 border-b hover:bg-[#5F6FFF] hover:text-white transition-all duration-300"
+//                 >
+//                   <p className="text-center">
+//                     {(currentPage - 1) * limit + index + 1}
+//                   </p>
+//                   <div className="flex items-center gap-2 justify-center">
+//                     <img
+//                       src={item.user.photo}
+//                       className="w-8 h-8 rounded-full object-cover"
+//                       alt="patient"
+//                     />
+//                     <p>{item.user.name}</p>
+//                   </div>
+//                   <p className="text-center">
+//                     {calculateAge(item.user.dateOfBirth)}
+//                   </p>
+//                   <p className="text-center whitespace-nowrap">
+//                     {item.date}, {item.time}
+//                   </p>
+//                   <div className="flex items-center gap-2 justify-center">
+//                     <img
+//                       src={item.doctor.photo}
+//                       className="w-8 h-8 rounded-full object-cover"
+//                       alt="doctor"
+//                     />
+//                     <p>{item.doctor.name}</p>
+//                   </div>
+//                   <p className="text-center whitespace-nowrap">
+//                     ₹{item.doctor.fee}
+//                   </p>
+//                   <div className="flex justify-center">
+//                     <span
+//                       className={`px-2 py-1 rounded-full text-xs font-semibold ${
+//                         item.status === "pending"
+//                           ? "bg-yellow-300 text-yellow-900"
+//                           : item.status === "cancelled"
+//                           ? "bg-red-200 text-red-700"
+//                           : item.status === "confirmed"
+//                           ? "bg-green-200 text-green-800"
+//                           : "bg-gray-300 text-gray-700"
+//                       }`}
+//                     >
+//                       {item.status}
+//                     </span>
+//                   </div>
+//                   <div className="flex justify-center gap-2 flex-wrap">
+//                     <button
+//                       className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full"
+//                       onClick={() => console.log("Cancel", item._id)}
+//                     >
+//                       Cancel
+//                     </button>
+//                     <button
+//                       className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full"
+//                       onClick={() => console.log("Confirm", item._id)}
+//                     >
+//                       Confirm
+//                     </button>
+//                   </div>
+//                 </div>
+//               ))
+//             )}
+//           </div>
+
+//           {/* Pagination */}
+//           <Pagination
+//             currentPage={currentPage}
+//             totalPages={totalPages}
+//             onPageChange={setCurrentPage}
+//           />
+//         </main>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AllAppointments;
