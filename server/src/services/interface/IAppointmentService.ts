@@ -184,5 +184,7 @@ export interface IAppointmentService {
   page: number;
   limit: number;
 }>
+
+updateStatus(appointmentId: string, status: string): Promise<{message: string}>
 //   cancelAppointment(id: string): Promise<void>;
 }

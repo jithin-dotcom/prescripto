@@ -587,6 +587,8 @@ import Navbar from "../../components/NavbarAdmin";
 import Pagination from "../../components/Pagination";
 import axiosInstance from "../../utils/axios";
 import { useDoctorStore } from "../../store/doctorStore";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const calculateAge = (dob: string): number => {
   const birthDate = new Date(dob);
@@ -633,12 +635,14 @@ const DoctorAppointments = () => {
   useDoctorStore((state) => state.doctorData);
   const limit = 2;
 
+
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         const res = await axiosInstance.get(
           `/doctor-appointments?page=${currentPage}&limit=${limit}&status=${statusFilter}`
         );
+        console.log("res.data.data : ", res.data.data);
         setAppointments(res.data.data);
         setTotalPages(res.data.totalPages);
       } catch (err) {
@@ -664,6 +668,24 @@ const DoctorAppointments = () => {
         return `${base} bg-gray-100 text-gray-600`;
     }
   };
+
+  const handleUpdateStatus = async (appointmentId: string, status: "pending" | "cancelled" | "confirmed" | "completed") => {
+     try {
+        await axiosInstance.patch(`/appointments/${appointmentId}`,{status})
+        const updatedStatus: Appointment[] = appointments.map((app) => {
+           return app._id === appointmentId ? {...app, status} : app;
+        })
+        setAppointments(updatedStatus);
+        toast.success(`Appointment ${status} successfully`);
+     } catch (error) {
+        if(axios.isAxiosError(error)){
+           toast.error(error.response?.data?.message || "Failed to update status");
+        }else{
+           toast.error("Something went wrong");
+        }
+     }
+
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -728,10 +750,14 @@ const DoctorAppointments = () => {
                   </p>
                   <p className="text-sm font-medium">₹{app?.fee || 500}</p>
                   <div className="flex gap-2 justify-center">
-                    <button className="bg-red-500 text-white text-xs px-3 py-1 rounded hover:bg-red-600 transition">
+                    <button className="bg-red-500 text-white text-xs px-3 py-1 rounded hover:bg-red-600 transition"
+                      onClick={() => handleUpdateStatus(app._id,"cancelled")}
+                    >
                       Cancel
                     </button>
-                    <button className="bg-green-500 text-white text-xs px-3 py-1 rounded hover:bg-green-600 transition">
+                    <button className="bg-green-500 text-white text-xs px-3 py-1 rounded hover:bg-green-600 transition"
+                      onClick={() => handleUpdateStatus(app._id,"confirmed")}
+                    >
                       Confirm
                     </button>
                   </div>

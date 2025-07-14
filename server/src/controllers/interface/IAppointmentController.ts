@@ -8,4 +8,5 @@ export interface IAppointmentController {
   getDoctorAppointments(req: Request, res: Response, next: NextFunction): Promise<void>;
   getAllAppointments(req: Request, res: Response, next: NextFunction): Promise<void>;
   getCreateAppointment(req: Request, res: Response, next: NextFunction): Promise<void>; 
+  updateStatus(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

@@ -1284,6 +1284,8 @@ import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
 import Pagination from "../../components/Pagination";
 import axiosInstance from "../../utils/axios";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 interface Doctor {
   _id: string;
@@ -1333,6 +1335,23 @@ const AllAppointments = () => {
 
     fetchAppointments();
   }, [currentPage, statusFilter]);
+
+  const handleUpdateStatus = async(appointmentId: string, status: string) => {
+      try {
+         await axiosInstance.patch(`/appointments/${appointmentId}`,{status});
+         const updatedStatus = appointments.map((app) => {
+            return app._id === appointmentId ? {...app,status} : app;
+         })
+         setAppointments(updatedStatus);
+         toast.success(`Appointment ${status} successfully`);
+      }catch (error) {
+         if(axios.isAxiosError(error)){
+            toast.error(error.response?.data?.message || `Failed to ${status} Appointment`);
+         }else{
+            toast.error("Something went wrong");
+         }
+      }
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -1410,13 +1429,13 @@ const AllAppointments = () => {
                   <div className="flex justify-center gap-2 flex-wrap">
                     <button
                       className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full"
-                      onClick={() => console.log("Cancel", item._id)}
+                      onClick={() => handleUpdateStatus(item._id, "cancelled")}
                     >
                       Cancel
                     </button>
                     <button
                       className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full"
-                      onClick={() => console.log("Confirm", item._id)}
+                      onClick={() => handleUpdateStatus(item._id, "confirmed")}
                     >
                       Confirm
                     </button>

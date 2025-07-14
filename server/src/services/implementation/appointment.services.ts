@@ -1240,4 +1240,25 @@ async getAllAppointments(
 
 //     await this._appointmentRepo.updateById(existing._id  as mongoose.Types.ObjectId, { status: "cancelled" });
 //   }
+
+
+async updateStatus(appointmentId: string, status: string): Promise<{message: string}>{
+   try {
+      const update = await this._appointmentRepo.updateById(appointmentId,{status:status});
+      if(!update){
+         throw new Error(`Failed to ${status} the Appointment`);
+      }
+      return {
+        message: `Appointment ${status} successfully`
+      }
+   } catch (error) {
+      if(error instanceof Error){
+         throw error;
+      }else{
+         throw new Error("Something went wrong");
+      }
+   }
+}
+
+
 }

@@ -262,4 +262,27 @@ export class AppointmentController implements IAppointmentController {
 }
 
 
+async updateStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+       const appointmentId = req.params.appointmentId;
+       const {status} = req.body;
+       console.log("status : ",status);
+       if(!appointmentId || !status){
+          res.status(StatusCode.BAD_REQUEST).json({message: "AppointmentId or Status Missing"});
+          return;
+       }
+       if(!["cancelled","confirmed"].includes(status)){
+          res.status(StatusCode.BAD_REQUEST).json({message: "Invalid Status"});
+          return;
+       }
+
+       await this._appointmentService.updateStatus(appointmentId, status);
+       res.status(StatusCode.OK).json({message: `Appointment ${status} successfully`});
+      
+    }catch (error) {
+       next(error);
+    }
+}
+
+
 }
