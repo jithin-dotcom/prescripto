@@ -100,7 +100,7 @@ import { appointmentSchema } from "../../validations/appointment.schema";
 import { StatusCode } from "../../constants/statusCode.enum";
 import { StatusMessage } from "../../constants/statusMessage";
 import mongoose from "mongoose";
-import { read } from "fs";
+
 
 export class AppointmentController implements IAppointmentController {
   constructor(private readonly _appointmentService: IAppointmentService) {}
@@ -149,7 +149,7 @@ export class AppointmentController implements IAppointmentController {
 
   async getCreateAppointment(req: Request, res: Response, next: NextFunction): Promise<void> {
      try {
-       console.log("entered into getCreateAppointment");
+       
         const { doctorId }= req.params;
         if(!doctorId){
            res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);

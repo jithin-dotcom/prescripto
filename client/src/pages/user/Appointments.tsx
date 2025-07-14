@@ -2188,6 +2188,7 @@ import { assets } from "../../assets/assets1";
 import axiosInstance from "../../utils/axios";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 interface Slot {
   day: string;
@@ -2339,8 +2340,12 @@ const Appointment: React.FC = () => {
     console.log("response : ", res);
     toast.success("Appointment booked successfully!");
   } catch (err) {
-    console.error("Failed to book appointment:", err);
-    toast.error("Something went wrong. Please try again.");
+    // console.error("Failed to book appointment:", err);
+    if(axios.isAxiosError(err)){
+       toast.error(err.response?.data?.message);
+    }else{
+       toast.error("Failed to book appointment");
+    }
   }
 };
 
@@ -2385,8 +2390,13 @@ const Appointment: React.FC = () => {
           setActiveTime(generatedSlots[0].times[0]);
         }
       } catch (err) {
-        console.error("Failed to fetch doctor data:", err);
-        toast.error("Failed to load doctor profile.");
+        // console.error("Failed to fetch doctor data:", err);
+        if(axios.isAxiosError(err)){
+          toast.error(err.response?.data?.message)
+        }else{
+          toast.error("Failed to load doctor profile");
+        }
+        
       }
     }
 

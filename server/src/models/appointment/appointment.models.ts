@@ -33,6 +33,10 @@ const appointmentSchema = new Schema<IAppointment>(
             enum: ["pending","confirmed","cancelled","completed"],
             default: "pending",
         },
+        fee: {
+            type: Number,
+            required: false,
+        }
     },
     {timestamps: true},
 

@@ -247,7 +247,20 @@ export class AppointmentService implements IAppointmentService {
       // Assume it's an object with _id field (IDoctorUser)
       doctorId = new mongoose.Types.ObjectId((data.doctorId as IDoctorUser)._id);
     }
-
+    const doctor = await this._doctorRepo.findOne({doctorId:doctorId});
+    if(doctor?.fee){
+       data.fee = doctor.fee;
+    }
+    const doctorAppointment = await this._appointmentRepo.findAll({doctorId:doctorId});
+    // console.log("doctor Appointment : ",doctorAppointment );
+    // console.log("data : ",data);
+    const timeArray = new Set();
+    doctorAppointment.forEach((obj) => {
+       timeArray.add(obj.time);
+    })
+    if(timeArray.has(data.time)){
+       throw new Error("Slot not Available");
+    }
     const appointmentData = {
       ...data,
       userId: new mongoose.Types.ObjectId(data.userId),
@@ -260,9 +273,14 @@ export class AppointmentService implements IAppointmentService {
     return {
       message: "successfully created",
     };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error creating appointment:", error);
-    throw new Error("Failed to create appointment");
+    if(error instanceof Error){
+       throw error;
+    }else{
+        throw new Error("Failed to create Appointment");
+    }
+    
   }
 }
 
@@ -680,7 +698,7 @@ async getAppointmentsByDoctor(
           country: patientProfile?.country,
           pin: patientProfile?.pin,
         },
-        fee: doctorProfile.fee,
+        fee: appointment?.fee || doctorProfile.fee,
         date: appointment.date,
         time: appointment.time,
         status: appointment.status,

@@ -7,5 +7,6 @@ export const appointmentSchema = z.object({
   doctorId: z.string().min(1, "Doctor ID is required"),
   date: z.string().min(1, "Date is required"),
   time: z.string().min(1, "Time is required"),
+  fees: z.number().optional(),
   transactionId: z.string().optional(), 
 });
