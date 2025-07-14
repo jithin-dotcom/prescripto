@@ -29,6 +29,8 @@ import EditDoctorProfile from "./pages/doctor/EditDoctorProfile";
 import Appointment from "./pages/user/Appointments";
 import MyAppointments from "./pages/user/MyAppointments";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments";
+import ChangeEmail from "./pages/auth/ChangeEmail";
+import ChangePassword from "./pages/auth/ChangePassword";
 
 
 const App: React.FC = () => {
@@ -167,6 +169,17 @@ const App: React.FC = () => {
           path="/doctor-appointments"
           element={isAuthenticated && role === "doctor" ? <DoctorAppointments /> : <Navigate to="/login" replace />}
         />
+
+        <Route
+          path="/change-email"
+          element={isAuthenticated && (role === "doctor" || role === "user")? <ChangeEmail /> : <Navigate to="/login" replace />}
+        />
+
+        <Route
+          path="/change-password"
+          element={isAuthenticated && (role === "doctor" || role === "user")? <ChangePassword /> : <Navigate to="/login" replace />}
+        />
+
 
         
         <Route path="*" element={<Navigate to={isAuthenticated ? getDashboardRoute() : "/login"} replace />} />

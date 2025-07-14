@@ -128,6 +128,7 @@ export class UserController implements IUserController {
 
     async changeEmail(req: Request, res: Response, next: NextFunction):Promise<void>{
        try {
+        console.log("entered into controller");
           const {password, newEmail} = req.body;
           const userId = req.user?.id;
 
