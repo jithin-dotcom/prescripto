@@ -1,11 +1,5 @@
 
 
-
-
-
-
-
-
 import React from "react";
 import { assets } from "../../assets/assets2";
 import Sidebar from "../../components/SideBarAdmin";

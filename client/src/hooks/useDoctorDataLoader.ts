@@ -1,6 +1,6 @@
 
 
-// hooks/useDoctorDataLoader.ts
+
 import { useEffect } from "react";
 import { useAuthStore } from "../store/authStore";
 import { useDoctorStore } from "../store/doctorStore";

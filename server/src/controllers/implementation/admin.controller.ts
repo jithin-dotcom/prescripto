@@ -166,10 +166,7 @@ async deleteUserOrDoctor(req: Request, res: Response, next: NextFunction) {
     });
   } catch (error) {
     next(error);
-    // res.status(StatusCode.BAD_REQUEST).json({
-    //   success: false,
-    //   message: error.message || "Failed to delete user/doctor",
-    // });
+    
   }
 }
 

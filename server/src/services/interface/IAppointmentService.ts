@@ -2,16 +2,6 @@
 import mongoose from "mongoose";
 import { IAppointment } from "../../models/appointment/IAppointment";
 
-// export interface IAppointmentResponse {
-//   _id: string;
-//   doctorId: string;
-//   userId: string;
-//   date: string;           
-//   time: string;
-//   status: "pending" | "confirmed" | "cancelled"; 
-//   transactionId?: string;
-// }
-
 
 
 export interface ICreateAppointment {
@@ -89,7 +79,6 @@ export interface IAppointmentWithUserResponse {
     isVerified: boolean;
     isBlocked: boolean;
 
-    // Patient profile fields directly inside user
     dateOfBirth?: string;
     gender?: string;
     houseName?: string;
@@ -97,7 +86,7 @@ export interface IAppointmentWithUserResponse {
     state?: string;
     country?: string;
     pin?: number;
-    // profilePhoto?: string;
+   
   };
   fee: number;
   date: string;
@@ -146,10 +135,9 @@ export interface IAppointmentFullResponse {
 
 
 export interface IAppointmentService {
-  // createAppointment(data: Partial<IAppointment>): Promise<IAppointmentResponse>;
+  
   createAppointment(data: Partial<IAppointment>): Promise<{message:string}>;
-  // getAppointmentsByUser(userId: string): Promise<IAppointmentResponse[]>;
-  // getAppointmentsByDoctor(doctorId: string): Promise<IAppointmentWithUserResponse[]>;
+  
    getAppointmentsByDoctor(
     doctorId: string,
     page: number,
@@ -162,7 +150,7 @@ export interface IAppointmentService {
     page: number;
     limit: number;
   }>
-  // getAllAppointments(): Promise<IAppointmentFullResponse[]>;
+  
   getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse>;
   getAllAppointments(page: number, limit: number, status:string): Promise<{
     data: IAppointmentFullResponse[];
@@ -173,18 +161,18 @@ export interface IAppointmentService {
   }>
 
   getAppointmentsByUser(
-  userId: string,
-  page: number,
-  limit: number,
-  status?: string
-): Promise<{
-  data: IAppointmentResponse[];
-  totalDocs: number;
-  totalPages: number;
-  page: number;
-  limit: number;
-}>
+    userId: string,
+    page: number,
+    limit: number,
+    status?: string
+  ): Promise<{
+    data: IAppointmentResponse[];
+    totalDocs: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+  }>
 
-updateStatus(appointmentId: string, status: string): Promise<{message: string}>
-//   cancelAppointment(id: string): Promise<void>;
+  updateStatus(appointmentId: string, status: string): Promise<{message: string}>;
+
 }
