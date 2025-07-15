@@ -1,0 +1,27 @@
+
+
+
+.marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scroll-left 17s linear infinite;
+  padding-left: 100%;
+}
+
+.marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+
+
+
+

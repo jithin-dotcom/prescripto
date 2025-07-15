@@ -37,6 +37,7 @@ const MyAppointments: React.FC = () => {
         }`;
 
         const res = await axiosInstance.get(query);
+        console.log("appointments : ",res.data?.data);
         setAppointments(res.data?.data || []);
         setTotalPages(res.data?.totalPages || 1);
       } catch (error) {
@@ -202,7 +203,7 @@ const MyAppointments: React.FC = () => {
         )}
       </main>
 
-      {/*  Reusable Headless UI Confirmation Modal */}
+      
       <ConfirmationModal
         isOpen={isModalOpen}
         title="Cancel Appointment"

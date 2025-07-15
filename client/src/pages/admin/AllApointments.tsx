@@ -108,8 +108,8 @@ const AllAppointments = () => {
             </select>
           </div>
 
-          <div className="hidden md:block bg-white rounded-lg shadow overflow-x-auto">
-            <table className="min-w-full text-sm text-left">
+          <div className="hidden md:block bg-white rounded-lg shadow-2xl overflow-x-auto hover:scale-102 transition duration-300">
+            <table className="min-w-full text-sm text-left ">
               <thead className="bg-[#EAEFFF] text-[#262626] text-sm font-semibold">
                 <tr>
                   <th className="px-4 py-3 text-center">#</th>

@@ -118,7 +118,7 @@ const DoctorAppointments = () => {
             </select>
           </div>
 
-          <div className="overflow-x-auto rounded-lg bg-white shadow">
+          <div className="overflow-x-auto rounded-lg bg-white shadow-2xl hover:scale-102 transition duration-300">
             <table className="min-w-full divide-y divide-gray-200 text-sm">
               <thead className="bg-[#EAEFFF] text-gray-700">
                 <tr>

@@ -98,7 +98,7 @@ const Appointment: React.FC = () => {
   if (period === "AM" && hour === 12) hour = 0;
 
   const appointmentDateTime = new Date();
-  const [day, month, year] = selectedSlot.date.split("/").map(Number); // 'dd/mm/yyyy'
+  const [day, month, year] = selectedSlot.date.split("/").map(Number); 
   appointmentDateTime.setFullYear(year, month - 1, day);
   appointmentDateTime.setHours(hour, minute, 0, 0);
 

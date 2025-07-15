@@ -130,7 +130,7 @@ const Login: React.FC = () => {
       <motion.div
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
         className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 space-y-6 hover:scale-105 transition duration-300"
       >
         <div className="text-center">
@@ -203,6 +203,7 @@ const Login: React.FC = () => {
             disabled={loading}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
+            transition={{ duration: 0.0, delay: 0.0 }}
             className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300"
             variants={{
               hidden: { opacity: 0, y: 20 },

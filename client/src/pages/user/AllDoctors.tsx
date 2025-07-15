@@ -51,7 +51,7 @@ const AllDoctors = () => {
     const handler = setTimeout(() => {
       setDebouncedSearchInput(searchInput);
     }, 500);
-
+    setPage(1);
     return () => clearTimeout(handler);
   }, [searchInput]);
 
