@@ -248,7 +248,7 @@ const DoctorProfile = () => {
           </div>
 
           {/* Profile Card */}
-          <div className="bg-white border border-[#C9D8FF] rounded-xl shadow-sm p-4 sm:p-6 flex flex-col sm:flex-row gap-6 transition hover:scale-[1.01]">
+          <div className="bg-white border border-[#C9D8FF] rounded-xl shadow-2xl p-4 sm:p-6 flex flex-col sm:flex-row gap-6  hover:scale-102 transition duration-300">
             {/* Profile Image */}
             <div className="flex justify-center sm:justify-start">
               <img

@@ -180,15 +180,25 @@ const Navbar = () => {
                     Profile
                   </button>
 
-                   {/* <button
+                   <button
                     onClick={() => {
                       setDropdownOpen(false);
-                      navigate("/doctor-profile");
+                      navigate("/change-password");
                     }}
                     className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
                   >
-                  Manage Slot
-                  </button> */}
+                  Change Password
+                  </button>
+
+                   <button
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      navigate("/change-email");
+                    }}
+                    className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
+                  >
+                  Change Email
+                  </button>
                   
                   <button
                     onClick={handleLogout}
