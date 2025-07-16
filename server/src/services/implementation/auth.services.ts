@@ -325,8 +325,8 @@ async refreshToken(token: string): Promise<{ accessToken: string; refreshToken: 
       throw new Error("Invalid or expired refresh token");
     }
 
-    const userRepo = new UserRepository();
-    const user = await userRepo.findById(decoded.id);
+    // const userRepo = new UserRepository();
+    const user = await this._userRepo.findById(decoded.id);
     if (!user) throw new Error("User not found");
     if (user.isBlocked) throw new Error("You are Blocked by Admin");
 

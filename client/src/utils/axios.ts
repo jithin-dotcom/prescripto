@@ -64,7 +64,7 @@ axiosInstance.interceptors.response.use(
        
         const newAccessToken = await refreshPromise;
         originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-        return axiosInstance(originalRequest); // Retry original request
+        return axiosInstance(originalRequest);
       } catch (err) {
         return Promise.reject(err);
       }

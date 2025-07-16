@@ -3,6 +3,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { UserModel } from "../models/user.models";
+import { StatusCode } from "../constants/statusCode.enum";
 
 import { JwtPayload } from "../types/jwtPayload";
 
@@ -19,7 +20,7 @@ export const verifyAccessToken = async (
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-       res.status(401).json({ message: "Access token missing or invalid" });
+       res.status(StatusCode.UNAUTHORIZED).json({ message: "Access token missing or invalid" });
        return;
     }
 
@@ -28,7 +29,7 @@ export const verifyAccessToken = async (
     const decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as JwtPayload;
     const user = await UserModel.findById(decoded.id);
     if(!user || user.isBlocked){
-       res.status(403).json({message: "Access denied, Blocked by Admin !"});
+       res.status(StatusCode.FORBIDDEN).json({message: "Access denied, Blocked by Admin !"});
        return;
     }
 
@@ -41,7 +42,7 @@ export const verifyAccessToken = async (
     next();
   } catch (error) {
     console.log(error);
-    res.status(401).json({ message: "Invalid or expired token" });
+    res.status(StatusCode.UNAUTHORIZED).json({ message: "Invalid or expired token" });
     return;
   }
 };
