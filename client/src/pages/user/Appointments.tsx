@@ -55,9 +55,10 @@ function generateSlots(availability: Availability[], slotDuration: number, booke
           `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
         )
       
-       if (!booked.has(timeStr)) {
-        slots.push(timeStr);
-      }
+      //  if (!booked.has(timeStr)) {
+      //   slots.push(timeStr);
+      // }
+      slots.push(timeStr)
       from = new Date(from.getTime() + slotDuration * 60000);
     }
 
@@ -129,7 +130,7 @@ const Appointment: React.FC = () => {
           };
         }
         return slot;
-      }).filter(slot => slot.times.length > 0); // Optional: Remove empty slot groups
+      }).filter(slot => slot.times.length > 0);
       return updated;
     });
 

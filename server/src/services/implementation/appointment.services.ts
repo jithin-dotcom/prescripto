@@ -66,14 +66,28 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
   
     console.log("doctor  : ",doctor );
     const doctorAppointment = await this._appointmentRepo.findAll({doctorId:doctorId});
-   
-    const timeArray = new Set();
-    doctorAppointment.forEach((obj) => {
-       timeArray.add(obj.time);
-    })
-    if(timeArray.has(data.time)){
-       throw new Error("Slot not Available");
+    console.log("doctor Appointment : ",doctorAppointment);
+
+
+    const isSlotTaken = doctorAppointment.some(app => {
+      return app.date === data.date && app.time === data.time;
+    });
+
+    if(isSlotTaken) {
+      throw new Error("Slot not available for the selected date and time");
     }
+   
+    // const timeArray = new Set();
+    // doctorAppointment.forEach((obj) => {
+    //    timeArray.add(obj.time);
+    // })
+
+   
+
+    // console.log("timeArray : ",timeArray);
+    // if(timeArray.has(data.time)){
+    //    throw new Error("Slot not Available");
+    // }
     const appointmentData = {
       ...data,
       userId: new mongoose.Types.ObjectId(data.userId),
