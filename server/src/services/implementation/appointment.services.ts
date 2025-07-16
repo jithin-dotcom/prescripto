@@ -39,16 +39,31 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
        data.fee = doctor.fee;
     }
 
-    
     const [dayStr, monthStr, yearStr] = data.date.split("/");
     const dateObj = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
     const appointmentDay = dateObj.toLocaleDateString("en-US", { weekday: "long" });
 
-    const isDayAvailable = doctor?.availability?.some((slot) => slot.day === appointmentDay);
-    if (!isDayAvailable) {
+    const dayAvailability = doctor?.availability?.find(slot => slot.day === appointmentDay);
+    if (!dayAvailability) {
       throw new Error(`Doctor is not available on ${appointmentDay}`);
     }
 
+    const timeToMinutes = (timeStr: string): number => {
+       const [time, period] = timeStr.split(" ");
+       let [hour, minute] = time.split(":").map(Number);
+       if (period === "PM" && hour !== 12) hour += 12;
+       if (period === "AM" && hour === 12) hour = 0;
+       return hour * 60 + minute;
+    };
+
+    const bookingTime = timeToMinutes(data.time!);
+    const fromTime = timeToMinutes(dayAvailability.from);
+    const toTime = timeToMinutes(dayAvailability.to);
+
+    if (bookingTime < fromTime || bookingTime >= toTime) {
+      throw new Error(`Doctor is only available from ${dayAvailability.from} to ${dayAvailability.to} on ${appointmentDay}`);
+    }
+  
     console.log("doctor  : ",doctor );
     const doctorAppointment = await this._appointmentRepo.findAll({doctorId:doctorId});
    
