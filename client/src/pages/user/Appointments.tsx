@@ -118,8 +118,26 @@ const Appointment: React.FC = () => {
     });
     console.log("response : ", res);
     toast.success("Appointment booked successfully!");
+
+       
+    setSlots(prevSlots => {
+      const updated = prevSlots.map((slot, index) => {
+        if (index === activeSlotIndex) {
+          return {
+            ...slot,
+            times: slot.times.filter(time => time !== activeTime),
+          };
+        }
+        return slot;
+      }).filter(slot => slot.times.length > 0); // Optional: Remove empty slot groups
+      return updated;
+    });
+
+   
+    const updatedTimes = slots[activeSlotIndex].times.filter(time => time !== activeTime);
+    setActiveTime(updatedTimes.length > 0 ? updatedTimes[0] : "");
   } catch (err) {
-    // console.error("Failed to book appointment:", err);
+    
     if(axios.isAxiosError(err)){
        toast.error(err.response?.data?.message);
     }else{
