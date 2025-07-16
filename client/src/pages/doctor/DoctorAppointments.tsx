@@ -37,7 +37,7 @@ const DoctorAppointments = () => {
 
   useDoctorStore((state) => state.doctorData);
 
-  const limit = 5;
+  const limit = 3;
 
   useEffect(() => {
     const fetchAppointments = async () => {
