@@ -10,7 +10,7 @@ export interface IAppointment extends Document {
     userId: mongoose.Types.ObjectId;
     doctorId: mongoose.Types.ObjectId | IDoctorUser;
     transactionId?: mongoose.Types.ObjectId;
-    date: string;
+    day: string;
     time: string;
     fee?: number;
     status: "pending" | "confirmed" | "cancelled" | "completed";

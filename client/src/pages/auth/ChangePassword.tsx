@@ -10,6 +10,7 @@ import { useAuthStore } from "../../store/authStore";
 import Navbar from "../../components/Navbar";
 import NavbarAdmin from "../../components/NavbarAdmin";
 import Sidebar from "../../components/SideBarAdmin";
+import { useNavigate } from "react-router-dom";
 
 const fadeIn = {
   hidden: { opacity: 0, y: 30 },
@@ -18,7 +19,7 @@ const fadeIn = {
 
 const ChangePassword = () => {
   const { role } = useAuthStore();
-
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -34,6 +35,7 @@ const ChangePassword = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    
     if (!form.currentPassword || !form.newPassword || !form.rePassword) {
       toast.error("All fields are required.");
       return;
@@ -51,7 +53,7 @@ const ChangePassword = () => {
 
     try {
       const res = await axiosInstance.post(
-        "/change-password", // works for all roles
+        "/user/change-password", 
         {
           password: form.currentPassword,
           newPassword: form.newPassword,
@@ -60,6 +62,12 @@ const ChangePassword = () => {
       );
 
       toast.success(res.data.message || "Password changed successfully");
+
+      if(role === "doctor"){
+        navigate("/doctor-dashboard");
+      }else if(role === "user"){
+        navigate("/user-dashboard");
+      }
       setForm({ currentPassword: "", newPassword: "", rePassword: "" });
     } catch (error) {
       if (axios.isAxiosError(error)) {

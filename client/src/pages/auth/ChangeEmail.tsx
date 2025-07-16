@@ -155,15 +155,19 @@ import { useAuthStore } from "../../store/authStore";
 import Navbar from "../../components/Navbar";
 import NavbarAdmin from "../../components/NavbarAdmin";
 import Sidebar from "../../components/SideBarAdmin";
+import { useNavigate } from "react-router-dom";
+
+
 
 const fadeIn = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
 };
 
+
 const ChangeEmail = () => {
   const { role } = useAuthStore();
-
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     newEmail: "",
     confirmEmail: "",
@@ -196,13 +200,19 @@ const ChangeEmail = () => {
 
     try {
       const res = await axiosInstance.post(
-        "/change-email",
+        "/user/change-email",
         {
           password: form.password,
           newEmail: form.newEmail,
         },
         { withCredentials: true }
       );
+      console.log("role : ",role);
+      if(role === "doctor"){
+         navigate("/doctor-dashboard");
+      }else if(role === "user"){
+        navigate("/user-dashboard");
+      }
 
       toast.success(res.data.message || "Email updated successfully");
       setForm({ newEmail: "", confirmEmail: "", password: "" });

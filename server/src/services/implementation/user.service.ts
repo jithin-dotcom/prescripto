@@ -230,6 +230,7 @@ async updateUserOrDoctor(
 async changePassword(userId: string, oldPassword: string, newPassword: string):Promise<void>{
    try {
       
+      console.log("entered into change password");
       const user = await this._userRepo.findById(userId);
       if(!user){
          throw new Error("User not found");

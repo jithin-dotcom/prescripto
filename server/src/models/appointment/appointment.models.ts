@@ -20,7 +20,7 @@ const appointmentSchema = new Schema<IAppointment>(
             ref: "Transaction",
             required: false,
         },
-        date: {
+        day: {
             type: String,
             required: true,
         },

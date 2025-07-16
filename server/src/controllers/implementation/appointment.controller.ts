@@ -29,7 +29,7 @@ export class AppointmentController implements IAppointmentController {
       const appointment = await this._appointmentService.createAppointment({
         userId: new mongoose.Types.ObjectId(validatedData.userId),
         doctorId: new mongoose.Types.ObjectId(validatedData.doctorId),
-        date: validatedData.date,
+        day: validatedData.date,
         time: validatedData.time,
         transactionId: validatedData.transactionId
           ? new mongoose.Types.ObjectId(validatedData.transactionId)

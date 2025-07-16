@@ -19,6 +19,7 @@ export interface ICreateAppointment {
     yearOfExperience: number;
     fee: number;
     availability: object[];
+    slotDuration: number;
 
   };
   userId: string;
@@ -31,7 +32,7 @@ export interface ICreateAppointment {
 
 export interface ICreateAppointmentResponse {
   responses: ICreateAppointment[];
-  timeArray: string[]; 
+  timeArray: {}; 
 }
 
 export interface IAppointmentResponse {

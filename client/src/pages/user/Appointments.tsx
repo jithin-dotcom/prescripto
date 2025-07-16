@@ -21,24 +21,84 @@ function formatTime24to12(time: string): string {
   return `${hour}:${minute.toString().padStart(2, "0")} ${ampm}`;
 }
 
-function generateSlots(availability: Availability[], slotDuration: number, bookedSlot: string[]): Slot[] {
+// function generateSlots(availability: Availability[], slotDuration: number, bookedSlot: string[]): Slot[] {
+//   const today = new Date();
+//   const result: Slot[] = [];
+
+//   for (let i = 0; i < 7; i++) {
+//     const currentDate = new Date();
+//     currentDate.setDate(today.getDate() + i);
+//     const dayName = currentDate.toLocaleDateString("en-US", { weekday: "long" });
+
+//     const booked = new Set(bookedSlot);
+
+//     console.log("booked : ",booked);
+//     const available = availability.find((a) => a.day === dayName);
+//     console.log("available : ", available);
+//     if (!available) continue;
+
+//     const slots: string[] = [];
+    
+
+//     const [fromHour, fromMinute] = available.from.split(":").map(Number);
+//     const [toHour, toMinute] = available.to.split(":").map(Number);
+
+//     let from = new Date(currentDate);
+//     from.setHours(fromHour, fromMinute, 0, 0);
+
+//     const to = new Date(currentDate);
+//     to.setHours(toHour, toMinute, 0, 0);
+
+//     while (from < to ) {
+      
+//       const timeStr =   formatTime24to12(
+//           `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
+//         )
+      
+//       //  if (!booked.has(timeStr)) {
+//       //   slots.push(timeStr);
+//       // }
+
+      
+//       slots.push(timeStr)
+//       from = new Date(from.getTime() + slotDuration * 60000);
+//     }
+
+//     result.push({
+//       day: dayName,
+//       date: currentDate.toLocaleDateString("en-GB"),
+//       times: slots,
+//     });
+//     console.log("slots : ",slots);
+//   }
+
+  
+//   return result;
+// }
+
+
+
+
+function generateSlots(
+  availability: Availability[],
+  slotDuration: number,
+  bookedSlotsByDate: Record<string, string[]>
+): Slot[] {
   const today = new Date();
   const result: Slot[] = [];
 
   for (let i = 0; i < 7; i++) {
     const currentDate = new Date();
     currentDate.setDate(today.getDate() + i);
+
     const dayName = currentDate.toLocaleDateString("en-US", { weekday: "long" });
+    const dateStr = currentDate.toLocaleDateString("en-GB"); // "dd/mm/yyyy"
 
-    const booked = new Set(bookedSlot);
-
-    console.log("booked : ",booked);
+    const booked = new Set(bookedSlotsByDate[dateStr] || []);
     const available = availability.find((a) => a.day === dayName);
-    console.log("available : ", available);
     if (!available) continue;
 
     const slots: string[] = [];
-    
 
     const [fromHour, fromMinute] = available.from.split(":").map(Number);
     const [toHour, toMinute] = available.to.split(":").map(Number);
@@ -49,30 +109,31 @@ function generateSlots(availability: Availability[], slotDuration: number, booke
     const to = new Date(currentDate);
     to.setHours(toHour, toMinute, 0, 0);
 
-    while (from < to ) {
-      
-      const timeStr =   formatTime24to12(
-          `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
-        )
-      
-      //  if (!booked.has(timeStr)) {
-      //   slots.push(timeStr);
-      // }
-      slots.push(timeStr)
+    while (from < to) {
+      const timeStr = formatTime24to12(
+        `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
+      );
+
+      // ✅ Only include time if it’s not already booked for that specific date
+      if (!booked.has(timeStr)) {
+        slots.push(timeStr);
+      }
+
       from = new Date(from.getTime() + slotDuration * 60000);
     }
 
-    result.push({
-      day: dayName,
-      date: currentDate.toLocaleDateString("en-GB"),
-      times: slots,
-    });
-    console.log("slots : ",slots);
+    if (slots.length > 0) {
+      result.push({
+        day: dayName,
+        date: dateStr,
+        times: slots,
+      });
+    }
   }
 
-  
   return result;
 }
+
 
 const Appointment: React.FC = () => {
   const { doctorId } = useParams();
@@ -163,6 +224,7 @@ const Appointment: React.FC = () => {
         console.log("timeArray :  ",res.data?.timeArray);
         // setBookedSlot(res.data?.timeArray);
 
+        console.log("slot duration : ",firstDoctor.slotDuration);
         const transformedDoctor: DoctorProfile = {
           name: firstDoctor.name,
           profilePhoto: firstDoctor.photo,

@@ -300,7 +300,7 @@ const EditDoctor = () => {
             </div>
 
             {/* Slot Duration */}
-            {/* <div className="mt-4">
+            <div className="mt-4">
               <label>Slot Duration (minutes)</label>
               <input
                 type="number"
@@ -311,7 +311,7 @@ const EditDoctor = () => {
                 onChange={handleChange}
                 className="border px-3 py-2 w-32"
               />
-            </div> */}
+            </div>
 
             <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded mt-6 hover:bg-blue-700">
               Update Doctor
