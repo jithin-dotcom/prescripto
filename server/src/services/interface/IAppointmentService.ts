@@ -55,6 +55,7 @@ export interface IAppointmentResponse {
   date: string;           
   time: string;
   appointmentNo: number;
+  payment: "paid" | "not paid";
   status: "pending" | "confirmed" | "cancelled" | "completed"; 
   transactionId?: string;
 }

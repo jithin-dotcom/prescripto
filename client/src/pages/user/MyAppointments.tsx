@@ -14,6 +14,16 @@ import axios from "axios";
 import type { Appointment } from "../../interfaces/IMyAppointments";
 
 
+const loadRazorpayScript = () =>
+  new Promise<boolean>((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+
+
 const MyAppointments: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,6 +103,74 @@ const MyAppointments: React.FC = () => {
     }
   };
 
+  const handleRazorpayPayment = async (appointment: Appointment) => {
+  const loaded = await loadRazorpayScript();
+  if (!loaded) {
+    toast.error("Failed to load Razorpay script. Please try again.");
+    return;
+  }
+
+  try {
+    const res = await axiosInstance.post("/payments/create-order", {
+      appointmentId: appointment._id,
+      userId: userId,
+      doctorId: appointment.doctor._id,
+      amount: appointment.doctor.fee,
+    });
+
+    console.log("res : ",res);
+    const { id: orderId, amount, currency } = res.data.order;
+    if (!res.data?.order?.id) {
+      toast.error("Failed to retrieve Razorpay order");
+      return;
+    }
+
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID as string, 
+      amount: amount * 100,
+      currency,
+      name: "TeleCare",
+      description: "Appointment Payment",
+      order_id: orderId,
+      handler: async function (response: any) {
+        console.log("response rezor : ",response);
+        try {
+          const verifyRes = await axiosInstance.post("/payments/verify", {
+            razorpayOrderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+          });
+
+          toast.success(verifyRes.data?.message || "Payment successful");
+
+          // Optional: Refresh appointments after payment
+          setAppointments((prev) =>
+            prev.map((a) =>
+              a._id === appointment._id ? { ...a, status: "paid" as any } : a
+            )
+          );
+        } catch (err) {
+          toast.error("Payment verification failed");
+        }
+      },
+      prefill: {
+        name: appointment.patientName || "TeleCare Patient",
+        email: "demo@telecare.com", // Update if you have user's email
+      },
+      theme: {
+        color: "#007BFF",
+      },
+    };
+
+    const paymentObject = new (window as any).Razorpay(options);
+    paymentObject.open();
+  } catch (error) {
+    toast.error("Failed to initiate payment");
+    console.error("Payment error:", error);
+  }
+};
+
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100 relative">
       <Navbar />
@@ -170,6 +248,15 @@ const MyAppointments: React.FC = () => {
                     <span className={`inline-block px-3 py-1 text-xs font-medium border rounded-full ${getStatusStyles(item.status)}`}>
                       {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                     </span>
+                     <span
+                       className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
+                       item.payment === "paid"
+                       ? "bg-green-100 text-green-800 border border-green-300"
+                       : "bg-red-100 text-red-800 border border-red-300"
+                       }`}
+                       >
+                       {item.payment === "paid" ? "Paid" : "Not Paid"}
+                     </span>
                   </div>
                 </div>
 
@@ -191,8 +278,11 @@ const MyAppointments: React.FC = () => {
                       <MotionButton>
                         <img className="max-w-20 max-h-5 mx-auto" src={assets.stripe_logo} alt="Stripe" />
                       </MotionButton>
-                      <MotionButton>
+                      {/* <MotionButton>
                         <img className="max-w-20 max-h-5 mx-auto" src={assets.razorpay_logo} alt="Razorpay" />
+                      </MotionButton> */}
+                      <MotionButton onClick={() => handleRazorpayPayment(item)}>
+                         <img className="max-w-20 max-h-5 mx-auto" src={assets.razorpay_logo} alt="Razorpay" />
                       </MotionButton>
                     </>
                   )}

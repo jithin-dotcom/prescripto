@@ -68,4 +68,9 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
        .sort({ createdAt: -1 });
    }
 
+
+   async updatePaymentStatus(appointmentId: string, status: "paid" | "not paid"): Promise<void> {
+  await AppointmentModel.findByIdAndUpdate(appointmentId, { payment: status });
+}
+
 }

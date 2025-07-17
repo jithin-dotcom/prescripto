@@ -7,6 +7,7 @@ export interface Doctor {
   photo: string;
   specialization: string;
   educationDetails: string;
+  fee: number;
 }
 
 export interface Appointment {
@@ -16,6 +17,7 @@ export interface Appointment {
   date: string;
   time: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
+  payment: "paid" | "not paid";
   appointmentNo?: number;
   transactionId?: string;
 }

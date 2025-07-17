@@ -15,6 +15,7 @@ export interface IAppointment extends Document {
     fee?: number;
     appointmentNo: number;
     status: "pending" | "confirmed" | "cancelled" | "completed";
+    payment: "paid" | "not paid";
     createdAt: Date;
     updatedAt: Date; 
 }

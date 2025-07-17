@@ -263,6 +263,7 @@ async getAppointmentsByUser(
         status: appointment.status,
         appointmentNo: appointment.appointmentNo || 0,
         transactionId: appointment.transactionId?.toString(),
+        payment: appointment.payment,
       });
     }
 

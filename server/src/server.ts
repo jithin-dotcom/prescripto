@@ -4,6 +4,7 @@ import patientProfileRoutes from "./routes/patientProfile.routes";
 import doctorProfileRoutes from "./routes/doctorProfile.routes";
 import adminRouter from "./routes/admin.routes";
 import userRouter from "./routes/user.routes";
+import paymentRouter from "./routes/payment.routes";
 import appointmentRouter from "./routes/appointment.routes"
 import env from './config/env.config';
 import connectDB  from './config/db.config';
@@ -39,7 +40,7 @@ app.use("/api/admin",adminRouter);
 app.use("/api/user",userRouter);
 app.use("/api", cloudinaryRoutes);
 app.use("/api", appointmentRouter);
-
+app.use("/api/payments",paymentRouter);
 
 app.use(errorHandler);
 
