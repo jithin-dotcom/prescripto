@@ -19,6 +19,7 @@ export interface Appointment {
   date: string;
   time: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
+  appointmentNo: number;
   doctor: Doctor;
   user: User;
 }

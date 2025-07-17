@@ -20,6 +20,10 @@ const appointmentSchema = new Schema<IAppointment>(
             ref: "Transaction",
             required: false,
         },
+        appointmentNo: {
+            type: Number,
+            required: true,
+        },
         day: {
             type: String,
             required: true,

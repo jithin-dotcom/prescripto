@@ -25,6 +25,7 @@ export interface ICreateAppointment {
   userId: string;
   date: string;           
   time: string;
+  appointmentNo: number
   status: "pending" | "confirmed" | "cancelled" | "completed"; 
   transactionId?: string;
 }
@@ -53,6 +54,7 @@ export interface IAppointmentResponse {
   userId: string;
   date: string;           
   time: string;
+  appointmentNo: number;
   status: "pending" | "confirmed" | "cancelled" | "completed"; 
   transactionId?: string;
 }
@@ -92,6 +94,7 @@ export interface IAppointmentWithUserResponse {
   fee: number;
   date: string;
   time: string;
+  appointmentNo: number;
   status: string;
   transactionId?: string;
 }
@@ -101,6 +104,7 @@ export interface IAppointmentFullResponse {
   date: string;
   time: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
+  appointmentNo: number;
   transactionId?: string;
   timeArray: string[];
 

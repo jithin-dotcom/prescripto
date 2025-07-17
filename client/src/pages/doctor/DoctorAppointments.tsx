@@ -123,6 +123,7 @@ const DoctorAppointments = () => {
               <thead className="bg-[#EAEFFF] text-gray-700">
                 <tr>
                   <th className="px-4 py-3 text-left">#</th>
+                  <th className="px-4 py-3 text-left">AppNo</th>
                   <th className="px-4 py-3">Patient</th>
                   <th className="px-4 py-3">Age</th>
                   <th className="px-4 py-3">Date & Time</th>
@@ -137,6 +138,7 @@ const DoctorAppointments = () => {
                   return (
                     <tr key={app._id} className="hover:bg-[#5F6FFF] hover:text-white transition">
                       <td className="px-4 py-3">{(currentPage - 1) * limit + index + 1}</td>
+                      <td className="px-4 py-3">{app.appointmentNo}</td>
                       <td className="px-4 py-3 flex items-center gap-2 justify-center">
                         <img
                           src={app.user.photo || "/default-avatar.png"}

@@ -16,5 +16,6 @@ export interface Appointment {
   date: string;
   time: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
+  appointmentNo?: number;
   transactionId?: string;
 }

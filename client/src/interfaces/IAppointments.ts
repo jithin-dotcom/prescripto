@@ -6,11 +6,18 @@ export interface Slot {
   times: string[];
 }
 
-export interface Availability {
-  day: string;
-  from: string;
-  to: string;
+export interface TimeBlock {
+  from: string; 
+  to: string;   
 }
+
+
+export interface Availability {
+  day: string; 
+  slots: TimeBlock[];
+}
+
+
 
 export interface DoctorProfile {
   name: string;

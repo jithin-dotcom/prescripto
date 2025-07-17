@@ -21,24 +21,35 @@ function formatTime24to12(time: string): string {
   return `${hour}:${minute.toString().padStart(2, "0")} ${ampm}`;
 }
 
-// function generateSlots(availability: Availability[], slotDuration: number, bookedSlot: string[]): Slot[] {
+function convertToMinutes(time: string): number {
+  const [hourMin, meridiem] = time.split(" ");
+  const [rawHours, minutes] = hourMin.split(":").map(Number);
+  let hours = rawHours;
+  if (meridiem === "PM" && hours !== 12) hours += 12;
+  if (meridiem === "AM" && hours === 12) hours = 0;
+  return hours * 60 + minutes;
+}
+
+// function generateSlots(
+//   availability: Availability[],
+//   slotDuration: number,
+//   bookedSlotsByDate: Record<string, string[]>
+// ): Slot[] {
 //   const today = new Date();
 //   const result: Slot[] = [];
 
 //   for (let i = 0; i < 7; i++) {
 //     const currentDate = new Date();
 //     currentDate.setDate(today.getDate() + i);
+
 //     const dayName = currentDate.toLocaleDateString("en-US", { weekday: "long" });
+//     const dateStr = currentDate.toLocaleDateString("en-GB"); // "dd/mm/yyyy"
 
-//     const booked = new Set(bookedSlot);
-
-//     console.log("booked : ",booked);
+//     const booked = new Set(bookedSlotsByDate[dateStr] || []);
 //     const available = availability.find((a) => a.day === dayName);
-//     console.log("available : ", available);
 //     if (!available) continue;
 
 //     const slots: string[] = [];
-    
 
 //     const [fromHour, fromMinute] = available.from.split(":").map(Number);
 //     const [toHour, toMinute] = available.to.split(":").map(Number);
@@ -49,30 +60,28 @@ function formatTime24to12(time: string): string {
 //     const to = new Date(currentDate);
 //     to.setHours(toHour, toMinute, 0, 0);
 
-//     while (from < to ) {
-      
-//       const timeStr =   formatTime24to12(
-//           `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
-//         )
-      
-//       //  if (!booked.has(timeStr)) {
-//       //   slots.push(timeStr);
-//       // }
+//     while (from < to) {
+//       const timeStr = formatTime24to12(
+//         `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
+//       );
 
-      
-//       slots.push(timeStr)
+//       // ✅ Only include time if it’s not already booked for that specific date
+//       if (!booked.has(timeStr)) {
+//         slots.push(timeStr);
+//       }
+
 //       from = new Date(from.getTime() + slotDuration * 60000);
 //     }
 
-//     result.push({
-//       day: dayName,
-//       date: currentDate.toLocaleDateString("en-GB"),
-//       times: slots,
-//     });
-//     console.log("slots : ",slots);
+//     if (slots.length > 0) {
+//       result.push({
+//         day: dayName,
+//         date: dateStr,
+//         times: slots,
+//       });
+//     }
 //   }
 
-  
 //   return result;
 // }
 
@@ -92,48 +101,52 @@ function generateSlots(
     currentDate.setDate(today.getDate() + i);
 
     const dayName = currentDate.toLocaleDateString("en-US", { weekday: "long" });
-    const dateStr = currentDate.toLocaleDateString("en-GB"); // "dd/mm/yyyy"
+    const dateStr = currentDate.toLocaleDateString("en-GB"); // dd/mm/yyyy
 
     const booked = new Set(bookedSlotsByDate[dateStr] || []);
-    const available = availability.find((a) => a.day === dayName);
-    if (!available) continue;
+    const availabilityForDay = availability.find((a) => a.day === dayName);
+    if (!availabilityForDay || availabilityForDay.slots.length === 0) continue;
 
-    const slots: string[] = [];
+    const daySlots: string[] = [];
 
-    const [fromHour, fromMinute] = available.from.split(":").map(Number);
-    const [toHour, toMinute] = available.to.split(":").map(Number);
+    console.log("availabilityForDay.slots : ",availabilityForDay.slots);
+    for (const timeRange of availabilityForDay.slots) {
+      const [fromHour, fromMinute] = timeRange.from.split(":").map(Number);
+      const [toHour, toMinute] = timeRange.to.split(":").map(Number);
 
-    let from = new Date(currentDate);
-    from.setHours(fromHour, fromMinute, 0, 0);
+      let from = new Date(currentDate);
+      from.setHours(fromHour, fromMinute, 0, 0);
 
-    const to = new Date(currentDate);
-    to.setHours(toHour, toMinute, 0, 0);
+      const to = new Date(currentDate);
+      to.setHours(toHour, toMinute, 0, 0);
 
-    while (from < to) {
-      const timeStr = formatTime24to12(
-        `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
-      );
+      while (from < to) {
+        const timeStr = formatTime24to12(
+          `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
+        );
 
-      // ✅ Only include time if it’s not already booked for that specific date
-      if (!booked.has(timeStr)) {
-        slots.push(timeStr);
+        
+        if (!booked.has(timeStr)) {
+          daySlots.push(timeStr);
+        }
+        console.log("daySlot : ",daySlots);
+       
+        from = new Date(from.getTime() + slotDuration * 60000);
       }
-
-      from = new Date(from.getTime() + slotDuration * 60000);
     }
 
-    if (slots.length > 0) {
+
+    if (daySlots.length > 0) {
       result.push({
         day: dayName,
         date: dateStr,
-        times: slots,
+        times: [...new Set(daySlots)].sort((a,b) => convertToMinutes(a)-convertToMinutes(b)),
       });
     }
   }
-
+  console.log("result : ",result);
   return result;
 }
-
 
 const Appointment: React.FC = () => {
   const { doctorId } = useParams();
@@ -319,10 +332,10 @@ const Appointment: React.FC = () => {
                   {slots.map((slot, index) => (
                     <div
                       key={index}
-                      className={`min-w-[100px] text-center py-4 px-3 rounded-xl cursor-pointer transition duration-300 ${
+                      className={`min-w-[100px] text-center py-4 px-3 rounded-xl  transition duration-300 ${
                         activeSlotIndex === index
                           ? "bg-indigo-600 text-white"
-                          : "bg-white border border-gray-300 text-gray-600 hover:bg-[#4F39F6] hover:text-white"
+                          : "bg-white border border-gray-300 text-gray-600 hover:bg-[#4F39F6] hover:text-white cursor-pointer"
                       }`}
                       onClick={() => {
                         setActiveSlotIndex(index);
@@ -343,7 +356,7 @@ const Appointment: React.FC = () => {
                       className={`w-full px-4 py-2 rounded-full text-sm transition ${
                         activeTime === time
                           ? "bg-indigo-600 text-white"
-                          : "bg-white border border-gray-400 text-gray-600 hover:bg-[#4F39F6] hover:text-white"
+                          : "bg-white border border-gray-400 text-gray-600 hover:bg-[#4F39F6] hover:text-white cursor-pointer"
                       }`}
                     >
                       {time}
@@ -356,7 +369,7 @@ const Appointment: React.FC = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={handleBooking}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full shadow-md"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full shadow-md cursor-pointer"
                   >
                     Book Appointment
                   </motion.button>

@@ -153,8 +153,12 @@ const MyAppointments: React.FC = () => {
 
                 <div className="flex-1 text-sm text-[#5E5E5E]">
                   <p className="text-[#262626] text-base font-semibold">
+                     Appointment Number : {item.appointmentNo}
+                  </p>
+                  <p className="text-[#262626] text-base font-semibold">
                     {item.doctor.name}, {item.doctor.educationDetails}
                   </p>
+        
                   <p>{item.doctor.specialization}</p>
                   <p className="text-[#464646] font-medium mt-1">Email:</p>
                   <p>{item.doctor.email}</p>

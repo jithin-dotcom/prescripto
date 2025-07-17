@@ -3,6 +3,7 @@
 export interface Appointment {
   _id: string;
   doctorId: string;
+  appointmentNo: number;
   user: {
     _id: string;
     name: string;

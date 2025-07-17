@@ -113,6 +113,7 @@ const AllAppointments = () => {
               <thead className="bg-[#EAEFFF] text-[#262626] text-sm font-semibold">
                 <tr>
                   <th className="px-4 py-3 text-center">#</th>
+                  <th className="px-4 py-3 text-center">AppNo</th>
                   <th className="px-4 py-3 text-center">Patient</th>
                   <th className="px-4 py-3 text-center">Age</th>
                   <th className="px-4 py-3 text-center">Date & Time</th>
@@ -128,6 +129,7 @@ const AllAppointments = () => {
                   return (
                     <tr key={item._id} className="hover:bg-[#5F6FFF] hover:text-white transition">
                       <td className="text-center px-4 py-3">{(currentPage - 1) * limit + index + 1}</td>
+                      <td className="text-center px-4 py-3">{item.appointmentNo}</td>
                       <td className="text-center px-4 py-3 flex items-center justify-center gap-2">
                         <img src={item.user.photo} className="w-8 h-8 rounded-full object-cover" />
                         {item.user.name}
