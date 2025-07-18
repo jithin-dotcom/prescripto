@@ -202,9 +202,18 @@ const Navbar = () => {
       
 
       {user?.role === "doctor" && !user?.isVerified && (
-        <div className="bg-orange-400 border-b border-red-300 overflow-hidden h-6 cursor-pointer">
+        <div className="bg-orange-500 border-b border-red-300 overflow-hidden h-6 cursor-pointer">
           <div className="marquee text-sm text-black-900 whitespace-nowrap py-auto">
-             Your account is not verified. Please upload your certificates to get verified and start receiving appointments. You will be verified within  24 hrs of uploading Certificate
+             
+              <span>
+        Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
+      </span>
+      <span className="mx-4">
+        Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
+      </span> 
+      <span className="mx-2">
+        Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
+      </span> 
           </div>
         </div>
       )}

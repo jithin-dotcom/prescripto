@@ -28,7 +28,7 @@ router.get("/all-createAppointments/:doctorId",appointmentController.getCreateAp
 router.get("/user-appointments/:userId", appointmentController.getUserAppointments.bind(appointmentController));
 router.get("/doctor-appointments", appointmentController.getDoctorAppointments.bind(appointmentController));
 router.get("/all-appointments",appointmentController.getAllAppointments.bind(appointmentController));
-router.patch("/appointments/:appointmentId",appointmentController.updateStatus.bind(appointmentController));
+router.patch("/cancel-appointment/:appointmentId",appointmentController.updateStatus.bind(appointmentController));
 
 
 export default router;

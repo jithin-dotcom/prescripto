@@ -43,7 +43,7 @@ const appointmentSchema = new Schema<IAppointment>(
         },
         payment:{
             type: String,
-            enum: ["paid","not paid"],
+            enum: ["paid","not paid","refund"],
             default: "not paid"
         }
     },

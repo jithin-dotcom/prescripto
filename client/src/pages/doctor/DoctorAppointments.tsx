@@ -45,6 +45,7 @@ const DoctorAppointments = () => {
         const res = await axiosInstance.get(
           `/doctor-appointments?page=${currentPage}&limit=${limit}&status=${statusFilter}`
         );
+        console.log("res.data.data", res.data.data);
         setAppointments(res.data.data);
         setTotalPages(res.data.totalPages);
       } catch (err) {
@@ -60,10 +61,19 @@ const DoctorAppointments = () => {
     if (!appointmentId || !newStatus) return;
 
     try {
-      await axiosInstance.patch(`/appointments/${appointmentId}`, { status: newStatus });
-      const updated = appointments.map((app) =>
-        app._id === appointmentId ? { ...app, status: newStatus } : app
-      );
+      await axiosInstance.patch(`/cancel-appointment/${appointmentId}`, { status: newStatus });
+      // const updated = appointments.map((app) =>
+      //   app._id === appointmentId ? { ...app, status: newStatus } : app
+      // );
+      const updated = appointments.map((app) => {
+         if(app._id !== appointmentId) return app;
+         const shouldRefund = newStatus === "cancelled" && app.payment === "paid";
+         return{
+           ...app,
+           status: newStatus,
+           payment: shouldRefund ? "refund" : app.payment
+         }
+      })
       setAppointments(updated);
       toast.success(`Appointment ${newStatus}`);
     } catch (error) {
@@ -129,6 +139,7 @@ const DoctorAppointments = () => {
                   <th className="px-4 py-3">Date & Time</th>
                   <th className="px-4 py-3">Fee</th>
                   <th className="px-4 py-3">Status</th>
+                   <th className="px-4 py-3">Payment</th>
                   <th className="px-4 py-3 text-center">Actions</th>
                 </tr>
               </thead>
@@ -157,6 +168,27 @@ const DoctorAppointments = () => {
                       <td className="px-4 py-3">
                         <span className={getStatusBadge(app.status)}>{app.status}</span>
                       </td>
+                       {/* <td className="px-4 py-3">
+                        <span>{app.payment}</span>
+                      </td> */}
+                      <td className="px-4 py-3">
+  <span
+    className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
+      app.payment === "paid"
+        ? "bg-green-100 text-green-800 border border-green-300"
+        : app.payment === "refund"
+        ? "bg-gray-100 text-gray-800 border border-gray-300"
+        : "bg-red-100 text-red-800 border border-red-300"
+    }`}
+  >
+    {app.payment === "paid"
+      ? "Paid"
+      : app.payment === "refund"
+      ? "Refunded"
+      : "Not Paid"}
+  </span>
+</td>
+
                       <td className="px-4 py-3 text-center">
                         <div className="flex justify-center gap-2">
                           <button

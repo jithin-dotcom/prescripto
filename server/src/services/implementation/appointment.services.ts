@@ -189,6 +189,7 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
       userId: new mongoose.Types.ObjectId(data.userId),
       doctorId,
       status: "pending",
+      payment: "not paid",
     } as IAppointment;
 
     await this._appointmentRepo.create(appointmentData);
@@ -721,6 +722,7 @@ async getAppointmentsByDoctor(
         time: appointment.time,
         appointmentNo: appointment.appointmentNo || 0,
         status: appointment.status,
+        payment: appointment.payment,
         transactionId: appointment.transactionId?.toString(),
       });
     }
@@ -789,6 +791,7 @@ async getAllAppointments(
         date: appointment.day,
         time: appointment.time,
         status: appointment.status,
+        payment: appointment.payment,
         appointmentNo: appointment.appointmentNo || 0,
         transactionId: appointment.transactionId?.toString(),
         timeArray,
@@ -839,22 +842,57 @@ async getAllAppointments(
 
 
 
-async updateStatus(appointmentId: string, status: string): Promise<{message: string}>{
-   try {
-      const update = await this._appointmentRepo.updateById(appointmentId,{status:status});
-      if(!update){
-         throw new Error(`Failed to ${status} the Appointment`);
-      }
-      return {
-        message: `Appointment ${status} successfully`
-      }
-   } catch (error) {
-      if(error instanceof Error){
-         throw error;
-      }else{
-         throw new Error("Something went wrong");
-      }
-   }
- }
+// async updateStatus(appointmentId: string, status: string): Promise<{message: string}>{
+//    try {
+//       let update = null;
+//       if(status = "cancelled"){
+//          update = await this._appointmentRepo.updateById(appointmentId,{status:status,payment:"refund"});
+//       }else{
+//          update = await this._appointmentRepo.updateById(appointmentId,{status:status});
+//       }
+       
+//       if(!update){
+//          throw new Error(`Failed to ${status} the Appointment`);
+//       }
+//       return {
+//         message: `Appointment ${status} successfully`
+//       }
+//    } catch (error) {
+//       if(error instanceof Error){
+//          throw error;
+//       }else{
+//          throw new Error("Something went wrong");
+//       }
+//    }
+//  }
+
+
+async updateStatus(appointmentId: string, status: string): Promise<{ message: string }> {
+  try {
+    let success = false;
+
+    if (status === "cancelled") {
+      success = await this._appointmentRepo.cancelWithRefundIfPaid(appointmentId);
+    } else {
+      const update = await this._appointmentRepo.updateById(appointmentId, { status });
+      success = !!update;
+    }
+
+    if (!success) {
+      throw new Error(`Failed to ${status} the appointment`);
+    }
+
+    return {
+      message: `Appointment ${status} successfully`,
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    } else {
+      throw new Error("Something went wrong");
+    }
+  }
+}
+
 
 }

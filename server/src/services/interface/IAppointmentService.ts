@@ -55,7 +55,7 @@ export interface IAppointmentResponse {
   date: string;           
   time: string;
   appointmentNo: number;
-  payment: "paid" | "not paid";
+  payment: "paid" | "not paid" | "refund";
   status: "pending" | "confirmed" | "cancelled" | "completed"; 
   transactionId?: string;
 }
@@ -97,6 +97,7 @@ export interface IAppointmentWithUserResponse {
   time: string;
   appointmentNo: number;
   status: string;
+  payment: string;
   transactionId?: string;
 }
 
@@ -105,6 +106,7 @@ export interface IAppointmentFullResponse {
   date: string;
   time: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
+  payment: "paid" | "not paid" | "refund";
   appointmentNo: number;
   transactionId?: string;
   timeArray: string[];

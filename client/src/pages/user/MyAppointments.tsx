@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 import ConfirmationModal from "../../components/ConfirmModal";
 import axios from "axios";
 import type { Appointment } from "../../interfaces/IMyAppointments";
+import { Video, MessageCircle } from "lucide-react";
 
 
 
@@ -66,10 +67,22 @@ const MyAppointments: React.FC = () => {
   const handleCancelAppointment = async () => {
     if (!appointmentToCancel) return;
     try {
-      await axiosInstance.patch(`/appointments/${appointmentToCancel._id}`, { status: "cancelled" });
-      const updated = appointments.map((item) =>
-        item._id === appointmentToCancel._id ? { ...item, status: "cancelled" as Appointment["status"] } : item
-      );
+      await axiosInstance.patch(`/cancel-appointment/${appointmentToCancel._id}`, { status: "cancelled" });
+      // const updated = appointments.map((item) =>
+      //   item._id === appointmentToCancel._id ? { ...item, status: "cancelled" as Appointment["status"] } : item
+      // );
+      
+    const updated = appointments.map((item) => {
+      if (item._id === appointmentToCancel._id) {
+        return {
+          ...item,
+          status: "cancelled" as Appointment["status"],
+          payment:
+            item.payment === "paid" ? ("refund" as Appointment["payment"]) : item.payment,
+        };
+      }
+      return item;
+    });
       setAppointments(updated);
       toast.success("Appointment cancelled successfully");
     }catch (error) {
@@ -131,7 +144,7 @@ const MyAppointments: React.FC = () => {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID as string, 
       amount: amount * 100,
       currency,
-      name: "TeleCare",
+      name: "Prescripto",
       description: "Appointment Payment",
       order_id: orderId,
       handler: async function (response: RazorpayResponse) {
@@ -146,11 +159,11 @@ const MyAppointments: React.FC = () => {
           toast.success(verifyRes.data?.message || "Payment successful");
 
           
-          // setAppointments((prev) =>
-          //   prev.map((a) =>
-          //     a._id === appointment._id ? { ...a, status: "paid" as any } : a
-          //   )
-          // );
+          setAppointments((prev) =>
+            prev.map((a) =>
+              a._id === appointment._id ? { ...a, payment: "paid" } : a
+            )
+          );
         } catch (err) {
           if(axios.isAxiosError(err)){
              toast.error(err.response?.data?.message || "Payment verification failed");
@@ -254,18 +267,28 @@ const MyAppointments: React.FC = () => {
                     <span className={`inline-block px-3 py-1 text-xs font-medium border rounded-full ${getStatusStyles(item.status)}`}>
                       {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                     </span>
+                    
+
                      <span
-                       className={`inline-block px-3 py-1 text-xs font-medium rounded-full ${
+                       className={`inline-block px-3 py-1 mx-1 text-xs font-medium rounded-full ${
                        item.payment === "paid"
                        ? "bg-green-100 text-green-800 border border-green-300"
+                       : item.payment === "refund"
+                       ? "bg-gray-100 text-gray-800 border border-gray-300"
                        : "bg-red-100 text-red-800 border border-red-300"
                        }`}
-                       >
-                       {item.payment === "paid" ? "Paid" : "Not Paid"}
+                     >
+                       {item.payment === "paid"
+                       ? "Paid"
+                       : item.payment === "refund"
+                       ? "Refunded"
+                       : "Not Paid"}
                      </span>
                   </div>
                 </div>
 
+                
+{/* 
                 <div className="flex flex-col gap-2 justify-start sm:justify-end text-sm text-center sm:text-right">
                   {["confirmed", "pending"].includes(item.status) && (
                     <MotionButton
@@ -279,20 +302,103 @@ const MyAppointments: React.FC = () => {
                     </MotionButton>
                   )}
 
-                  {item.status === "confirmed" && (
+                  {item.status === "confirmed" && item.payment !== "paid" && (
                     <>
                       <MotionButton>
                         <img className="max-w-20 max-h-5 mx-auto" src={assets.stripe_logo} alt="Stripe" />
                       </MotionButton>
-                      {/* <MotionButton>
-                        <img className="max-w-20 max-h-5 mx-auto" src={assets.razorpay_logo} alt="Razorpay" />
-                      </MotionButton> */}
+        
                       <MotionButton onClick={() => handleRazorpayPayment(item)}>
                          <img className="max-w-20 max-h-5 mx-auto" src={assets.razorpay_logo} alt="Razorpay" />
                       </MotionButton>
                     </>
                   )}
-                </div>
+
+
+                </div> */}
+
+                {/* <div className="flex flex-col gap-2 justify-start sm:justify-end text-sm text-center sm:text-right">
+  {item.status === "confirmed" && item.payment !== "paid" && (
+    <>
+      <MotionButton>
+        <img className="max-w-20 max-h-5 mx-auto" src={assets.stripe_logo} alt="Stripe" />
+      </MotionButton>
+
+      <MotionButton onClick={() => handleRazorpayPayment(item)}>
+        <img className="max-w-20 max-h-5 mx-auto" src={assets.razorpay_logo} alt="Razorpay" />
+      </MotionButton>
+    </>
+  )}
+
+  {["confirmed", "pending"].includes(item.status) && (
+    <MotionButton
+      onClick={() => {
+        setAppointmentToCancel(item);
+        setIsModalOpen(true);
+      }}
+      className="hover:bg-red-600 hover:text-white"
+    >
+      Cancel appointment
+    </MotionButton>
+  )}
+</div> */}
+
+
+
+<div className="flex flex-col gap-2 justify-start sm:justify-end text-sm text-center sm:text-right">
+  {/* Razorpay and Stripe if not paid */}
+  {item.status === "confirmed" && item.payment !== "paid" && (
+    <>
+      <MotionButton className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-100 transition">
+        <img className="h-5 w-auto" src={assets.stripe_logo} alt="Stripe" />
+      </MotionButton>
+
+      <MotionButton
+        onClick={() => handleRazorpayPayment(item)}
+        className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-100 transition"
+      >
+        <img className="h-5 w-auto" src={assets.razorpay_logo} alt="Razorpay" />
+      </MotionButton>
+    </>
+  )}
+
+  {/* Video Call and Chat if paid */}
+  {item.status === "confirmed" && item.payment === "paid" && (
+    <>
+      <MotionButton
+        onClick={() => console.log("Start video call")}
+        className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-blue-600 hover:text-white transition"
+      >
+        <Video size={18} strokeWidth={1.5} />
+        <span>Video Call</span>
+      </MotionButton>
+
+      <MotionButton
+        onClick={() => console.log("Open chat")}
+        className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-green-600 hover:text-white transition"
+      >
+        <MessageCircle size={18} strokeWidth={1.5} />
+        <span>Chat</span>
+      </MotionButton>
+    </>
+  )}
+
+  {/* Cancel Button */}
+  {["confirmed", "pending"].includes(item.status) && (
+    <MotionButton
+      onClick={() => {
+        setAppointmentToCancel(item);
+        setIsModalOpen(true);
+      }}
+      className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-red-600 hover:text-white transition"
+    >
+      Cancel appointment
+    </MotionButton>
+  )}
+</div>
+
+
+
               </motion.div>
             ))}
           </motion.div>

@@ -26,5 +26,5 @@ export interface IAppointmentRepository extends IBaseRepository<IAppointment>{
      ): Promise<IAppointment[]>
 
      updatePaymentStatus(appointmentId: string, status: "paid" | "not paid"): Promise<void>;
-
+     cancelWithRefundIfPaid(id: string): Promise<boolean>;
 }

@@ -39,6 +39,7 @@ const AllAppointments = () => {
         const res = await axiosInstance.get(
           `/all-appointments?page=${currentPage}&limit=${limit}&status=${statusFilter}`
         );
+        console.log("res.data.data : ",res.data.data);
         setAppointments(res.data.data);
         setTotalPages(res.data.totalPages);
       } catch (err) {
@@ -51,10 +52,24 @@ const AllAppointments = () => {
   const confirmStatusChange = async () => {
     if (!modalData) return;
     try {
-      await axiosInstance.patch(`/appointments/${modalData.id}`, { status: modalData.status });
-      const updated = appointments.map((app) =>
-        app._id === modalData.id ? { ...app, status: modalData.status } : app
-      );
+      await axiosInstance.patch(`/cancel-appointment/${modalData.id}`, { status: modalData.status });
+      // const updated = appointments.map((app) =>
+      //   app._id === modalData.id ? { ...app, status: modalData.status } : app
+      // );
+      
+    const updated = appointments.map((app) => {
+      if (app._id !== modalData.id) return app;
+
+      const shouldRefund =
+        modalData.status === "cancelled" && app.payment === "paid";
+
+      return {
+        ...app,
+        status: modalData.status as Appointment["status"],
+        payment: shouldRefund ? ("refund" as Appointment["payment"]) : app.payment,
+      };
+    });
+      
       setAppointments(updated);
       toast.success(`Appointment ${modalData.status} successfully`);
     } catch (error) {
@@ -120,6 +135,7 @@ const AllAppointments = () => {
                   <th className="px-4 py-3 text-center">Doctor</th>
                   <th className="px-4 py-3 text-center">Fees</th>
                   <th className="px-4 py-3 text-center">Status</th>
+                  <th className="px-4 py-3 text-center">Payment</th>
                   <th className="px-4 py-3 text-center">Actions</th>
                 </tr>
               </thead>
@@ -143,6 +159,24 @@ const AllAppointments = () => {
                       <td className="text-center px-4 py-3">₹{item.doctor.fee}</td>
                       <td className="text-center px-4 py-3">
                         <span className={getStatusBadge(item.status)}>{item.status}</span>
+                      </td>
+                       <td className="text-center px-4 py-3">
+                        {/* <span >{item.payment}</span> */}
+                         <span
+                       className={`inline-block px-3 py-1 mx-1 text-xs font-medium rounded-full ${
+                       item.payment === "paid"
+                       ? "bg-green-100 text-green-800 border border-green-300"
+                       : item.payment === "refund"
+                       ? "bg-gray-100 text-gray-800 border border-gray-300"
+                       : "bg-red-100 text-red-800 border border-red-300"
+                       }`}
+                     >
+                       {item.payment === "paid"
+                       ? "Paid"
+                       : item.payment === "refund"
+                       ? "Refunded"
+                       : "Not Paid"}
+                     </span>
                       </td>
                       <td className="text-center px-4 py-3">
                         <div className="flex justify-center gap-2">

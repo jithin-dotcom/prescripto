@@ -70,7 +70,24 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
 
 
    async updatePaymentStatus(appointmentId: string, status: "paid" | "not paid"): Promise<void> {
-  await AppointmentModel.findByIdAndUpdate(appointmentId, { payment: status });
+     await AppointmentModel.findByIdAndUpdate(appointmentId, { payment: status });
+   }
+
+   async cancelWithRefundIfPaid(id: string): Promise<boolean> {
+  const res = await this.model.updateOne(
+    { _id: id },
+    [
+      {
+        $set: {
+          status: "cancelled",
+          payment: {
+            $cond: [{ $eq: ["$payment", "paid"] }, "refund", "$payment"],
+          },
+        },
+      },
+    ]
+  );
+  return res.modifiedCount > 0;
 }
 
 }
