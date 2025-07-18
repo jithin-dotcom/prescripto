@@ -14,6 +14,7 @@ import axios from "axios";
 import type { Appointment } from "../../interfaces/IMyAppointments";
 
 
+
 const loadRazorpayScript = () =>
   new Promise<boolean>((resolve) => {
     const script = document.createElement("script");
@@ -34,6 +35,7 @@ const MyAppointments: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const userId = useAuthStore((state) => state.user?._id);
+  const name = useAuthStore((state) => state.user?.name);
   const limit = 4;
 
   useEffect(() => {
@@ -132,7 +134,7 @@ const MyAppointments: React.FC = () => {
       name: "TeleCare",
       description: "Appointment Payment",
       order_id: orderId,
-      handler: async function (response: any) {
+      handler: async function (response: RazorpayResponse) {
         console.log("response rezor : ",response);
         try {
           const verifyRes = await axiosInstance.post("/payments/verify", {
@@ -143,18 +145,22 @@ const MyAppointments: React.FC = () => {
 
           toast.success(verifyRes.data?.message || "Payment successful");
 
-          // Optional: Refresh appointments after payment
-          setAppointments((prev) =>
-            prev.map((a) =>
-              a._id === appointment._id ? { ...a, status: "paid" as any } : a
-            )
-          );
+          
+          // setAppointments((prev) =>
+          //   prev.map((a) =>
+          //     a._id === appointment._id ? { ...a, status: "paid" as any } : a
+          //   )
+          // );
         } catch (err) {
-          toast.error("Payment verification failed");
+          if(axios.isAxiosError(err)){
+             toast.error(err.response?.data?.message || "Payment verification failed");
+          }else{
+             toast.error("Payment verification failed");
+          }  
         }
       },
       prefill: {
-        name: appointment.patientName || "TeleCare Patient",
+        name: name || "Prescripto Patient",
         email: "demo@telecare.com", // Update if you have user's email
       },
       theme: {
@@ -162,7 +168,7 @@ const MyAppointments: React.FC = () => {
       },
     };
 
-    const paymentObject = new (window as any).Razorpay(options);
+    const paymentObject = new window.Razorpay(options);
     paymentObject.open();
   } catch (error) {
     toast.error("Failed to initiate payment");
