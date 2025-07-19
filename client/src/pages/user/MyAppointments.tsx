@@ -13,6 +13,7 @@ import ConfirmationModal from "../../components/ConfirmModal";
 import axios from "axios";
 import type { Appointment } from "../../interfaces/IMyAppointments";
 import { Video, MessageCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -34,6 +35,7 @@ const MyAppointments: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const userId = useAuthStore((state) => state.user?._id);
   const name = useAuthStore((state) => state.user?.name);
@@ -374,7 +376,7 @@ const MyAppointments: React.FC = () => {
       </MotionButton>
 
       <MotionButton
-        onClick={() => console.log("Open chat")}
+        onClick={() => navigate("/chat",{ state: { appointmentId: item._id, userId: item.userId, doctorId: item.doctor._id } })}
         className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-green-600 hover:text-white transition"
       >
         <MessageCircle size={18} strokeWidth={1.5} />

@@ -31,7 +31,7 @@ import MyAppointments from "./pages/user/MyAppointments";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments";
 import ChangeEmail from "./pages/auth/ChangeEmail";
 import ChangePassword from "./pages/auth/ChangePassword";
-
+import ChatUI from "./pages/chat/Chat";
 
 const App: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -173,6 +173,10 @@ const App: React.FC = () => {
         <Route
           path="/change-email"
           element={isAuthenticated && (role === "doctor" || role === "user")? <ChangeEmail /> : <Navigate to="/login" replace />}
+        />
+        <Route
+          path="/chat"
+          element={isAuthenticated && (role === "doctor" || role === "user")? <ChatUI /> : <Navigate to="/login" replace />}
         />
 
         <Route

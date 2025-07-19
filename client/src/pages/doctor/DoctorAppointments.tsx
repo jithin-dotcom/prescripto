@@ -11,6 +11,7 @@ import axios from "axios";
 import { Ban, Check } from "lucide-react";
 import ConfirmModal from "../../components/ConfirmModal"; 
 import type { Appointment } from "../../interfaces/IDoctorAppointment";
+import { useNavigate } from "react-router-dom";
 
 const calculateAge = (dob: string): number => {
   const birthDate = new Date(dob);
@@ -34,6 +35,7 @@ const DoctorAppointments = () => {
     appointmentId: string;
     newStatus: "confirmed" | "cancelled" | null;
   }>({ appointmentId: "", newStatus: null });
+  const navigate = useNavigate();
 
   useDoctorStore((state) => state.doctorData);
 
@@ -103,7 +105,7 @@ const DoctorAppointments = () => {
         return `${base} bg-gray-100 text-gray-600`;
     }
   };
-
+  console.log("appointments : ",appointments);
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <Navbar />
@@ -144,6 +146,7 @@ const DoctorAppointments = () => {
                 </tr>
               </thead>
               <tbody>
+                
                 {appointments.map((app, index) => {
                   const disabled = ["cancelled", "completed"].includes(app.status);
                   return (
@@ -206,7 +209,7 @@ const DoctorAppointments = () => {
                           >
                             <Ban size={14} /> Cancel
                           </button>
-                          <button
+                          {/* <button
                             className={`text-xs px-3 py-1 rounded flex items-center gap-1 transition ${
                               disabled
                                 ? "bg-gray-400 text-white cursor-not-allowed"
@@ -220,7 +223,54 @@ const DoctorAppointments = () => {
                             disabled={disabled}
                           >
                             <Check size={14} /> Confirm
-                          </button>
+                          </button> */}
+
+
+                          {app.status === "confirmed" && app.payment === "paid" ? (
+      <>
+        <button
+          className="text-xs px-3 py-1 rounded flex items-center gap-1 bg-blue-500 text-white hover:bg-blue-600 transition"
+          onClick={() => {
+              navigate("/chat",{ state: { appointmentId: app._id, userId: app.user._id, doctorId: app.doctorId } })
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M21 15a2 2 0 002-2V7a2 2 0 00-2-2H7L3 9v4a2 2 0 002 2h2v4l4-4h10z" />
+          </svg>
+          Chat
+        </button>
+
+        <button
+          className="text-xs px-3 py-1 rounded flex items-center gap-1 bg-purple-500 text-white hover:bg-purple-600 transition"
+          onClick={() => {
+            // Replace with your video call route or action
+            console.log("Start video call with", app.user.name);
+          }}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14V10z" />
+            <path d="M4 6h10a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2z" />
+          </svg>
+          Video
+        </button>
+      </>
+    ) : (
+      <button
+        className={`text-xs px-3 py-1 rounded flex items-center gap-1 transition ${
+          disabled
+            ? "bg-gray-400 text-white cursor-not-allowed"
+            : "bg-green-500 text-white hover:bg-green-600"
+        }`}
+        onClick={() => {
+          if (!disabled)
+            setSelectedAction({ appointmentId: app._id, newStatus: "confirmed" });
+          setModalOpen(true);
+        }}
+        disabled={disabled}
+      >
+        <Check size={14} /> Confirm
+      </button>
+    )}
                         </div>
                       </td>
                     </tr>
