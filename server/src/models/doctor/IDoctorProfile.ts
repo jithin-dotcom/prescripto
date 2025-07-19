@@ -30,16 +30,16 @@
 
 import mongoose, { Document } from "mongoose";
 
-// A single time range in a day
+
 export interface ITimeBlock {
   from: string;
   to: string;
 }
 
-// Availability for a day with multiple time blocks
+
 export interface IAvailabilitySlot {
   day: string;
-  slots: ITimeBlock[]; // replaces from/to directly on IAvailabilitySlot
+  slots: ITimeBlock[]; 
 }
 
 export interface IDoctorProfile extends Document {

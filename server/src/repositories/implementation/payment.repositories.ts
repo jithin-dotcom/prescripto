@@ -28,12 +28,12 @@ export class PaymentRepository
   implements IPaymentRepository
 {
   constructor() {
-    super(Payment); // Passing the Payment mongoose model
+    super(Payment); 
   }
 
   async findByRazorpayOrderId(orderId: string): Promise<IPayment | null> {
     return await this.model.findOne({ razorpayOrderId: orderId });
   }
 
-  // You can add more Razorpay-specific methods here later
+  
 }
