@@ -15,12 +15,12 @@ const messageRepository = new MessageRepository();
 const chatService = new ChatService(chatRepository, messageRepository);
 const chatController = new ChatController(chatService);
 
-// Protect all chat routes with access token middleware
+
 router.use(verifyAccessToken);
 
-// GET /messages/:appointmentId → Get previous messages of a chat
-router.get("/messages/:appointmentId", chatController.getChatMessages.bind(chatController));
 
-// (Later you can add more like POST /send-message, etc.)
+router.get("/messages/:appointmentId", chatController.getChatMessages.bind(chatController));
+router.get("/my-chats",chatController.getUserChats.bind(chatController));
+
 
 export default router;

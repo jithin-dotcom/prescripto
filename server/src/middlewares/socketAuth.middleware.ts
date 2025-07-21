@@ -7,7 +7,7 @@ const JWT_SECRET = process.env.JWT_ACCESS_SECRET || "your jwt secret";
 
 export const socketAuthMiddleware = (socket: Socket, next: (err?: Error) => void) => {
   const token = socket.handshake.auth?.token;
-  console.log("entered into middleware :",token);
+  console.log("entered into middleware socket :",token);
   if (!token) {
     console.log("Authentication error: No token provided")
     return next(new Error("Authentication error: No token provided"));

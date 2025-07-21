@@ -15,6 +15,7 @@ export interface Appointment {
   doctor: Doctor;
   userId: string;
   date: string;
+  day?:string
   time: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
   payment: "paid" | "not paid" | "refund";

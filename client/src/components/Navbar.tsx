@@ -175,6 +175,15 @@ const Navbar = () => {
                     >
                        Appointments
                     </button>
+                     <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        navigate("/my-chat");
+                      }}
+                      className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
+                    >
+                       My Chats
+                    </button>
                     
                     <button
                       onClick={handleLogout}

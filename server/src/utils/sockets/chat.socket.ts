@@ -311,25 +311,245 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { Server, Socket } from "socket.io";
+// import mongoose from "mongoose";
+// import { Chat } from "../../models/chat/chat.models";
+// import { Message } from "../../models/message/message.models";
+// import { uploadToCloudinary } from "../../config/cloudinary";
+
+// export const chatSocketHandler = (io: Server, socket: Socket) => {
+
+//     console.log("entered into socket");
+
+
+  
+//    const user = socket.data.user;
+
+//   console.log("user in socket connect",user);
+
+//   if (!user || !user.id || !user.role) {
+//     console.error("Socket connection rejected: User not authenticated.");
+//     socket.disconnect();
+//     return;
+//   }
+
+//     socket.on("joinRoom", async ({ appointmentId }: { appointmentId: string }) => {
+//          console.log("entered into socket");
+//       if (!appointmentId || !mongoose.Types.ObjectId.isValid(appointmentId)) {
+//         socket.emit("error", { message: "Invalid appointment ID." });
+        
+//         return;
+//     }
+
+//     socket.join(appointmentId);
+//     console.log(`User ${user.id} joined room: ${appointmentId}`);
+
+//     // Mark all messages as read for this chat
+//     const chat = await Chat.findOne({ appointmentId });
+//     if (chat) {
+//       await Message.updateMany(
+//         { chatId: chat._id, read: false, sender: { $ne: user.id } },
+//         { read: true }
+//       );
+//     }
+//   });
+
+
+
+// socket.on("sendMessage", async (data: any) => {
+//   try {
+//     const { appointmentId, content, type, doctorId, userId } = data;
+//     const user = socket.data.user;
+
+//     if (!appointmentId || !content || !type) {
+//       socket.emit("error", { message: "Missing required fields" });
+//       return;
+//     }
+
+//     if (!doctorId || !userId) {
+//       socket.emit("error", { message: "Missing doctorId or userId" });
+//       return;
+//     }
+
+//     let chat = await Chat.findOne({ appointmentId });
+
+//     if (!chat) {
+//       chat = await Chat.create({
+//         appointmentId: new mongoose.Types.ObjectId(appointmentId),
+//         doctorId: new mongoose.Types.ObjectId(doctorId),
+//         userId: new mongoose.Types.ObjectId(userId),
+//         participants: [new mongoose.Types.ObjectId(userId), new mongoose.Types.ObjectId(doctorId)],
+//         isActive: true,
+//       });
+//     }
+
+//     let finalContent = content;
+
+//     if (type === "image") {
+//       // Extract base64 data (strip "data:image/png;base64," etc.)
+//       const matches = content.match(/^data:(.+);base64,(.+)$/);
+//       if (!matches || matches.length !== 3) {
+//         socket.emit("error", { message: "Invalid image format." });
+//         return;
+//       }
+
+//       const buffer = Buffer.from(matches[2], "base64");
+
+//       try {
+//         finalContent = await uploadToCloudinary(buffer, "chat_images");
+//       } catch (uploadErr) {
+//         console.error("Cloudinary upload error:", uploadErr);
+//         socket.emit("error", { message: "Image upload failed." });
+//         return;
+//       }
+//     }
+
+//     const message = await Message.create({
+//       chatId: chat._id,
+//       content: finalContent,
+//       type,
+//       sender: user.id,
+//     });
+
+//     io.to(appointmentId).emit("receiveMessage", message);
+//   } catch (error) {
+//     console.error("🔥 sendMessage error:", error);
+//     socket.emit("error", { message: "Internal server error" });
+//   }
+// });
+
+
+//   socket.on("endChat", async ({ appointmentId }: { appointmentId: string }) => {
+//     try {
+//       if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
+//         socket.emit("error", { message: "Invalid appointment ID." });
+//         return;
+//       }
+
+//       await Chat.findOneAndUpdate({ appointmentId }, { isActive: false });
+//       io.to(appointmentId).emit("chatEnded");
+//       console.log(`Chat ended for appointment ${appointmentId}`);
+//     } catch (err) {
+//       console.error("Error ending chat:", err);
+//       socket.emit("error", { message: "Failed to end chat." });
+//     }
+//   });
+
+//   // socket.on("markAsRead", async ({ chatId }: { chatId: string }) => {
+//   //   console.log("entered markAsRead");
+//   //   if (!chatId || !mongoose.Types.ObjectId.isValid(chatId)) {
+//   //     socket.emit("error", { message: "Invalid chat ID." });
+//   //     return;
+//   //   }
+
+//   //   await Message.updateMany({ chatId, read: false, sender: { $ne: user._id } }, { read: true });
+//   //   const updatedMessages = await Message.find({
+//   //     chatId,
+//   //     sender: { $ne: user._id },
+//   //     read: true,
+//   //   });
+
+//   //    io.to(chatId.toString()).emit("messagesRead", {
+//   //   chatId,
+//   //   readerId: user._id, // who read
+//   //   messageIds: updatedMessages.map(msg => msg._id), // list of message ids marked as read
+//   // });
+
+//   // });
+
+
+
+//   socket.on("markAsRead", async ({ chatId }) => {
+//   console.log("entered markAsRead");
+
+//   if (!chatId || !mongoose.Types.ObjectId.isValid(chatId)) {
+//     socket.emit("error", { message: "Invalid chat ID." });
+//     return;
+//   }
+
+//   const chat = await Chat.findById(chatId);
+//   if (!chat) {
+//     socket.emit("error", { message: "Chat not found." });
+//     return;
+//   }
+
+//   // Mark messages as read
+//   await Message.updateMany(
+//     { chatId, read: false, sender: { $ne: user._id } },
+//     { read: true }
+//   );
+
+//   const updatedMessages = await Message.find({
+//     chatId,
+//     sender: { $ne: user._id },
+//     read: true,
+//   });
+
+//   // Emit to appointmentId room
+//   io.to(chat.appointmentId.toString()).emit("messagesRead", {
+//     chatId,
+//     readerId: user._id,
+//     messageIds: updatedMessages.map((msg) => msg._id),
+//   });
+//   console.log("emitted io.to")
+// });
+
+
+//   socket.on("typing", ({ appointmentId }: { appointmentId: string }) => {
+//     if (mongoose.Types.ObjectId.isValid(appointmentId)) {
+//       socket.to(appointmentId).emit("typing", { userId: user.id });
+//     }
+//   });
+
+//   socket.on("disconnect", () => {
+//     console.log(`User ${user.id} disconnected`);
+//   });
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import { Server, Socket } from "socket.io";
 import mongoose from "mongoose";
 import { Chat } from "../../models/chat/chat.models";
 import { Message } from "../../models/message/message.models";
-import { IChat } from "../../models/chat/IChat"; 
+import { uploadToCloudinary } from "../../config/cloudinary";
 
 export const chatSocketHandler = (io: Server, socket: Socket) => {
+  console.log("entered into socket");
 
-    console.log("entered into socket");
+  const user = socket.data.user;
 
-//     const user = {
-//   _id: new mongoose.Types.ObjectId("64dca4e7fc13ae3bfb000001"), // replace with any ObjectId
-//   role: "user",
-// };
-// socket.data.user = user;
-  
-   const user = socket.data.user;
-
-  console.log("user in socket connect",user);
+  console.log("user in socket connect", user);
 
   if (!user || !user.id || !user.role) {
     console.error("Socket connection rejected: User not authenticated.");
@@ -337,89 +557,130 @@ export const chatSocketHandler = (io: Server, socket: Socket) => {
     return;
   }
 
-    socket.on("joinRoom", async ({ appointmentId }: { appointmentId: string }) => {
-         console.log("entered into soket");
-      if (!appointmentId || !mongoose.Types.ObjectId.isValid(appointmentId)) {
-        socket.emit("error", { message: "Invalid appointment ID." });
-        
-        return;
+  socket.on("joinRoom", async ({ appointmentId }: { appointmentId: string }) => {
+    console.log("entered joinRoom");
+    if (!appointmentId || !mongoose.Types.ObjectId.isValid(appointmentId)) {
+      socket.emit("error", { message: "Invalid appointment ID." });
+      return;
     }
 
     socket.join(appointmentId);
     console.log(`User ${user.id} joined room: ${appointmentId}`);
 
-    // Mark all messages as read for this chat
+    // Mark all messages as read for this chat when joining
     const chat = await Chat.findOne({ appointmentId });
     if (chat) {
       await Message.updateMany(
         { chatId: chat._id, read: false, sender: { $ne: user.id } },
         { read: true }
       );
+      const updatedMessages = await Message.find({
+        chatId: chat._id,
+        sender: { $ne: user.id },
+        read: true,
+      });
+      io.to(appointmentId).emit("messagesRead", {
+        chatId: chat._id,
+        readerId: user.id,
+        messageIds: updatedMessages.map((msg) => msg._id),
+      });
+      console.log(`Marked ${updatedMessages.length} messages as read for chat ${chat._id}`);
     }
   });
 
+  socket.on("sendMessage", async (data: any) => {
+    try {
+      const { appointmentId, content, type, doctorId, userId } = data;
 
-socket.on("sendMessage", async (data: any) => {
-  try {
-    const { appointmentId, content, type, doctorId, userId } = data;
-    console.log("data in socket :",data);
-    const user = socket.data.user;
-    // console.log("user in sendMessage : ", user,user._id);
+      if (!appointmentId || !content || !type) {
+        socket.emit("error", { message: "Missing required fields" });
+        return;
+      }
 
-    console.log("✅ Received sendMessage payload:", {
-      appointmentId,
-      content,
-      type,
-      userToken: user,
-      doctorId,
-      userId,
-    });
+      if (!doctorId || !userId) {
+        socket.emit("error", { message: "Missing doctorId or userId" });
+        return;
+      }
 
-    if (!appointmentId || !content || !type) {
-      console.error("❌ Missing required fields");
-      socket.emit("error", { message: "Missing required fields" });
-      return;
-    }
+      let chat = await Chat.findOne({ appointmentId });
 
-    if (!doctorId || !userId) {
-      console.error("❌ Missing doctorId or userId");
-      socket.emit("error", { message: "Missing doctorId or userId" });
-      return;
-    }
+      if (!chat) {
+        chat = await Chat.create({
+          appointmentId: new mongoose.Types.ObjectId(appointmentId),
+          doctorId: new mongoose.Types.ObjectId(doctorId),
+          userId: new mongoose.Types.ObjectId(userId),
+          participants: [new mongoose.Types.ObjectId(userId), new mongoose.Types.ObjectId(doctorId)],
+          isActive: true,
+        });
+      }
 
-    // Check if chat exists
-    let chat = await Chat.findOne({ appointmentId });
+      let finalContent = content;
 
-    if (!chat) {
-      console.log("📦 Creating new chat...");
-      chat = await Chat.create({
-        appointmentId: new mongoose.Types.ObjectId(appointmentId),
-        doctorId: new mongoose.Types.ObjectId(doctorId),
-        userId: new mongoose.Types.ObjectId(userId),
-        participants: [new mongoose.Types.ObjectId(userId),new mongoose.Types.ObjectId(doctorId)],
-        isActive: true,
+      if (type === "image") {
+        const matches = content.match(/^data:(.+);base64,(.+)$/);
+        if (!matches || matches.length !== 3) {
+          socket.emit("error", { message: "Invalid image format." });
+          return;
+        }
+
+        const buffer = Buffer.from(matches[2], "base64");
+
+        try {
+          finalContent = await uploadToCloudinary(buffer, "chat_images");
+        } catch (uploadErr) {
+          console.error("Cloudinary upload error:", uploadErr);
+          socket.emit("error", { message: "Image upload failed." });
+          return;
+        }
+      }
+
+      const message = await Message.create({
+        chatId: chat._id,
+        content: finalContent,
+        type,
+        sender: user.id,
+        read: false,
       });
+
+      io.to(appointmentId).emit("receiveMessage", message);
+    } catch (error) {
+      console.error("🔥 sendMessage error:", error);
+      socket.emit("error", { message: "Internal server error" });
+    }
+  });
+
+  socket.on("markAsRead", async ({ chatId }: { chatId: string }) => {
+    console.log("entered markAsRead");
+
+    if (!chatId || !mongoose.Types.ObjectId.isValid(chatId)) {
+      socket.emit("error", { message: "Invalid chat ID." });
+      return;
     }
 
-    // Create the message
-    const message = await Message.create({
-      chatId: chat._id,
-      content,
-      type,
-      sender: user.id,
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      socket.emit("error", { message: "Chat not found." });
+      return;
+    }
+
+    await Message.updateMany(
+      { chatId, read: false, sender: { $ne: user.id } },
+      { read: true }
+    );
+
+    const updatedMessages = await Message.find({
+      chatId,
+      sender: { $ne: user.id },
+      read: true,
     });
 
-    console.log("✅ New message created:", message);
-
-    // Emit to all in the chat room
-    // io.to(`chat_${chat._id}`).emit("receiveMessage", message);
-    io.to(appointmentId).emit("receiveMessage", message);
-  } catch (error) {
-    console.error("🔥 sendMessage error:", error);
-    socket.emit("error", { message: "Internal server error" });
-  }
-});
-
+    io.to(chat.appointmentId.toString()).emit("messagesRead", {
+      chatId,
+      readerId: user.id,
+      messageIds: updatedMessages.map((msg) => msg._id),
+    });
+    console.log(`Marked ${updatedMessages.length} messages as read for chat ${chatId}`);
+  });
 
   socket.on("endChat", async ({ appointmentId }: { appointmentId: string }) => {
     try {
@@ -435,15 +696,6 @@ socket.on("sendMessage", async (data: any) => {
       console.error("Error ending chat:", err);
       socket.emit("error", { message: "Failed to end chat." });
     }
-  });
-
-  socket.on("markAsRead", async ({ chatId }: { chatId: string }) => {
-    if (!chatId || !mongoose.Types.ObjectId.isValid(chatId)) {
-      socket.emit("error", { message: "Invalid chat ID." });
-      return;
-    }
-
-    await Message.updateMany({ chatId, read: false, sender: { $ne: user._id } }, { read: true });
   });
 
   socket.on("typing", ({ appointmentId }: { appointmentId: string }) => {

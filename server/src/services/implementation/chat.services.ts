@@ -140,4 +140,14 @@ export class ChatService implements IChatService {
       throw error;
     }
   }
+
+  async getUserChats(userId: string): Promise<IChat[]> {
+    try {
+     return   this._chatRepo.getChatsByUser(userId);
+      
+    } catch (error) {
+      console.log("error : ",error);
+      throw error;
+    }
+  }
 }
