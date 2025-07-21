@@ -33,6 +33,7 @@ import ChangeEmail from "./pages/auth/ChangeEmail";
 import ChangePassword from "./pages/auth/ChangePassword";
 import ChatUI from "./pages/chat/Chat";
 import ChatDashboard from "./pages/chat/ChatDashboard";
+import VideoCall from "./pages/video/videoCall";
 
 const App: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -190,6 +191,10 @@ const App: React.FC = () => {
           element={isAuthenticated && (role === "doctor" || role === "user")? <ChangePassword /> : <Navigate to="/login" replace />}
         />
 
+        <Route
+          path="/my-video"
+          element={isAuthenticated && (role === "doctor" || role === "user")? <VideoCall /> : <Navigate to="/login" replace />}
+        />
 
         
         <Route path="*" element={<Navigate to={isAuthenticated ? getDashboardRoute() : "/login"} replace />} />

@@ -1579,7 +1579,7 @@ const ChatUI = (props: ChatProps) => {
     const token = useAuthStore.getState().accessToken;
     if (!appointmentId || !user || !hasHydrated || !token) return;
 
-    const socket = io(import.meta.env.VITE_SOCKET_URL, {
+    const socket = io(`${import.meta.env.VITE_SOCKET_URL}/chat`, {
       auth: { token },
       withCredentials: true,
     });

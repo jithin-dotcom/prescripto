@@ -80,15 +80,11 @@ import { requestLogger } from './middlewares/requestLogger.middleware';
 import { errorHandler } from './middlewares/errorHandler.middleware';
 import { socketAuthMiddleware } from './middlewares/socketAuth.middleware';
 import { chatSocketHandler } from './utils/sockets/chat.socket';
+import { videoCallSocketHandler } from './utils/sockets/videoCall.socket';
 
 const app = express();
 const server = http.createServer(app); 
-// const io = new Server(server, {
-//   cors: {
-//     origin: "http://localhost:5173", 
-//     credentials: true,
-//   },
-// });
+
 
 const io = new Server(server, {
   cors: {
@@ -98,13 +94,36 @@ const io = new Server(server, {
 });
 
 
-io.use(socketAuthMiddleware);
+// io.use(socketAuthMiddleware);
 
 
-io.on("connection", (socket) => {
-  console.log(`Socket connected: ${socket.id}`);
-  chatSocketHandler(io, socket);
+// io.on("connection", (socket) => {
+//   console.log(`Socket connected: ${socket.id}`);
+//   chatSocketHandler(io, socket);
+//   videoCallSocketHandler(io, socket);
+// });
+
+
+
+
+// Namespace for chat - with auth
+const chatNamespace = io.of("/chat");
+chatNamespace.use(socketAuthMiddleware); // Only chat needs auth
+chatNamespace.on("connection", (socket) => {
+  console.log(`✅ Chat socket connected: ${socket.id}`);
+  chatSocketHandler(chatNamespace, socket);
 });
+
+// Namespace for video - no auth needed
+const videoNamespace = io.of("/video");
+videoNamespace.on("connection", (socket) => {
+  console.log(`✅ Video socket connected: ${socket.id}`);
+  videoCallSocketHandler(videoNamespace, socket);
+});
+
+
+
+
 
 
 // app.use(cors({

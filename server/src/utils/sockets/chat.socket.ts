@@ -543,8 +543,9 @@ import mongoose from "mongoose";
 import { Chat } from "../../models/chat/chat.models";
 import { Message } from "../../models/message/message.models";
 import { uploadToCloudinary } from "../../config/cloudinary";
+import { Namespace } from "socket.io";
 
-export const chatSocketHandler = (io: Server, socket: Socket) => {
+export const chatSocketHandler = (io: Namespace, socket: Socket) => { //Socket => NameSpace
   console.log("entered into socket");
 
   const user = socket.data.user;

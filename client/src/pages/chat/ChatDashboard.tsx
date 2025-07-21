@@ -1259,7 +1259,7 @@ const ChatDashboard = () => {
   useEffect(() => {
     if (!selectedChat || !token || !hasHydrated) return;
 
-    const socket = io(import.meta.env.VITE_SOCKET_URL, {
+    const socket = io(`${import.meta.env.VITE_SOCKET_URL}/chat`, {
       auth: { token },
       withCredentials: true,
     });

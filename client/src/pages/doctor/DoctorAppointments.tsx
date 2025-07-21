@@ -244,7 +244,9 @@ const DoctorAppointments = () => {
           className="text-xs px-3 py-1 rounded flex items-center gap-1 bg-purple-500 text-white hover:bg-purple-600 transition"
           onClick={() => {
             // Replace with your video call route or action
-            console.log("Start video call with", app.user.name);
+            // console.log("Start video call with", app.user.name);
+            // navigate("/my-video",{ state: { appointmentId: app._id, patientId: app.user._id, doctorId: app.doctorId } })
+             navigate("/my-video",{ state: { appointmentId: app._id, userId: app.doctorId, doctorId: app.user._id } })
           }}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

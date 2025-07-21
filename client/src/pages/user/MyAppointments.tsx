@@ -289,61 +289,7 @@ const MyAppointments: React.FC = () => {
                   </div>
                 </div>
 
-                
-{/* 
-                <div className="flex flex-col gap-2 justify-start sm:justify-end text-sm text-center sm:text-right">
-                  {["confirmed", "pending"].includes(item.status) && (
-                    <MotionButton
-                      onClick={() => {
-                        setAppointmentToCancel(item);
-                        setIsModalOpen(true);
-                      }}
-                      className="hover:bg-red-600 hover:text-white"
-                    >
-                      Cancel appointment
-                    </MotionButton>
-                  )}
-
-                  {item.status === "confirmed" && item.payment !== "paid" && (
-                    <>
-                      <MotionButton>
-                        <img className="max-w-20 max-h-5 mx-auto" src={assets.stripe_logo} alt="Stripe" />
-                      </MotionButton>
-        
-                      <MotionButton onClick={() => handleRazorpayPayment(item)}>
-                         <img className="max-w-20 max-h-5 mx-auto" src={assets.razorpay_logo} alt="Razorpay" />
-                      </MotionButton>
-                    </>
-                  )}
-
-
-                </div> */}
-
-                {/* <div className="flex flex-col gap-2 justify-start sm:justify-end text-sm text-center sm:text-right">
-  {item.status === "confirmed" && item.payment !== "paid" && (
-    <>
-      <MotionButton>
-        <img className="max-w-20 max-h-5 mx-auto" src={assets.stripe_logo} alt="Stripe" />
-      </MotionButton>
-
-      <MotionButton onClick={() => handleRazorpayPayment(item)}>
-        <img className="max-w-20 max-h-5 mx-auto" src={assets.razorpay_logo} alt="Razorpay" />
-      </MotionButton>
-    </>
-  )}
-
-  {["confirmed", "pending"].includes(item.status) && (
-    <MotionButton
-      onClick={() => {
-        setAppointmentToCancel(item);
-        setIsModalOpen(true);
-      }}
-      className="hover:bg-red-600 hover:text-white"
-    >
-      Cancel appointment
-    </MotionButton>
-  )}
-</div> */}
+  
 
 
 
@@ -368,7 +314,13 @@ const MyAppointments: React.FC = () => {
   {item.status === "confirmed" && item.payment === "paid" && (
     <>
       <MotionButton
-        onClick={() => console.log("Start video call")}
+        onClick={() => navigate("/my-video", {
+                                         state: {
+                                           appointmentId: item._id,
+                                           userId: item.userId,
+                                           doctorId: item.doctor._id,
+                                         },
+                                      })}
         className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-blue-600 hover:text-white transition"
       >
         <Video size={18} strokeWidth={1.5} />
