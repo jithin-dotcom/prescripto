@@ -436,11 +436,13 @@
 import { Server, Socket } from "socket.io";
 import { CallLogService } from "../../services/implementation/callLog.service";
 import { CallLogRepository } from "../../repositories/implementation/callLog.repository";
+import { AppointmentRepository } from "../../repositories/implementation/appointment.repositories";
 import mongoose from "mongoose";
 import { Namespace } from "socket.io";
 
 const callLogRepository = new CallLogRepository();
-const callLogService = new CallLogService(callLogRepository);
+const appointmentRepository = new AppointmentRepository();
+const callLogService = new CallLogService(callLogRepository, appointmentRepository);
 
 interface CallSession {
   doctorId: string;
@@ -453,7 +455,7 @@ const activeCalls = new Map<string, CallSession>(); // userId => CallSession
 const connectedUsers = new Map<string, Socket>(); // userId => Socket
 
 export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
-  console.log(`✅ Video socket connected: ${socket.id}`);
+  console.log(`Video socket connected: ${socket.id}`);
 
   socket.on("register-user", (userId: string) => {
     if (!userId) {
@@ -471,7 +473,7 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
     socket.data.userId = userId;
     connectedUsers.set(userId, socket);
     console.log(`User ${userId} joined room: ${userId}`);
-    socket.join(userId); // Join userId room
+    socket.join(userId); 
     console.log(`Socket ${socket.id} rooms:`, socket.rooms);
   });
 
@@ -486,23 +488,79 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
     console.log(`Socket ${socket.id} rooms:`, socket.rooms);
   });
 
-  socket.on("call-user", ({ to, from, signal, name, doctorId, patientId, appointmentId }) => {
-    if (!to || !from) {
-      console.error("Invalid call-user data:", { to, from });
-      socket.emit("error", { message: "Invalid call-user data" });
-      return;
-    }
-    console.log(`call-user event received from ${from} to ${to}`);
-    activeCalls.set(from, {
-      doctorId,
-      patientId,
-      appointmentId,
-      startTime: new Date(),
-    });
+  // socket.on("call-user", ({ to, from, signal, name, doctorId, patientId, appointmentId }) => {
+  //   if (!to || !from ) {
+  //     console.error("Invalid call-user data:", { to, from });
+  //     socket.emit("error", { message: "Invalid call-user data" });
+  //     return;
+  //   }
+  //   console.log(`call-user event received from ${from} to ${to}`);
+  //   activeCalls.set(from, {
+  //     doctorId,
+  //     patientId,
+  //     appointmentId,
+  //     startTime: new Date(),
+  //   });
+  //   activeCalls.set(to, {
+  //     doctorId,
+  //     patientId,
+  //     appointmentId,
+  //     startTime: new Date(),
+  //   });
 
-    console.log(`Sending incoming-call to: ${to}`);
-    io.to(to).emit("incoming-call", { from, name, signal });
-  });
+  //   console.log(`Sending incoming-call to: ${to}`);
+  //   io.to(to).emit("incoming-call", { from, name, signal });
+  // });
+
+
+
+  socket.on("call-user", ({ to, from, signal, name, doctorId, patientId, appointmentId }) => {
+  if (!to || !from || !appointmentId || !doctorId || !patientId) {
+    console.error("Invalid call-user data:", { to, from, appointmentId });
+    socket.emit("error", { message: "Invalid call-user data" });
+    return;
+  }
+
+  const receiverSocket = connectedUsers.get(to);
+  const senderSocket = connectedUsers.get(from);
+
+  // Check if receiver is online
+  if (!receiverSocket) {
+    console.warn(`Receiver ${to} is not online`);
+    socket.emit("error", { message: "User is not online or available for call." });
+    return;
+  }
+
+  const receiverRooms = Array.from(receiverSocket.rooms);
+  const senderRooms = Array.from(socket.rooms);
+
+  // Check if both are in the same appointment room
+  const receiverInRoom = receiverRooms.includes(appointmentId);
+  const senderInRoom = senderRooms.includes(appointmentId);
+
+  if (!receiverInRoom || !senderInRoom) {
+    console.warn(`Appointment mismatch. Receiver in room: ${receiverInRoom}, Sender in room: ${senderInRoom}`);
+    socket.emit("error", {
+      message: "User is not online or available for call",
+    });
+    return;
+  }
+
+  // Log call session
+  const session: CallSession = {
+    doctorId,
+    patientId,
+    appointmentId,
+    startTime: new Date(),
+  };
+
+  activeCalls.set(from, session);
+  activeCalls.set(to, session);
+
+  console.log(`Valid call initiated from ${from} to ${to} for appointment ${appointmentId}`);
+  io.to(to).emit("incoming-call", { from, name, signal });
+});
+
 
   socket.on("answer-call", ({ to, signal, appointmentId }) => {
     console.log(`answer-call event from ${socket.data.userId} to ${to}`);
@@ -541,6 +599,7 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
       }
 
       activeCalls.delete(from);
+      activeCalls.delete(to);
     }
 
     io.to(to).emit("end-call");
@@ -551,12 +610,65 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
     io.to(to).emit("ice-candidate", { candidate });
   });
 
-  socket.on("disconnect", () => {
-    console.log(`Socket disconnected: ${socket.id}, user: ${socket.data.userId}`);
-    if (socket.data.userId) {
-      connectedUsers.delete(socket.data.userId);
-      io.to(socket.data.userId).emit("user-disconnected");
-      activeCalls.delete(socket.data.userId);
+  
+  socket.on("disconnect", async () => {
+  console.log(`Socket disconnected: ${socket.id}, user: ${socket.data.userId}`);
+
+  const userId = socket.data.userId;
+  const session = activeCalls.get(userId);
+
+  if (userId) {
+    connectedUsers.delete(userId);
+
+    // Notify other participant in the call room
+    if (session?.appointmentId) {
+      io.to(session.appointmentId).emit("user-disconnected", {userId});
+      try {
+         const endTime = new Date();
+         const duration = Math.floor((endTime.getTime() - session.startTime.getTime())/1000);
+
+         await callLogService.logCall({
+            doctorId: new mongoose.Types.ObjectId(session.doctorId),
+            patientId: new mongoose.Types.ObjectId(session.patientId),
+            appointmentId: new mongoose.Types.ObjectId(session.appointmentId),
+            startTime: session.startTime,
+            endTime: endTime,
+            duration,
+            callType: "video",
+            callStatus: "dropped",
+         })
+          console.log(`Notified room ${session.appointmentId} that user ${userId} disconnected`);
+      } catch (error) {
+          console.error("Error in auto logging ");
+      }
+     
     }
-  });
+
+    // activeCalls.delete(userId);
+  }
+});
+
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+// socket.on("disconnect", () => {
+  //   console.log(`Socket disconnected: ${socket.id}, user: ${socket.data.userId}`);
+  //   if (socket.data.userId) {
+  //     connectedUsers.delete(socket.data.userId);
+  //     io.to(socket.data.userId).emit("user-disconnected");
+      
+   
+  //     activeCalls.delete(socket.data.userId);
+  //   }
+  // });

@@ -16,7 +16,7 @@ const callLogSchema: Schema = new Schema(
     callType: { type: String, enum: ["video", "audio"], default: "video" },
     callStatus: {
       type: String,
-      enum: ["completed", "missed", "cancelled"],
+      enum: ["completed", "dropped", "cancelled"],
       default: "completed",
     },
   },

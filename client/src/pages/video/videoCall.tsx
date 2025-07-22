@@ -1452,333 +1452,11 @@
 
 
 
-import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import { Phone, PhoneOff, Video, X } from "lucide-react";
-import { io, Socket } from "socket.io-client";
-
-type SignalData = RTCSessionDescriptionInit;
-
-interface IncomingCallData {
-  from: string;
-  name: string;
-  signal: SignalData;
-}
-
-export default function MyVideoCall() {
-  const { state } = useLocation();
-  const { appointmentId, userId, doctorId } = state || {};
-
-  const socketRef = useRef<Socket | null>(null);
-  const [stream, setStream] = useState<MediaStream | null>(null);
-  const [incomingCall, setIncomingCall] = useState<IncomingCallData | null>(null);
-  const [callAccepted, setCallAccepted] = useState(false);
-  const [callEnded, setCallEnded] = useState(false);
-  const [showIncomingPopup, setShowIncomingPopup] = useState(false);
-  const [isCalling, setIsCalling] = useState(false);
-
-  const myVideo = useRef<HTMLVideoElement>(null);
-  const userVideo = useRef<HTMLVideoElement>(null);
-  const peerConnection = useRef<RTCPeerConnection | null>(null);
-
-  useEffect(() => {
-    if (!appointmentId || !userId || !doctorId) {
-      console.error("Missing required parameters:", { appointmentId, userId, doctorId });
-      return;
-    }
-
-    console.log("appointmentId : ",appointmentId);
-    console.log("userId : ",userId);
-    console.log("doctorId: ",doctorId);
-
-    // 1. Connect socket
-    socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/video`, {
-      withCredentials: true,
-    });
-
-    const socket = socketRef.current;
-
-    // 2. Register user and join rooms
-    socket.emit("register-user", userId);
-    socket.emit("join-call-room", { appointmentId, userId, doctorId });
-
-    // 3. Get local media stream
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((currentStream) => {
-        setStream(currentStream);
-        if (myVideo.current) myVideo.current.srcObject = currentStream;
-      })
-      .catch((err) => console.error("Error accessing media devices:", err));
-
-    // 4. Handle socket events
-    socket.on("connect", () => {
-      console.log("Socket connected:", socket.id, "for user:", userId);
-    });
-
-    socket.on("incoming-call", ({ from, name, signal }) => {
-      console.log("📞 Incoming call received!", { from, name, signal });
-      setIncomingCall({ from, name, signal });
-      setShowIncomingPopup(true);
-    });
-
-    socket.on("call-rejected", () => {
-      console.log("Call rejected by recipient");
-      alert("Call was rejected.");
-      setIsCalling(false);
-    });
-
-    socket.on("call-accepted", async ({ signal }) => {
-      console.log("Call accepted, setting remote description");
-      setCallAccepted(true);
-      if (peerConnection.current) {
-        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-      }
-    });
-
-    socket.on("end-call", () => {
-      console.log("Call ended by remote user");
-      handleRemoteEnd();
-    });
-
-    socket.on("user-disconnected", () => {
-      console.log("Remote user disconnected");
-      alert("The other user disconnected.");
-      handleRemoteEnd();
-    });
-
-    socket.on("ice-candidate", async ({ candidate }) => {
-      if (peerConnection.current && candidate) {
-        console.log("Adding received ICE candidate");
-        await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
-      }
-    });
-
-    // Cleanup
-    return () => {
-      console.log("Cleaning up for user:", userId);
-      peerConnection.current?.close();
-      stream?.getTracks().forEach((track) => track.stop());
-      socket.disconnect();
-    };
-  }, [appointmentId, userId, doctorId]);
-
-  const startCall = async () => {
-    if (!userId || !doctorId) {
-      console.error("Cannot start call: userId or doctorId missing");
-      return;
-    }
-
-    const pc = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    });
-    peerConnection.current = pc;
-    setIsCalling(true);
-
-    stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
-
-    pc.ontrack = (event) => {
-      console.log("Received remote stream");
-      if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-    };
-
-    pc.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log("Sending ICE candidate to:", userId === doctorId ? userId : doctorId);
-        socketRef.current?.emit("ice-candidate", {
-          to: userId === doctorId ? userId : doctorId,
-          candidate: event.candidate,
-        });
-      }
-    };
-
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-
-    // Fix: Correctly determine the receiverId
-    const receiverId = userId === doctorId ? userId : doctorId; // Fixed to target the other party
-    socketRef.current?.emit("call-user", {
-      to: receiverId,
-      from: userId,
-      name: userId === doctorId ? "Doctor" : "Patient",
-      appointmentId,
-      signal: offer,
-      doctorId,
-      patientId: userId !== doctorId ? userId : undefined,
-    });
-    console.log("Emitting call-user to:", receiverId);
-  };
-
-  const handleAcceptCall = async () => {
-    setCallAccepted(true);
-    setShowIncomingPopup(false);
-
-    const pc = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    });
-    peerConnection.current = pc;
-
-    stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
-
-    pc.ontrack = (event) => {
-      console.log("Received remote stream");
-      if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-    };
-
-    pc.onicecandidate = (event) => {
-      if (event.candidate) {
-        console.log("Sending ICE candidate to:", incomingCall?.from);
-        socketRef.current?.emit("ice-candidate", {
-          to: incomingCall?.from,
-          candidate: event.candidate,
-        });
-      }
-    };
-
-    if (incomingCall?.signal) {
-      await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-    }
-
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-
-    socketRef.current?.emit("answer-call", {
-      to: incomingCall?.from,
-      appointmentId,
-      signal: answer,
-    });
-    console.log("Emitting answer-call to:", incomingCall?.from);
-  };
-
-  const handleRejectCall = () => {
-    setShowIncomingPopup(false);
-    socketRef.current?.emit("reject-call", {
-      to: incomingCall?.from,
-      appointmentId,
-    });
-    console.log("Emitting reject-call to:", incomingCall?.from);
-  };
-
-  const endCall = () => {
-    setCallEnded(true);
-    setCallAccepted(false);
-    peerConnection.current?.close();
-
-    socketRef.current?.emit("end-call", {
-      from: userId,
-      to: userId === doctorId ? userId : doctorId,
-      appointmentId,
-    });
-    console.log("Emitting end-call");
-  };
-
-  const handleRemoteEnd = () => {
-    console.log("Handling remote call end");
-    setCallEnded(true);
-    setCallAccepted(false);
-    peerConnection.current?.close();
-  };
-
-  return (
-    <div className="h-screen w-full flex items-center justify-center bg-gray-100 p-4">
-      <div className="flex flex-col gap-6 items-center w-full max-w-4xl">
-        {!callAccepted && !isCalling && (
-          <button
-            onClick={startCall}
-            className="bg-blue-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-600 shadow-md"
-          >
-            <Video /> Start Call
-          </button>
-        )}
-
-        <video
-          ref={myVideo}
-          muted
-          autoPlay
-          playsInline
-          className="rounded-lg w-full max-w-md shadow-lg"
-        />
-        {callAccepted && (
-          <video
-            ref={userVideo}
-            autoPlay
-            playsInline
-            className="rounded-lg w-full max-w-md shadow-lg"
-          />
-        )}
-
-        {callAccepted && !callEnded && (
-          <button
-            onClick={endCall}
-            className="bg-red-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-red-600 shadow-md"
-          >
-            <PhoneOff /> End Call
-          </button>
-        )}
-      </div>
-
-      <AnimatePresence>
-        {showIncomingPopup && incomingCall && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-          >
-            <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center gap-4">
-              <button
-                className="absolute top-2 right-2"
-                onClick={() => setShowIncomingPopup(false)}
-              >
-                <X />
-              </button>
-              <Video className="text-blue-500" size={40} />
-              <p className="text-lg font-semibold">
-                Incoming call from {incomingCall.name}
-              </p>
-              <div className="flex gap-4">
-                <button
-                  className="bg-green-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-green-600"
-                  onClick={handleAcceptCall}
-                >
-                  <Phone /> Accept
-                </button>
-                <button
-                  className="bg-red-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-red-600"
-                  onClick={handleRejectCall}
-                >
-                  <PhoneOff /> Reject
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // import { useEffect, useRef, useState } from "react";
-// import { useLocation, useNavigate } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 // import { AnimatePresence, motion } from "framer-motion";
 // import { Phone, PhoneOff, Video, X } from "lucide-react";
 // import { io, Socket } from "socket.io-client";
-// import { useAuthStore } from "./path-to-your-auth-store"; // Adjust the import path
 
 // type SignalData = RTCSessionDescriptionInit;
 
@@ -1790,15 +1468,7 @@ export default function MyVideoCall() {
 
 // export default function MyVideoCall() {
 //   const { state } = useLocation();
-//   const navigate = useNavigate();
-//   const { appointmentId, doctorId, patientId } = state || {};
-//   const { user, role, hasHydrated } = useAuthStore((state) => ({
-//     user: state.user,
-//     role: state.role,
-//     hasHydrated: state.hasHydrated,
-//   }));
-
-//   const userId = user?.id; // Get userId from auth store
+//   const { appointmentId, userId, doctorId } = state || {};
 
 //   const socketRef = useRef<Socket | null>(null);
 //   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -1807,75 +1477,31 @@ export default function MyVideoCall() {
 //   const [callEnded, setCallEnded] = useState(false);
 //   const [showIncomingPopup, setShowIncomingPopup] = useState(false);
 //   const [isCalling, setIsCalling] = useState(false);
-//   const [hasNavigated, setHasNavigated] = useState(false); // Prevent navigation loop
 
 //   const myVideo = useRef<HTMLVideoElement>(null);
 //   const userVideo = useRef<HTMLVideoElement>(null);
 //   const peerConnection = useRef<RTCPeerConnection | null>(null);
 
 //   useEffect(() => {
-//     // Wait for Zustand store to hydrate
-//     if (!hasHydrated) {
-//       console.log("Waiting for auth store to hydrate...");
+//     if (!appointmentId || !userId || !doctorId) {
+//       console.error("Missing required parameters:", { appointmentId, userId, doctorId });
 //       return;
 //     }
 
-//     // Log state and auth for debugging
-//     console.log("Received state:", { appointmentId, userId, doctorId, patientId, role });
-
-//     if (!appointmentId || !userId || !doctorId || !patientId || !role) {
-//       console.error("Missing required parameters:", {
-//         appointmentId,
-//         userId,
-//         doctorId,
-//         patientId,
-//         role,
-//       });
-//       if (!hasNavigated) {
-//         alert("Invalid call parameters or authentication. Redirecting...");
-//         setHasNavigated(true); // Prevent multiple navigations
-//         navigate("/");
-//       }
-//       return;
-//     }
-
-//     // Validate role consistency
-//     if (role === "doctor" && userId !== doctorId) {
-//       console.error("Role mismatch: userId does not match doctorId for doctor role", {
-//         userId,
-//         doctorId,
-//       });
-//       if (!hasNavigated) {
-//         alert("Authentication error: User ID does not match doctor ID. Redirecting...");
-//         setHasNavigated(true);
-//         navigate("/");
-//       }
-//       return;
-//     }
-//     if (role === "user" && userId !== patientId) {
-//       console.error("Role mismatch: userId does not match patientId for user role", {
-//         userId,
-//         patientId,
-//       });
-//       if (!hasNavigated) {
-//         alert("Authentication error: User ID does not match patient ID. Redirecting...");
-//         setHasNavigated(true);
-//         navigate("/");
-//       }
-//       return;
-//     }
+//     console.log("appointmentId : ",appointmentId);
+//     console.log("userId : ",userId);
+//     console.log("doctorId: ",doctorId);
 
 //     // 1. Connect socket
 //     socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/video`, {
 //       withCredentials: true,
-//       reconnectionAttempts: 5,
 //     });
 
 //     const socket = socketRef.current;
 
 //     // 2. Register user and join rooms
 //     socket.emit("register-user", userId);
-//     socket.emit("join-call-room", { appointmentId, userId, doctorId, patientId });
+//     socket.emit("join-call-room", { appointmentId, userId, doctorId });
 
 //     // 3. Get local media stream
 //     navigator.mediaDevices
@@ -1889,16 +1515,6 @@ export default function MyVideoCall() {
 //     // 4. Handle socket events
 //     socket.on("connect", () => {
 //       console.log("Socket connected:", socket.id, "for user:", userId);
-//     });
-
-//     socket.on("connect_error", (err) => {
-//       console.error("Socket connection error:", err.message);
-//       alert("Failed to connect to server. Please try again.");
-//     });
-
-//     socket.on("error", ({ message }) => {
-//       console.error("Server error:", message);
-//       alert(`Server error: ${message}`);
 //     });
 
 //     socket.on("incoming-call", ({ from, name, signal }) => {
@@ -1946,16 +1562,11 @@ export default function MyVideoCall() {
 //       stream?.getTracks().forEach((track) => track.stop());
 //       socket.disconnect();
 //     };
-//   }, [appointmentId, userId, doctorId, patientId, role, hasHydrated, navigate, hasNavigated]);
+//   }, [appointmentId, userId, doctorId]);
 
 //   const startCall = async () => {
-//     if (!userId || !doctorId || !patientId || !role) {
-//       console.error("Cannot start call: missing parameters", {
-//         userId,
-//         doctorId,
-//         patientId,
-//         role,
-//       });
+//     if (!userId || !doctorId) {
+//       console.error("Cannot start call: userId or doctorId missing");
 //       return;
 //     }
 
@@ -1974,10 +1585,9 @@ export default function MyVideoCall() {
 
 //     pc.onicecandidate = (event) => {
 //       if (event.candidate) {
-//         const receiverId = role === "doctor" ? patientId : doctorId;
-//         console.log("Sending ICE candidate to:", receiverId);
+//         console.log("Sending ICE candidate to:", userId === doctorId ? userId : doctorId);
 //         socketRef.current?.emit("ice-candidate", {
-//           to: receiverId,
+//           to: userId === doctorId ? userId : doctorId,
 //           candidate: event.candidate,
 //         });
 //       }
@@ -1986,21 +1596,18 @@ export default function MyVideoCall() {
 //     const offer = await pc.createOffer();
 //     await pc.setLocalDescription(offer);
 
-//     // Determine to and from based on role
-//     const to = role === "doctor" ? patientId : doctorId;
-//     const from = userId;
-//     const name = role === "doctor" ? "Doctor" : "Patient";
-
+//     // Fix: Correctly determine the receiverId
+//     const receiverId = userId === doctorId ? userId : doctorId; // Fixed to target the other party
 //     socketRef.current?.emit("call-user", {
-//       to,
-//       from,
-//       name,
+//       to: receiverId,
+//       from: userId,
+//       name: userId === doctorId ? "Doctor" : "Patient",
 //       appointmentId,
 //       signal: offer,
 //       doctorId,
-//       patientId,
+//       patientId: userId !== doctorId ? userId : undefined,
 //     });
-//     console.log("Emitting call-user:", { to, from, name });
+//     console.log("Emitting call-user to:", receiverId);
 //   };
 
 //   const handleAcceptCall = async () => {
@@ -2060,7 +1667,7 @@ export default function MyVideoCall() {
 
 //     socketRef.current?.emit("end-call", {
 //       from: userId,
-//       to: role === "doctor" ? patientId : doctorId,
+//       to: userId === doctorId ? userId : doctorId,
 //       appointmentId,
 //     });
 //     console.log("Emitting end-call");
@@ -2151,6 +1758,485 @@ export default function MyVideoCall() {
 //     </div>
 //   );
 // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import { Phone, PhoneOff, Video, X } from "lucide-react";
+import { io, Socket } from "socket.io-client";
+import { useAuthStore } from "../../store/authStore";
+import { toast } from "react-toastify";
+
+type SignalData = RTCSessionDescriptionInit;
+
+interface IncomingCallData {
+  from: string;
+  name: string;
+  signal: SignalData;
+}
+
+export default function MyVideoCall() {
+  const { state } = useLocation();
+  const { user: currentUser } = useAuthStore();
+  const myId = currentUser?._id;
+  const { appointmentId, userId: patientId, doctorId } = state || {};
+  const navigate = useNavigate();
+  
+
+  const isDoctor = myId === doctorId;
+  const peerId = isDoctor ? patientId : doctorId;
+
+  const socketRef = useRef<Socket | null>(null);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [incomingCall, setIncomingCall] = useState<IncomingCallData | null>(null);
+  const [callAccepted, setCallAccepted] = useState(false);
+  const [callEnded, setCallEnded] = useState(false);
+  const [showIncomingPopup, setShowIncomingPopup] = useState(false);
+  const [isCalling, setIsCalling] = useState(false);
+
+  const myVideo = useRef<HTMLVideoElement>(null);
+  const userVideo = useRef<HTMLVideoElement>(null);
+  const peerConnection = useRef<RTCPeerConnection | null>(null);
+  // const pendingCandidates: RTCIceCandidateInit[] = [];
+  const hasShownMediaErrorRef = useRef(false);
+
+  useEffect(() => {
+
+    if (!myId || !appointmentId || !patientId || !doctorId) {
+      console.error("Missing required parameters:", { appointmentId, patientId, doctorId, myId });
+      toast.error("Missing required parameters : appointmentId, patientId, doctorId, myId")
+      return ;
+    }
+    socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/video`, {
+      withCredentials: true,
+    });
+
+    const socket = socketRef.current;
+
+    socket.emit("register-user", myId);
+    socket.emit("join-call-room", { appointmentId, userId: myId, doctorId, patientId });
+
+    navigator.mediaDevices
+      .getUserMedia({ video: true, audio: true })
+      .then((currentStream) => {
+        setStream(currentStream);
+        if (myVideo.current) myVideo.current.srcObject = currentStream;
+
+      
+      })
+      .catch((err) => {
+        // toast.error(`Error accessing media devices : ${err}`)
+        console.error("Media access error:", err);
+
+  if (!hasShownMediaErrorRef.current) {
+    if (err?.message?.includes("Permission denied")) {
+      toast.error("Please allow access to camera and microphone.");
+    } else {
+      toast.error("Could not access media devices.");
+    }
+    hasShownMediaErrorRef.current = true; // Prevent future toasts
+  }
+
+  
+  socketRef.current?.disconnect();
+  return;
+      });
+
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id, "for user:", myId);
+    });
+
+    socket.on("incoming-call", ({ from, name, signal }) => {
+      console.log("Incoming call received", { from, name, signal });
+      setIncomingCall({ from, name, signal });
+      setShowIncomingPopup(true);
+    });
+
+    socket.on("call-rejected", () => {
+      console.log("Call rejected by recipient");
+      toast.error("Call was rejected ");
+      setIsCalling(false);
+    });
+
+    socket.on("call-accepted", async ({ signal }) => {
+      setCallAccepted(true);
+      setCallEnded(false);
+      setIsCalling(true);
+      setShowIncomingPopup(false);
+      console.log("Call accepted, setting remote description");
+      toast.success("Call accepted");
+      setCallAccepted(true);
+      if (peerConnection.current) {
+        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
+      }
+    });
+
+    socket.on("end-call", () => {
+      handleRemoteEnd();
+      console.log("Call ended by remote user");
+      toast.success("Call completed successfully");
+      if(isDoctor){
+          navigate("/doctor-appointments",{replace: true});
+      }else{
+         navigate("/my-appointments",{replace: true});
+      }
+     
+    });
+
+    socket.on("user-disconnected", (payload) => {
+       peerConnection.current?.close();
+       console.log("user-disconnected event received", payload);
+      toast.error("The other user disconnected.");
+      handleRemoteEnd();
+    });
+
+    socket.onAny((event, ...args) => {
+     console.log("📡 Received event:", event, args);
+    });
+    
+
+  //   socket.on("error", (message) => {
+  //    console.error("Socket error:", message);
+  //    toast.error(message); // Show backend error as toast
+  //    setIsCalling(false); // Reset calling state
+  //  });
+
+    socket.on("error", (err) => {
+      console.error("Socket error:", err);
+
+      const errorMessage = typeof err === "string" ? err : err?.message || "An unknown error occurred";
+      toast.error(errorMessage);
+      setIsCalling(false);
+    })
+
+    socket.on("ice-candidate", async ({ candidate }) => {
+      if (peerConnection.current && candidate) {
+        console.log("Adding received ICE candidate");
+        await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    });
+
+    
+
+    return () => {
+      console.log("Cleaning up for user:", myId);
+      peerConnection.current?.close();
+      stream?.getTracks().forEach((track) => track.stop());
+      socket.disconnect();
+
+    };
+  }, [appointmentId, myId, doctorId, patientId]);
+
+  // const startCall = async () => {
+  
+  //   setCallAccepted(false);
+  //   setCallEnded(false);
+  //   const pc = new RTCPeerConnection({
+  //     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  //   });
+  //   console.log("pc : ",pc);
+  //   peerConnection.current = pc;
+  //   setIsCalling(true);
+   
+
+  //   stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
+
+  //   pc.ontrack = (event) => {
+  //     if (userVideo.current) userVideo.current.srcObject = event.streams[0];
+  //   };
+
+  //   pc.onicecandidate = (event) => {
+  //     if (event.candidate) {
+  //       socketRef.current?.emit("ice-candidate", {
+  //         to: peerId,
+  //         candidate: event.candidate,
+  //       });
+  //     }
+  //   };
+
+  //   const offer = await pc.createOffer();
+  //   await pc.setLocalDescription(offer);
+
+  //   socketRef.current?.emit("call-user", {
+  //     to: peerId,
+  //     from: myId,
+  //     name: isDoctor ? "Doctor" : "Patient",
+  //     appointmentId,
+  //     signal: offer,
+  //     doctorId,
+  //     patientId,
+  //   });
+  // };
+
+
+  const startCall = async () => {
+  if (!peerId || !myId || !appointmentId || !doctorId || !patientId) {
+    toast.error("Cannot start call: Missing required information.");
+    return;
+  }
+
+  setCallAccepted(false);
+  setCallEnded(false);
+  setIsCalling(true);
+
+  const pc = new RTCPeerConnection({
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+  });
+
+  console.log("Creating RTCPeerConnection:", pc);
+  peerConnection.current = pc;
+
+  stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
+
+  pc.ontrack = (event) => {
+    if (userVideo.current) {
+      userVideo.current.srcObject = event.streams[0];
+    }
+  };
+
+  pc.onicecandidate = (event) => {
+    if (event.candidate) {
+      socketRef.current?.emit("ice-candidate", {
+        to: peerId,
+        candidate: event.candidate,
+      });
+    }
+  };
+
+  try {
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    socketRef.current?.emit("call-user", {
+      to: peerId,
+      from: myId,
+      name: isDoctor ? "Doctor" : "Patient",
+      appointmentId,
+      signal: offer,
+      doctorId,
+      patientId,
+    });
+
+    console.log("Call offer emitted to backend");
+
+  } catch (err) {
+    console.error("Error starting call:", err);
+    toast.error("Error starting call. Please try again.");
+    setIsCalling(false);
+  }
+};
+
+
+  const handleAcceptCall = async () => {
+    setCallAccepted(true);
+    setCallEnded(false);  //
+    setIsCalling(true); //
+    setShowIncomingPopup(false);
+
+
+    const pc = new RTCPeerConnection({
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    });
+    peerConnection.current = pc;
+
+    stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
+
+    pc.ontrack = (event) => {
+      if (userVideo.current) userVideo.current.srcObject = event.streams[0];
+    };
+
+    pc.onicecandidate = (event) => {
+      if (event.candidate && incomingCall?.from) {
+        socketRef.current?.emit("ice-candidate", {
+          to: incomingCall.from,
+          candidate: event.candidate,
+        });
+      }
+    };
+
+    if (incomingCall?.signal) {
+      await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
+      
+    }
+
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+
+    socketRef.current?.emit("answer-call", {
+      to: incomingCall?.from,
+      appointmentId,
+      signal: answer,
+    });
+  };
+
+
+
+  const handleRejectCall = () => {
+    setShowIncomingPopup(false);
+   
+    if (incomingCall?.from) {
+      socketRef.current?.emit("reject-call", {
+        to: incomingCall.from,
+        appointmentId,
+      });
+    }
+  };
+
+  const endCall = () => {
+    setCallEnded(true);
+    setCallAccepted(false);
+    setIsCalling(false);
+    setShowIncomingPopup(false);
+   
+    peerConnection.current?.close();
+
+    socketRef.current?.emit("end-call", {
+      from: myId,
+      to: peerId,
+      appointmentId,
+    });
+    toast.success("Call completed successfully");
+    if(isDoctor){
+      navigate("/doctor-appointments")
+    }else{
+      navigate("/my-appointments")
+    }
+  };
+
+  const handleRemoteEnd = () => {
+   
+    setCallAccepted(false);
+    setCallEnded(true);
+    setIsCalling(false);
+    peerConnection.current?.close();
+    
+  };
+  console.log("callAccepted : ", callAccepted);
+  console.log("callEnded : ", callEnded);
+  console.log("isCalling : ", isCalling);
+  console.log("showIncomingPopup : ", showIncomingPopup);
+
+  return (
+    <div className="h-screen w-full flex items-center justify-center bg-gray-100 p-4">
+      <div className="flex flex-col gap-6 items-center w-full max-w-4xl">
+        {!callAccepted && !isCalling  && (
+          <button
+            onClick={startCall}
+            className="bg-blue-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-600 shadow-md"
+          >
+            <Video /> Start Call
+          </button>
+        )}
+
+        <video
+          ref={myVideo}
+          muted
+          autoPlay
+          playsInline
+          className="rounded-lg w-full max-w-md shadow-lg"
+        />
+        {callAccepted && (
+          <video
+            ref={userVideo}
+            autoPlay
+            playsInline
+            className="rounded-lg w-full max-w-md shadow-lg"
+          />
+        )}
+
+        {callAccepted && !callEnded && (
+          <button
+            onClick={endCall}
+            className="bg-red-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-red-600 shadow-md"
+          >
+            <PhoneOff /> End Call
+          </button>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {showIncomingPopup && incomingCall && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          >
+            <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center gap-4">
+              <button
+                className="absolute top-2 right-2"
+                onClick={() => setShowIncomingPopup(false)}
+              >
+                <X />
+              </button>
+              <Video className="text-blue-500" size={40} />
+              <p className="text-lg font-semibold">
+                Incoming call from {incomingCall.name}
+              </p>
+              <div className="flex gap-4">
+                <button
+                  className="bg-green-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-green-600"
+                  onClick={handleAcceptCall}
+                >
+                  <Phone /> Accept
+                </button>
+                <button
+                  className="bg-red-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-red-600"
+                  onClick={handleRejectCall}
+                >
+                  <PhoneOff /> Reject
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

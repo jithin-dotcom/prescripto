@@ -9,7 +9,7 @@ export interface ICallLog extends Document {
     endTime: Date;
     duration: number;
     callType: "video" | "audio";
-    callStatus: "completed" | "missed" | "cancelled";
+    callStatus: "completed" | "dropped" | "cancelled";
     createdAt: Date;
     updateAt: Date;
 
