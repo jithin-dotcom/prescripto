@@ -8,6 +8,7 @@ import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorPr
 import { IAppointmentWithUserResponse } from "../interface/IAppointmentService";
 import { IPatientProfileRepository } from "../../repositories/interface/IPatientProfileRepository";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
+import { IChatRepository } from "../../repositories/interface/IChatRepository";
 
 
 export class AppointmentService implements IAppointmentService {
@@ -16,6 +17,7 @@ export class AppointmentService implements IAppointmentService {
     private _doctorRepo : IDoctorProfileRepository,
     private _patientRepo: IPatientProfileRepository,
     private _userRepo: IUserRepository,
+    private _chatRepo: IChatRepository,
   ) {}
 
 
@@ -875,6 +877,17 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
       success = await this._appointmentRepo.cancelWithRefundIfPaid(appointmentId);
     } else {
       const update = await this._appointmentRepo.updateById(appointmentId, { status });
+      console.log("update: ", update);
+      const appId = update?._id as mongoose.Types.ObjectId;
+      const userId = update?.userId as mongoose.Types.ObjectId;
+      const doctorId = update?.doctorId as mongoose.Types.ObjectId;
+      const participants = [userId, doctorId] as mongoose.Types.ObjectId[];
+      const existingChat = await this._chatRepo.findByAppointmentId(appointmentId);
+      console.log("existing chat : ", existingChat);
+      if(!existingChat){
+         await this._chatRepo.createChat({appointmentId: appId, userId, doctorId, participants})
+      }
+    
       success = !!update;
     }
 

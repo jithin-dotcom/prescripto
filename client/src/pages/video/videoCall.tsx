@@ -1917,15 +1917,9 @@ export default function MyVideoCall() {
     });
 
     socket.onAny((event, ...args) => {
-     console.log("📡 Received event:", event, args);
+     console.log("Received event:", event, args);
     });
     
-
-  //   socket.on("error", (message) => {
-  //    console.error("Socket error:", message);
-  //    toast.error(message); // Show backend error as toast
-  //    setIsCalling(false); // Reset calling state
-  //  });
 
     socket.on("error", (err) => {
       console.error("Socket error:", err);
@@ -1947,53 +1941,37 @@ export default function MyVideoCall() {
     return () => {
       console.log("Cleaning up for user:", myId);
       peerConnection.current?.close();
+      // cleanupMedia();
       stream?.getTracks().forEach((track) => track.stop());
       socket.disconnect();
 
     };
   }, [appointmentId, myId, doctorId, patientId]);
 
-  // const startCall = async () => {
-  
-  //   setCallAccepted(false);
-  //   setCallEnded(false);
-  //   const pc = new RTCPeerConnection({
-  //     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-  //   });
-  //   console.log("pc : ",pc);
-  //   peerConnection.current = pc;
-  //   setIsCalling(true);
-   
 
-  //   stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
+//   const cleanupMedia = () => {
+//   console.log("Cleaning up media and peer connection");
 
-  //   pc.ontrack = (event) => {
-  //     if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-  //   };
+//   if (peerConnection.current) {
+//     peerConnection.current.close();
+//     peerConnection.current = null;
+//   }
 
-  //   pc.onicecandidate = (event) => {
-  //     if (event.candidate) {
-  //       socketRef.current?.emit("ice-candidate", {
-  //         to: peerId,
-  //         candidate: event.candidate,
-  //       });
-  //     }
-  //   };
+//   if (stream) {
+//     stream.getTracks().forEach((track) => track.stop());
+//     setStream(null);
+//   }
 
-  //   const offer = await pc.createOffer();
-  //   await pc.setLocalDescription(offer);
+//   if (myVideo.current) {
+//     myVideo.current.srcObject = null;
+//   }
 
-  //   socketRef.current?.emit("call-user", {
-  //     to: peerId,
-  //     from: myId,
-  //     name: isDoctor ? "Doctor" : "Patient",
-  //     appointmentId,
-  //     signal: offer,
-  //     doctorId,
-  //     patientId,
-  //   });
-  // };
+//   if (userVideo.current) {
+//     userVideo.current.srcObject = null;
+//   }
+// };
 
+ 
 
   const startCall = async () => {
   if (!peerId || !myId || !appointmentId || !doctorId || !patientId) {
@@ -2115,6 +2093,7 @@ export default function MyVideoCall() {
     setShowIncomingPopup(false);
    
     peerConnection.current?.close();
+    // cleanupMedia();
 
     socketRef.current?.emit("end-call", {
       from: myId,
@@ -2135,6 +2114,7 @@ export default function MyVideoCall() {
     setCallEnded(true);
     setIsCalling(false);
     peerConnection.current?.close();
+    // cleanupMedia();
     
   };
   console.log("callAccepted : ", callAccepted);

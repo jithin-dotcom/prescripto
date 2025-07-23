@@ -228,7 +228,7 @@ const DoctorAppointments = () => {
 
                           {app.status === "confirmed" && app.payment === "paid" ? (
       <>
-        <button
+        {/* <button
           className="text-xs px-3 py-1 rounded flex items-center gap-1 bg-blue-500 text-white hover:bg-blue-600 transition"
           onClick={() => {
               navigate("/chat",{ state: { appointmentId: app._id, userId: app.user._id, doctorId: app.doctorId } })
@@ -238,7 +238,7 @@ const DoctorAppointments = () => {
             <path d="M21 15a2 2 0 002-2V7a2 2 0 00-2-2H7L3 9v4a2 2 0 002 2h2v4l4-4h10z" />
           </svg>
           Chat
-        </button>
+        </button> */}
 
         <button
           className="text-xs px-3 py-1 rounded flex items-center gap-1 bg-purple-500 text-white hover:bg-purple-600 transition"

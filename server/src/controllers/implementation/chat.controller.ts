@@ -37,7 +37,6 @@ export class ChatController implements IChatController {
          return;
       } 
 
-
       const chats = await this._chatService.getUserChats(userId);
       console.log("chat : ", chats);
       res.status(200).json({ chats });

@@ -20,6 +20,7 @@ router.use(verifyAccessToken);
 
 
 router.get("/messages/:appointmentId", chatController.getChatMessages.bind(chatController));
+
 router.get("/my-chats",chatController.getUserChats.bind(chatController));
 
 

@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import ConfirmationModal from "../../components/ConfirmModal";
 import axios from "axios";
 import type { Appointment } from "../../interfaces/IMyAppointments";
-import { Video, MessageCircle } from "lucide-react";
+import { Video } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 
@@ -327,13 +327,13 @@ const MyAppointments: React.FC = () => {
         <span>Video Call</span>
       </MotionButton>
 
-      <MotionButton
+      {/* <MotionButton
         onClick={() => navigate("/chat",{ state: { appointmentId: item._id, userId: item.userId, doctorId: item.doctor._id } })}
         className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-green-600 hover:text-white transition"
       >
         <MessageCircle size={18} strokeWidth={1.5} />
         <span>Chat</span>
-      </MotionButton>
+      </MotionButton> */}
     </>
   )}
 

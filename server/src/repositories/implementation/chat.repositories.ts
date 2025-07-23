@@ -15,6 +15,14 @@ export class ChatRepository extends BaseRepository<IChat & Document> implements 
     return await this.model.findOne({ appointmentId });
   }
 
+  async findByDoctorId(doctorId: string): Promise<(IChat & Document) | null> {
+    return await this.model.findOne({ doctorId });
+  }
+
+  async findByUserId(userId: string): Promise<(IChat & Document) | null> {
+    return await this.model.findOne({ userId });
+  }
+
   async createChat(data: Partial<IChat>): Promise<IChat & Document> {
     return await this.model.create(data);
   }

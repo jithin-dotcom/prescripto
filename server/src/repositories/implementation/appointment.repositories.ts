@@ -73,8 +73,8 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
      await AppointmentModel.findByIdAndUpdate(appointmentId, { payment: status });
    }
 
-   async cancelWithRefundIfPaid(id: string): Promise<boolean> {
-  const res = await this.model.updateOne(
+  async cancelWithRefundIfPaid(id: string): Promise<boolean> {
+   const res = await this.model.updateOne(
     { _id: id },
     [
       {

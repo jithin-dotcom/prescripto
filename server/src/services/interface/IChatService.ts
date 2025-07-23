@@ -34,5 +34,5 @@ export interface IChatService {
 
   createMessage(chatId: string, senderId: string, content: string): Promise<IMessage>;
   getMessagesByChatId(chatId: string): Promise<IMessage[]>;
-   getUserChats(userId: string): Promise<IChat[]>;
+  getUserChats(userId: string): Promise<IChat[]>;
 }
