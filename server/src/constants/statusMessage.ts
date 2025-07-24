@@ -12,4 +12,4 @@ export const StatusMessage = {
   MISSING_DATA: "userData and profileData are required",
   NO_CONTENT: "Resource deleted successfully ",
   MISSING_ID: "ID is missing",
-} as const;
+} as const

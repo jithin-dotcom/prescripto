@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
 import { AxiosError } from "axios";
+import { APIRoutes } from "../../constants/routes.constants";
 
 const AddDoctor = () => {
   const [form, setForm] = useState({
@@ -128,7 +129,7 @@ const AddDoctor = () => {
   });
 
   try {
-     await axiosInstance.post("/admin/create-users", formData, {
+     await axiosInstance.post(APIRoutes.ADMIN_CREATE_USERS, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
         Authorization: `Bearer ${accessToken}`,

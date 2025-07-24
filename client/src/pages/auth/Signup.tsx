@@ -6,6 +6,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import logo from "../../assets/Screenshot 2025-07-08 170708.png";
 import { motion } from "framer-motion";
+import { APIAuthRoutes } from "../../constants/routes.constants";
 
 const calculatePasswordStrength = (password: string) => {
   let score = 0;
@@ -75,7 +76,7 @@ const Signup = () => {
 
     setLoading(true);
     try {
-      await axios.post("/api/auth/signup", {
+      await axios.post(APIAuthRoutes.SIGNUP, {
         name: form.name,
         email: form.email,
         password: form.password,

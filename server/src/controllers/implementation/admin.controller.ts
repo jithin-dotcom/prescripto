@@ -47,6 +47,7 @@ export class AdminController implements IAdminController {
        let limit = parseInt(req.query.limit as string) || 10;
        let search = typeof req.query.search === "string" ? req.query.search : "";
        let specialty = typeof req.query.specialty === "string" ? req.query.specialty : "";
+       console.log("limit : ", limit);
 
        if (page < 1) page = 1;
        if (limit < 1) limit = 10;

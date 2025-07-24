@@ -6,6 +6,7 @@ import { assets } from "../../assets/assets2";
 import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
 import axiosInstance from "../../utils/axios";
+import { APIRoutes } from "../../constants/routes.constants";
 
 interface IResult {
    doctorCount: number,
@@ -17,9 +18,7 @@ const DoctorDashboard: React.FC = () => {
   useEffect(()=>{
     async function getAll(){
         try {
-          const res = await axiosInstance.get(
-        `/admin/users-count`
-      );
+          const res = await axiosInstance.get(APIRoutes.USERS_COUNT);
       setResult(res.data);
        
         } catch (error) {

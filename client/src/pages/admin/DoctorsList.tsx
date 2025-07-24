@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import type { Doctor } from "../../interfaces/IDoctorList";
 import Pagination from "../../components/Pagination";
 import { Search } from "lucide-react";
+import { APIRoutes } from "../../constants/routes.constants";
 
 const specialities = [
   "General physician",
@@ -28,15 +29,16 @@ const DoctorsList: React.FC = () => {
   const [search, setSearch] = useState<string>("");
   const [specialty, setSpecialty] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [pageSize, setPageSize] = useState<number>(4);
 
   const navigate = useNavigate();
-  const limit = 2;
+  // const limit = 2;
 
-  const getDoctor = async (page = 1, query = "", selectedSpecialty = "") => {
+  const getDoctor = async (page = 1, query = "", selectedSpecialty = "", limit = pageSize) => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(
-        `/admin/users?role=doctor&page=${page}&limit=${limit}&search=${query}&specialty=${selectedSpecialty}`
+        `${APIRoutes.ADMIN_GET_USERS}?role=doctor&page=${page}&limit=${limit}&search=${query}&specialty=${selectedSpecialty}`
       );
       setDoctors(res.data.data.items);
       setTotalPages(res.data.data.totalPages);
@@ -55,13 +57,13 @@ const DoctorsList: React.FC = () => {
   })
   useEffect(()=>{
      getDoctor(currentPage, debouncedSearch, specialty)
-  },[currentPage, debouncedSearch, specialty])
+  },[currentPage, debouncedSearch, specialty, pageSize])
 
   
 
   const toggleBlockStatus = async (doctorId: string) => {
     try {
-      await axiosInstance.patch(`/admin/block-toggle/${doctorId}`);
+      await axiosInstance.patch(`${APIRoutes.ADMIN_BLOCK_TOGGLE}/${doctorId}`);
       setDoctors((prev) =>
         prev.map((doc) =>
           doc._id === doctorId ? { ...doc, isBlocked: !doc.isBlocked } : doc
@@ -77,7 +79,7 @@ const DoctorsList: React.FC = () => {
 
   const toggleVerifiedStatus = async (doctorId: string) => {
     try {
-      await axiosInstance.patch(`/admin/verify-toggle/${doctorId}`);
+      await axiosInstance.patch(`${APIRoutes.ADMIN_VERIFY_TOGGLE}/${doctorId}`);
       setDoctors((prev) =>
         prev.map((doc) =>
           doc._id === doctorId ? { ...doc, isVerified: !doc.isVerified } : doc
@@ -194,11 +196,21 @@ const DoctorsList: React.FC = () => {
             
               <div className="mt-8">
                 {totalPages >= 1 && (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    onPageChange={(page) => setCurrentPage(page)}
-                  />
+                  // <Pagination
+                  //   currentPage={currentPage}
+                  //   totalPages={totalPages}
+                  //   onPageChange={(page) => setCurrentPage(page)}
+                  // />
+                                  <Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={setCurrentPage}
+  pageSize={pageSize}
+  onPageSizeChange={(size) => {
+    setPageSize(size);
+    setCurrentPage(1); 
+  }}
+/>
                 )}
               </div>
             </>

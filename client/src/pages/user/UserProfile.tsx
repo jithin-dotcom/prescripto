@@ -7,6 +7,7 @@ import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
 import type { Profile } from "../../interfaces/IUserProfile";
 import { motion } from "framer-motion";
+import { APIUserRoutes } from "../../constants/routes.constants";
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const UserProfile = () => {
 
     async function fetchUserProfile() {
       try {
-        const res = await axiosInstance.get(`/user/user-profile/${userId}`);
+        const res = await axiosInstance.get(`${APIUserRoutes.USER_PROFILE}/${userId}`);
         const { user, profile: profileData } = res.data.data;
 
         setProfile({

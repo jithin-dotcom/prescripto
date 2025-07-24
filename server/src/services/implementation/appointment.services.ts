@@ -612,7 +612,7 @@ async getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse
       yearOfExperience: profile.yearOfExperience || 0,
       about: profile.about || "",
       fee: profile.fee || 0,
-      availability: profile.availability || [], // updated structure with slots[]
+      availability: profile.availability || [], 
       slotDuration: profile.slotDuration || 30,
     };
 
@@ -843,30 +843,6 @@ async getAllAppointments(
 
 
 
-
-// async updateStatus(appointmentId: string, status: string): Promise<{message: string}>{
-//    try {
-//       let update = null;
-//       if(status = "cancelled"){
-//          update = await this._appointmentRepo.updateById(appointmentId,{status:status,payment:"refund"});
-//       }else{
-//          update = await this._appointmentRepo.updateById(appointmentId,{status:status});
-//       }
-       
-//       if(!update){
-//          throw new Error(`Failed to ${status} the Appointment`);
-//       }
-//       return {
-//         message: `Appointment ${status} successfully`
-//       }
-//    } catch (error) {
-//       if(error instanceof Error){
-//          throw error;
-//       }else{
-//          throw new Error("Something went wrong");
-//       }
-//    }
-//  }
 
 
 async updateStatus(appointmentId: string, status: string): Promise<{ message: string }> {

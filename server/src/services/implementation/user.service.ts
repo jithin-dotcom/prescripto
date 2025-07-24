@@ -250,7 +250,9 @@ async changePassword(userId: string, oldPassword: string, newPassword: string):P
 
    }catch (error) {
       if(error instanceof Error){
-         throw new Error(error.message);
+        //  throw new Error(error.message);
+        console.log("error: ",error);
+        throw error
       }else{
          throw new Error("Something went wrong");
       }

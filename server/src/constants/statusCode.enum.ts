@@ -12,4 +12,4 @@ export enum StatusCode {
   CONFLICT = 409,
 
   INTERNAL_SERVER_ERROR = 500,
-}
+} 

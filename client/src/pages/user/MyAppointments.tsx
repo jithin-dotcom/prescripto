@@ -14,6 +14,7 @@ import axios from "axios";
 import type { Appointment } from "../../interfaces/IMyAppointments";
 import { Video } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { APIUserRoutes, APIRoutes } from "../../constants/routes.constants";
 
 
 
@@ -39,7 +40,8 @@ const MyAppointments: React.FC = () => {
 
   const userId = useAuthStore((state) => state.user?._id);
   const name = useAuthStore((state) => state.user?.name);
-  const limit = 4;
+  const [pageSize, setPageSize] = useState<number>(5)
+  // const limit = 4;
 
   useEffect(() => {
     if (!userId) return;
@@ -47,7 +49,7 @@ const MyAppointments: React.FC = () => {
     const fetchAppointments = async () => {
       try {
         setLoading(true);
-        const query = `/user-appointments/${userId}?page=${currentPage}&limit=${limit}${
+        const query = `${APIUserRoutes.APPOINTMENTS}/${userId}?page=${currentPage}&limit=${pageSize}${
           selectedStatus !== "all" ? `&status=${selectedStatus}` : ""
         }`;
 
@@ -64,12 +66,12 @@ const MyAppointments: React.FC = () => {
     };
 
     fetchAppointments();
-  }, [userId, selectedStatus, currentPage]);
+  }, [userId, selectedStatus, currentPage, pageSize]);
 
   const handleCancelAppointment = async () => {
     if (!appointmentToCancel) return;
     try {
-      await axiosInstance.patch(`/cancel-appointment/${appointmentToCancel._id}`, { status: "cancelled" });
+      await axiosInstance.patch(`${APIRoutes.CANCEL_APPOINTMENTS}/${appointmentToCancel._id}`, { status: "cancelled" });
       // const updated = appointments.map((item) =>
       //   item._id === appointmentToCancel._id ? { ...item, status: "cancelled" as Appointment["status"] } : item
       // );
@@ -128,7 +130,7 @@ const MyAppointments: React.FC = () => {
   }
 
   try {
-    const res = await axiosInstance.post("/payments/create-order", {
+    const res = await axiosInstance.post(APIUserRoutes.PAYMENT_CREATE_ORDER, {
       appointmentId: appointment._id,
       userId: userId,
       doctorId: appointment.doctor._id,
@@ -152,7 +154,7 @@ const MyAppointments: React.FC = () => {
       handler: async function (response: RazorpayResponse) {
         console.log("response rezor : ",response);
         try {
-          const verifyRes = await axiosInstance.post("/payments/verify", {
+          const verifyRes = await axiosInstance.post(APIUserRoutes.PAYMENT_VERIFY_ORDER, {
             razorpayOrderId: response.razorpay_order_id,
             razorpayPaymentId: response.razorpay_payment_id,
             razorpaySignature: response.razorpay_signature,
@@ -176,7 +178,7 @@ const MyAppointments: React.FC = () => {
       },
       prefill: {
         name: name || "Prescripto Patient",
-        email: "demo@telecare.com", // Update if you have user's email
+        email: "demo@telecare.com", 
       },
       theme: {
         color: "#007BFF",
@@ -241,6 +243,7 @@ const MyAppointments: React.FC = () => {
                 className="flex flex-col sm:flex-row gap-4 sm:gap-6 p-4 bg-white rounded-lg shadow-2xl hover:scale-105 transition duration-300"
                 variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}
                 transition={{ duration: 1 }}
+                onClick={() => navigate("/user-appointment-details",{state:{appointment:item}})}
               >
                 <div className="sm:w-36 flex-shrink-0">
                   <img
@@ -302,7 +305,11 @@ const MyAppointments: React.FC = () => {
       </MotionButton>
 
       <MotionButton
-        onClick={() => handleRazorpayPayment(item)}
+        onClick={(e) => {
+          e.stopPropagation()
+          handleRazorpayPayment(item)
+
+        }}
         className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-100 transition"
       >
         <img className="h-5 w-auto" src={assets.razorpay_logo} alt="Razorpay" />
@@ -314,13 +321,15 @@ const MyAppointments: React.FC = () => {
   {item.status === "confirmed" && item.payment === "paid" && (
     <>
       <MotionButton
-        onClick={() => navigate("/my-video", {
+        onClick={(e) => {
+          e.stopPropagation()
+           navigate("/my-video", {
                                          state: {
                                            appointmentId: item._id,
                                            userId: item.userId,
                                            doctorId: item.doctor._id,
                                          },
-                                      })}
+                                      })}}
         className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-blue-600 hover:text-white transition"
       >
         <Video size={18} strokeWidth={1.5} />
@@ -340,9 +349,11 @@ const MyAppointments: React.FC = () => {
   {/* Cancel Button */}
   {["confirmed", "pending"].includes(item.status) && (
     <MotionButton
-      onClick={() => {
+      onClick={(e) => {
+        e.stopPropagation();
         setAppointmentToCancel(item);
         setIsModalOpen(true);
+        
       }}
       className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-red-600 hover:text-white transition"
     >
@@ -359,7 +370,17 @@ const MyAppointments: React.FC = () => {
         )}
 
         {appointments.length > 0 && (
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+          // <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+                                                                     <Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={setCurrentPage}
+  pageSize={pageSize}
+  onPageSizeChange={(size) => {
+    setPageSize(size);
+    setCurrentPage(1); 
+  }}
+/>
         )}
       </main>
 

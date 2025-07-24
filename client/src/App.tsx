@@ -34,6 +34,9 @@ import ChangePassword from "./pages/auth/ChangePassword";
 import ChatUI from "./pages/chat/Chat";
 import ChatDashboard from "./pages/chat/ChatDashboard";
 import VideoCall from "./pages/video/videoCall";
+import AppointmentDetails from "./pages/doctor/AppointmentDetails";
+import AdminAppointmentDetails from "./pages/admin/AdminAppointmentDetails";
+import UserAppointmentDetails from "./pages/user/UserAppointmentDetails";
 
 const App: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -131,6 +134,12 @@ const App: React.FC = () => {
           element={isAuthenticated && role === "admin" ? <EditDoctor /> : <Navigate to="/login" replace />}
         />
 
+        <Route
+          path="/admin-appointment-details"
+          element={isAuthenticated && role === "admin" ? <AdminAppointmentDetails /> : <Navigate to="/login" replace />}
+        />
+       
+
          <Route
           path="/all-doctors"
           element={isAuthenticated && role === "user" ? <AllDoctors /> : <Navigate to="/login" replace />}
@@ -161,6 +170,10 @@ const App: React.FC = () => {
           element={isAuthenticated && role === "user" ? <MyAppointments /> : <Navigate to="/login" replace />}
         />
          
+        <Route
+          path="/user-appointment-details/"
+          element={isAuthenticated && role === "user" ? <UserAppointmentDetails /> : <Navigate to="/login" replace />}
+        />
          
         <Route
           path="/edit-profile-doctor/:id"
@@ -170,6 +183,11 @@ const App: React.FC = () => {
          <Route
           path="/doctor-appointments"
           element={isAuthenticated && role === "doctor" ? <DoctorAppointments /> : <Navigate to="/login" replace />}
+        />
+
+         <Route
+          path="/appointment-details"
+          element={isAuthenticated && role === "doctor" ? <AppointmentDetails /> : <Navigate to="/login" replace />}
         />
 
         <Route

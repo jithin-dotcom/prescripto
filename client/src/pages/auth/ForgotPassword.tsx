@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import logo from '../../assets/Screenshot 2025-07-08 170708.png';
+import { APIAuthRoutes } from "../../constants/routes.constants";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +15,7 @@ const ForgotPassword: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post("/api/auth/forgot-password", { email });
+      await axios.post(APIAuthRoutes.FORGOT_PASSWORD, { email });
       toast.success("OTP sent to your email");
       localStorage.setItem("forgotEmail", email);
       navigate("/verify-forgot-password");

@@ -1860,7 +1860,7 @@ export default function MyVideoCall() {
     } else {
       toast.error("Could not access media devices.");
     }
-    hasShownMediaErrorRef.current = true; // Prevent future toasts
+    hasShownMediaErrorRef.current = true; 
   }
 
   

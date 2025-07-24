@@ -9,6 +9,7 @@ import { logoutService } from "../services/logoutService";
 import axiosInstance from "../utils/axios";
 import { Menu, X } from "lucide-react"; 
 import { fetchCurrentUser } from "../services/authService";
+import { APIRoutes } from "../constants/routes.constants";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -19,9 +20,7 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-// useEffect(() => {
-//   console.log("User in Navbar:", user);
-// }, [user]);
+
 
    useEffect(() => {
       const getUser = async () => {
@@ -65,7 +64,7 @@ const Navbar = () => {
     formData.append("photo", file);
 
     try {
-      const response = await axiosInstance.post("/patient/upload-photo", formData, {
+      const response = await axiosInstance.post(APIRoutes.UPLOAD_PATIENT_PHOTO, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${accessToken}`,

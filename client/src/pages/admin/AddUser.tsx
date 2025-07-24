@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
 import axios, { AxiosError } from "axios";
+import { APIRoutes } from "../../constants/routes.constants";
 
 type country = {
    name : {
@@ -149,7 +150,7 @@ const AddUser = () => {
     formData.append("photo", profilePhoto);
 
     try {
-      await axiosInstance.post("/admin/create-users", formData, {
+      await axiosInstance.post(APIRoutes.ADMIN_CREATE_USERS, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${accessToken}`,
@@ -225,6 +226,7 @@ const AddUser = () => {
               <div className="flex flex-col lg:flex-row items-start gap-10 text-gray-600">
                 
                 <div className="w-full lg:flex-1 flex flex-col gap-4">
+                  
                   <input
                     name="name"
                     placeholder="Name"

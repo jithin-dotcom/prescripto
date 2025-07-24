@@ -1,632 +1,5 @@
 
 
-
-// // import React, { useEffect, useState } from "react";
-// // import Navbar from "../../components/NavbarAdmin";
-// // import SidebarAdmin from "../../components/SideBarAdmin";
-// // import { assets } from "../../assets/assets2";
-// // import { toast } from "react-toastify";
-// // import axiosInstance from "../../utils/axios";
-// // import { useAuthStore } from "../../store/authStore";
-// // import { useParams, useNavigate } from "react-router-dom";
-// // import axios from "axios";
-
-// // type AvailabilitySlot = { day: string; from: string; to: string };
-
-// // const formatTo12Hour = (time24: string): string => {
-// //   const [h, m] = time24.split(":").map(Number);
-// //   const ampm = h >= 12 ? "PM" : "AM";
-// //   const hour = h % 12 === 0 ? 12 : h % 12;
-// //   return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
-// // };
-
-
-// // const convertTo24Hour = (time12: string): string => {
-// //   const time12Regex = /^(\d{1,2}):(\d{2}) (AM|PM)$/;
-// //   const match = time12.match(time12Regex);
-
-// //   if (!match) return "00:00"; 
-
-// //   const [_, hours, minutes, ampm] = match;
-// //   console.log(_);
-// //   let h = parseInt(hours, 10);
-// //   const m = parseInt(minutes, 10);
-
-// //   if (ampm === "PM" && h < 12) h += 12;
-// //   if (ampm === "AM" && h === 12) h = 0;
-
-// //   return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
-// // };
-
-
-// // const generateTimeOptions = (): string[] => {
-// //   const opts: string[] = [];
-// //   for (let h = 0; h < 24; h++) {
-// //     for (const m of [0, 30]) {
-// //       const ampm = h >= 12 ? "PM" : "AM";
-// //       const hour = h % 12 === 0 ? 12 : h % 12;
-// //       opts.push(`${hour}:${m === 0 ? "00" : m} ${ampm}`);
-// //     }
-// //   }
-// //   return opts;
-// // };
-
-// // const timeOptions = generateTimeOptions();
-
-// // const EditDoctorProfile = () => {
-// //   const [form, setForm] = useState({
-// //     name: "",
-// //     email: "",
-// //     specialization: "",
-// //     educationDetails: "",
-// //     registrationNumber: "",
-// //     registrationYear: "",
-// //     yearOfExperience: "",
-// //     fee: "",
-// //     about: "",
-// //     slotDuration: 30,
-// //     availability: [] as AvailabilitySlot[],
-// //   });
-
-// //   const [profilePhoto, setProfilePhoto] = useState<File | string | null>(null);
-// //   const [proofDocuments, setProofDocuments] = useState<FileList | null>(null);
-// //   const { id } = useParams();
-// //   const { accessToken } = useAuthStore();
-// //   const navigate = useNavigate();
-
-// //   useEffect(() => {
-// //     async function loadDoctor() {
-// //       try {
-// //         const res = await axiosInstance.get(`/admin/get-user/${id}`);
-// //         const user = res.data.data;
-// //         const profile = user.profile?.[0] || {};
-
-// //         const formattedAvailability = (profile.availability || []).map((slot: AvailabilitySlot) => ({
-// //           day: slot.day,
-// //           from: formatTo12Hour(slot.from),
-// //           to: formatTo12Hour(slot.to),
-// //         }));
-
-// //         setForm({
-// //           name: user.name || "",
-// //           email: user.email || "",
-// //           specialization: profile.specialization || "",
-// //           educationDetails: profile.educationDetails || "",
-// //           registrationNumber: profile.registrationNumber || "",
-// //           registrationYear: profile.registrationYear || "",
-// //           yearOfExperience: profile.yearOfExperience || "",
-// //           fee: profile.fee || "",
-// //           about: profile.about || "",
-// //           slotDuration: profile.slotDuration || 30,
-// //           availability: formattedAvailability,
-// //         });
-
-// //         if (user.photo) setProfilePhoto(user.photo);
-// //       } catch (e) {
-// //         console.error(e);
-// //         toast.error("Failed to load doctor info");
-// //       }
-// //     }
-
-// //     if (id) loadDoctor();
-// //   }, [id]);
-
-// //   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-// //     setForm({ ...form, [e.target.name]: e.target.value });
-// //   };
-
-// //   const handleSubmit = async (e: React.FormEvent) => {
-// //     e.preventDefault();
-
-// //     if (!form.name.match(/^[A-Za-z\s]+$/)) return toast.error("Name must contain only letters/spaces");
-// //     if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return toast.error("Invalid email");
-// //     if (!form.educationDetails.match(/^[A-Z\s]+$/)) return toast.error("Education uppercase only");
-// //     if (!form.registrationNumber.match(/^[a-zA-Z0-9]+$/)) return toast.error("Invalid registration number");
-// //     if (!form.registrationYear.match(/^\d{4}$/)) return toast.error("Invalid registration year");
-// //     if (!String(form.yearOfExperience).match(/^\d+$/)) return toast.error("Experience must be numeric");
-// //     if (!form.specialization) return toast.error("Select a specialization");
-// //     if (!form.about) return toast.error("Fill in About section");
-
-// //     const seen = new Set<string>();
-// //     const convertedAvail: AvailabilitySlot[] = [];
-
-// //     for (const slot of form.availability) {
-// //       if (!slot.day || !slot.from || !slot.to) return toast.error("Fill all fields in availability");
-// //       if (seen.has(slot.day)) return toast.error(`Duplicate day: ${slot.day}`);
-// //       seen.add(slot.day);
-
-
-// //       const from24 = convertTo24Hour(slot.from);
-// //       const to24 = convertTo24Hour(slot.to);
-
-// //       console.log("from24 : ",from24);
-// //       console.log("to24 : ",to24);
-
-// //       if (!timeOptions.includes(slot.from) || !timeOptions.includes(slot.to)) {
-// //         return toast.error(`Invalid time selected for ${slot.day}`);
-// //       }
-// //       if (from24 >= to24) return toast.error(`From must be before To on ${slot.day}`);
-
-// //       convertedAvail.push({ day: slot.day, from: from24, to: to24 });
-// //     }
-
-// //     const userData = { name: form.name, email: form.email, role: "doctor" };
-// //     const profileData = {
-// //       specialization: form.specialization,
-// //       educationDetails: form.educationDetails,
-// //       registrationNumber: form.registrationNumber,
-// //       registrationYear: form.registrationYear,
-// //       yearOfExperience: form.yearOfExperience,
-// //       fee: form.fee,
-// //       about: form.about,
-// //       availability: convertedAvail,
-// //       slotDuration: form.slotDuration,
-// //     };
-
-// //     const fd = new FormData();
-// //     fd.append("userData", JSON.stringify(userData));
-// //     fd.append("profileData", JSON.stringify(profileData));
-// //     if (profilePhoto && typeof profilePhoto !== "string") fd.append("photo", profilePhoto);
-// //     if (proofDocuments) Array.from(proofDocuments).forEach((f) => fd.append("proofDocument", f));
-
-// //     try {
-// //       await axiosInstance.put(`/admin/update-user/${id}`, fd, {
-// //         headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${accessToken}` },
-// //         withCredentials: true,
-// //       });
-// //       toast.success("Doctor profile updated");
-// //       navigate("/doctor-profile");
-// //     } catch (e) {
-// //       if (axios.isAxiosError(e)) {
-// //         toast.error(e.response?.data?.message || "Update failed");
-// //       } else {
-// //         toast.error("Something went wrong");
-// //       }
-// //     }
-// //   };
-
-// //   return (
-// //     <div className="min-h-screen bg-gray-100 flex flex-col">
-// //       <Navbar />
-// //       <div className="flex flex-1 flex-row">
-// //         <SidebarAdmin />
-// //         <main className="flex-1 p-6 overflow-y-auto">
-// //           <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-6 shadow rounded">
-// //             <h2 className="text-2xl mb-4">Edit Doctor Profile</h2>
-
-// //             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-// //               <input name="name" value={form.name} onChange={handleChange} placeholder="Name" className="border px-3 py-2" />
-// //               <input name="email" value={form.email} onChange={handleChange} placeholder="Email" className="border px-3 py-2" />
-// //               <input name="educationDetails" value={form.educationDetails} onChange={handleChange} placeholder="Education (MBBS/MD)" className="border px-3 py-2" />
-// //               <input name="yearOfExperience" value={form.yearOfExperience} onChange={handleChange} placeholder="Experience (years)" className="border px-3 py-2" />
-// //               <select name="specialization" value={form.specialization} onChange={handleChange} className="border px-3 py-2">
-// //                 <option value="">Select Speciality</option>
-// //                 {["General physician", "Gynecologist", "Dermatologist", "Pediatricians", "Neurologist", "Gastroenterologist"].map((v) => (
-// //                   <option key={v} value={v}>{v}</option>
-// //                 ))}
-// //               </select>
-// //               <input name="registrationNumber" value={form.registrationNumber} onChange={handleChange} placeholder="Reg Number" className="border px-3 py-2" />
-// //               <input name="registrationYear" value={form.registrationYear} onChange={handleChange} placeholder="Reg Year" className="border px-3 py-2" />
-// //               <input name="fee" value={form.fee} onChange={handleChange} placeholder="Fee" className="border px-3 py-2" />
-// //             </div>
-
-// //             <div className="mt-4 flex items-center gap-4">
-// //               <label htmlFor="photo">
-// //                 <img
-// //                   src={typeof profilePhoto === "string" ? profilePhoto : profilePhoto ? URL.createObjectURL(profilePhoto) : assets.upload_area}
-// //                   className="w-16 h-16 rounded-full object-cover bg-gray-100 cursor-pointer"
-// //                   alt="Profile"
-// //                 />
-// //               </label>
-// //               <input id="photo" type="file" accept="image/*" hidden onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)} />
-// //               <input type="file" accept=".pdf,image/*" multiple onChange={(e) => setProofDocuments(e.target.files)} />
-// //             </div>
-
-// //             <textarea
-// //               name="about"
-// //               value={form.about}
-// //               onChange={handleChange}
-// //               placeholder="About doctor"
-// //               className="w-full border px-3 py-2 mt-4"
-// //               rows={4}
-// //             />
-
-// //             <div className="mt-6">
-// //               <h3 className="font-semibold mb-2">Availability Slots</h3>
-// //               {form.availability.map((s, i) => (
-// //                 <div key={i} className="flex gap-2 mb-2">
-// //                   <select value={s.day} onChange={(e) => {
-// //                     const updated = [...form.availability];
-// //                     updated[i].day = e.target.value;
-// //                     setForm({ ...form, availability: updated });
-// //                   }} className="border px-2 py-1">
-// //                     <option value="">Select Day</option>
-// //                     {["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].map(d => (
-// //                       <option key={d} value={d}>{d}</option>
-// //                     ))}
-// //                   </select>
-// //                   <select value={s.from} onChange={(e) => {
-// //                     const updated = [...form.availability];
-// //                     updated[i].from = e.target.value;
-// //                     setForm({ ...form, availability: updated });
-// //                   }} className="border px-2 py-1">
-// //                     <option value="">From</option>
-// //                     {timeOptions.map(opt => (
-// //                       <option key={opt} value={opt}>{opt}</option>
-// //                     ))}
-// //                   </select>
-// //                   <select value={s.to} onChange={(e) => {
-// //                     const updated = [...form.availability];
-// //                     updated[i].to = e.target.value;
-// //                     setForm({ ...form, availability: updated });
-// //                   }} className="border px-2 py-1">
-// //                     <option value="">To</option>
-// //                     {timeOptions.map(opt => (
-// //                       <option key={opt} value={opt}>{opt}</option>
-// //                     ))}
-// //                   </select>
-// //                   <button type="button" className="text-red-500 cursor-pointer" onClick={() => {
-// //                     const updated = [...form.availability];
-// //                     updated.splice(i, 1);
-// //                     setForm({ ...form, availability: updated });
-// //                   }}>
-// //                     Remove
-// //                   </button>
-// //                 </div>
-// //               ))}
-// //               <button type="button" onClick={() => setForm({ ...form, availability: [...form.availability, { day: "", from: "", to: "" }] })} className="text-blue-600">
-// //                 + Add Slot
-// //               </button>
-// //             </div>
-
-// //             {/* <div className="mt-4">
-// //               <label>Slot Duration (minutes)</label>
-// //               <input type="number" name="slotDuration" value={form.slotDuration} min={10} max={120} onChange={handleChange} className="border px-3 py-2 w-32" />
-// //             </div> */}
-
-// //             <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded mt-6 hover:bg-blue-700">
-// //               Update Doctor
-// //             </button>
-// //           </form>
-// //         </main>
-// //       </div>
-// //     </div>
-// //   );
-// // };
-
-// // export default EditDoctorProfile;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React, { useEffect, useState } from "react";
-// import Navbar from "../../components/NavbarAdmin";
-// import SidebarAdmin from "../../components/SideBarAdmin";
-// import { assets } from "../../assets/assets2";
-// import { toast } from "react-toastify";
-// import axiosInstance from "../../utils/axios";
-// import { useAuthStore } from "../../store/authStore";
-// import { useParams, useNavigate } from "react-router-dom";
-// import axios from "axios";
-
-// type AvailabilitySlot = { day: string; from: string; to: string };
-
-// const formatTo12Hour = (time24: string): string => {
-//   const [h, m] = time24.split(":").map(Number);
-//   const ampm = h >= 12 ? "PM" : "AM";
-//   const hour = h % 12 === 0 ? 12 : h % 12;
-//   return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
-// };
-
-
-// const convertTo24Hour = (time12: string): string => {
-//   const time12Regex = /^(\d{1,2}):(\d{2}) (AM|PM)$/;
-//   const match = time12.match(time12Regex);
-
-//   if (!match) return "00:00"; 
-
-//   const [_, hours, minutes, ampm] = match;
-//   console.log(_);
-//   let h = parseInt(hours, 10);
-//   const m = parseInt(minutes, 10);
-
-//   if (ampm === "PM" && h < 12) h += 12;
-//   if (ampm === "AM" && h === 12) h = 0;
-
-//   return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
-// };
-
-
-// const generateTimeOptions = (): string[] => {
-//   const opts: string[] = [];
-//   for (let h = 0; h < 24; h++) {
-//     for (const m of [0, 30]) {
-//       const ampm = h >= 12 ? "PM" : "AM";
-//       const hour = h % 12 === 0 ? 12 : h % 12;
-//       opts.push(`${hour}:${m === 0 ? "00" : m} ${ampm}`);
-//     }
-//   }
-//   return opts;
-// };
-
-// const timeOptions = generateTimeOptions();
-
-// const EditDoctorProfile = () => {
-//   const [form, setForm] = useState({
-//     name: "",
-//     email: "",
-//     specialization: "",
-//     educationDetails: "",
-//     registrationNumber: "",
-//     registrationYear: "",
-//     yearOfExperience: "",
-//     fee: "",
-//     about: "",
-//     slotDuration: 30,
-//     availability: [] as AvailabilitySlot[],
-//   });
-
-//   const [profilePhoto, setProfilePhoto] = useState<File | string | null>(null);
-//   const [proofDocuments, setProofDocuments] = useState<FileList | null>(null);
-//   const { id } = useParams();
-//   const { accessToken } = useAuthStore();
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     async function loadDoctor() {
-//       try {
-//         const res = await axiosInstance.get(`/admin/get-user/${id}`);
-//         const user = res.data.data;
-//         const profile = user.profile?.[0] || {};
-
-//         const formattedAvailability = (profile.availability || []).map((slot: AvailabilitySlot) => ({
-//           day: slot.day,
-//           from: formatTo12Hour(slot.from),
-//           to: formatTo12Hour(slot.to),
-//         }));
-
-//         setForm({
-//           name: user.name || "",
-//           email: user.email || "",
-//           specialization: profile.specialization || "",
-//           educationDetails: profile.educationDetails || "",
-//           registrationNumber: profile.registrationNumber || "",
-//           registrationYear: profile.registrationYear || "",
-//           yearOfExperience: profile.yearOfExperience || "",
-//           fee: profile.fee || "",
-//           about: profile.about || "",
-//           slotDuration: profile.slotDuration || 30,
-//           availability: formattedAvailability,
-//         });
-
-//         if (user.photo) setProfilePhoto(user.photo);
-//       } catch (e) {
-//         console.error(e);
-//         toast.error("Failed to load doctor info");
-//       }
-//     }
-
-//     if (id) loadDoctor();
-//   }, [id]);
-
-//   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-//     setForm({ ...form, [e.target.name]: e.target.value });
-//   };
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     if (!form.name.match(/^[A-Za-z\s]+$/)) return toast.error("Name must contain only letters/spaces");
-//     if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) return toast.error("Invalid email");
-//     if (!form.educationDetails.match(/^[A-Z\s]+$/)) return toast.error("Education uppercase only");
-//     if (!form.registrationNumber.match(/^[a-zA-Z0-9]+$/)) return toast.error("Invalid registration number");
-//     if (!form.registrationYear.match(/^\d{4}$/)) return toast.error("Invalid registration year");
-//     if (!String(form.yearOfExperience).match(/^\d+$/)) return toast.error("Experience must be numeric");
-//     if (!form.specialization) return toast.error("Select a specialization");
-//     if (!form.about) return toast.error("Fill in About section");
-
-//     const seen = new Set<string>();
-//     const convertedAvail: AvailabilitySlot[] = [];
-
-//     for (const slot of form.availability) {
-//       if (!slot.day || !slot.from || !slot.to) return toast.error("Fill all fields in availability");
-//       if (seen.has(slot.day)) return toast.error(`Duplicate day: ${slot.day}`);
-//       seen.add(slot.day);
-
-
-//       const from24 = convertTo24Hour(slot.from);
-//       const to24 = convertTo24Hour(slot.to);
-
-//       console.log("from24 : ",from24);
-//       console.log("to24 : ",to24);
-
-//       if (!timeOptions.includes(slot.from) || !timeOptions.includes(slot.to)) {
-//         return toast.error(`Invalid time selected for ${slot.day}`);
-//       }
-//       if (from24 >= to24) return toast.error(`From must be before To on ${slot.day}`);
-
-//       convertedAvail.push({ day: slot.day, from: from24, to: to24 });
-//     }
-
-//     const userData = { name: form.name, email: form.email, role: "doctor" };
-//     const profileData = {
-//       specialization: form.specialization,
-//       educationDetails: form.educationDetails,
-//       registrationNumber: form.registrationNumber,
-//       registrationYear: form.registrationYear,
-//       yearOfExperience: form.yearOfExperience,
-//       fee: form.fee,
-//       about: form.about,
-//       availability: convertedAvail,
-//       slotDuration: form.slotDuration,
-//     };
-
-//     const fd = new FormData();
-//     fd.append("userData", JSON.stringify(userData));
-//     fd.append("profileData", JSON.stringify(profileData));
-//     if (profilePhoto && typeof profilePhoto !== "string") fd.append("photo", profilePhoto);
-//     if (proofDocuments) Array.from(proofDocuments).forEach((f) => fd.append("proofDocument", f));
-
-//     try {
-//       await axiosInstance.put(`/admin/update-user/${id}`, fd, {
-//         headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${accessToken}` },
-//         withCredentials: true,
-//       });
-//       toast.success("Doctor profile updated");
-//       navigate("/doctor-profile");
-//     } catch (e) {
-//       if (axios.isAxiosError(e)) {
-//         toast.error(e.response?.data?.message || "Update failed");
-//       } else {
-//         toast.error("Something went wrong");
-//       }
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gray-100 flex flex-col">
-//       <Navbar />
-//       <div className="flex flex-1 flex-row">
-//         <SidebarAdmin />
-//         <main className="flex-1 p-6 overflow-y-auto">
-//           <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-6 shadow rounded">
-//             <h2 className="text-2xl mb-4">Edit Doctor Profile</h2>
-
-//             <div className="m-4 flex items-center gap-4">
-//               <label htmlFor="photo">
-                
-//                 <img
-//                   src={typeof profilePhoto === "string" ? profilePhoto : profilePhoto ? URL.createObjectURL(profilePhoto) : assets.upload_area}
-//                   className="w-16 h-16 rounded-full object-cover bg-gray-100 cursor-pointer"
-//                   alt="Profile Photo"
-//                 />
-//               </label>
-//                <input
-//                   type="file"
-//                   id="photo"
-//                   accept="image/*"
-//                   hidden
-//                   onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)}
-//                 />
-//               <label className="mt-2 text-sm text-gray-600 font-medium">Profile Photo</label>
-           
-//             </div>
-
-//             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-//               <input name="name" value={form.name} onChange={handleChange} placeholder="Name" className="border px-3 py-2" />
-//               <input name="email" value={form.email} onChange={handleChange} placeholder="Email" className="border px-3 py-2" />
-//               <input name="educationDetails" value={form.educationDetails} onChange={handleChange} placeholder="Education (MBBS/MD)" className="border px-3 py-2" />
-//               <input name="yearOfExperience" value={form.yearOfExperience} onChange={handleChange} placeholder="Experience (years)" className="border px-3 py-2" />
-//               <select name="specialization" value={form.specialization} onChange={handleChange} className="border px-3 py-2">
-//                 <option value="">Select Speciality</option>
-//                 {["General physician", "Gynecologist", "Dermatologist", "Pediatricians", "Neurologist", "Gastroenterologist"].map((v) => (
-//                   <option key={v} value={v}>{v}</option>
-//                 ))}
-//               </select>
-//               <input name="registrationNumber" value={form.registrationNumber} onChange={handleChange} placeholder="Reg Number" className="border px-3 py-2" />
-//               <input name="registrationYear" value={form.registrationYear} onChange={handleChange} placeholder="Reg Year" className="border px-3 py-2" />
-//               <input name="fee" value={form.fee} onChange={handleChange} placeholder="Fee" className="border px-3 py-2" />
-//               <label className="mt-2 text-sm text-gray-600 font-medium">Upload proof documents (image)</label>
-//               <input type="file" accept=".pdf,image/*" multiple onChange={(e) => setProofDocuments(e.target.files)} className="border px-2 py-2 rounded cursor-pointer" />
-//             </div>
-
-       
-
-//             <textarea
-//               name="about"
-//               value={form.about}
-//               onChange={handleChange}
-//               placeholder="About doctor"
-//               className="w-full border px-3 py-2 mt-4"
-//               rows={4}
-//             />
-
-//             <div className="mt-6">
-//               <h3 className="font-semibold mb-2">Availability Slots</h3>
-//               {form.availability.map((s, i) => (
-//                 <div key={i} className="flex gap-2 mb-2">
-//                   <select value={s.day} onChange={(e) => {
-//                     const updated = [...form.availability];
-//                     updated[i].day = e.target.value;
-//                     setForm({ ...form, availability: updated });
-//                   }} className="border px-2 py-1">
-//                     <option value="">Select Day</option>
-//                     {["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"].map(d => (
-//                       <option key={d} value={d}>{d}</option>
-//                     ))}
-//                   </select>
-//                   <select value={s.from} onChange={(e) => {
-//                     const updated = [...form.availability];
-//                     updated[i].from = e.target.value;
-//                     setForm({ ...form, availability: updated });
-//                   }} className="border px-2 py-1">
-//                     <option value="">From</option>
-//                     {timeOptions.map(opt => (
-//                       <option key={opt} value={opt}>{opt}</option>
-//                     ))}
-//                   </select>
-//                   <select value={s.to} onChange={(e) => {
-//                     const updated = [...form.availability];
-//                     updated[i].to = e.target.value;
-//                     setForm({ ...form, availability: updated });
-//                   }} className="border px-2 py-1">
-//                     <option value="">To</option>
-//                     {timeOptions.map(opt => (
-//                       <option key={opt} value={opt}>{opt}</option>
-//                     ))}
-//                   </select>
-//                   <button type="button" className="text-red-500 cursor-pointer" onClick={() => {
-//                     const updated = [...form.availability];
-//                     updated.splice(i, 1);
-//                     setForm({ ...form, availability: updated });
-//                   }}>
-//                     Remove
-//                   </button>
-//                 </div>
-//               ))}
-//               <button type="button" onClick={() => setForm({ ...form, availability: [...form.availability, { day: "", from: "", to: "" }] })} className="text-blue-600 cursor-pointer">
-//                 + Add Slot
-//               </button>
-//             </div>
-
-//             <div className="mt-4">
-//               <label>Slot Duration (minutes)</label>
-//               <input type="number" name="slotDuration" value={form.slotDuration} min={10} max={120} onChange={handleChange} className="border px-3 py-2 w-32" />
-//             </div>
-
-//             <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded mt-6 hover:bg-blue-700 cursor-pointer">
-//               Update Doctor
-//             </button>
-//           </form>
-//         </main>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default EditDoctorProfile;
-
-
-
-
-
-
-
-
-
-
-
 import React, { useEffect, useState } from "react";
 import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
@@ -636,6 +9,7 @@ import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { APIRoutes } from "../../constants/routes.constants";
 
 
 interface ITimeBlock {
@@ -706,7 +80,7 @@ const EditDoctorProfile: React.FC = () => {
 
   useEffect(() => {
     if (!id) return;
-    axiosInstance.get(`/admin/get-user/${id}`)
+    axiosInstance.get(`${APIRoutes.ADMIN_GET_USER_EDIT}/${id}`)
       .then(res => {
         const user = res.data.data;
         const prof = user.profile?.[0] || {};
@@ -814,7 +188,7 @@ const EditDoctorProfile: React.FC = () => {
       if (proofDocuments)
         Array.from(proofDocuments).forEach(f => fd.append("proofDocument", f));
 
-      await axiosInstance.put(`/admin/update-user/${id}`, fd, {
+      await axiosInstance.put(`${APIRoutes.ADMIN_UPDATE_USERS}/${id}`, fd, {
         headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${accessToken}` },
         withCredentials: true,
       });
@@ -852,7 +226,7 @@ const EditDoctorProfile: React.FC = () => {
             </div>
 
             {/* Profile Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input name="name" value={form.name} onChange={handleChange} placeholder="Name" className="border px-3 py-2" />
               <input name="email" value={form.email} onChange={handleChange} placeholder="Email" className="border px-3 py-2" />
               <input name="educationDetails" value={form.educationDetails} onChange={handleChange} placeholder="Education (MBBS/MD)" className="border px-3 py-2" />
@@ -869,12 +243,155 @@ const EditDoctorProfile: React.FC = () => {
               <input type="file" accept=".pdf,image/*" multiple onChange={e => setProofDocuments(e.target.files)} className="border px-3 py-2" />
             </div>
 
-            {/* About */}
-            <textarea name="about" value={form.about} onChange={handleChange} placeholder="About" className="w-full border px-3 py-2 mt-4" rows={4} />
+           
+            <textarea name="about" value={form.about} onChange={handleChange} placeholder="About" className="w-full border px-3 py-2 mt-4" rows={4} /> */}
+
+
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
+  <div className="flex flex-col">
+    <label htmlFor="name" className="mb-1 font-medium">Name</label>
+    <input
+      id="name"
+      name="name"
+      value={form.name}
+      onChange={handleChange}
+      placeholder="Enter your full name"
+      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <label htmlFor="email" className="mb-1 font-medium">Email</label>
+    <input
+      id="email"
+      name="email"
+      value={form.email}
+      onChange={handleChange}
+      placeholder="Enter your email"
+      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <label htmlFor="educationDetails" className="mb-1 font-medium">Education</label>
+    <input
+      id="educationDetails"
+      name="educationDetails"
+      value={form.educationDetails}
+      onChange={handleChange}
+      placeholder="E.g. MBBS, MD"
+      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <label htmlFor="yearOfExperience" className="mb-1 font-medium">Experience (Years)</label>
+    <input
+      id="yearOfExperience"
+      name="yearOfExperience"
+      value={form.yearOfExperience}
+      onChange={handleChange}
+      placeholder="E.g. 5"
+      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <label htmlFor="specialization" className="mb-1 font-medium">Specialization</label>
+    <select
+      id="specialization"
+      name="specialization"
+      value={form.specialization}
+      onChange={handleChange}
+      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="">Select Specialization</option>
+      {[
+        "General physician",
+        "Gynecologist",
+        "Dermatologist",
+        "Pediatrician",
+        "Neurologist",
+        "Gastroenterologist",
+      ].map((s) => (
+        <option key={s} value={s}>
+          {s}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  <div className="flex flex-col">
+    <label htmlFor="registrationNumber" className="mb-1 font-medium">Registration Number</label>
+    <input
+      id="registrationNumber"
+      name="registrationNumber"
+      value={form.registrationNumber}
+      onChange={handleChange}
+      placeholder="Enter registration number"
+      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <label htmlFor="registrationYear" className="mb-1 font-medium">Registration Year</label>
+    <input
+      id="registrationYear"
+      name="registrationYear"
+      value={form.registrationYear}
+      onChange={handleChange}
+      placeholder="E.g. 2018"
+      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+
+  <div className="flex flex-col">
+    <label htmlFor="fee" className="mb-1 font-medium">Consultation Fee</label>
+    <input
+      id="fee"
+      name="fee"
+      value={form.fee}
+      onChange={handleChange}
+      placeholder="E.g. 500"
+      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+
+  <div className="flex flex-col md:col-span-2">
+    <label htmlFor="documents" className="mb-1 font-medium">Proof Documents (PDF/Image)</label>
+    <input
+      id="documents"
+      type="file"
+      accept=".pdf,image/*"
+      multiple
+      onChange={(e) => setProofDocuments(e.target.files)}
+      className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+</div>
+
+<div className="mt-6">
+  <label htmlFor="about" className="block mb-1 font-medium text-gray-700">About</label>
+  <textarea
+    id="about"
+    name="about"
+    value={form.about}
+    onChange={handleChange}
+    placeholder="Tell us about yourself"
+    rows={4}
+    className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>
+
+
+
+
+
 
             {/* Availability */}
            
-
+{/* 
 <div className="mt-6">
   <h3 className="font-semibold mb-3 text-lg">Availability</h3>
 
@@ -920,7 +437,7 @@ const EditDoctorProfile: React.FC = () => {
           </button>
         </div>
 
-        {/* Time Blocks */}
+       
         <div className="flex flex-wrap gap-3">
           {slot.slots.map((blk, j) => (
             <div key={j} className="flex items-center gap-2 bg-white border px-2 py-1 rounded shadow-sm">
@@ -970,7 +487,7 @@ const EditDoctorProfile: React.FC = () => {
             </div>
           ))}
 
-          {/* Add Time Block */}
+         
           <button
             type="button"
             onClick={() => {
@@ -987,7 +504,7 @@ const EditDoctorProfile: React.FC = () => {
     ))}
   </div>
 
-  {/* Add New Day */}
+ 
   <button
     type="button"
     className="mt-4 text-green-600 text-sm"
@@ -1001,6 +518,141 @@ const EditDoctorProfile: React.FC = () => {
     ➕ Add New Day
   </button>
 </div>
+ */}
+
+
+
+
+
+
+
+<div className="mt-10">
+  <h3 className="text-xl font-semibold text-gray-800 mb-4">Availability</h3>
+
+  <div className="flex flex-col gap-6">
+    {form.availability.map((slot, i) => (
+      <div key={i} className="border border-gray-200 rounded-xl p-5 bg-white shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="text-sm font-medium text-gray-700">Day:</label>
+            <select
+              value={slot.day}
+              onChange={(e) => {
+                const selectedDay = e.target.value;
+                const isDuplicate = form.availability.some((a, idx) => idx !== i && a.day === selectedDay);
+                if (isDuplicate) {
+                  toast.error(`Day "${selectedDay}" is already selected.`);
+                  return;
+                }
+                const updated = [...form.availability];
+                updated[i].day = selectedDay;
+                setForm({ ...form, availability: updated });
+              }}
+              className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Select Day</option>
+              {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => (
+                <option key={day} value={day}>{day}</option>
+              ))}
+            </select>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const updated = [...form.availability];
+              updated.splice(i, 1);
+              setForm({ ...form, availability: updated });
+            }}
+            className="text-sm text-red-600 hover:underline"
+          >
+            🗑️ Remove Day
+          </button>
+        </div>
+
+        {/* Time Slots */}
+        <div className="flex flex-wrap gap-3">
+          {slot.slots.map((blk, j) => (
+            <div
+              key={j}
+              className="flex flex-wrap sm:flex-nowrap items-center gap-2 border border-gray-300 px-3 py-2 rounded-lg bg-gray-50"
+            >
+              <select
+                value={blk.from}
+                onChange={(e) => {
+                  const updated = [...form.availability];
+                  updated[i].slots[j].from = e.target.value;
+                  setForm({ ...form, availability: updated });
+                }}
+                className="border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none"
+              >
+                <option value="">From</option>
+                {timeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+
+              <span className="text-gray-500">to</span>
+
+              <select
+                value={blk.to}
+                onChange={(e) => {
+                  const updated = [...form.availability];
+                  updated[i].slots[j].to = e.target.value;
+                  setForm({ ...form, availability: updated });
+                }}
+                className="border border-gray-300 px-2 py-1 rounded text-sm focus:outline-none"
+              >
+                <option value="">To</option>
+                {timeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+              </select>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const updated = [...form.availability];
+                  updated[i].slots.splice(j, 1);
+                  setForm({ ...form, availability: updated });
+                }}
+                className="text-red-500 text-sm ml-2 hover:underline"
+              >
+                ❌
+              </button>
+            </div>
+          ))}
+
+          {/* Add Time Block */}
+          <button
+            type="button"
+            onClick={() => {
+              const updated = [...form.availability];
+              updated[i].slots.push({ from: "", to: "" });
+              setForm({ ...form, availability: updated });
+            }}
+            className="text-blue-600 text-sm font-medium hover:underline"
+          >
+            ➕ Add Time Block
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  {/* Add New Day */}
+  <div className="mt-6">
+    <button
+      type="button"
+      onClick={() => {
+        setForm({
+          ...form,
+          availability: [...form.availability, { day: "", slots: [{ from: "", to: "" }] }],
+        });
+      }}
+      className="text-green-600 text-sm font-medium hover:underline"
+    >
+      ➕ Add New Day
+    </button>
+  </div>
+</div>
+
+
 
 
 

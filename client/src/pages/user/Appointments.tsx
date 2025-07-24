@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import axios from "axios";
 import type { Slot, DoctorProfile, Availability } from "../../interfaces/IAppointments";
+import { APIUserRoutes } from "../../constants/routes.constants";
 
 
 
@@ -30,78 +31,22 @@ function convertToMinutes(time: string): number {
   return hours * 60 + minutes;
 }
 
-// function generateSlots(
-//   availability: Availability[],
-//   slotDuration: number,
-//   bookedSlotsByDate: Record<string, string[]>
-// ): Slot[] {
-//   const today = new Date();
-//   const result: Slot[] = [];
-
-//   for (let i = 0; i < 7; i++) {
-//     const currentDate = new Date();
-//     currentDate.setDate(today.getDate() + i);
-
-//     const dayName = currentDate.toLocaleDateString("en-US", { weekday: "long" });
-//     const dateStr = currentDate.toLocaleDateString("en-GB"); // "dd/mm/yyyy"
-
-//     const booked = new Set(bookedSlotsByDate[dateStr] || []);
-//     const available = availability.find((a) => a.day === dayName);
-//     if (!available) continue;
-
-//     const slots: string[] = [];
-
-//     const [fromHour, fromMinute] = available.from.split(":").map(Number);
-//     const [toHour, toMinute] = available.to.split(":").map(Number);
-
-//     let from = new Date(currentDate);
-//     from.setHours(fromHour, fromMinute, 0, 0);
-
-//     const to = new Date(currentDate);
-//     to.setHours(toHour, toMinute, 0, 0);
-
-//     while (from < to) {
-//       const timeStr = formatTime24to12(
-//         `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
-//       );
-
-//       // ✅ Only include time if it’s not already booked for that specific date
-//       if (!booked.has(timeStr)) {
-//         slots.push(timeStr);
-//       }
-
-//       from = new Date(from.getTime() + slotDuration * 60000);
-//     }
-
-//     if (slots.length > 0) {
-//       result.push({
-//         day: dayName,
-//         date: dateStr,
-//         times: slots,
-//       });
-//     }
-//   }
-
-//   return result;
-// }
-
-
-
 
 function generateSlots(
   availability: Availability[],
   slotDuration: number,
   bookedSlotsByDate: Record<string, string[]>
 ): Slot[] {
+  console.log("bookedslotbydate : ", bookedSlotsByDate );
   const today = new Date();
   const result: Slot[] = [];
-
+  console.log("availablity : ", availability);
   for (let i = 0; i < 7; i++) {
     const currentDate = new Date();
     currentDate.setDate(today.getDate() + i);
 
     const dayName = currentDate.toLocaleDateString("en-US", { weekday: "long" });
-    const dateStr = currentDate.toLocaleDateString("en-GB"); // dd/mm/yyyy
+    const dateStr = currentDate.toLocaleDateString("en-GB"); 
 
     const booked = new Set(bookedSlotsByDate[dateStr] || []);
     const availabilityForDay = availability.find((a) => a.day === dayName);
@@ -186,7 +131,7 @@ const Appointment: React.FC = () => {
   }
 
   try {
-    const res = await axiosInstance.post("/create-appointment", {
+    const res = await axiosInstance.post(APIUserRoutes.CREATE_APPOINTMENTS, {
       doctorId,
       date: selectedSlot.date,
       time: activeTime,
@@ -225,7 +170,7 @@ const Appointment: React.FC = () => {
   useEffect(() => {
     async function fetchDoctorProfile() {
       try {
-        const res = await axiosInstance.get(`/all-createAppointments/${doctorId}`);
+        const res = await axiosInstance.get(`${APIUserRoutes.GET_ALL_APPOINTMENTS}/${doctorId}`);
         console.log("adminRes : ", res);
 
         const firstDoctor = res.data.responses?.[0]?.doctor;

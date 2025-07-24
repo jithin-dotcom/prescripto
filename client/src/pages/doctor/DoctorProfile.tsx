@@ -7,6 +7,7 @@ import Sidebar from "../../components/SideBarAdmin";
 import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
 import type { DoctorProfileData } from "../../interfaces/IDoctorProfile";
+import { APIUserRoutes } from "../../constants/routes.constants";
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const DoctorProfile = () => {
 
     async function fetchDoctorProfile() {
       try {
-        const res = await axiosInstance.get(`/user/user-profile/${doctorId}`);
+        const res = await axiosInstance.get(`${APIUserRoutes.USER_PROFILE}/${doctorId}`);
         const { user, profile: profileData } = res.data.data;
 
         setProfile({

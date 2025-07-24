@@ -5,6 +5,7 @@ import { useAuthStore } from "../store/authStore";
 import { toast } from "react-toastify";
 import { logoutService } from "./logoutService";
 import { AxiosError } from "axios"; 
+import { APIAuthRoutes } from "../constants/routes.constants";
 
 
 
@@ -13,7 +14,7 @@ let isBlockedHandled = false;
 
 export const fetchCurrentUser = async (accessToken: string, navigate: (path: string) => void) => {
   try {
-    const res = await axiosInstance.get("/auth/me", {
+    const res = await axiosInstance.get(APIAuthRoutes.AUTH_ME, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

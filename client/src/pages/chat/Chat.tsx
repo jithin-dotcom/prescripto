@@ -1512,6 +1512,7 @@ import Sidebar from "../../components/SideBarAdmin";
 import { useAuthStore } from "../../store/authStore";
 import { useLocation } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
+import { APIChatRoutes } from "../../constants/routes.constants";
 
 interface Message {
   _id: string;
@@ -1557,7 +1558,7 @@ const ChatUI = (props: ChatProps) => {
       if (!appointmentId || !token) return;
 
       try {
-        const res = await axiosInstance.get(`/messages/${appointmentId}`, {
+        const res = await axiosInstance.get(`${APIChatRoutes.GET_MESSAGES}/${appointmentId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

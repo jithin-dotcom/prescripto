@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../utils/axios";
 import type { Doctor } from "../interfaces/IDoctor";
+import { APIRoutes } from "../constants/routes.constants";
 
 
 const TopDoctors = () => {
@@ -12,8 +13,8 @@ const TopDoctors = () => {
   useEffect(() => {
     async function fetchTopDoctors() {
       try {
-        const res = await axiosInstance.get("/user/top-doctors");
-        setDoctors(res.data.data); // adjust if data structure differs
+        const res = await axiosInstance.get(APIRoutes.TOP_DOCTORS);
+        setDoctors(res.data.data); 
       } catch (error) {
         console.error("Error fetching top doctors:", error);
       } finally {

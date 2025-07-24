@@ -10,7 +10,8 @@ import axios from "axios";
 import { X, Check } from "lucide-react";
 import ConfirmModal from "../../components/ConfirmModal"; 
 import type {  Appointment } from "../../interfaces/IAllAppointments";
-
+import { APIRoutes } from "../../constants/routes.constants";
+import { useNavigate } from "react-router-dom";
 
 const calculateAge = (dob: string): number => {
   const birthDate = new Date(dob);
@@ -23,6 +24,7 @@ const AllAppointments = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState("");
+  const navigate = useNavigate();
   const [modalData, setModalData] = useState<{
     id: string;
     status: "cancelled" | "confirmed";
@@ -31,13 +33,14 @@ const AllAppointments = () => {
     time: string;
   } | null>(null);
 
-  const limit = 4;
+  const [pageSize, setPageSize] = useState<number>(5);
+  
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         const res = await axiosInstance.get(
-          `/all-appointments?page=${currentPage}&limit=${limit}&status=${statusFilter}`
+          `/all-appointments?page=${currentPage}&limit=${pageSize}&status=${statusFilter}`
         );
         console.log("res.data.data : ",res.data.data);
         setAppointments(res.data.data);
@@ -47,17 +50,14 @@ const AllAppointments = () => {
       }
     };
     fetchAppointments();
-  }, [currentPage, statusFilter]);
+  }, [currentPage, statusFilter, pageSize]);
 
   const confirmStatusChange = async () => {
     if (!modalData) return;
     try {
-      await axiosInstance.patch(`/cancel-appointment/${modalData.id}`, { status: modalData.status });
-      // const updated = appointments.map((app) =>
-      //   app._id === modalData.id ? { ...app, status: modalData.status } : app
-      // );
+      await axiosInstance.patch(`${APIRoutes.CANCEL_APPOINTMENTS}/${modalData.id}`, { status: modalData.status });  
       
-    const updated = appointments.map((app) => {
+      const updated = appointments.map((app) => {
       if (app._id !== modalData.id) return app;
 
       const shouldRefund =
@@ -143,8 +143,8 @@ const AllAppointments = () => {
                 {appointments.map((item, index) => {
                   const disabled = ["cancelled", "completed"].includes(item.status);
                   return (
-                    <tr key={item._id} className="hover:bg-[#5F6FFF] hover:text-white transition">
-                      <td className="text-center px-4 py-3">{(currentPage - 1) * limit + index + 1}</td>
+                    <tr key={item._id} className="hover:bg-[#5F6FFF] hover:text-white transition" onClick={() => navigate("/admin-appointment-details",{state:{appointment:item}}) }>
+                      <td className="text-center px-4 py-3">{(currentPage - 1) * pageSize + index + 1}</td>
                       <td className="text-center px-4 py-3">{item.appointmentNo}</td>
                       <td className="text-center px-4 py-3 flex items-center justify-center gap-2">
                         <img src={item.user.photo} className="w-8 h-8 rounded-full object-cover" />
@@ -185,16 +185,18 @@ const AllAppointments = () => {
                             className={`p-1.5 rounded-full ${
                               disabled ? "bg-gray-300 cursor-not-allowed" : "bg-red-500 hover:bg-red-600 text-white cursor-pointer"
                             }`}
-                            onClick={() =>
-                              !disabled &&
+                            onClick={(e) =>{
+                              e.stopPropagation();
+                              if(!disabled){
                               setModalData({
                                 id: item._id,
                                 status: "cancelled",
                                 patientName: item.user.name,
                                 date: item.date,
                                 time: item.time,
-                              })
+                            });
                             }
+                            }}
                             disabled={disabled}
                           >
                             <X className="w-4 h-4" />
@@ -204,16 +206,18 @@ const AllAppointments = () => {
                             className={`p-1.5 rounded-full ${
                               disabled ? "bg-gray-300 cursor-not-allowed" : "bg-green-500 hover:bg-green-600 text-white cursor-pointer"
                             }`}
-                            onClick={() =>
-                              !disabled &&
+                            onClick={(e) =>{
+                              e.stopPropagation();
+                              if(!disabled){
                               setModalData({
                                 id: item._id,
                                 status: "confirmed",
                                 patientName: item.user.name,
                                 date: item.date,
                                 time: item.time,
-                              })
+                              });
                             }
+                            }}
                             disabled={disabled}
                           >
                             <Check className="w-4 h-4" />
@@ -227,11 +231,21 @@ const AllAppointments = () => {
             </table>
           </div>
 
-          <Pagination
+          {/* <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-          />
+          /> */}
+               <Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={setCurrentPage}
+  pageSize={pageSize}
+  onPageSizeChange={(size) => {
+    setPageSize(size);
+    setCurrentPage(1); 
+  }}
+/>
         </main>
       </div>
 

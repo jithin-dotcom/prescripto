@@ -564,6 +564,7 @@ import { Send, Paperclip } from "lucide-react";
 import io, { Socket } from "socket.io-client";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { APIChatRoutes } from "../../constants/routes.constants";
 
 dayjs.extend(customParseFormat);
 
@@ -627,7 +628,7 @@ const ChatDashboard = () => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const res = await axiosInstance.get("/my-chats");
+        const res = await axiosInstance.get(APIChatRoutes.MY_CHATS);
         const chats: ChatListItem[] = res.data.chats || [];
         console.log("chats:", chats);
 
@@ -694,7 +695,7 @@ const ChatDashboard = () => {
     const fetchPreviousMessages = async () => {
       if (!selectedChat || !token) return;
       try {
-        const res = await axiosInstance.get(`/messages/${selectedChat.appointmentId._id}`);
+        const res = await axiosInstance.get(`${APIChatRoutes.GET_MESSAGES}/${selectedChat.appointmentId._id}`);
        
         setMessages(res.data.messages || []);
         console.log("messages: ", res.data.messages);

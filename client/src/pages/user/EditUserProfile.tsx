@@ -8,6 +8,7 @@ import axiosInstance from "../../utils/axios";
 import { useAuthStore } from "../../store/authStore";
 import axios, { AxiosError } from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import { APIRoutes, APIUserRoutes } from "../../constants/routes.constants";
 
 type country = {
   name: {
@@ -60,7 +61,7 @@ const EditUserProfile = () => {
 
     const fetchUser = async () => {
       try {
-        const response = await axiosInstance.get(`/admin/get-user/${id}`);
+        const response = await axiosInstance.get(`${APIRoutes.ADMIN_GET_USER_EDIT}/${id}`);
         const user = response.data.data;
         const profile = user.profile?.[0];
 
@@ -130,7 +131,7 @@ const EditUserProfile = () => {
     }
 
     try {
-      const endpoint = id ? `/user/update-user/${id}` : "/user/create-users";
+      const endpoint = id ? `${APIUserRoutes.UPDATE_USER}/${id}` : APIUserRoutes.CREATE_USER;
       const method = id ? "put" : "post";
 
        await axiosInstance[method](endpoint, formData, {
@@ -186,7 +187,7 @@ const EditUserProfile = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col lg:flex-row items-start gap-10 text-gray-600">
+              {/* <div className="flex flex-col lg:flex-row items-start gap-10 text-gray-600">
                 <div className="w-full lg:flex-1 flex flex-col gap-4">
                   <input
                     name="name"
@@ -273,7 +274,149 @@ const EditUserProfile = () => {
                     className="border rounded px-3 py-2"
                   />
                 </div>
-              </div>
+              </div> */}
+
+
+
+              <div className="flex flex-col lg:flex-row items-start gap-10 text-gray-700">
+  {/* Left column */}
+  <div className="w-full lg:flex-1 flex flex-col gap-5">
+    {/* Name */}
+    <div className="flex flex-col">
+      <label htmlFor="name" className="mb-1 text-sm font-medium">Full Name</label>
+      <input
+        id="name"
+        name="name"
+        type="text"
+        placeholder="Enter your name"
+        value={form.name}
+        onChange={handleChange}
+        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    {/* Email */}
+    <div className="flex flex-col">
+      <label htmlFor="email" className="mb-1 text-sm font-medium">Email</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        placeholder="Enter your email"
+        value={form.email}
+        onChange={handleChange}
+        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    {/* Date of Birth */}
+    <div className="flex flex-col">
+      <label htmlFor="dob" className="mb-1 text-sm font-medium">Date of Birth</label>
+      <input
+        id="dob"
+        name="dob"
+        type="date"
+        value={form.dob}
+        onChange={handleChange}
+        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+  </div>
+
+  {/* Right column */}
+  <div className="w-full lg:flex-1 flex flex-col gap-5">
+    {/* Gender */}
+    <div className="flex flex-col">
+      <label htmlFor="gender" className="mb-1 text-sm font-medium">Gender</label>
+      <select
+        id="gender"
+        name="gender"
+        value={form.gender}
+        onChange={handleChange}
+        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <option value="">Select gender</option>
+        {["male", "female", "other"].map((g) => (
+          <option key={g} value={g}>{g}</option>
+        ))}
+      </select>
+    </div>
+
+    {/* House Name */}
+    <div className="flex flex-col">
+      <label htmlFor="houseName" className="mb-1 text-sm font-medium">House Name</label>
+      <input
+        id="houseName"
+        name="houseName"
+        type="text"
+        placeholder="e.g., Rose Villa"
+        value={form.houseName}
+        onChange={handleChange}
+        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    {/* City */}
+    <div className="flex flex-col">
+      <label htmlFor="city" className="mb-1 text-sm font-medium">City</label>
+      <input
+        id="city"
+        name="city"
+        type="text"
+        placeholder="Enter city"
+        value={form.city}
+        onChange={handleChange}
+        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    {/* State */}
+    <div className="flex flex-col">
+      <label htmlFor="state" className="mb-1 text-sm font-medium">State</label>
+      <input
+        id="state"
+        name="state"
+        type="text"
+        placeholder="Enter state"
+        value={form.state}
+        onChange={handleChange}
+        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
+    {/* Country */}
+    <div className="flex flex-col">
+      <label htmlFor="country" className="mb-1 text-sm font-medium">Country</label>
+      <select
+        id="country"
+        name="country"
+        value={form.country}
+        onChange={handleChange}
+        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <option value="">Select country</option>
+        {countries.map((country) => (
+          <option key={country} value={country}>{country}</option>
+        ))}
+      </select>
+    </div>
+
+    {/* PIN Code */}
+    <div className="flex flex-col">
+      <label htmlFor="pinCode" className="mb-1 text-sm font-medium">PIN Code</label>
+      <input
+        id="pinCode"
+        name="pinCode"
+        type="number"
+        placeholder="Enter PIN code"
+        value={form.pinCode}
+        onChange={handleChange}
+        className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+  </div>
+</div>
+
 
               <button
                 type="submit"

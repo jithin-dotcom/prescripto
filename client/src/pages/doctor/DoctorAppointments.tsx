@@ -12,6 +12,8 @@ import { Ban, Check } from "lucide-react";
 import ConfirmModal from "../../components/ConfirmModal"; 
 import type { Appointment } from "../../interfaces/IDoctorAppointment";
 import { useNavigate } from "react-router-dom";
+import { APIRoutes, APIDoctorRoutes } from "../../constants/routes.constants";
+
 
 const calculateAge = (dob: string): number => {
   const birthDate = new Date(dob);
@@ -36,16 +38,17 @@ const DoctorAppointments = () => {
     newStatus: "confirmed" | "cancelled" | null;
   }>({ appointmentId: "", newStatus: null });
   const navigate = useNavigate();
+  const [pageSize, setPageSize] = useState<number>(5);
 
   useDoctorStore((state) => state.doctorData);
 
-  const limit = 3;
+  
 
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
         const res = await axiosInstance.get(
-          `/doctor-appointments?page=${currentPage}&limit=${limit}&status=${statusFilter}`
+          `${APIDoctorRoutes.DOCTOR_APPOINTMENTS}?page=${currentPage}&limit=${pageSize}&status=${statusFilter}`
         );
         console.log("res.data.data", res.data.data);
         setAppointments(res.data.data);
@@ -56,17 +59,15 @@ const DoctorAppointments = () => {
     };
 
     fetchAppointments();
-  }, [currentPage, statusFilter]);
+  }, [currentPage, statusFilter, pageSize]);
 
   const handleUpdateStatus = async () => {
     const { appointmentId, newStatus } = selectedAction;
     if (!appointmentId || !newStatus) return;
 
     try {
-      await axiosInstance.patch(`/cancel-appointment/${appointmentId}`, { status: newStatus });
-      // const updated = appointments.map((app) =>
-      //   app._id === appointmentId ? { ...app, status: newStatus } : app
-      // );
+      await axiosInstance.patch(`${APIRoutes.CANCEL_APPOINTMENTS}/${appointmentId}`, { status: newStatus });
+
       const updated = appointments.map((app) => {
          if(app._id !== appointmentId) return app;
          const shouldRefund = newStatus === "cancelled" && app.payment === "paid";
@@ -150,8 +151,8 @@ const DoctorAppointments = () => {
                 {appointments.map((app, index) => {
                   const disabled = ["cancelled", "completed"].includes(app.status);
                   return (
-                    <tr key={app._id} className="hover:bg-[#5F6FFF] hover:text-white transition">
-                      <td className="px-4 py-3">{(currentPage - 1) * limit + index + 1}</td>
+                    <tr key={app._id} className="hover:bg-[#5F6FFF] hover:text-white transition" onClick={()=>navigate("/appointment-details",{state:{appointment:app}})}>
+                      <td className="px-4 py-3">{(currentPage - 1) * pageSize + index + 1}</td>
                       <td className="px-4 py-3">{app.appointmentNo}</td>
                       <td className="px-4 py-3 flex items-center gap-2 justify-center">
                         <img
@@ -198,9 +199,10 @@ const DoctorAppointments = () => {
                             className={`text-xs px-3 py-1 rounded flex items-center gap-1 transition ${
                               disabled
                                 ? "bg-gray-400 text-white cursor-not-allowed"
-                                : "bg-red-500 text-white hover:bg-red-600"
+                                : "bg-red-500 text-white hover:bg-red-600 cursor-pointer"
                             }`}
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.stopPropagation();
                               if (!disabled)
                                 setSelectedAction({ appointmentId: app._id, newStatus: "cancelled" });
                               setModalOpen(true);
@@ -209,40 +211,17 @@ const DoctorAppointments = () => {
                           >
                             <Ban size={14} /> Cancel
                           </button>
-                          {/* <button
-                            className={`text-xs px-3 py-1 rounded flex items-center gap-1 transition ${
-                              disabled
-                                ? "bg-gray-400 text-white cursor-not-allowed"
-                                : "bg-green-500 text-white hover:bg-green-600"
-                            }`}
-                            onClick={() => {
-                              if (!disabled)
-                                setSelectedAction({ appointmentId: app._id, newStatus: "confirmed" });
-                              setModalOpen(true);
-                            }}
-                            disabled={disabled}
-                          >
-                            <Check size={14} /> Confirm
-                          </button> */}
+                          
 
 
                           {app.status === "confirmed" && app.payment === "paid" ? (
       <>
-        {/* <button
-          className="text-xs px-3 py-1 rounded flex items-center gap-1 bg-blue-500 text-white hover:bg-blue-600 transition"
-          onClick={() => {
-              navigate("/chat",{ state: { appointmentId: app._id, userId: app.user._id, doctorId: app.doctorId } })
-          }}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path d="M21 15a2 2 0 002-2V7a2 2 0 00-2-2H7L3 9v4a2 2 0 002 2h2v4l4-4h10z" />
-          </svg>
-          Chat
-        </button> */}
+       
 
         <button
-          className="text-xs px-3 py-1 rounded flex items-center gap-1 bg-purple-500 text-white hover:bg-purple-600 transition"
-          onClick={() => {
+          className="text-xs px-3 py-1 rounded flex items-center gap-1 bg-purple-500 text-white hover:bg-purple-600 transition cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
             navigate("/my-video",{ state: { appointmentId: app._id, userId: app.user._id, doctorId: app.doctorId } })
             //  navigate("/my-video",{ state: { appointmentId: app._id, userId: app.doctorId, doctorId: app.user._id } })
           }}
@@ -259,9 +238,10 @@ const DoctorAppointments = () => {
         className={`text-xs px-3 py-1 rounded flex items-center gap-1 transition ${
           disabled
             ? "bg-gray-400 text-white cursor-not-allowed"
-            : "bg-green-500 text-white hover:bg-green-600"
+            : "bg-green-500 text-white hover:bg-green-600 cursor-pointer"
         }`}
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
           if (!disabled)
             setSelectedAction({ appointmentId: app._id, newStatus: "confirmed" });
           setModalOpen(true);
@@ -282,7 +262,17 @@ const DoctorAppointments = () => {
 
           {totalPages > 0 && (
             <div className="mt-6">
-              <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+              {/* <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} /> */}
+                                              <Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  onPageChange={setCurrentPage}
+  pageSize={pageSize}
+  onPageSizeChange={(size) => {
+    setPageSize(size);
+    setCurrentPage(1); 
+  }}
+/>
             </div>
           )}
 

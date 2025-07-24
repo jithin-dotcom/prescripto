@@ -9,6 +9,7 @@ import { logoutService } from "../services/logoutService";
 import { toast } from "react-toastify";
 import axiosInstance from "../utils/axios";
 import "../styles/marquee.css";
+import { APIRoutes } from "../constants/routes.constants";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ const Navbar = () => {
     formData.append("photo", file);
 
     try {
-      const response = await axiosInstance.post("/patient/upload-photo", formData, {
+      const response = await axiosInstance.post(APIRoutes.UPLOAD_PATIENT_PHOTO, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${accessToken}`,
@@ -213,16 +214,15 @@ const Navbar = () => {
       {user?.role === "doctor" && !user?.isVerified && (
         <div className="bg-orange-500 border-b border-red-300 overflow-hidden h-6 cursor-pointer">
           <div className="marquee text-sm text-black-900 whitespace-nowrap py-auto">
-             
-              <span>
-        Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
-      </span>
-      <span className="mx-4">
-        Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
-      </span> 
-      <span className="mx-2">
-        Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
-      </span> 
+            <span>
+              Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
+            </span>
+            <span className="mx-4">
+               Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
+            </span> 
+            <span className="mx-2">
+               Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
+            </span> 
           </div>
         </div>
       )}
