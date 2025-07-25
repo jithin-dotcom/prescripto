@@ -244,6 +244,42 @@ const Navbar = () => {
               >
                 Profile
               </button>
+               <button
+                onClick={() => {
+                  navigate("/my-chat");
+                  setMobileMenuOpen(false);
+                }}
+                className="py-2 px-4 text-left hover:bg-[#5F6FFF] hover:text-white"
+              >
+                My Chat
+              </button>
+               <button
+                onClick={() => {
+                  navigate("/my-appointments");
+                  setMobileMenuOpen(false);
+                }}
+                className="py-2 px-4 text-left hover:bg-[#5F6FFF] hover:text-white"
+              >
+                Appointments
+              </button>
+               <button
+                onClick={() => {
+                  navigate("/change-password");
+                  setMobileMenuOpen(false);
+                }}
+                className="py-2 px-4 text-left hover:bg-[#5F6FFF] hover:text-white"
+              >
+                Change Password
+              </button>
+               <button
+                onClick={() => {
+                  navigate("/change-email");
+                  setMobileMenuOpen(false);
+                }}
+                className="py-2 px-4 text-left hover:bg-[#5F6FFF] hover:text-white"
+              >
+                Change Email
+              </button>
               <button
                 onClick={() => {
                   handleLogout();

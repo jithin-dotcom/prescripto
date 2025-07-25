@@ -19,7 +19,6 @@ export const verifyAccessToken = async (
    
     const authHeader = req.headers.authorization;
 
-    console.log("entered into express middleware : ", authHeader );
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
        res.status(StatusCode.UNAUTHORIZED).json({ message: "Access token missing or invalid" });

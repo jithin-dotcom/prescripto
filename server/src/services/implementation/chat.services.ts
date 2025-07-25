@@ -2,52 +2,107 @@
 
 // import { IChat } from "../../models/chat/IChat";
 // import { IMessage } from "../../models/message/IMessage";
+// import { IChatService } from "../interface/IChatService";
 // import { IChatRepository } from "../../repositories/interface/IChatRepository";
 // import { IMessageRepository } from "../../repositories/interface/IMessageRepository";
-// import { IChatService } from "../interface/IChatService";
 // import mongoose from "mongoose";
+// import { uploadToCloudinary } from "../../config/cloudinary";
 
 // export class ChatService implements IChatService {
 //   constructor(
-//     private chatRepo: IChatRepository,
-//     private messageRepo: IMessageRepository
+//     private _chatRepo: IChatRepository,
+//     private _messageRepo: IMessageRepository
 //   ) {}
 
-//   async findOrCreateChat(appointmentId: string, user: { _id: string; role: string }): Promise<IChat> {
-//     let chat = await this.chatRepo.findByAppointmentId(appointmentId);
-//     if (!chat) {
-//       const newChat: Partial<IChat> = {
+//   async createChat(appointmentId: string, participants: string[]): Promise<IChat> {
+//     try {
+//       if (!appointmentId || participants.length < 2) {
+//         throw new Error("Invalid appointment ID or participants");
+//       }
+
+//       const existing = await this._chatRepo.findByAppointmentId(appointmentId);
+//       if (existing) {
+//         throw new Error("Chat already exists for this appointment");
+//       }
+
+//       const chat = await this._chatRepo.createChat({
 //         appointmentId: new mongoose.Types.ObjectId(appointmentId),
-//         doctorId: user.role === "doctor" ? user._id : undefined,
-//         userId: user.role === "user" ? user._id : undefined,
+//         participants: participants.map(id => new mongoose.Types.ObjectId(id)),
 //         isActive: true,
-//       };
-//       chat = await this.chatRepo.create(newChat);
+//       });
+
+//       return chat;
+//     } catch (error) {
+//       console.error("Error creating chat:", error);
+//       throw error;
 //     }
-//     return chat;
 //   }
 
-//   async createMessage(
-//     chatId: mongoose.Types.ObjectId,
-//     senderId: string,
-//     content: string,
-//     type: "text" | "image"
-//   ): Promise<IMessage> {
-//     const message: Partial<IMessage> = {
-//       chatId,
-//       sender: senderId,
-//       content,
-//       type,
-//       read: false,
-//       timestamp: new Date(),
-//     };
-//     return await this.messageRepo.create(message);
+//   async deactivateChat(appointmentId: string): Promise<void> {
+//     try {
+//       await this._chatRepo.deactivateChat(appointmentId);
+//     } catch (error) {
+//       console.error("Error deactivating chat:", error);
+//       throw error;
+//     }
 //   }
 
-//   async endChat(appointmentId: string): Promise<void> {
-//     await this.chatRepo.endChatByAppointmentId(appointmentId);
+//   async getChatByAppointmentId(appointmentId: string): Promise<IChat | null> {
+//     try {
+//       return await this._chatRepo.findByAppointmentId(appointmentId);
+//     } catch (error) {
+//       console.error("Error fetching chat:", error);
+//       throw error;
+//     }
 //   }
+
+//   async createMessage(chatId: string, senderId: string, content: string): Promise<IMessage> {
+//     try {
+//       if (!chatId || !senderId || !content.trim()) {
+//         throw new Error("Invalid message data");
+//       }
+
+//       const message = await this._messageRepo.createMessage({
+//         chatId: new mongoose.Types.ObjectId(chatId),
+//         sender: new mongoose.Types.ObjectId(senderId),
+//         content,
+//         timestamp: new Date(),
+//       });
+
+//       return message;
+//     } catch (error) {
+//       console.error("Error creating message:", error);
+//       throw error;
+//     }
+//   }
+
+//   async getMessagesByChatId(chatId: string): Promise<IMessage[]> {
+//     try {
+//       return await this._messageRepo.getMessagesByChatId(chatId);
+//     } catch (error) {
+//       console.error("Error fetching messages:", error);
+//       throw error;
+//     }
+//   }
+
+//   async getUserChats(userId: string): Promise<IChat[]> {
+//     try {
+//      return   this._chatRepo.getChatsByUser(userId);
+      
+//     } catch (error) {
+//       console.log("error : ",error);
+//       throw error;
+//     }
+//   }
+
+
+
 // }
+
+
+
+
+
 
 
 
@@ -66,8 +121,8 @@ import mongoose from "mongoose";
 
 export class ChatService implements IChatService {
   constructor(
-    private _chatRepo: IChatRepository,
-    private _messageRepo: IMessageRepository
+    public _chatRepo: IChatRepository,
+    public _messageRepo: IMessageRepository
   ) {}
 
   async createChat(appointmentId: string, participants: string[]): Promise<IChat> {
@@ -83,8 +138,10 @@ export class ChatService implements IChatService {
 
       const chat = await this._chatRepo.createChat({
         appointmentId: new mongoose.Types.ObjectId(appointmentId),
-        participants: participants.map(id => new mongoose.Types.ObjectId(id)),
+        participants: participants.map((id) => new mongoose.Types.ObjectId(id)),
         isActive: true,
+        doctorId: new mongoose.Types.ObjectId(participants[0]),
+        userId: new mongoose.Types.ObjectId(participants[1]),
       });
 
       return chat;
@@ -96,7 +153,10 @@ export class ChatService implements IChatService {
 
   async deactivateChat(appointmentId: string): Promise<void> {
     try {
-      await this._chatRepo.deactivateChat(appointmentId);
+      const result = await this._chatRepo.deactivateChat(appointmentId);
+      if (!result) {
+        throw new Error("Chat not found or could not be deactivated");
+      }
     } catch (error) {
       console.error("Error deactivating chat:", error);
       throw error;
@@ -106,13 +166,29 @@ export class ChatService implements IChatService {
   async getChatByAppointmentId(appointmentId: string): Promise<IChat | null> {
     try {
       return await this._chatRepo.findByAppointmentId(appointmentId);
+      // return await this._chatRepo.findById(chatId);
     } catch (error) {
       console.error("Error fetching chat:", error);
       throw error;
     }
   }
 
-  async createMessage(chatId: string, senderId: string, content: string): Promise<IMessage> {
+  async getChatById(chatId: string): Promise<IChat | null> {
+    try {
+      // return await this._chatRepo.findByAppointmentId(appointmentId);
+      return await this._chatRepo.findById(chatId);
+    } catch (error) {
+      console.error("Error fetching chat:", error);
+      throw error;
+    }
+  }
+
+  async createMessage(
+    chatId: string,
+    senderId: string,
+    content: string,
+    type: "text" | "image"
+  ): Promise<IMessage> {
     try {
       if (!chatId || !senderId || !content.trim()) {
         throw new Error("Invalid message data");
@@ -122,7 +198,9 @@ export class ChatService implements IChatService {
         chatId: new mongoose.Types.ObjectId(chatId),
         sender: new mongoose.Types.ObjectId(senderId),
         content,
+        type,
         timestamp: new Date(),
+        read: false,
       });
 
       return message;
@@ -143,11 +221,31 @@ export class ChatService implements IChatService {
 
   async getUserChats(userId: string): Promise<IChat[]> {
     try {
-     return   this._chatRepo.getChatsByUser(userId);
-      
+      return await this._chatRepo.getChatsByUser(userId);
     } catch (error) {
-      console.log("error : ",error);
+      console.error("Error fetching user chats:", error);
+      throw error;
+    }
+  }
+
+  async markMessagesAsRead(chatId: string, readerId: string): Promise<void> {
+    try {
+      await this._messageRepo.markAsRead(chatId, readerId);
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+      throw error;
+    }
+  }
+
+  async getReadMessages(chatId: string, readerId: string): Promise<IMessage[]> {
+    try {
+      return await this._messageRepo.getReadMessages(chatId, readerId);
+    } catch (error) {
+      console.error("Error fetching read messages:", error);
       throw error;
     }
   }
 }
+
+
+

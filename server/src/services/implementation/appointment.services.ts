@@ -120,31 +120,31 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
       throw new Error("Missing required fields");
     }
 
-    // Convert doctorId to ObjectId
+   
     const doctorId = data.doctorId instanceof mongoose.Types.ObjectId
       ? data.doctorId
       : new mongoose.Types.ObjectId((data.doctorId as IDoctorUser)._id);
 
-    // Fetch doctor to get fee and availability
+   
     const doctor = await this._doctorRepo.findOne({ doctorId });
     if (!doctor) throw new Error("Doctor not found");
 
-    // Assign fee
+  
     if (doctor.fee) {
       data.fee = doctor.fee;
     }
 
-    // Generate 6-digit appointment number
+    
     data.appointmentNo = Math.floor(100000 + Math.random() * 900000);
 
-    // Convert "dd/mm/yyyy" to Date object
+   
     const [dayStr, monthStr, yearStr] = data.day.split("/");
     const selectedDate = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
 
-    // Get weekday name (e.g., "Monday")
+   
     const appointmentWeekday = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
 
-    // Find availability for that weekday
+   
     const availabilitySlot = doctor.availability?.find(
       (slot): slot is IAvailabilitySlot => slot.day === appointmentWeekday
     );
@@ -153,7 +153,7 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
       throw new Error(`Doctor is not available on ${appointmentWeekday}`);
     }
 
-    // Convert "hh:mm AM/PM" to total minutes
+   
     const timeToMinutes = (timeStr: string): number => {
       const [time, period] = timeStr.split(" ");
       let [hour, minute] = time.split(":").map(Number);
@@ -164,7 +164,7 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
 
     const bookingMinutes = timeToMinutes(data.time);
 
-    // Check if booking time falls within any available slot block
+   
     const validSlot = availabilitySlot.slots.some(block => {
       const fromMinutes = timeToMinutes(block.from);
       const toMinutes = timeToMinutes(block.to);
@@ -175,10 +175,13 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
       throw new Error(`Doctor is not available at ${data.time} on ${appointmentWeekday}`);
     }
 
-    // Check for existing appointments at same day & time
+    
     const existingAppointments = await this._appointmentRepo.findAll({ doctorId });
     const isSlotTaken = existingAppointments.some(app => {
-      return app.day === data.day && app.time === data.time;
+      if(app.status !== "cancelled" ){
+         return app.day === data.day && app.time === data.time;
+      }
+      
     });
 
     if (isSlotTaken) {
@@ -285,279 +288,6 @@ async getAppointmentsByUser(
 
 
 
-// async getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse> {
-//   try {
-//     const responses: ICreateAppointment[] = [];
-//     const timeArray: string[] = [];
-
-//     const doctorUser = await this._userRepo.findById(new mongoose.Types.ObjectId(doctorId));
-//     if (!doctorUser) {
-//       return {
-//         responses: [],
-//         timeArray: [],
-//       };
-//     }
-
-//     const profile = await this._doctorRepo.findOne({ doctorId: doctorUser._id });
-
-   
-//     if (!profile) {
-//       return {
-//         responses: [
-//           {
-//             _id: "",
-//             doctor: {
-//               _id: (doctorUser._id as mongoose.Types.ObjectId).toString(),
-//               name: doctorUser.name,
-//               email: doctorUser.email,
-//               photo: doctorUser.photo,
-//               isVerified: doctorUser.isVerified,
-//               isBlocked: doctorUser.isBlocked,
-//               educationDetails: "",
-//               specialization: "",
-//               yearOfExperience: 0,
-//               about: "",
-//               fee: 0,
-//               availability: [],
-//               slotDuration: 0,
-//             },
-//             userId: "",
-//             date: "",
-//             time: "",
-//             status: "pending",
-//             transactionId: "",
-//           },
-//         ],
-//         timeArray: [],
-//       };
-//     }
-
-//     const appointments = await this._appointmentRepo.findDoctor(
-//       new mongoose.Types.ObjectId(doctorId)
-//     );
-
-//     if (!appointments || appointments.length === 0) {
-//       responses.push({
-//         _id: "",
-//         doctor: {
-//           _id: (doctorUser._id as mongoose.Types.ObjectId).toString(),
-//           name: doctorUser.name,
-//           email: doctorUser.email,
-//           photo: doctorUser.photo,
-//           isVerified: doctorUser.isVerified,
-//           isBlocked: doctorUser.isBlocked,
-//           educationDetails: profile.educationDetails || "",
-//           specialization: profile.specialization || "",
-//           yearOfExperience: profile.yearOfExperience || 0,
-//           about: profile.about || "",
-//           fee: profile.fee || 0,
-//           availability: profile.availability || [],
-//           slotDuration: profile.slotDuration || 30,
-//         },
-//         userId: "",
-//         date: "",
-//         time: "",
-//         status: "pending",
-//         transactionId: "",
-//       });
-
-//       return {
-//         responses,
-//         timeArray,
-//       };
-//     }
-
-//     for (const appointment of appointments) {
-//       const doctor = appointment.doctorId as any;
-
-     
-//       if (!doctor || typeof doctor !== "object" || !("name" in doctor)) {
-//         continue;
-//       }
-
-//       timeArray.push(appointment.time);
-
-//       responses.push({
-//         _id: (appointment._id as mongoose.Types.ObjectId).toString(),
-//         doctor: {
-//           _id: doctor._id.toString(),
-//           name: doctor.name,
-//           email: doctor.email,
-//           photo: doctor.photo,
-//           isVerified: doctor.isVerified,
-//           isBlocked: doctor.isBlocked,
-//           educationDetails: profile.educationDetails || "",
-//           specialization: profile.specialization || "",
-//           yearOfExperience: profile.yearOfExperience || 0,
-//           about: profile.about || "",
-//           fee: profile.fee || 0,
-//           availability: profile.availability || [],
-//           slotDuration: profile.slotDuration || 30,
-//         },
-//         userId: appointment.userId.toString(),
-//         date: appointment.day,
-//         time: appointment.time,
-//         status: appointment.status,
-//         transactionId: appointment.transactionId?.toString() || "",
-//       });
-//     }
-
-//     return {
-//       responses,
-//       timeArray,
-//     };
-//   } catch (error) {
-//     console.error("Error in getCreateAppointment:", error);
-//     return {
-//       responses: [],
-//       timeArray: [],
-//     };
-//   }
-// }
-
-
-
-
-// async getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse> {
-//   try {
-//     const responses: ICreateAppointment[] = [];
-//     const timeArray: Record<string, string[]> = {}; // <-- changed from string[] to Record
-
-//     const doctorUser = await this._userRepo.findById(new mongoose.Types.ObjectId(doctorId));
-//     if (!doctorUser) {
-//       return {
-//         responses: [],
-//         timeArray: {},
-//       };
-//     }
-
-//     const profile = await this._doctorRepo.findOne({ doctorId: doctorUser._id });
-
-//     if (!profile) {
-//       return {
-//         responses: [
-//           {
-//             _id: "",
-//             doctor: {
-//               _id: (doctorUser._id as mongoose.Types.ObjectId).toString(),
-//               name: doctorUser.name,
-//               email: doctorUser.email,
-//               photo: doctorUser.photo,
-//               isVerified: doctorUser.isVerified,
-//               isBlocked: doctorUser.isBlocked,
-//               educationDetails: "",
-//               specialization: "",
-//               yearOfExperience: 0,
-//               about: "",
-//               fee: 0,
-//               availability: [],
-//               slotDuration: 0,
-//             },
-//             userId: "",
-//             date: "",
-//             time: "",
-//             appointmentNo: 0,
-//             status: "pending",
-//             transactionId: "",
-//           },
-//         ],
-//         timeArray: {},
-//       };
-//     }
-
-//     const appointments = await this._appointmentRepo.findDoctor(
-//       new mongoose.Types.ObjectId(doctorId)
-//     );
-
-//     if (!appointments || appointments.length === 0) {
-//       responses.push({
-//         _id: "",
-//         doctor: {
-//           _id: (doctorUser._id as mongoose.Types.ObjectId).toString(),
-//           name: doctorUser.name,
-//           email: doctorUser.email,
-//           photo: doctorUser.photo,
-//           isVerified: doctorUser.isVerified,
-//           isBlocked: doctorUser.isBlocked,
-//           educationDetails: profile.educationDetails || "",
-//           specialization: profile.specialization || "",
-//           yearOfExperience: profile.yearOfExperience || 0,
-//           about: profile.about || "",
-//           fee: profile.fee || 0,
-//           availability: profile.availability || [],
-//           slotDuration: profile.slotDuration || 30,
-//         },
-//         userId: "",
-//         date: "",
-//         time: "",
-//         appointmentNo: 0,
-//         status: "pending",
-//         transactionId: "",
-//       });
-
-//       return {
-//         responses,
-//         timeArray: {},
-//       };
-//     }
-
-//     for (const appointment of appointments) {
-//       const doctor = appointment.doctorId as any;
-
-//       if (!doctor || typeof doctor !== "object" || !("name" in doctor)) {
-//         continue;
-//       }
-
-//       // ⬇️ Group time under date
-//       const date = appointment.day;
-//       const time = appointment.time;
-
-//       if (!timeArray[date]) {
-//         timeArray[date] = [];
-//       }
-//       timeArray[date].push(time);
-
-//       responses.push({
-//         _id: (appointment._id as mongoose.Types.ObjectId).toString(),
-//         doctor: {
-//           _id: doctor._id.toString(),
-//           name: doctor.name,
-//           email: doctor.email,
-//           photo: doctor.photo,
-//           isVerified: doctor.isVerified,
-//           isBlocked: doctor.isBlocked,
-//           educationDetails: profile.educationDetails || "",
-//           specialization: profile.specialization || "",
-//           yearOfExperience: profile.yearOfExperience || 0,
-//           about: profile.about || "",
-//           fee: profile.fee || 0,
-//           availability: profile.availability || [],
-//           slotDuration: profile.slotDuration || 30,
-//         },
-//         userId: appointment.userId.toString(),
-//         date,
-//         time,
-//         appointmentNo: appointment.appointmentNo || 0,
-//         status: appointment.status,
-//         transactionId: appointment.transactionId?.toString() || "",
-//       });
-//     }
-
-//     return {
-//       responses,
-//       timeArray, 
-//     };
-//   } catch (error) {
-//     console.error("Error in getCreateAppointment:", error);
-//     return {
-//       responses: [],
-//       timeArray: {},
-//     };
-//   }
-// }
-
-
-
 async getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse> {
   try {
     const responses: ICreateAppointment[] = [];
@@ -638,8 +368,10 @@ async getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse
       if (!timeArray[date]) {
         timeArray[date] = [];
       }
-      timeArray[date].push(time);
-
+      if(appointment.status !== "cancelled" ){
+        timeArray[date].push(time);
+      }
+      
       responses.push({
         _id: (appointment._id as mongoose.Types.ObjectId).toString(),
         doctor: doctorData,
@@ -651,7 +383,7 @@ async getCreateAppointment(doctorId: string): Promise<ICreateAppointmentResponse
         transactionId: appointment.transactionId?.toString() || "",
       });
     }
-
+   
     return { responses, timeArray };
   } catch (error) {
     console.error("Error in getCreateAppointment:", error);

@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import type { Slot, DoctorProfile, Availability } from "../../interfaces/IAppointments";
 import { APIUserRoutes } from "../../constants/routes.constants";
+import ConfirmModal from "../../components/ConfirmModal";
 
 
 
@@ -99,6 +100,7 @@ const Appointment: React.FC = () => {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [activeSlotIndex, setActiveSlotIndex] = useState(0);
   const [activeTime, setActiveTime] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
 
   const handleBooking = async () => {
@@ -157,12 +159,8 @@ const Appointment: React.FC = () => {
     const updatedTimes = slots[activeSlotIndex].times.filter(time => time !== activeTime);
     setActiveTime(updatedTimes.length > 0 ? updatedTimes[0] : "");
   } catch (err) {
-    
-    if(axios.isAxiosError(err)){
-       toast.error(err.response?.data?.message);
-    }else{
-       toast.error("Failed to book appointment");
-    }
+    console.log("error : ",err);
+   
   }
 };
 
@@ -313,7 +311,8 @@ const Appointment: React.FC = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    onClick={handleBooking}
+                    // onClick={handleBooking}
+                    onClick={() => setShowConfirmModal(true)}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full shadow-md cursor-pointer"
                   >
                     Book Appointment
@@ -327,6 +326,17 @@ const Appointment: React.FC = () => {
         ) : (
           <p className="text-gray-600 text-center mt-20">Loading doctor profile...</p>
         )}
+
+        <ConfirmModal
+  isOpen={showConfirmModal}
+  onClose={() => setShowConfirmModal(false)}
+  onConfirm={handleBooking}
+  title="Confirm Appointment Booking"
+  description={`Do you want to book an appointment with Dr. ${doctor?.name} at ${activeTime} on ${slots[activeSlotIndex]?.date}?`}
+  confirmText="Book"
+  cancelText="Cancel"
+/>
+
       </main>
     </div>
   );

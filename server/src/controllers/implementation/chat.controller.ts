@@ -15,7 +15,7 @@ export class ChatController implements IChatController {
       const chat = await this._chatService.getChatByAppointmentId(appointmentId);
 
       if (!chat) {
-         res.status(404).json({ message: "Chat not found" });
+         res.status(404).json({ message: "Chat not found in controller" });
          return;
       }
 
@@ -38,7 +38,7 @@ export class ChatController implements IChatController {
       } 
 
       const chats = await this._chatService.getUserChats(userId);
-      console.log("chat : ", chats);
+     
       res.status(200).json({ chats });
     } catch (error) {
       console.error("Error getting chats:", error);
