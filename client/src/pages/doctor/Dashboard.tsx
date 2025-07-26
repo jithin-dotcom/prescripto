@@ -18,7 +18,7 @@ const DoctorDashboard: React.FC = () => {
         <Sidebar />
 
        
-        <main className="flex-1 p-4 md:p-6 lg:p-8 space-y-8">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 space-y-8 mt-12">
          
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           

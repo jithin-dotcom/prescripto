@@ -162,7 +162,7 @@ const EditUser = () => {
       <Navbar />
       <div className="flex flex-1 flex-row">
         <SidebarAdmin />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto mt-12">
           <form className="w-full max-w-5xl mx-auto" onSubmit={handleSubmit}>
             <p className="mb-6 text-2xl font-semibold text-gray-700">
               {id ? "Edit User" : "Add User"}
@@ -192,104 +192,11 @@ const EditUser = () => {
                 </p>
               </div>
 
-              {/* <div className="flex flex-col lg:flex-row items-start gap-10 text-gray-600">
-                <div className="w-full lg:flex-1 flex flex-col gap-4">
-                  
-                  <input
-                    name="name"
-                    placeholder="Name"
-                    type="text"
-                    value={form.name}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                  />
-                  <input
-                    name="email"
-                    placeholder="Email"
-                    type="text"
-                    value={form.email}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                  />
-                  <label>Date of Birth</label>
-                  <input
-                    name="dob"
-                    type="date"
-                    value={form.dob}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                  />
-                </div>
-
-                <div className="w-full lg:flex-1 flex flex-col gap-4">
-                  <select
-                    name="gender"
-                    value={form.gender}
-                    onChange={handleChange}
-                    className="border rounded px-2 py-2"
-                  >
-                    {["male", "female", "other"].map((g) => (
-                      <option key={g} value={g}>
-                        {g}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    name="houseName"
-                    placeholder="House Name"
-                    type="text"
-                    value={form.houseName}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                  />
-                  <input
-                    name="city"
-                    placeholder="City"
-                    type="text"
-                    value={form.city}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                  />
-                  <input
-                    name="state"
-                    placeholder="State"
-                    type="text"
-                    value={form.state}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                  />
-                  <select
-                    name="country"
-                    value={form.country}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                  >
-                    <option value="">Select Country</option>
-                    {countries.map((country) => (
-                      <option key={country} value={country}>
-                        {country}
-                      </option>
-                    ))}
-                  </select>
-                  <input
-                    name="pinCode"
-                    placeholder="PIN Code"
-                    type="number"
-                    value={form.pinCode}
-                    onChange={handleChange}
-                    className="border rounded px-3 py-2"
-                  />
-                </div>
-              </div> */}
-
-
-
-
-
-              <div className="flex flex-col lg:flex-row items-start gap-10 text-gray-700">
-  {/* Left Section */}
+              
+ <div className="flex flex-col lg:flex-row items-start gap-10 text-gray-700">
+ 
   <div className="w-full lg:flex-1 flex flex-col gap-5">
-    {/* Name */}
+   
     <div className="flex flex-col">
       <label htmlFor="name" className="mb-1 text-sm font-medium">Full Name</label>
       <input
@@ -303,7 +210,7 @@ const EditUser = () => {
       />
     </div>
 
-    {/* Email */}
+   
     <div className="flex flex-col">
       <label htmlFor="email" className="mb-1 text-sm font-medium">Email</label>
       <input
@@ -317,7 +224,7 @@ const EditUser = () => {
       />
     </div>
 
-    {/* DOB */}
+   
     <div className="flex flex-col">
       <label htmlFor="dob" className="mb-1 text-sm font-medium">Date of Birth</label>
       <input
@@ -331,9 +238,9 @@ const EditUser = () => {
     </div>
   </div>
 
-  {/* Right Section */}
+ 
   <div className="w-full lg:flex-1 flex flex-col gap-5">
-    {/* Gender */}
+   
     <div className="flex flex-col">
       <label htmlFor="gender" className="mb-1 text-sm font-medium">Gender</label>
       <select
@@ -350,7 +257,7 @@ const EditUser = () => {
       </select>
     </div>
 
-    {/* House Name */}
+    
     <div className="flex flex-col">
       <label htmlFor="houseName" className="mb-1 text-sm font-medium">House Name</label>
       <input
@@ -364,7 +271,7 @@ const EditUser = () => {
       />
     </div>
 
-    {/* City */}
+   
     <div className="flex flex-col">
       <label htmlFor="city" className="mb-1 text-sm font-medium">City</label>
       <input
@@ -378,7 +285,7 @@ const EditUser = () => {
       />
     </div>
 
-    {/* State */}
+   
     <div className="flex flex-col">
       <label htmlFor="state" className="mb-1 text-sm font-medium">State</label>
       <input
@@ -392,7 +299,7 @@ const EditUser = () => {
       />
     </div>
 
-    {/* Country */}
+   
     <div className="flex flex-col">
       <label htmlFor="country" className="mb-1 text-sm font-medium">Country</label>
       <select
@@ -409,7 +316,7 @@ const EditUser = () => {
       </select>
     </div>
 
-    {/* PIN Code */}
+   
     <div className="flex flex-col">
       <label htmlFor="pinCode" className="mb-1 text-sm font-medium">PIN Code</label>
       <input

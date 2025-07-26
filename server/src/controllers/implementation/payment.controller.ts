@@ -8,7 +8,7 @@ import { IPaymentController } from "../interface/IPaymentController";
 export class PaymentController implements IPaymentController {
   constructor(private paymentService: IPaymentService) {}
 
-  // POST /payments/create-order
+  
   async createRazorpayOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { appointmentId, userId, doctorId, amount } = req.body;
@@ -31,7 +31,7 @@ export class PaymentController implements IPaymentController {
     }
   }
 
-  // POST /payments/verify
+  
   async verifyPaymentSignature(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;

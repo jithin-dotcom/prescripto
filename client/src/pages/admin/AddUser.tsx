@@ -192,7 +192,7 @@ const AddUser = () => {
       <div className="flex flex-1 flex-row">
         <SidebarAdmin />
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto mt-12">
           <form className="w-full max-w-5xl mx-auto" onSubmit={handleSubmit}>
             <p className="mb-6 text-2xl font-semibold text-gray-700">Add User</p>
 

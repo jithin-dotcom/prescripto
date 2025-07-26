@@ -1,7 +1,7 @@
 
 import { Document } from "mongoose";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
-import { UserModel } from "../../models/user.models"; 
+
 import { IUser } from "../../types/user.type";
 
 

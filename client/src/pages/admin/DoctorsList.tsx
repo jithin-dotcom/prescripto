@@ -98,13 +98,13 @@ const DoctorsList: React.FC = () => {
       <Navbar />
       <div className="flex flex-1">
         <SidebarAdmin />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
-          {/* Header with Search & Filter */}
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto mt-12">
+         
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
             <h1 className="text-2xl font-semibold text-gray-700">All Doctors</h1>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
-              {/* Search */}
+             
               <div className="relative w-full sm:w-72">
                 <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
                 <input
@@ -201,16 +201,16 @@ const DoctorsList: React.FC = () => {
                   //   totalPages={totalPages}
                   //   onPageChange={(page) => setCurrentPage(page)}
                   // />
-                                  <Pagination
-  currentPage={currentPage}
-  totalPages={totalPages}
-  onPageChange={setCurrentPage}
-  pageSize={pageSize}
-  onPageSizeChange={(size) => {
-    setPageSize(size);
-    setCurrentPage(1); 
-  }}
-/>
+                <Pagination
+                 currentPage={currentPage}
+                 totalPages={totalPages}
+                 onPageChange={setCurrentPage}
+                 pageSize={pageSize}
+                 onPageSizeChange={(size) => {
+                 setPageSize(size);
+                 setCurrentPage(1); 
+                }}
+                />
                 )}
               </div>
             </>

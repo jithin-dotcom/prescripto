@@ -324,29 +324,23 @@ const MyAppointments: React.FC = () => {
         onClick={(e) => {
           e.stopPropagation()
            navigate("/my-video", {
-                                         state: {
-                                           appointmentId: item._id,
-                                           userId: item.userId,
-                                           doctorId: item.doctor._id,
-                                         },
-                                      })}}
+                                  state: {
+                                    appointmentId: item._id,
+                                    userId: item.userId,
+                                    doctorId: item.doctor._id,
+                                  },
+                              })}}
         className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-blue-600 hover:text-white transition"
       >
         <Video size={18} strokeWidth={1.5} />
         <span>Video Call</span>
       </MotionButton>
 
-      {/* <MotionButton
-        onClick={() => navigate("/chat",{ state: { appointmentId: item._id, userId: item.userId, doctorId: item.doctor._id } })}
-        className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-green-600 hover:text-white transition"
-      >
-        <MessageCircle size={18} strokeWidth={1.5} />
-        <span>Chat</span>
-      </MotionButton> */}
+     
     </>
   )}
 
-  {/* Cancel Button */}
+ 
   {["confirmed", "pending"].includes(item.status) && (
     <MotionButton
       onClick={(e) => {
@@ -370,18 +364,18 @@ const MyAppointments: React.FC = () => {
         )}
 
         {appointments.length > 0 && (
-          // <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-                                                                     <Pagination
-  currentPage={currentPage}
-  totalPages={totalPages}
-  onPageChange={setCurrentPage}
-  pageSize={pageSize}
-  onPageSizeChange={(size) => {
-    setPageSize(size);
-    setCurrentPage(1); 
-  }}
-/>
-        )}
+       
+      <Pagination
+       currentPage={currentPage}
+       totalPages={totalPages}
+       onPageChange={setCurrentPage}
+       pageSize={pageSize}
+       onPageSizeChange={(size) => {
+       setPageSize(size);
+       setCurrentPage(1); 
+      }}
+     />
+    )}
       </main>
 
       

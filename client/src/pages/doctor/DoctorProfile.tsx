@@ -68,7 +68,7 @@ const DoctorProfile = () => {
           <Sidebar />
         </aside>
 
-        <main className="flex-1 w-full p-4 sm:p-6 lg:p-8">
+        <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 mt-12">
          
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <h1 className="text-2xl font-semibold text-gray-700">My Profile</h1>

@@ -32,7 +32,7 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
       return;
     }
 
-    // Disconnect previous socket for the same userId
+    
     if (connectedUsers.has(userId)) {
       console.log(`User ${userId} already connected, disconnecting old socket`);
       connectedUsers.get(userId)?.disconnect();
@@ -163,7 +163,7 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
   if (userId) {
     connectedUsers.delete(userId);
 
-    // Notify other participant in the call room
+   
     if (session?.appointmentId) {
       io.to(session.appointmentId).emit("user-disconnected", {userId});
       try {
@@ -186,8 +186,6 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
       }
      
     }
-
-    // activeCalls.delete(userId);
   }
 });
 
@@ -205,13 +203,3 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
 
 
 
-// socket.on("disconnect", () => {
-  //   console.log(`Socket disconnected: ${socket.id}, user: ${socket.data.userId}`);
-  //   if (socket.data.userId) {
-  //     connectedUsers.delete(socket.data.userId);
-  //     io.to(socket.data.userId).emit("user-disconnected");
-      
-   
-  //     activeCalls.delete(socket.data.userId);
-  //   }
-  // });

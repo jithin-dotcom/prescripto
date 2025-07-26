@@ -21,98 +21,6 @@ export class AppointmentService implements IAppointmentService {
   ) {}
 
 
-// async createAppointment(data: Partial<IAppointment>): Promise<{ message: string }> {
-//   try {
-//     if (!data.userId || !data.doctorId || !data.day || !data.time) {
-//       throw new Error("Missing required fields");
-//     }
-//     // console.log("data : ",data);
-
-//     let doctorId: mongoose.Types.ObjectId;
-
-   
-//     if (data.doctorId instanceof mongoose.Types.ObjectId) {
-//       doctorId = data.doctorId;
-//     } else {
-     
-//       doctorId = new mongoose.Types.ObjectId((data.doctorId as IDoctorUser)._id);
-//     }
-//     const doctor = await this._doctorRepo.findOne({doctorId:doctorId});
-//     if(doctor?.fee){
-//        data.fee = doctor.fee;
-//     }
-//     const appointmentNo = Math.floor(100000 + Math.random() * 900000);
-//     if(!appointmentNo){
-//        throw new Error("Failed to create AppointmentNo");
-//     }
-//     data.appointmentNo = appointmentNo;
-
-//     const [dayStr, monthStr, yearStr] = data.day.split("/");
-//     const dateObj = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
-//     const appointmentDay = dateObj.toLocaleDateString("en-US", { weekday: "long" });
-
-//     const dayAvailability = doctor?.availability?.find(slot => slot.day === appointmentDay);
-//     if (!dayAvailability) {
-//       throw new Error(`Doctor is not available on ${appointmentDay}`);
-//     }
-
-//     const timeToMinutes = (timeStr: string): number => {
-//        const [time, period] = timeStr.split(" ");
-//        let [hour, minute] = time.split(":").map(Number);
-//        if (period === "PM" && hour !== 12) hour += 12;
-//        if (period === "AM" && hour === 12) hour = 0;
-//        return hour * 60 + minute;
-//     };
-
-//     const bookingTime = timeToMinutes(data.time!);
-//     const fromTime = timeToMinutes(dayAvailability.from);
-//     const toTime = timeToMinutes(dayAvailability.to);
-
-//     if (bookingTime < fromTime || bookingTime >= toTime) {
-//       throw new Error(`Doctor is only available from ${dayAvailability.from} to ${dayAvailability.to} on ${appointmentDay}`);
-//     }
-  
-//     console.log("doctor  : ",doctor );
-//     const doctorAppointment = await this._appointmentRepo.findAll({doctorId:doctorId});
-//     console.log("doctor Appointment : ",doctorAppointment);
-
-
-//     const isSlotTaken = doctorAppointment.some(app => {
-//       return app.day === data.day && app.time === data.time;
-//     });
-
-//     if(isSlotTaken) {
-//       throw new Error("Slot not available for the selected date and time");
-//     }
-   
-   
-//     const appointmentData = {
-//       ...data,
-//       userId: new mongoose.Types.ObjectId(data.userId),
-//       doctorId,
-//       status: "pending" as "pending",
-//     };
-
-//     await this._appointmentRepo.create(appointmentData);
-
-//     return {
-//       message: "successfully created",
-//     };
-//   } catch (error: unknown) {
-//     console.error("Error creating appointment:", error);
-//     if(error instanceof Error){
-//        throw error;
-//     }else{
-//         throw new Error("Failed to create Appointment");
-//     }
-    
-//   }
-// }
-
-
-
-
-
 
 async createAppointment(data: Partial<IAppointment>): Promise<{ message: string }> {
   try {
@@ -572,7 +480,6 @@ async getAllAppointments(
     throw new Error("Failed to fetch all appointments");
   }
 }
-
 
 
 

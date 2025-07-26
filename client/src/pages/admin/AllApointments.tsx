@@ -410,15 +410,15 @@ const AllAppointments = () => {
       <Navbar />
       <div className="flex flex-1">
         <SidebarAdmin />
-        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8">
-          {/* Header Section */}
+        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 mt-12">
+         
           <div className="mb-4 sm:mb-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-4">
               <h1 className="text-xl sm:text-2xl font-semibold text-gray-700">
                 All Appointments
               </h1>
               
-              {/* Desktop Filter */}
+             
               <div className="hidden sm:block">
                 <select
                   value={statusFilter}
@@ -436,7 +436,7 @@ const AllAppointments = () => {
                 </select>
               </div>
 
-              {/* Mobile Filter Button */}
+             
               <div className="sm:hidden">
                 <button
                   onClick={() => setShowMobileFilter(!showMobileFilter)}
@@ -449,7 +449,7 @@ const AllAppointments = () => {
               </div>
             </div>
 
-            {/* Mobile Filter Dropdown */}
+           
             {showMobileFilter && (
               <div className="mt-3 sm:hidden">
                 <select
@@ -471,7 +471,7 @@ const AllAppointments = () => {
             )}
           </div>
 
-          {/* Desktop Table View */}
+         
           <div className="hidden lg:block bg-white rounded-lg  border border-gray-200 overflow-hidden hover:scale-102 transition duration-300 shadow-2xl">
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm">
@@ -599,7 +599,7 @@ const AllAppointments = () => {
             </div>
           </div>
 
-          {/* Mobile/Tablet Card View */}
+          
           <div className="lg:hidden space-y-3 sm:space-y-4">
             {appointments.map((item, index) => {
               const disabled = ["cancelled", "completed"].includes(item.status);
@@ -609,7 +609,7 @@ const AllAppointments = () => {
                   className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
                   onClick={() => navigate("/admin-appointment-details", {state: {appointment: item}})}
                 >
-                  {/* Header with appointment number and status */}
+                
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <div className="text-xs text-gray-500 mb-1">
@@ -627,7 +627,7 @@ const AllAppointments = () => {
                     </div>
                   </div>
 
-                  {/* Patient Info */}
+                 
                   <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">
                     <img 
                       src={item.user.photo} 
@@ -643,7 +643,7 @@ const AllAppointments = () => {
                     </div>
                   </div>
 
-                  {/* Appointment Details */}
+               
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <Calendar className="w-4 h-4" />
@@ -655,7 +655,7 @@ const AllAppointments = () => {
                     </div>
                   </div>
 
-                  {/* Doctor Info */}
+               
                   <div className="flex items-center justify-between mb-4 p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center gap-3">
                       <img 
@@ -674,7 +674,7 @@ const AllAppointments = () => {
                     </div>
                   </div>
 
-                  {/* Actions */}
+                 
                   <div className="flex gap-2 pt-3 border-t border-gray-100">
                     <button
                       className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-medium transition-colors ${
@@ -728,7 +728,7 @@ const AllAppointments = () => {
             })}
           </div>
 
-          {/* Pagination */}
+         
           <div className="mt-6">
             <Pagination
               currentPage={currentPage}

@@ -9,15 +9,15 @@ export const APIRoutes = {
    ADMIN_GET_USERS: "/admin/users",
    ADMIN_BLOCK_TOGGLE: "/admin/block-toggle", 
    ADMIN_VERIFY_TOGGLE: "/admin/verify-toggle",
-   ADMIN_GET_USER_EDIT: "/admin/get-user", ///admin/get-user///admin/get-user
-   ADMIN_UPDATE_USERS: "/admin/update-user",///admin/update-user
+   ADMIN_GET_USER_EDIT: "/admin/get-user", 
+   ADMIN_UPDATE_USERS: "/admin/update-user",
 } as const
 
 
 export const APIUserRoutes = {
    CHANGE_EMAIL: "/user/change-email",
    CHANGE_PASSWORD: "/user/change-password",
-   USER_PROFILE: "/user/user-profile",///user/all-doctors///user/user-profile
+   USER_PROFILE: "/user/user-profile",
    ALL_DOCTORS: "/user/all-doctors",
    CREATE_APPOINTMENTS: "/create-appointment",
    GET_ALL_APPOINTMENTS: "/all-createAppointments",

@@ -113,7 +113,7 @@ const EditDoctorProfile: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Basic validation (name, email, etc.)
+      
       if (!form.name.match(/^[A-Za-z\s]+$/)) throw new Error("Name must be letters/spaces");
       if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) throw new Error("Invalid email");
       if (!form.educationDetails.match(/^[A-Z\s]+$/)) throw new Error("Education uppercase only");
@@ -154,7 +154,7 @@ const EditDoctorProfile: React.FC = () => {
              return;
           }
           
-          // if (f24 >= t24) throw new Error(`From must be before To on ${day}`);
+         
           const key = `${f24}-${t24}`;
           if (seenBlocks.has(key)) throw new Error(`Duplicate block on ${day}`);
           seenBlocks.add(key);
@@ -208,7 +208,7 @@ const EditDoctorProfile: React.FC = () => {
       <Navbar />
       <div className="flex flex-1">
         <SidebarAdmin />
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-y-auto mt-12">
           <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-6 shadow rounded">
             <h2 className="text-2xl mb-4">Edit Doctor Profile</h2>
 
@@ -224,29 +224,6 @@ const EditDoctorProfile: React.FC = () => {
               <input type="file" id="photo" accept="image/*" hidden onChange={e => setProfilePhoto(e.target.files?.[0] || null)} />
               <span className="text-sm text-gray-600">Change Photo</span>
             </div>
-
-            {/* Profile Fields */}
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input name="name" value={form.name} onChange={handleChange} placeholder="Name" className="border px-3 py-2" />
-              <input name="email" value={form.email} onChange={handleChange} placeholder="Email" className="border px-3 py-2" />
-              <input name="educationDetails" value={form.educationDetails} onChange={handleChange} placeholder="Education (MBBS/MD)" className="border px-3 py-2" />
-              <input name="yearOfExperience" value={form.yearOfExperience} onChange={handleChange} placeholder="Experience (years)" className="border px-3 py-2" />
-              <select name="specialization" value={form.specialization} onChange={handleChange} className="border px-3 py-2">
-                <option value="">Select Specialization</option>
-                {["General physician","Gynecologist","Dermatologist","Pediatrician","Neurologist","Gastroenterologist"].map(s => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-              <input name="registrationNumber" value={form.registrationNumber} onChange={handleChange} placeholder="Reg Number" className="border px-3 py-2" />
-              <input name="registrationYear" value={form.registrationYear} onChange={handleChange} placeholder="Reg Year" className="border px-3 py-2" />
-              <input name="fee" value={form.fee} onChange={handleChange} placeholder="Fee" className="border px-3 py-2" />
-              <input type="file" accept=".pdf,image/*" multiple onChange={e => setProofDocuments(e.target.files)} className="border px-3 py-2" />
-            </div>
-
-           
-            <textarea name="about" value={form.about} onChange={handleChange} placeholder="About" className="w-full border px-3 py-2 mt-4" rows={4} /> */}
-
-
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-700">
   <div className="flex flex-col">
@@ -383,147 +360,6 @@ const EditDoctorProfile: React.FC = () => {
     className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
   />
 </div>
-
-
-
-
-
-
-            {/* Availability */}
-           
-{/* 
-<div className="mt-6">
-  <h3 className="font-semibold mb-3 text-lg">Availability</h3>
-
-  <div className="flex flex-col gap-3">
-    {form.availability.map((slot, i) => (
-      <div key={i} className="border p-4 rounded bg-gray-50">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <label className="text-sm font-medium">Day:</label>
-            <select
-              value={slot.day}
-              onChange={(e) => {
-                const selectedDay = e.target.value;
-                const isDuplicate = form.availability.some((a, idx) => idx !== i && a.day === selectedDay);
-                if (isDuplicate) {
-                  toast.error(`Day "${selectedDay}" is already selected. Cannot add duplicate day`);
-                  return;
-                }
-                const updated = [...form.availability];
-                updated[i].day = e.target.value;
-                setForm({ ...form, availability: updated });
-              }}
-              className="border px-2 py-1 rounded text-sm"
-            >
-              <option value="">Select Day</option>
-              {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
-                <option key={day} value={day}>
-                  {day}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button
-            type="button"
-            className="text-red-500 text-sm"
-            onClick={() => {
-              const updated = [...form.availability];
-              updated.splice(i, 1);
-              setForm({ ...form, availability: updated });
-            }}
-          >
-            Remove Day
-          </button>
-        </div>
-
-       
-        <div className="flex flex-wrap gap-3">
-          {slot.slots.map((blk, j) => (
-            <div key={j} className="flex items-center gap-2 bg-white border px-2 py-1 rounded shadow-sm">
-              <select
-                value={blk.from}
-                onChange={(e) => {
-                  const updated = [...form.availability];
-                  updated[i].slots[j].from = e.target.value;
-                  setForm({ ...form, availability: updated });
-                }}
-                className="border px-1 py-1 rounded text-sm"
-              >
-                <option value="">From</option>
-                {timeOptions.map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-
-              <span>-</span>
-
-              <select
-                value={blk.to}
-                onChange={(e) => {
-                  const updated = [...form.availability];
-                  updated[i].slots[j].to = e.target.value;
-                  setForm({ ...form, availability: updated });
-                }}
-                className="border px-1 py-1 rounded text-sm"
-              >
-                <option value="">To</option>
-                {timeOptions.map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-
-              <button
-                type="button"
-                onClick={() => {
-                  const updated = [...form.availability];
-                  updated[i].slots.splice(j, 1);
-                  setForm({ ...form, availability: updated });
-                }}
-                className="text-xs text-red-600 ml-2"
-              >
-                ❌
-              </button>
-            </div>
-          ))}
-
-         
-          <button
-            type="button"
-            onClick={() => {
-              const updated = [...form.availability];
-              updated[i].slots.push({ from: "", to: "" });
-              setForm({ ...form, availability: updated });
-            }}
-            className="text-blue-600 text-sm"
-          >
-            ➕ Add Time Block
-          </button>
-        </div>
-      </div>
-    ))}
-  </div>
-
- 
-  <button
-    type="button"
-    className="mt-4 text-green-600 text-sm"
-    onClick={() => {
-      setForm({
-        ...form,
-        availability: [...form.availability, { day: "", slots: [{ from: "", to: "" }] }],
-      });
-    }}
-  >
-    ➕ Add New Day
-  </button>
-</div>
- */}
-
-
-
-
-
 
 
 <div className="mt-10">

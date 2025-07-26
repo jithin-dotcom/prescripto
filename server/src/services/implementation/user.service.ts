@@ -54,7 +54,7 @@ async getAllDoctors(
   sort: string = "createdAt",
   specialty: string = "",
 ): Promise<{
-  data: ({ profile: IDoctorProfile[] } & IUser)[]; // Flattened user + profile
+  data: ({ profile: IDoctorProfile[] } & IUser)[]; 
   total: number;
   totalPages: number;
   page: number;

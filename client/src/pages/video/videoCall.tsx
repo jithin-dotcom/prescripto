@@ -1,1794 +1,12 @@
 
 
-
-// // // // // // import { useEffect, useRef, useState } from "react";
-// // // // // // import { motion, AnimatePresence } from "framer-motion";
-// // // // // // import { Phone, PhoneOff, Video } from "lucide-react";
-// // // // // // import io from "socket.io-client";
-
-// // // // // // type SignalData =
-// // // // // //   | RTCSessionDescriptionInit
-// // // // // //   | { candidate: RTCIceCandidateInit };
-// // // // // // const socket = io(import.meta.env.VITE_SOCKET_URL, { withCredentials: true });
-
-// // // // // // interface IncomingCallData {
-// // // // // //   from: string;
-// // // // // //   name: string;
-// // // // // //   signal: SignalData;
-// // // // // // }
-
-// // // // // // export default function VideoCall() {
-// // // // // //   const [stream, setStream] = useState<MediaStream | null>(null);
-// // // // // //   const [callAccepted, setCallAccepted] = useState(false);
-// // // // // //   const [callEnded, setCallEnded] = useState(false);
-// // // // // //   const [incomingCall, setIncomingCall] = useState<IncomingCallData | null>(null);
-// // // // // //   const [showIncomingPopup, setShowIncomingPopup] = useState(false);
-
-// // // // // //   const myVideo = useRef<HTMLVideoElement>(null);
-// // // // // //   const userVideo = useRef<HTMLVideoElement>(null);
-// // // // // //   const peerConnection = useRef<RTCPeerConnection | null>(null);
-
-
-// // // // // //   function isRTCSessionDescription(
-// // // // // //   signal: SignalData
-// // // // // // ): signal is RTCSessionDescriptionInit {
-// // // // // //   return "type" in signal && "sdp" in signal;
-// // // // // // }
-
-
-// // // // // //   useEffect(() => {
-// // // // // //     navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-// // // // // //       .then(currentStream => {
-// // // // // //         setStream(currentStream);
-// // // // // //         if (myVideo.current) myVideo.current.srcObject = currentStream;
-// // // // // //       });
-
-// // // // // //     socket.on("incoming-call", ({ from, name, signal }) => {
-// // // // // //       setIncomingCall({ from, name, signal });
-// // // // // //       setShowIncomingPopup(true);
-// // // // // //     });
-
-// // // // // //     socket.on("call-rejected", () => {
-// // // // // //       alert("Call rejected");
-// // // // // //       setShowIncomingPopup(false);
-// // // // // //     });
-
-// // // // // //     return () => {
-// // // // // //       socket.off("incoming-call");
-// // // // // //       socket.off("call-rejected");
-// // // // // //     };
-// // // // // //   }, []);
-
-// // // // // //   const handleAcceptCall = async () => {
-// // // // // //     setShowIncomingPopup(false);
-// // // // // //     setCallAccepted(true);
-
-// // // // // //     const pc = new RTCPeerConnection();
-// // // // // //     peerConnection.current = pc;
-
-// // // // // //     stream?.getTracks().forEach(track => pc.addTrack(track, stream));
-
-// // // // // //     pc.ontrack = event => {
-// // // // // //       const [remoteStream] = event.streams;
-// // // // // //       if (userVideo.current) userVideo.current.srcObject = remoteStream;
-// // // // // //     };
-
-// // // // // //     // await pc.setRemoteDescription(new RTCSessionDescription(incomingCall!.signal));
-// // // // // //     if (isRTCSessionDescription(incomingCall!.signal)) {
-// // // // // //   await pc.setRemoteDescription(new RTCSessionDescription(incomingCall!.signal));
-// // // // // // } else {
-// // // // // //   console.error("Signal is not a valid RTCSessionDescriptionInit");
-// // // // // //   return;
-// // // // // // }
-
-// // // // // //     const answer = await pc.createAnswer();
-// // // // // //     await pc.setLocalDescription(answer);
-
-// // // // // //     socket.emit("answer-call", {
-// // // // // //       to: incomingCall!.from,
-// // // // // //       signal: pc.localDescription,
-// // // // // //     });
-// // // // // //   };
-
-// // // // // //   const handleRejectCall = () => {
-// // // // // //     setShowIncomingPopup(false);
-// // // // // //     socket.emit("reject-call", { to: incomingCall?.from });
-// // // // // //   };
-
-// // // // // //   const endCall = () => {
-// // // // // //     setCallEnded(true);
-// // // // // //     peerConnection.current?.close();
-// // // // // //     socket.emit("end-call", { to: incomingCall?.from });
-// // // // // //   };
-
-// // // // // //   return (
-// // // // // //     <div className="flex flex-col h-screen w-full items-center justify-center bg-gray-100">
-// // // // // //       <div className="relative w-full max-w-4xl flex flex-col items-center justify-center gap-6">
-// // // // // //         <video ref={myVideo} muted autoPlay playsInline className="rounded-xl shadow-md w-full max-w-sm" />
-
-// // // // // //         {callAccepted && (
-// // // // // //           <video ref={userVideo} autoPlay playsInline className="rounded-xl shadow-md w-full max-w-sm" />
-// // // // // //         )}
-
-// // // // // //         {callAccepted && !callEnded && (
-// // // // // //           <button
-// // // // // //             onClick={endCall}
-// // // // // //             className="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-md flex items-center gap-2"
-// // // // // //           >
-// // // // // //             <PhoneOff /> End Call
-// // // // // //           </button>
-// // // // // //         )}
-// // // // // //       </div>
-
-// // // // // //       <AnimatePresence>
-// // // // // //         {showIncomingPopup && incomingCall && (
-// // // // // //           <motion.div
-// // // // // //             initial={{ opacity: 0, scale: 0.8 }}
-// // // // // //             animate={{ opacity: 1, scale: 1 }}
-// // // // // //             exit={{ opacity: 0, scale: 0.8 }}
-// // // // // //             className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-// // // // // //           >
-// // // // // //             <div className="bg-white rounded-xl p-6 shadow-lg flex flex-col gap-4 items-center">
-// // // // // //               <Video size={40} className="text-blue-500" />
-// // // // // //               <p className="text-lg font-semibold">Incoming call from {incomingCall.name}</p>
-// // // // // //               <div className="flex gap-4">
-// // // // // //                 <button
-// // // // // //                   className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full shadow-md flex items-center gap-2"
-// // // // // //                   onClick={handleAcceptCall}
-// // // // // //                 >
-// // // // // //                   <Phone /> Accept
-// // // // // //                 </button>
-// // // // // //                 <button
-// // // // // //                   className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-full shadow-md flex items-center gap-2"
-// // // // // //                   onClick={handleRejectCall}
-// // // // // //                 >
-// // // // // //                   <PhoneOff /> Reject
-// // // // // //                 </button>
-// // // // // //               </div>
-// // // // // //             </div>
-// // // // // //           </motion.div>
-// // // // // //         )}
-// // // // // //       </AnimatePresence>
-// // // // // //     </div>
-// // // // // //   );
-// // // // // // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // // // // import { useEffect, useRef, useState } from "react";
-// // // // // import { motion, AnimatePresence } from "framer-motion";
-// // // // // import { Phone, PhoneOff, Video, X } from "lucide-react";
-// // // // // import io from "socket.io-client";
-
-// // // // // type SignalData = RTCSessionDescriptionInit | { candidate: RTCIceCandidateInit };
-// // // // // const socket = io(import.meta.env.VITE_SOCKET_URL, { withCredentials: true });
-
-// // // // // interface IncomingCallData {
-// // // // //   from: string;
-// // // // //   name: string;
-// // // // //   signal: SignalData;
-// // // // // }
-
-// // // // // export default function VideoCall() {
-// // // // //   const [stream, setStream] = useState<MediaStream | null>(null);
-// // // // //   const [callAccepted, setCallAccepted] = useState(false);
-// // // // //   const [callEnded, setCallEnded] = useState(false);
-// // // // //   const [incomingCall, setIncomingCall] = useState<IncomingCallData | null>(null);
-// // // // //   const [showIncomingPopup, setShowIncomingPopup] = useState(false);
-// // // // //   const [isCalling, setIsCalling] = useState(false);
-// // // // //   const [calleeId, setCalleeId] = useState("");
-// // // // // //   const [calleeName, setCalleeName] = useState("");
-
-// // // // //   const myVideo = useRef<HTMLVideoElement>(null);
-// // // // //   const userVideo = useRef<HTMLVideoElement>(null);
-// // // // //   const peerConnection = useRef<RTCPeerConnection | null>(null);
-
-// // // // //   function isRTCSessionDescription(
-// // // // //     signal: SignalData
-// // // // //   ): signal is RTCSessionDescriptionInit {
-// // // // //     return "type" in signal && "sdp" in signal;
-// // // // //   }
-
-// // // // //   useEffect(() => {
-// // // // //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(currentStream => {
-// // // // //       setStream(currentStream);
-// // // // //       if (myVideo.current) myVideo.current.srcObject = currentStream;
-// // // // //     });
-
-// // // // //     socket.on("incoming-call", ({ from, name, signal }) => {
-// // // // //       setIncomingCall({ from, name, signal });
-// // // // //       setShowIncomingPopup(true);
-// // // // //     });
-
-// // // // //     socket.on("call-rejected", () => {
-// // // // //       alert("Call was rejected");
-// // // // //       setIsCalling(false);
-// // // // //       peerConnection.current?.close();
-// // // // //     });
-
-// // // // //     socket.on("call-accepted", async ({ signal }) => {
-// // // // //       setCallAccepted(true);
-// // // // //       setIsCalling(false);
-// // // // //       if (peerConnection.current && isRTCSessionDescription(signal)) {
-// // // // //         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-// // // // //       }
-// // // // //     });
-
-// // // // //     return () => {
-// // // // //       socket.off("incoming-call");
-// // // // //       socket.off("call-rejected");
-// // // // //       socket.off("call-accepted");
-// // // // //     };
-// // // // //   }, []);
-
-// // // // //   const startCall = async () => {
-// // // // //     if (!calleeId) return alert("Enter Callee ID");
-
-// // // // //     const pc = new RTCPeerConnection();
-// // // // //     peerConnection.current = pc;
-// // // // //     setIsCalling(true);
-
-// // // // //     stream?.getTracks().forEach(track => pc.addTrack(track, stream));
-
-// // // // //     pc.ontrack = event => {
-// // // // //       const [remoteStream] = event.streams;
-// // // // //       if (userVideo.current) userVideo.current.srcObject = remoteStream;
-// // // // //     };
-
-// // // // //     const offer = await pc.createOffer();
-// // // // //     await pc.setLocalDescription(offer);
-
-// // // // //     socket.emit("call-user", {
-// // // // //       to: calleeId,
-// // // // //       signal: pc.localDescription,
-// // // // //       name: "Caller",
-// // // // //     });
-// // // // //   };
-
-// // // // //   const handleAcceptCall = async () => {
-// // // // //     setShowIncomingPopup(false);
-// // // // //     setCallAccepted(true);
-
-// // // // //     const pc = new RTCPeerConnection();
-// // // // //     peerConnection.current = pc;
-
-// // // // //     stream?.getTracks().forEach(track => pc.addTrack(track, stream));
-
-// // // // //     pc.ontrack = event => {
-// // // // //       const [remoteStream] = event.streams;
-// // // // //       if (userVideo.current) userVideo.current.srcObject = remoteStream;
-// // // // //     };
-
-// // // // //     if (incomingCall && isRTCSessionDescription(incomingCall.signal)) {
-// // // // //       await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-// // // // //     }
-
-// // // // //     const answer = await pc.createAnswer();
-// // // // //     await pc.setLocalDescription(answer);
-
-// // // // //     socket.emit("answer-call", {
-// // // // //       to: incomingCall?.from,
-// // // // //       signal: pc.localDescription,
-// // // // //     });
-// // // // //   };
-
-// // // // //   const handleRejectCall = () => {
-// // // // //     setShowIncomingPopup(false);
-// // // // //     socket.emit("reject-call", { to: incomingCall?.from });
-// // // // //   };
-
-// // // // //   const cancelCall = () => {
-// // // // //     socket.emit("cancel-call", { to: calleeId });
-// // // // //     peerConnection.current?.close();
-// // // // //     setIsCalling(false);
-// // // // //   };
-
-// // // // //   const endCall = () => {
-// // // // //     setCallEnded(true);
-// // // // //     setCallAccepted(false);
-// // // // //     setIsCalling(false);
-// // // // //     peerConnection.current?.close();
-// // // // //     socket.emit("end-call", { to: incomingCall?.from || calleeId });
-// // // // //   };
-
-// // // // //   return (
-// // // // //     <div className="flex flex-col h-screen w-full items-center justify-center bg-gray-100 px-4">
-// // // // //       <div className="flex flex-col items-center gap-6 w-full max-w-4xl">
-// // // // //         <div className="w-full flex flex-col items-center gap-4">
-// // // // //           <input
-// // // // //             placeholder="Enter Callee ID"
-// // // // //             value={calleeId}
-// // // // //             onChange={(e) => setCalleeId(e.target.value)}
-// // // // //             className="px-4 py-2 border rounded-lg w-64"
-// // // // //           />
-// // // // //           {!callAccepted && !isCalling && (
-// // // // //             <button
-// // // // //               onClick={startCall}
-// // // // //               className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-full shadow-md flex items-center gap-2"
-// // // // //             >
-// // // // //               <Video /> Start Call
-// // // // //             </button>
-// // // // //           )}
-// // // // //           {isCalling && !callAccepted && (
-// // // // //             <button
-// // // // //               onClick={cancelCall}
-// // // // //               className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2 rounded-full shadow-md"
-// // // // //             >
-// // // // //               Cancel Call
-// // // // //             </button>
-// // // // //           )}
-// // // // //         </div>
-
-// // // // //         <video ref={myVideo} muted autoPlay playsInline className="rounded-xl shadow-md w-full max-w-sm" />
-// // // // //         {callAccepted && (
-// // // // //           <video ref={userVideo} autoPlay playsInline className="rounded-xl shadow-md w-full max-w-sm" />
-// // // // //         )}
-
-// // // // //         {callAccepted && !callEnded && (
-// // // // //           <button
-// // // // //             onClick={endCall}
-// // // // //             className="mt-4 px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-full shadow-md flex items-center gap-2"
-// // // // //           >
-// // // // //             <PhoneOff /> End Call
-// // // // //           </button>
-// // // // //         )}
-// // // // //       </div>
-
-// // // // //       <AnimatePresence>
-// // // // //         {showIncomingPopup && incomingCall && (
-// // // // //           <motion.div
-// // // // //             initial={{ opacity: 0, scale: 0.8 }}
-// // // // //             animate={{ opacity: 1, scale: 1 }}
-// // // // //             exit={{ opacity: 0, scale: 0.8 }}
-// // // // //             className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
-// // // // //           >
-// // // // //             <div className="bg-white rounded-xl p-6 shadow-lg flex flex-col gap-4 items-center relative">
-// // // // //               <button
-// // // // //                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-// // // // //                 onClick={() => setShowIncomingPopup(false)}
-// // // // //               >
-// // // // //                 <X />
-// // // // //               </button>
-// // // // //               <Video size={40} className="text-blue-500" />
-// // // // //               <p className="text-lg font-semibold">Incoming call from {incomingCall.name}</p>
-// // // // //               <div className="flex gap-4">
-// // // // //                 <button
-// // // // //                   className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full shadow-md flex items-center gap-2"
-// // // // //                   onClick={handleAcceptCall}
-// // // // //                 >
-// // // // //                   <Phone /> Accept
-// // // // //                 </button>
-// // // // //                 <button
-// // // // //                   className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-full shadow-md flex items-center gap-2"
-// // // // //                   onClick={handleRejectCall}
-// // // // //                 >
-// // // // //                   <PhoneOff /> Reject
-// // // // //                 </button>
-// // // // //               </div>
-// // // // //             </div>
-// // // // //           </motion.div>
-// // // // //         )}
-// // // // //       </AnimatePresence>
-// // // // //     </div>
-// // // // //   );
-// // // // // }
-
-
-
-
-
-
-
-
-
-
-
-// // // // import { useEffect, useRef, useState } from "react";
-// // // // import { useLocation } from "react-router-dom";
-// // // // import { AnimatePresence, motion } from "framer-motion";
-// // // // import { Phone, PhoneOff, Video, X } from "lucide-react";
-// // // // import io from "socket.io-client";
-
-// // // // const socket = io(`${import.meta.env.VITE_SOCKET_URL}/video`, { withCredentials: true });
-
-// // // // type SignalData = RTCSessionDescriptionInit;
-
-// // // // interface IncomingCallData {
-// // // //   from: string;
-// // // //   name: string;
-// // // //   signal: SignalData;
-// // // // }
-
-// // // // export default function MyVideoCall() {
-// // // //   const { state } = useLocation();
-// // // //   const { appointmentId, userId, doctorId } = state || {};
-
-// // // //   const [stream, setStream] = useState<MediaStream | null>(null);
-// // // //   const [incomingCall, setIncomingCall] = useState<IncomingCallData | null>(null);
-// // // //   const [callAccepted, setCallAccepted] = useState(false);
-// // // //   const [callEnded, setCallEnded] = useState(false);
-// // // //   const [showIncomingPopup, setShowIncomingPopup] = useState(false);
-// // // //   const [isCalling, setIsCalling] = useState(false);
-
-// // // //   const myVideo = useRef<HTMLVideoElement>(null);
-// // // //   const userVideo = useRef<HTMLVideoElement>(null);
-// // // //   const peerConnection = useRef<RTCPeerConnection | null>(null);
-
-// // // //   useEffect(() => {
-// // // //     if (!appointmentId || !userId || !doctorId) return;
-
-// // // //     socket.emit("join-call-room", { appointmentId, userId, doctorId });
-
-// // // //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(currentStream => {
-// // // //       setStream(currentStream);
-// // // //       if (myVideo.current) myVideo.current.srcObject = currentStream;
-// // // //     });
-
-// // // //     socket.on("incoming-call", ({ from, name, signal }) => {
-// // // //       setIncomingCall({ from, name, signal });
-// // // //       setShowIncomingPopup(true);
-// // // //     });
-
-// // // //     socket.on("call-rejected", () => {
-// // // //       alert("Call was rejected.");
-// // // //       setIsCalling(false);
-// // // //     });
-
-// // // //     socket.on("call-accepted", async ({ signal }) => {
-// // // //       setCallAccepted(true);
-// // // //       if (peerConnection.current) {
-// // // //         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-// // // //       }
-// // // //     });
-
-// // // //     socket.on("end-call", () => {
-// // // //       handleRemoteEnd();
-// // // //     });
-
-// // // //     return () => {
-// // // //       socket.disconnect();
-// // // //     };
-// // // //   }, [appointmentId, userId, doctorId]);
-
-// // // //   const startCall = async () => {
-// // // //     const pc = new RTCPeerConnection();
-// // // //     peerConnection.current = pc;
-// // // //     setIsCalling(true);
-
-// // // //     stream?.getTracks().forEach(track => pc.addTrack(track, stream!));
-
-// // // //     pc.ontrack = event => {
-// // // //       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-// // // //     };
-
-// // // //     const offer = await pc.createOffer();
-// // // //     await pc.setLocalDescription(offer);
-
-// // // //     socket.emit("call-user", {
-// // // //       to: doctorId === userId ? appointmentId : doctorId,
-// // // //       from: userId,
-// // // //       name: "User",
-// // // //       appointmentId,
-// // // //       signal: offer,
-// // // //     });
-// // // //   };
-
-// // // //   const handleAcceptCall = async () => {
-// // // //     setCallAccepted(true);
-// // // //     setShowIncomingPopup(false);
-
-// // // //     const pc = new RTCPeerConnection();
-// // // //     peerConnection.current = pc;
-
-// // // //     stream?.getTracks().forEach(track => pc.addTrack(track, stream!));
-
-// // // //     pc.ontrack = event => {
-// // // //       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-// // // //     };
-
-// // // //     if (incomingCall?.signal) {
-// // // //       await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-// // // //     }
-
-// // // //     const answer = await pc.createAnswer();
-// // // //     await pc.setLocalDescription(answer);
-
-// // // //     socket.emit("answer-call", {
-// // // //       to: incomingCall?.from,
-// // // //       appointmentId,
-// // // //       signal: answer,
-// // // //     });
-// // // //   };
-
-// // // //   const handleRejectCall = () => {
-// // // //     setShowIncomingPopup(false);
-// // // //     socket.emit("reject-call", { to: incomingCall?.from, appointmentId });
-// // // //   };
-
-// // // //   const endCall = () => {
-// // // //     setCallEnded(true);
-// // // //     setCallAccepted(false);
-// // // //     peerConnection.current?.close();
-// // // //     socket.emit("end-call", { appointmentId });
-// // // //   };
-
-// // // //   const handleRemoteEnd = () => {
-// // // //     alert("Call ended by the other party.");
-// // // //     setCallEnded(true);
-// // // //     setCallAccepted(false);
-// // // //     peerConnection.current?.close();
-// // // //   };
-
-// // // //   return (
-// // // //     <div className="h-screen w-full flex items-center justify-center bg-gray-100 p-4">
-// // // //       <div className="flex flex-col gap-6 items-center w-full max-w-4xl">
-// // // //         {!callAccepted && !isCalling && (
-// // // //           <button
-// // // //             onClick={startCall}
-// // // //             className="bg-blue-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-600 shadow-md"
-// // // //           >
-// // // //             <Video /> Start Call
-// // // //           </button>
-// // // //         )}
-
-// // // //         <video
-// // // //           ref={myVideo}
-// // // //           muted
-// // // //           autoPlay
-// // // //           playsInline
-// // // //           className="rounded-lg w-full max-w-md shadow-lg"
-// // // //         />
-// // // //         {callAccepted && (
-// // // //           <video
-// // // //             ref={userVideo}
-// // // //             autoPlay
-// // // //             playsInline
-// // // //             className="rounded-lg w-full max-w-md shadow-lg"
-// // // //           />
-// // // //         )}
-
-// // // //         {callAccepted && !callEnded && (
-// // // //           <button
-// // // //             onClick={endCall}
-// // // //             className="bg-red-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-red-600 shadow-md"
-// // // //           >
-// // // //             <PhoneOff /> End Call
-// // // //           </button>
-// // // //         )}
-// // // //       </div>
-
-// // // //       <AnimatePresence>
-// // // //         {showIncomingPopup && incomingCall && (
-// // // //           <motion.div
-// // // //             initial={{ opacity: 0, scale: 0.9 }}
-// // // //             animate={{ opacity: 1, scale: 1 }}
-// // // //             exit={{ opacity: 0, scale: 0.9 }}
-// // // //             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-// // // //           >
-// // // //             <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center gap-4">
-// // // //               <button
-// // // //                 className="absolute top-2 right-2"
-// // // //                 onClick={() => setShowIncomingPopup(false)}
-// // // //               >
-// // // //                 <X />
-// // // //               </button>
-// // // //               <Video className="text-blue-500" size={40} />
-// // // //               <p className="text-lg font-semibold">
-// // // //                 Incoming call from {incomingCall.name}
-// // // //               </p>
-// // // //               <div className="flex gap-4">
-// // // //                 <button
-// // // //                   className="bg-green-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-green-600"
-// // // //                   onClick={handleAcceptCall}
-// // // //                 >
-// // // //                   <Phone /> Accept
-// // // //                 </button>
-// // // //                 <button
-// // // //                   className="bg-red-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-red-600"
-// // // //                   onClick={handleRejectCall}
-// // // //                 >
-// // // //                   <PhoneOff /> Reject
-// // // //                 </button>
-// // // //               </div>
-// // // //             </div>
-// // // //           </motion.div>
-// // // //         )}
-// // // //       </AnimatePresence>
-// // // //     </div>
-// // // //   );
-// // // // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // // // import { useEffect, useRef, useState } from "react";
-// // // // import { useLocation } from "react-router-dom";
-// // // // import { AnimatePresence, motion } from "framer-motion";
-// // // // import { Phone, PhoneOff, Video, X } from "lucide-react";
-// // // // import io from "socket.io-client";
-
-// // // // const socket = io(`${import.meta.env.VITE_SOCKET_URL}/video`, {
-// // // //   withCredentials: true,
-// // // // });
-
-// // // // type SignalData = RTCSessionDescriptionInit;
-
-// // // // interface IncomingCallData {
-// // // //   from: string;
-// // // //   name: string;
-// // // //   signal: SignalData;
-// // // // }
-
-// // // // export default function MyVideoCall() {
-// // // //   const { state } = useLocation();
-// // // //   const { appointmentId, userId, doctorId } = state || {};
-
-// // // //   const [stream, setStream] = useState<MediaStream | null>(null);
-// // // //   const [incomingCall, setIncomingCall] = useState<IncomingCallData | null>(null);
-// // // //   const [callAccepted, setCallAccepted] = useState(false);
-// // // //   const [callEnded, setCallEnded] = useState(false);
-// // // //   const [showIncomingPopup, setShowIncomingPopup] = useState(false);
-// // // //   const [isCalling, setIsCalling] = useState(false);
-
-// // // //   const myVideo = useRef<HTMLVideoElement>(null);
-// // // //   const userVideo = useRef<HTMLVideoElement>(null);
-// // // //   const peerConnection = useRef<RTCPeerConnection | null>(null);
-
-// // // //   useEffect(() => {
-// // // //     if (!appointmentId || !userId || !doctorId) return;
-
-// // // //     console.log("appointmentId :",appointmentId);
-// // // //      console.log("userId :",userId);
-// // // //       console.log("doctorId :",doctorId);
-
-// // // //     // Register user and join call room
-// // // //     socket.emit("register-user", userId);
-// // // //     socket.emit("join-call-room", { appointmentId, userId, doctorId });
-
-// // // //     // Get local media
-// // // //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(currentStream => {
-// // // //       setStream(currentStream);
-// // // //       if (myVideo.current) myVideo.current.srcObject = currentStream;
-// // // //     });
-
-// // // //     // Handle incoming call
-// // // //     socket.on("incoming-call", ({ from, name, signal }) => {
-// // // //       setIncomingCall({ from, name, signal });
-// // // //       setShowIncomingPopup(true);
-// // // //     });
-
-// // // //     socket.on("call-rejected", () => {
-// // // //       alert("Call was rejected.");
-// // // //       setIsCalling(false);
-// // // //     });
-
-// // // //     socket.on("call-accepted", async ({ signal }) => {
-// // // //       setCallAccepted(true);
-// // // //       if (peerConnection.current) {
-// // // //         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-// // // //       }
-// // // //     });
-
-// // // //     socket.on("end-call", () => {
-// // // //       handleRemoteEnd();
-// // // //     });
-
-// // // //     socket.on("user-disconnected", () => {
-// // // //       alert("The other user disconnected.");
-// // // //       handleRemoteEnd();
-// // // //     });
-
-// // // //     return () => {
-// // // //       peerConnection.current?.close();
-// // // //       stream?.getTracks().forEach(track => track.stop());
-// // // //       socket.disconnect();
-// // // //     };
-// // // //   }, [appointmentId, userId, doctorId]);
-
-// // // //   const startCall = async () => {
-// // // //     const pc = new RTCPeerConnection();
-// // // //     peerConnection.current = pc;
-// // // //     setIsCalling(true);
-
-// // // //     stream?.getTracks().forEach(track => pc.addTrack(track, stream!));
-
-// // // //     pc.ontrack = event => {
-// // // //       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-// // // //     };
-
-// // // //     const offer = await pc.createOffer();
-// // // //     await pc.setLocalDescription(offer);
-
-// // // // //     const isDoctor = userId === doctorId;
-// // // // // const receiverId = isDoctor ? state.patientId : doctorId;
-
-// // // //     socket.emit("call-user", {
-// // // //     //   to: doctorId === userId ? appointmentId : doctorId,
-// // // //       to: doctorId === userId ? userId : doctorId, 
-// // // //       from: userId,
-// // // //       name: "User",
-// // // //       appointmentId,
-// // // //       signal: offer,
-// // // //     });
-// // // //   };
-
-// // // //   const handleAcceptCall = async () => {
-// // // //     setCallAccepted(true);
-// // // //     setShowIncomingPopup(false);
-
-// // // //     const pc = new RTCPeerConnection();
-// // // //     peerConnection.current = pc;
-
-// // // //     stream?.getTracks().forEach(track => pc.addTrack(track, stream!));
-
-// // // //     pc.ontrack = event => {
-// // // //       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-// // // //     };
-
-// // // //     if (incomingCall?.signal) {
-// // // //       await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-// // // //     }
-
-// // // //     const answer = await pc.createAnswer();
-// // // //     await pc.setLocalDescription(answer);
-
-// // // //     socket.emit("answer-call", {
-// // // //       to: incomingCall?.from,
-// // // //       appointmentId,
-// // // //       signal: answer,
-// // // //     });
-// // // //   };
-
-// // // //   const handleRejectCall = () => {
-// // // //     setShowIncomingPopup(false);
-// // // //     socket.emit("reject-call", {
-// // // //       to: incomingCall?.from,
-// // // //       appointmentId,
-// // // //     });
-// // // //   };
-
-// // // //   const endCall = () => {
-// // // //     setCallEnded(true);
-// // // //     setCallAccepted(false);
-// // // //     peerConnection.current?.close();
-
-// // // //     socket.emit("end-call", {
-// // // //       from: userId,
-// // // //       to: doctorId === userId ? appointmentId : doctorId,
-// // // //     });
-// // // //   };
-
-// // // //   const handleRemoteEnd = () => {
-// // // //     setCallEnded(true);
-// // // //     setCallAccepted(false);
-// // // //     peerConnection.current?.close();
-// // // //   };
-
-// // // //   return (
-// // // //     <div className="h-screen w-full flex items-center justify-center bg-gray-100 p-4">
-// // // //       <div className="flex flex-col gap-6 items-center w-full max-w-4xl">
-// // // //         {!callAccepted && !isCalling && (
-// // // //           <button
-// // // //             onClick={startCall}
-// // // //             className="bg-blue-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-600 shadow-md"
-// // // //           >
-// // // //             <Video /> Start Call
-// // // //           </button>
-// // // //         )}
-
-// // // //         <video
-// // // //           ref={myVideo}
-// // // //           muted
-// // // //           autoPlay
-// // // //           playsInline
-// // // //           className="rounded-lg w-full max-w-md shadow-lg"
-// // // //         />
-// // // //         {callAccepted && (
-// // // //           <video
-// // // //             ref={userVideo}
-// // // //             autoPlay
-// // // //             playsInline
-// // // //             className="rounded-lg w-full max-w-md shadow-lg"
-// // // //           />
-// // // //         )}
-
-// // // //         {callAccepted && !callEnded && (
-// // // //           <button
-// // // //             onClick={endCall}
-// // // //             className="bg-red-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-red-600 shadow-md"
-// // // //           >
-// // // //             <PhoneOff /> End Call
-// // // //           </button>
-// // // //         )}
-// // // //       </div>
-
-// // // //       <AnimatePresence>
-// // // //         {showIncomingPopup && incomingCall && (
-// // // //           <motion.div
-// // // //             initial={{ opacity: 0, scale: 0.9 }}
-// // // //             animate={{ opacity: 1, scale: 1 }}
-// // // //             exit={{ opacity: 0, scale: 0.9 }}
-// // // //             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-// // // //           >
-// // // //             <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center gap-4">
-// // // //               <button
-// // // //                 className="absolute top-2 right-2"
-// // // //                 onClick={() => setShowIncomingPopup(false)}
-// // // //               >
-// // // //                 <X />
-// // // //               </button>
-// // // //               <Video className="text-blue-500" size={40} />
-// // // //               <p className="text-lg font-semibold">
-// // // //                 Incoming call from {incomingCall.name}
-// // // //               </p>
-// // // //               <div className="flex gap-4">
-// // // //                 <button
-// // // //                   className="bg-green-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-green-600"
-// // // //                   onClick={handleAcceptCall}
-// // // //                 >
-// // // //                   <Phone /> Accept
-// // // //                 </button>
-// // // //                 <button
-// // // //                   className="bg-red-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-red-600"
-// // // //                   onClick={handleRejectCall}
-// // // //                 >
-// // // //                   <PhoneOff /> Reject
-// // // //                 </button>
-// // // //               </div>
-// // // //             </div>
-// // // //           </motion.div>
-// // // //         )}
-// // // //       </AnimatePresence>
-// // // //     </div>
-// // // //   );
-// // // // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // // import { useEffect, useRef, useState } from "react";
-// // // import { useLocation } from "react-router-dom";
-// // // import { AnimatePresence, motion } from "framer-motion";
-// // // import { Phone, PhoneOff, Video, X } from "lucide-react";
-// // // import { io, Socket } from "socket.io-client";
-
-// // // type SignalData = RTCSessionDescriptionInit;
-
-// // // interface IncomingCallData {
-// // //   from: string;
-// // //   name: string;
-// // //   signal: SignalData;
-// // // }
-
-// // // export default function MyVideoCall() {
-// // //   const { state } = useLocation();
-// // //   const { appointmentId, userId, doctorId } = state || {};
-
-// // //   const socketRef = useRef<Socket | null>(null);
-// // //   const [stream, setStream] = useState<MediaStream | null>(null);
-// // //   const [incomingCall, setIncomingCall] = useState<IncomingCallData | null>(null);
-// // //   const [callAccepted, setCallAccepted] = useState(false);
-// // //   const [callEnded, setCallEnded] = useState(false);
-// // //   const [showIncomingPopup, setShowIncomingPopup] = useState(false);
-// // //   const [isCalling, setIsCalling] = useState(false);
-
-// // //   const myVideo = useRef<HTMLVideoElement>(null);
-// // //   const userVideo = useRef<HTMLVideoElement>(null);
-// // //   const peerConnection = useRef<RTCPeerConnection | null>(null);
-
-// // //   useEffect(() => {
-// // //     if (!appointmentId || !userId || !doctorId) return;
-
-// // //     // 1. Connect socket once
-// // //     socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/video`, {
-// // //       withCredentials: true,
-// // //     });
-
-// // //     const socket = socketRef.current;
-
-// // //     // 2. Register user and join room
-// // //     socket.emit("register-user", userId);
-// // //     socket.emit("join-call-room", { appointmentId, userId, doctorId });
-
-// // //     // 3. Get local media stream
-// // //     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(currentStream => {
-// // //       setStream(currentStream);
-// // //       if (myVideo.current) myVideo.current.srcObject = currentStream;
-// // //     });
-
-// // //     // 4. Handle events
-// // //     socket.on("incoming-call", ({ from, name, signal }) => {
-// // //           console.log("📞 Incoming call received!", { from, name, signal });
-// // //       setIncomingCall({ from, name, signal });
-// // //       setShowIncomingPopup(true);
-// // //     });
-
-// // //     socket.on("call-rejected", () => {
-// // //       alert("Call was rejected.");
-// // //       setIsCalling(false);
-// // //     });
-
-// // //     socket.on("call-accepted", async ({ signal }) => {
-// // //       setCallAccepted(true);
-// // //       if (peerConnection.current) {
-// // //         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-// // //       }
-// // //     });
-
-// // //     socket.on("end-call", () => {
-// // //       handleRemoteEnd();
-// // //     });
-
-// // //     socket.on("user-disconnected", () => {
-// // //       alert("The other user disconnected.");
-// // //       handleRemoteEnd();
-// // //     });
-
-// // //     // Cleanup
-// // //     return () => {
-// // //       peerConnection.current?.close();
-// // //       stream?.getTracks().forEach(track => track.stop());
-// // //       socket.disconnect();
-// // //     };
-// // //   }, [appointmentId, userId, doctorId]);
-
-// // //   const startCall = async () => {
-// // //     const pc = new RTCPeerConnection();
-// // //     peerConnection.current = pc;
-// // //     setIsCalling(true);
-
-// // //     stream?.getTracks().forEach(track => pc.addTrack(track, stream!));
-
-// // //     pc.ontrack = event => {
-// // //       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-// // //     };
-
-// // //     const offer = await pc.createOffer();
-// // //     await pc.setLocalDescription(offer);
-
-// // //      const receiverId = userId === doctorId ? userId : doctorId;
-// // //     const s = socketRef.current?.emit("call-user", {
-        
-// // //       to: receiverId,
-// // //       from: userId,
-// // //       name: "User",
-// // //       appointmentId,
-// // //       signal: offer,
-// // //     });
-// // //     console.log("call-user : ",s);
-// // //   };
-
-// // //   const handleAcceptCall = async () => {
-// // //     setCallAccepted(true);
-// // //     setShowIncomingPopup(false);
-
-// // //     const pc = new RTCPeerConnection();
-// // //     peerConnection.current = pc;
-
-// // //     stream?.getTracks().forEach(track => pc.addTrack(track, stream!));
-
-// // //     pc.ontrack = event => {
-// // //       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-// // //     };
-
-// // //     if (incomingCall?.signal) {
-// // //       await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-// // //     }
-
-// // //     const answer = await pc.createAnswer();
-// // //     await pc.setLocalDescription(answer);
-
-// // //     socketRef.current?.emit("answer-call", {
-// // //       to: incomingCall?.from,
-// // //       appointmentId,
-// // //       signal: answer,
-// // //     });
-// // //   };
-
-// // //   const handleRejectCall = () => {
-// // //     setShowIncomingPopup(false);
-// // //     socketRef.current?.emit("reject-call", {
-// // //       to: incomingCall?.from,
-// // //       appointmentId,
-// // //     });
-// // //   };
-
-// // //   const endCall = () => {
-// // //     setCallEnded(true);
-// // //     setCallAccepted(false);
-// // //     peerConnection.current?.close();
-
-// // //     socketRef.current?.emit("end-call", {
-// // //       from: userId,
-// // //       to: doctorId === userId ? appointmentId : doctorId,
-// // //     });
-// // //   };
-
-// // //   const handleRemoteEnd = () => {
-// // //     setCallEnded(true);
-// // //     setCallAccepted(false);
-// // //     peerConnection.current?.close();
-// // //   };
-
-// // //   return (
-// // //     <div className="h-screen w-full flex items-center justify-center bg-gray-100 p-4">
-// // //       <div className="flex flex-col gap-6 items-center w-full max-w-4xl">
-// // //         {!callAccepted && !isCalling && (
-// // //           <button
-// // //             onClick={startCall}
-// // //             className="bg-blue-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-600 shadow-md"
-// // //           >
-// // //             <Video /> Start Call
-// // //           </button>
-// // //         )}
-
-// // //         <video
-// // //           ref={myVideo}
-// // //           muted
-// // //           autoPlay
-// // //           playsInline
-// // //           className="rounded-lg w-full max-w-md shadow-lg"
-// // //         />
-// // //         {callAccepted && (
-// // //           <video
-// // //             ref={userVideo}
-// // //             autoPlay
-// // //             playsInline
-// // //             className="rounded-lg w-full max-w-md shadow-lg"
-// // //           />
-// // //         )}
-
-// // //         {callAccepted && !callEnded && (
-// // //           <button
-// // //             onClick={endCall}
-// // //             className="bg-red-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-red-600 shadow-md"
-// // //           >
-// // //             <PhoneOff /> End Call
-// // //           </button>
-// // //         )}
-// // //       </div>
-
-// // //       <AnimatePresence>
-// // //         {showIncomingPopup && incomingCall && (
-// // //           <motion.div
-// // //             initial={{ opacity: 0, scale: 0.9 }}
-// // //             animate={{ opacity: 1, scale: 1 }}
-// // //             exit={{ opacity: 0, scale: 0.9 }}
-// // //             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-// // //           >
-// // //             <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center gap-4">
-// // //               <button
-// // //                 className="absolute top-2 right-2"
-// // //                 onClick={() => setShowIncomingPopup(false)}
-// // //               >
-// // //                 <X />
-// // //               </button>
-// // //               <Video className="text-blue-500" size={40} />
-// // //               <p className="text-lg font-semibold">
-// // //                 Incoming call from {incomingCall.name}
-// // //               </p>
-// // //               <div className="flex gap-4">
-// // //                 <button
-// // //                   className="bg-green-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-green-600"
-// // //                   onClick={handleAcceptCall}
-// // //                 >
-// // //                   <Phone /> Accept
-// // //                 </button>
-// // //                 <button
-// // //                   className="bg-red-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-red-600"
-// // //                   onClick={handleRejectCall}
-// // //                 >
-// // //                   <PhoneOff /> Reject
-// // //                 </button>
-// // //               </div>
-// // //             </div>
-// // //           </motion.div>
-// // //         )}
-// // //       </AnimatePresence>
-// // //     </div>
-// // //   );
-// // // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // import { useEffect, useRef, useState } from "react";
-// // import { useLocation } from "react-router-dom";
-// // import { AnimatePresence, motion } from "framer-motion";
-// // import { Phone, PhoneOff, Video, X } from "lucide-react";
-// // import { io, Socket } from "socket.io-client";
-
-// // type SignalData = RTCSessionDescriptionInit;
-
-// // interface IncomingCallData {
-// //   from: string;
-// //   name: string;
-// //   signal: SignalData;
-// // }
-
-// // export default function MyVideoCall() {
-// //   const { state } = useLocation();
-// //   const { appointmentId, userId, doctorId } = state || {};
-
-// //   const socketRef = useRef<Socket | null>(null);
-// //   const [stream, setStream] = useState<MediaStream | null>(null);
-// //   const [incomingCall, setIncomingCall] = useState<IncomingCallData | null>(null);
-// //   const [callAccepted, setCallAccepted] = useState(false);
-// //   const [callEnded, setCallEnded] = useState(false);
-// //   const [showIncomingPopup, setShowIncomingPopup] = useState(false);
-// //   const [isCalling, setIsCalling] = useState(false);
-
-// //   const myVideo = useRef<HTMLVideoElement>(null);
-// //   const userVideo = useRef<HTMLVideoElement>(null);
-// //   const peerConnection = useRef<RTCPeerConnection | null>(null);
-
-// //   useEffect(() => {
-// //     if (!appointmentId || !userId || !doctorId) {
-// //       console.error("Missing required parameters:", { appointmentId, userId, doctorId });
-// //       return;
-// //     }
-
-// //     // 1. Connect socket
-// //     socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/video`, {
-// //       withCredentials: true,
-// //     });
-
-// //     const socket = socketRef.current;
-
-// //     // 2. Register user and join rooms
-// //     socket.emit("register-user", userId);
-// //     socket.emit("join-call-room", { appointmentId, userId, doctorId });
-
-// //     // 3. Get local media stream
-// //     navigator.mediaDevices
-// //       .getUserMedia({ video: true, audio: true })
-// //       .then((currentStream) => {
-// //         setStream(currentStream);
-// //         if (myVideo.current) myVideo.current.srcObject = currentStream;
-// //       })
-// //       .catch((err) => console.error("Error accessing media devices:", err));
-
-// //     // 4. Handle socket events
-// //     socket.on("connect", () => {
-// //       console.log("Socket connected:", socket.id);
-// //     });
-
-// //     socket.on("incoming-call", ({ from, name, signal }) => {
-// //       console.log("📞 Incoming call received!", { from, name, signal });
-// //       setIncomingCall({ from, name, signal });
-// //       setShowIncomingPopup(true);
-// //     });
-
-// //     socket.on("call-rejected", () => {
-// //       console.log("Call rejected by recipient");
-// //       alert("Call was rejected.");
-// //       setIsCalling(false);
-// //     });
-
-// //     socket.on("call-accepted", async ({ signal }) => {
-// //       console.log("Call accepted, setting remote description");
-// //       setCallAccepted(true);
-// //       if (peerConnection.current) {
-// //         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-// //       }
-// //     });
-
-// //     socket.on("end-call", () => {
-// //       console.log("Call ended by remote user");
-// //       handleRemoteEnd();
-// //     });
-
-// //     socket.on("user-disconnected", () => {
-// //       console.log("Remote user disconnected");
-// //       alert("The other user disconnected.");
-// //       handleRemoteEnd();
-// //     });
-
-// //     // Cleanup
-// //     return () => {
-// //       console.log("Cleaning up...");
-// //       peerConnection.current?.close();
-// //       stream?.getTracks().forEach((track) => track.stop());
-// //       socket.disconnect();
-// //     };
-// //   }, [appointmentId, userId, doctorId]);
-
-// //   const startCall = async () => {
-// //     // Use ICE servers for reliable WebRTC connection
-// //     const pc = new RTCPeerConnection({
-// //       iceServers: [
-// //         { urls: "stun:stun.l.google.com:19302" },
-// //         // Add TURN servers if available
-// //       ],
-// //     });
-// //     peerConnection.current = pc;
-// //     setIsCalling(true);
-
-// //     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
-
-// //     pc.ontrack = (event) => {
-// //       console.log("Received remote stream");
-// //       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-// //     };
-
-// //     pc.onicecandidate = (event) => {
-// //       if (event.candidate) {
-// //         console.log("Sending ICE candidate");
-// //         socketRef.current?.emit("ice-candidate", {
-// //           to: userId === doctorId ? userId : doctorId,
-// //           candidate: event.candidate,
-// //         });
-// //       }
-// //     };
-
-// //     const offer = await pc.createOffer();
-// //     await pc.setLocalDescription(offer);
-
-// //     // Fix: Correctly determine the receiverId
-// //     const receiverId = userId === doctorId ? userId : doctorId; // This was incorrect
-// //     socketRef.current?.emit("call-user", {
-// //       to: receiverId,
-// //       from: userId,
-// //       name: userId === doctorId ? "Doctor" : "User",
-// //       appointmentId,
-// //       signal: offer,
-// //       doctorId,
-// //       patientId: userId !== doctorId ? userId : undefined,
-// //     });
-// //     console.log("Emitting call-user to:", receiverId);
-// //   };
-
-// //   const handleAcceptCall = async () => {
-// //     setCallAccepted(true);
-// //     setShowIncomingPopup(false);
-
-// //     const pc = new RTCPeerConnection({
-// //       iceServers: [
-// //         { urls: "stun:stun.l.google.com:19302" },
-// //         // Add TURN servers if available
-// //       ],
-// //     });
-// //     peerConnection.current = pc;
-
-// //     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
-
-// //     pc.ontrack = (event) => {
-// //       console.log("Received remote stream");
-// //       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-// //     };
-
-// //     pc.onicecandidate = (event) => {
-// //       if (event.candidate) {
-// //         console.log("Sending ICE candidate");
-// //         socketRef.current?.emit("ice-candidate", {
-// //           to: incomingCall?.from,
-// //           candidate: event.candidate,
-// //         });
-// //       }
-// //     };
-
-// //     if (incomingCall?.signal) {
-// //       await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-// //     }
-
-// //     const answer = await pc.createAnswer();
-// //     await pc.setLocalDescription(answer);
-
-// //     socketRef.current?.emit("answer-call", {
-// //       to: incomingCall?.from,
-// //       appointmentId,
-// //       signal: answer,
-// //     });
-// //     console.log("Emitting answer-call to:", incomingCall?.from);
-// //   };
-
-// //   const handleRejectCall = () => {
-// //     setShowIncomingPopup(false);
-// //     socketRef.current?.emit("reject-call", {
-// //       to: incomingCall?.from,
-// //       appointmentId,
-// //     });
-// //     console.log("Emitting reject-call to:", incomingCall?.from);
-// //   };
-
-// //   const endCall = () => {
-// //     setCallEnded(true);
-// //     setCallAccepted(false);
-// //     peerConnection.current?.close();
-
-// //     socketRef.current?.emit("end-call", {
-// //       from: userId,
-// //       to: userId === doctorId ? userId : doctorId, // Corrected to send to the other party
-// //       appointmentId,
-// //     });
-// //     console.log("Emitting end-call");
-// //   };
-
-// //   const handleRemoteEnd = () => {
-// //     console.log("Handling remote call end");
-// //     setCallEnded(true);
-// //     setCallAccepted(false);
-// //     peerConnection.current?.close();
-// //   };
-
-// //   // Handle ICE candidates
-// //   socketRef.current?.on("ice-candidate", async ({ candidate }) => {
-// //     if (peerConnection.current && candidate) {
-// //       console.log("Adding received ICE candidate");
-// //       await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
-// //     }
-// //   });
-
-// //   return (
-// //     <div className="h-screen w-full flex items-center justify-center bg-gray-100 p-4">
-// //       <div className="flex flex-col gap-6 items-center w-full max-w-4xl">
-// //         {!callAccepted && !isCalling && (
-// //           <button
-// //             onClick={startCall}
-// //             className="bg-blue-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-600 shadow-md"
-// //           >
-// //             <Video /> Start Call
-// //           </button>
-// //         )}
-
-// //         <video
-// //           ref={myVideo}
-// //           muted
-// //           autoPlay
-// //           playsInline
-// //           className="rounded-lg w-full max-w-md shadow-lg"
-// //         />
-// //         {callAccepted && (
-// //           <video
-// //             ref={userVideo}
-// //             autoPlay
-// //             playsInline
-// //             className="rounded-lg w-full max-w-md shadow-lg"
-// //           />
-// //         )}
-
-// //         {callAccepted && !callEnded && (
-// //           <button
-// //             onClick={endCall}
-// //             className="bg-red-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-red-600 shadow-md"
-// //           >
-// //             <PhoneOff /> End Call
-// //           </button>
-// //         )}
-// //       </div>
-
-// //       <AnimatePresence>
-// //         {showIncomingPopup && incomingCall && (
-// //           <motion.div
-// //             initial={{ opacity: 0, scale: 0.9 }}
-// //             animate={{ opacity: 1, scale: 1 }}
-// //             exit={{ opacity: 0, scale: 0.9 }}
-// //             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-// //           >
-// //             <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center gap-4">
-// //               <button
-// //                 className="absolute top-2 right-2"
-// //                 onClick={() => setShowIncomingPopup(false)}
-// //               >
-// //                 <X />
-// //               </button>
-// //               <Video className="text-blue-500" size={40} />
-// //               <p className="text-lg font-semibold">
-// //                 Incoming call from {incomingCall.name}
-// //               </p>
-// //               <div className="flex gap-4">
-// //                 <button
-// //                   className="bg-green-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-green-600"
-// //                   onClick={handleAcceptCall}
-// //                 >
-// //                   <Phone /> Accept
-// //                 </button>
-// //                 <button
-// //                   className="bg-red-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-red-600"
-// //                   onClick={handleRejectCall}
-// //                 >
-// //                   <PhoneOff /> Reject
-// //                 </button>
-// //               </div>
-// //             </div>
-// //           </motion.div>
-// //         )}
-// //       </AnimatePresence>
-// //     </div>
-// //   );
-// // }
-
-
-
-
-
-
-
-
-// import { useEffect, useRef, useState } from "react";
-// import { useLocation } from "react-router-dom";
-// import { AnimatePresence, motion } from "framer-motion";
-// import { Phone, PhoneOff, Video, X } from "lucide-react";
-// import { io, Socket } from "socket.io-client";
-
-// type SignalData = RTCSessionDescriptionInit;
-
-// interface IncomingCallData {
-//   from: string;
-//   name: string;
-//   signal: SignalData;
-// }
-
-// export default function MyVideoCall() {
-//   const { state } = useLocation();
-//   const { appointmentId, userId, doctorId } = state || {};
-
-//   const socketRef = useRef<Socket | null>(null);
-//   const [stream, setStream] = useState<MediaStream | null>(null);
-//   const [incomingCall, setIncomingCall] = useState<IncomingCallData | null>(null);
-//   const [callAccepted, setCallAccepted] = useState(false);
-//   const [callEnded, setCallEnded] = useState(false);
-//   const [showIncomingPopup, setShowIncomingPopup] = useState(false);
-//   const [isCalling, setIsCalling] = useState(false);
-
-//   const myVideo = useRef<HTMLVideoElement>(null);
-//   const userVideo = useRef<HTMLVideoElement>(null);
-//   const peerConnection = useRef<RTCPeerConnection | null>(null);
-
-//   useEffect(() => {
-//     if (!appointmentId || !userId || !doctorId) {
-//       console.error("Missing required parameters:", { appointmentId, userId, doctorId });
-//       return;
-//     }
-
-//     console.log("appointmentId : ",appointmentId);
-//     console.log("userId : ",userId);
-//     console.log("doctorId: ",doctorId);
-
-//     // 1. Connect socket
-//     socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/video`, {
-//       withCredentials: true,
-//     });
-
-//     const socket = socketRef.current;
-
-//     // 2. Register user and join rooms
-//     socket.emit("register-user", userId);
-//     socket.emit("join-call-room", { appointmentId, userId, doctorId });
-
-//     // 3. Get local media stream
-//     navigator.mediaDevices
-//       .getUserMedia({ video: true, audio: true })
-//       .then((currentStream) => {
-//         setStream(currentStream);
-//         if (myVideo.current) myVideo.current.srcObject = currentStream;
-//       })
-//       .catch((err) => console.error("Error accessing media devices:", err));
-
-//     // 4. Handle socket events
-//     socket.on("connect", () => {
-//       console.log("Socket connected:", socket.id, "for user:", userId);
-//     });
-
-//     socket.on("incoming-call", ({ from, name, signal }) => {
-//       console.log("📞 Incoming call received!", { from, name, signal });
-//       setIncomingCall({ from, name, signal });
-//       setShowIncomingPopup(true);
-//     });
-
-//     socket.on("call-rejected", () => {
-//       console.log("Call rejected by recipient");
-//       alert("Call was rejected.");
-//       setIsCalling(false);
-//     });
-
-//     socket.on("call-accepted", async ({ signal }) => {
-//       console.log("Call accepted, setting remote description");
-//       setCallAccepted(true);
-//       if (peerConnection.current) {
-//         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-//       }
-//     });
-
-//     socket.on("end-call", () => {
-//       console.log("Call ended by remote user");
-//       handleRemoteEnd();
-//     });
-
-//     socket.on("user-disconnected", () => {
-//       console.log("Remote user disconnected");
-//       alert("The other user disconnected.");
-//       handleRemoteEnd();
-//     });
-
-//     socket.on("ice-candidate", async ({ candidate }) => {
-//       if (peerConnection.current && candidate) {
-//         console.log("Adding received ICE candidate");
-//         await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
-//       }
-//     });
-
-//     // Cleanup
-//     return () => {
-//       console.log("Cleaning up for user:", userId);
-//       peerConnection.current?.close();
-//       stream?.getTracks().forEach((track) => track.stop());
-//       socket.disconnect();
-//     };
-//   }, [appointmentId, userId, doctorId]);
-
-//   const startCall = async () => {
-//     if (!userId || !doctorId) {
-//       console.error("Cannot start call: userId or doctorId missing");
-//       return;
-//     }
-
-//     const pc = new RTCPeerConnection({
-//       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-//     });
-//     peerConnection.current = pc;
-//     setIsCalling(true);
-
-//     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
-
-//     pc.ontrack = (event) => {
-//       console.log("Received remote stream");
-//       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-//     };
-
-//     pc.onicecandidate = (event) => {
-//       if (event.candidate) {
-//         console.log("Sending ICE candidate to:", userId === doctorId ? userId : doctorId);
-//         socketRef.current?.emit("ice-candidate", {
-//           to: userId === doctorId ? userId : doctorId,
-//           candidate: event.candidate,
-//         });
-//       }
-//     };
-
-//     const offer = await pc.createOffer();
-//     await pc.setLocalDescription(offer);
-
-//     // Fix: Correctly determine the receiverId
-//     const receiverId = userId === doctorId ? userId : doctorId; // Fixed to target the other party
-//     socketRef.current?.emit("call-user", {
-//       to: receiverId,
-//       from: userId,
-//       name: userId === doctorId ? "Doctor" : "Patient",
-//       appointmentId,
-//       signal: offer,
-//       doctorId,
-//       patientId: userId !== doctorId ? userId : undefined,
-//     });
-//     console.log("Emitting call-user to:", receiverId);
-//   };
-
-//   const handleAcceptCall = async () => {
-//     setCallAccepted(true);
-//     setShowIncomingPopup(false);
-
-//     const pc = new RTCPeerConnection({
-//       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-//     });
-//     peerConnection.current = pc;
-
-//     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
-
-//     pc.ontrack = (event) => {
-//       console.log("Received remote stream");
-//       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
-//     };
-
-//     pc.onicecandidate = (event) => {
-//       if (event.candidate) {
-//         console.log("Sending ICE candidate to:", incomingCall?.from);
-//         socketRef.current?.emit("ice-candidate", {
-//           to: incomingCall?.from,
-//           candidate: event.candidate,
-//         });
-//       }
-//     };
-
-//     if (incomingCall?.signal) {
-//       await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-//     }
-
-//     const answer = await pc.createAnswer();
-//     await pc.setLocalDescription(answer);
-
-//     socketRef.current?.emit("answer-call", {
-//       to: incomingCall?.from,
-//       appointmentId,
-//       signal: answer,
-//     });
-//     console.log("Emitting answer-call to:", incomingCall?.from);
-//   };
-
-//   const handleRejectCall = () => {
-//     setShowIncomingPopup(false);
-//     socketRef.current?.emit("reject-call", {
-//       to: incomingCall?.from,
-//       appointmentId,
-//     });
-//     console.log("Emitting reject-call to:", incomingCall?.from);
-//   };
-
-//   const endCall = () => {
-//     setCallEnded(true);
-//     setCallAccepted(false);
-//     peerConnection.current?.close();
-
-//     socketRef.current?.emit("end-call", {
-//       from: userId,
-//       to: userId === doctorId ? userId : doctorId,
-//       appointmentId,
-//     });
-//     console.log("Emitting end-call");
-//   };
-
-//   const handleRemoteEnd = () => {
-//     console.log("Handling remote call end");
-//     setCallEnded(true);
-//     setCallAccepted(false);
-//     peerConnection.current?.close();
-//   };
-
-//   return (
-//     <div className="h-screen w-full flex items-center justify-center bg-gray-100 p-4">
-//       <div className="flex flex-col gap-6 items-center w-full max-w-4xl">
-//         {!callAccepted && !isCalling && (
-//           <button
-//             onClick={startCall}
-//             className="bg-blue-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-600 shadow-md"
-//           >
-//             <Video /> Start Call
-//           </button>
-//         )}
-
-//         <video
-//           ref={myVideo}
-//           muted
-//           autoPlay
-//           playsInline
-//           className="rounded-lg w-full max-w-md shadow-lg"
-//         />
-//         {callAccepted && (
-//           <video
-//             ref={userVideo}
-//             autoPlay
-//             playsInline
-//             className="rounded-lg w-full max-w-md shadow-lg"
-//           />
-//         )}
-
-//         {callAccepted && !callEnded && (
-//           <button
-//             onClick={endCall}
-//             className="bg-red-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-red-600 shadow-md"
-//           >
-//             <PhoneOff /> End Call
-//           </button>
-//         )}
-//       </div>
-
-//       <AnimatePresence>
-//         {showIncomingPopup && incomingCall && (
-//           <motion.div
-//             initial={{ opacity: 0, scale: 0.9 }}
-//             animate={{ opacity: 1, scale: 1 }}
-//             exit={{ opacity: 0, scale: 0.9 }}
-//             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
-//           >
-//             <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center gap-4">
-//               <button
-//                 className="absolute top-2 right-2"
-//                 onClick={() => setShowIncomingPopup(false)}
-//               >
-//                 <X />
-//               </button>
-//               <Video className="text-blue-500" size={40} />
-//               <p className="text-lg font-semibold">
-//                 Incoming call from {incomingCall.name}
-//               </p>
-//               <div className="flex gap-4">
-//                 <button
-//                   className="bg-green-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-green-600"
-//                   onClick={handleAcceptCall}
-//                 >
-//                   <Phone /> Accept
-//                 </button>
-//                 <button
-//                   className="bg-red-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-red-600"
-//                   onClick={handleRejectCall}
-//                 >
-//                   <PhoneOff /> Reject
-//                 </button>
-//               </div>
-//             </div>
-//           </motion.div>
-//         )}
-//       </AnimatePresence>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { Phone, PhoneOff, Video, X } from "lucide-react";
+import { 
+  Phone, PhoneOff, Video, Mic, MicOff, VideoOff, 
+  Users, MoreVertical
+} from "lucide-react";
 import { io, Socket } from "socket.io-client";
 import { useAuthStore } from "../../store/authStore";
 import { toast } from "react-toastify";
@@ -1807,7 +25,6 @@ export default function MyVideoCall() {
   const myId = currentUser?._id;
   const { appointmentId, userId: patientId, doctorId } = state || {};
   const navigate = useNavigate();
-  
 
   const isDoctor = myId === doctorId;
   const peerId = isDoctor ? patientId : doctorId;
@@ -1819,20 +36,77 @@ export default function MyVideoCall() {
   const [callEnded, setCallEnded] = useState(false);
   const [showIncomingPopup, setShowIncomingPopup] = useState(false);
   const [isCalling, setIsCalling] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState("connecting");
+  const [callDuration, setCallDuration] = useState(0);
+  const [showControls, setShowControls] = useState(true);
+
+  const [isAudioEnabled, setIsAudioEnabled] = useState(true);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
 
   const myVideo = useRef<HTMLVideoElement>(null);
   const userVideo = useRef<HTMLVideoElement>(null);
   const peerConnection = useRef<RTCPeerConnection | null>(null);
-  // const pendingCandidates: RTCIceCandidateInit[] = [];
   const hasShownMediaErrorRef = useRef(false);
+  const callStartTime = useRef<number>(0);
+  const durationInterval = useRef<NodeJS.Timeout  | undefined>(undefined);
+  const controlsTimeout = useRef<NodeJS.Timeout  | undefined>(undefined);
+
+  // Auto-hide controls after 3 seconds of inactivity
+  useEffect(() => {
+    if (showControls && callAccepted) {
+      clearTimeout(controlsTimeout.current);
+      controlsTimeout.current = setTimeout(() => setShowControls(false), 3000);
+    }
+    return () => clearTimeout(controlsTimeout.current);
+  }, [showControls, callAccepted]);
+
+  // Call duration timer
+  useEffect(() => {
+    if (callAccepted && !callEnded) {
+      callStartTime.current = Date.now();
+      durationInterval.current = setInterval(() => {
+        setCallDuration(Math.floor((Date.now() - callStartTime.current) / 1000));
+      }, 1000);
+    } else {
+      clearInterval(durationInterval.current);
+    }
+    return () => clearInterval(durationInterval.current);
+  }, [callAccepted, callEnded]);
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const toggleAudio = () => {
+    if (stream) {
+      stream.getAudioTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setIsAudioEnabled((prev) => !prev);
+    }
+  };
+
+  const toggleVideo = () => {
+    if (stream) {
+      stream.getVideoTracks().forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setIsVideoEnabled((prev) => !prev);
+    }
+  };
+
+  const showControlsTemporarily = () => {
+    setShowControls(true);
+  };
 
   useEffect(() => {
-
     if (!myId || !appointmentId || !patientId || !doctorId) {
-      console.error("Missing required parameters:", { appointmentId, patientId, doctorId, myId });
-      toast.error("Missing required parameters : appointmentId, patientId, doctorId, myId")
-      return ;
+      toast.error("Missing required parameters.");
+      return;
     }
+
     socketRef.current = io(`${import.meta.env.VITE_SOCKET_URL}/video`, {
       withCredentials: true,
     });
@@ -1847,200 +121,94 @@ export default function MyVideoCall() {
       .then((currentStream) => {
         setStream(currentStream);
         if (myVideo.current) myVideo.current.srcObject = currentStream;
-
-      
+        setConnectionStatus("ready");
       })
       .catch((err) => {
-        // toast.error(`Error accessing media devices : ${err}`)
-        console.error("Media access error:", err);
-
-  if (!hasShownMediaErrorRef.current) {
-    if (err?.message?.includes("Permission denied")) {
-      toast.error("Please allow access to camera and microphone.");
-    } else {
-      toast.error("Could not access media devices.");
-    }
-    hasShownMediaErrorRef.current = true; 
-  }
-
-  
-  socketRef.current?.disconnect();
-  return;
+        if (!hasShownMediaErrorRef.current) {
+          toast.error(
+            err?.message?.includes("Permission denied")
+              ? "Please allow access to camera and microphone."
+              : "Could not access media devices."
+          );
+          hasShownMediaErrorRef.current = true;
+        }
+        setConnectionStatus("error");
+        socketRef.current?.disconnect();
+        return;
       });
 
     socket.on("connect", () => {
-      console.log("Socket connected:", socket.id, "for user:", myId);
+      console.log("Socket connected:", socket.id);
+      setConnectionStatus("connected");
     });
-
+    
     socket.on("incoming-call", ({ from, name, signal }) => {
-      console.log("Incoming call received", { from, name, signal });
       setIncomingCall({ from, name, signal });
       setShowIncomingPopup(true);
     });
-
+    
     socket.on("call-rejected", () => {
-      console.log("Call rejected by recipient");
-      toast.error("Call was rejected ");
+      toast.error("Call was rejected");
       setIsCalling(false);
+      setConnectionStatus("ready");
     });
-
+    
     socket.on("call-accepted", async ({ signal }) => {
       setCallAccepted(true);
       setCallEnded(false);
       setIsCalling(true);
       setShowIncomingPopup(false);
-      console.log("Call accepted, setting remote description");
-      toast.success("Call accepted");
-      setCallAccepted(true);
+      setConnectionStatus("connected");
       if (peerConnection.current) {
         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
       }
     });
-
+    
     socket.on("end-call", () => {
       handleRemoteEnd();
-      console.log("Call ended by remote user");
       toast.success("Call completed successfully");
-      if(isDoctor){
-          navigate("/doctor-appointments",{replace: true});
-      }else{
-         navigate("/my-appointments",{replace: true});
-      }
-     
+      navigate(isDoctor ? "/doctor-appointments" : "/my-appointments", { replace: true });
     });
 
     socket.on("user-disconnected", (payload) => {
-       peerConnection.current?.close();
-       console.log("user-disconnected event received", payload);
-      toast.error("The other user disconnected.");
+      peerConnection.current?.close();
+      console.log("user-disconnected event received", payload);
+      toast.error("The other user disconnected. Please try to connect again");
+      setConnectionStatus("disconnected");
       handleRemoteEnd();
     });
-
-    socket.onAny((event, ...args) => {
-     console.log("Received event:", event, args);
-    });
     
-
-    socket.on("error", (err) => {
-      console.error("Socket error:", err);
-
-      const errorMessage = typeof err === "string" ? err : err?.message || "An unknown error occurred";
-      toast.error(errorMessage);
-      setIsCalling(false);
-    })
-
     socket.on("ice-candidate", async ({ candidate }) => {
       if (peerConnection.current && candidate) {
-        console.log("Adding received ICE candidate");
         await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
       }
     });
 
-    
+    socket.on("error", (err) => {
+      console.error("Socket error:", err);
+      const errorMessage = typeof err === "string" ? err : err?.message || "An unknown error occurred";
+      toast.error(errorMessage);
+      setIsCalling(false);
+      setConnectionStatus("ended");
+    });
 
     return () => {
-      console.log("Cleaning up for user:", myId);
       peerConnection.current?.close();
-      // cleanupMedia();
       stream?.getTracks().forEach((track) => track.stop());
       socket.disconnect();
-
+      clearInterval(durationInterval.current);
+      clearTimeout(controlsTimeout.current);
     };
-  }, [appointmentId, myId, doctorId, patientId]);
-
-
-//   const cleanupMedia = () => {
-//   console.log("Cleaning up media and peer connection");
-
-//   if (peerConnection.current) {
-//     peerConnection.current.close();
-//     peerConnection.current = null;
-//   }
-
-//   if (stream) {
-//     stream.getTracks().forEach((track) => track.stop());
-//     setStream(null);
-//   }
-
-//   if (myVideo.current) {
-//     myVideo.current.srcObject = null;
-//   }
-
-//   if (userVideo.current) {
-//     userVideo.current.srcObject = null;
-//   }
-// };
-
- 
+  }, [appointmentId, myId, doctorId, patientId, navigate, isDoctor]);
 
   const startCall = async () => {
-  if (!peerId || !myId || !appointmentId || !doctorId || !patientId) {
-    toast.error("Cannot start call: Missing required information.");
-    return;
-  }
+    if (!peerId || !myId || !appointmentId) return toast.error("Missing required information.");
+    setCallAccepted(false);
+    setCallEnded(false);
+    setIsCalling(true);
+    setConnectionStatus("calling");
 
-  setCallAccepted(false);
-  setCallEnded(false);
-  setIsCalling(true);
-
-  const pc = new RTCPeerConnection({
-    iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-  });
-
-  console.log("Creating RTCPeerConnection:", pc);
-  peerConnection.current = pc;
-
-  stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
-
-  pc.ontrack = (event) => {
-    if (userVideo.current) {
-      userVideo.current.srcObject = event.streams[0];
-    }
-  };
-
-  pc.onicecandidate = (event) => {
-    if (event.candidate) {
-      socketRef.current?.emit("ice-candidate", {
-        to: peerId,
-        candidate: event.candidate,
-      });
-    }
-  };
-
-  try {
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-
-    socketRef.current?.emit("call-user", {
-      to: peerId,
-      from: myId,
-      name: isDoctor ? "Doctor" : "Patient",
-      appointmentId,
-      signal: offer,
-      doctorId,
-      patientId,
-    });
-
-    console.log("Call offer emitted to backend");
-
-  } catch (err) {
-    console.error("Error starting call:", err);
-    toast.error("Error starting call. Please try again.");
-    setIsCalling(false);
-  }
-};
-
-
-  const handleAcceptCall = async () => {
-    setCallAccepted(true);
-    setCallEnded(false);  //
-    setIsCalling(true); //
-    setShowIncomingPopup(false);
-
-
-    const pc = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    });
+    const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
     peerConnection.current = pc;
 
     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
@@ -2048,7 +216,52 @@ export default function MyVideoCall() {
     pc.ontrack = (event) => {
       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
     };
+    
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        socketRef.current?.emit("ice-candidate", {
+          to: peerId,
+          candidate: event.candidate,
+        });
+      }
+    };
 
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      socketRef.current?.emit("call-user", {
+        to: peerId,
+        from: myId,
+        name: isDoctor ? "Doctor" : "Patient",
+        appointmentId,
+        signal: offer,
+        doctorId,
+        patientId,
+      });
+    } catch (err) {
+      console.log("error : ", err);
+      toast.error("Error starting call. Please try again.");
+      setIsCalling(false);
+      setConnectionStatus("error");
+    }
+  };
+
+  const handleAcceptCall = async () => {
+    setCallAccepted(true);
+    setCallEnded(false);
+    setIsCalling(true);
+    setShowIncomingPopup(false);
+    setConnectionStatus("connecting");
+
+    const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+    peerConnection.current = pc;
+
+    stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
+
+    pc.ontrack = (event) => {
+      if (userVideo.current) userVideo.current.srcObject = event.streams[0];
+    };
+    
     pc.onicecandidate = (event) => {
       if (event.candidate && incomingCall?.from) {
         socketRef.current?.emit("ice-candidate", {
@@ -2060,7 +273,6 @@ export default function MyVideoCall() {
 
     if (incomingCall?.signal) {
       await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-      
     }
 
     const answer = await pc.createAnswer();
@@ -2073,11 +285,8 @@ export default function MyVideoCall() {
     });
   };
 
-
-
   const handleRejectCall = () => {
     setShowIncomingPopup(false);
-   
     if (incomingCall?.from) {
       socketRef.current?.emit("reject-call", {
         to: incomingCall.from,
@@ -2091,124 +300,310 @@ export default function MyVideoCall() {
     setCallAccepted(false);
     setIsCalling(false);
     setShowIncomingPopup(false);
-   
+    setConnectionStatus("ended");
     peerConnection.current?.close();
-    // cleanupMedia();
-
     socketRef.current?.emit("end-call", {
       from: myId,
       to: peerId,
       appointmentId,
     });
     toast.success("Call completed successfully");
-    if(isDoctor){
-      navigate("/doctor-appointments")
-    }else{
-      navigate("/my-appointments")
-    }
+    navigate(isDoctor ? "/doctor-appointments" : "/my-appointments");
   };
 
   const handleRemoteEnd = () => {
-   
     setCallAccepted(false);
     setCallEnded(true);
     setIsCalling(false);
+    setConnectionStatus("ended");
     peerConnection.current?.close();
-    // cleanupMedia();
-    
   };
-  console.log("callAccepted : ", callAccepted);
-  console.log("callEnded : ", callEnded);
-  console.log("isCalling : ", isCalling);
-  console.log("showIncomingPopup : ", showIncomingPopup);
 
   return (
-    <div className="h-screen w-full flex items-center justify-center bg-gray-100 p-4">
-      <div className="flex flex-col gap-6 items-center w-full max-w-4xl">
-        {!callAccepted && !isCalling  && (
-          <button
-            onClick={startCall}
-            className="bg-blue-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-blue-600 shadow-md"
-          >
-            <Video /> Start Call
-          </button>
-        )}
+    <div className="h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+                           radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.3) 0%, transparent 50%)`
+        }} />
+      </div>
 
-        <video
-          ref={myVideo}
-          muted
-          autoPlay
-          playsInline
-          className="rounded-lg w-full max-w-md shadow-lg"
-        />
-        {callAccepted && (
+      {/* Header */}
+      <motion.div 
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="absolute top-0 left-0 right-0 z-20 p-6"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            {/* <div className="flex items-center space-x-2">
+              <div className={`w-3 h-3 rounded-full ${
+                connectionStatus === "connected" ? "bg-green-400" : 
+                connectionStatus === "calling" || connectionStatus === "connecting" ? "bg-yellow-400" : 
+                connectionStatus === "error" ? "bg-red-400" : "bg-gray-400"
+              }`} />
+              <span className="text-white text-sm font-medium capitalize">
+                {connectionStatus === "calling" ? "Calling..." : 
+                 connectionStatus === "connecting" ? "Connecting..." : 
+                 connectionStatus}
+              </span>
+            </div> */}
+            {callAccepted && (
+              <div className="text-white text-sm bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm">
+                {formatDuration(callDuration)}
+              </div>
+            )}
+          </div>
+          
+          <div className="text-white text-lg font-semibold">
+            {isDoctor ? "Patient Consultation" : "Doctor Consultation"}
+          </div>
+        </div>
+      </motion.div>
+
+     
+      <div className="h-full w-full relative" onMouseMove={showControlsTemporarily}>
+       
+        {callAccepted ? (
           <video
             ref={userVideo}
             autoPlay
             playsInline
-            className="rounded-lg w-full max-w-md shadow-lg"
+            className="w-full h-full object-cover"
           />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="text-center">
+              <motion.div 
+                animate={{ 
+                  scale: isCalling ? [1, 1.1, 1] : 1,
+                  rotate: isCalling ? [0, 5, -5, 0] : 0
+                }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: isCalling ? Infinity : 0, 
+                  ease: "easeInOut" 
+                }}
+                className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl"
+              >
+                <Users className="w-16 h-16 text-white" />
+              </motion.div>
+              
+              <h2 className="text-white text-2xl font-bold mb-4">
+                {isCalling ? "Connecting..." : 
+                 connectionStatus === "error" ? "Connection Error" : 
+                 "Ready to Connect"}
+              </h2>
+              
+              {connectionStatus === "error" && (
+                <p className="text-red-400 mb-6">
+                  Please check your camera and microphone permissions
+                </p>
+              )}
+              
+              {!callAccepted && !isCalling && connectionStatus !== "error" && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={startCall}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-4 rounded-full flex items-center gap-3 mx-auto shadow-xl transition-all duration-200"
+                >
+                  <Video className="w-5 h-5" />
+                  Start Video Call
+                </motion.button>
+              )}
+            </div>
+          </div>
         )}
 
-        {callAccepted && !callEnded && (
-          <button
-            onClick={endCall}
-            className="bg-red-500 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-red-600 shadow-md"
+       
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="absolute top-20 right-6 w-48 h-36 rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 bg-black/50 backdrop-blur-sm z-10"
+        >
+          <video
+            ref={myVideo}
+            muted
+            autoPlay
+            playsInline
+            className="w-full h-full object-cover"
+          />
+          
+          {/* Local Video Status Indicators */}
+          <div className="absolute bottom-2 left-2 flex gap-1">
+            {!isAudioEnabled && (
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="bg-red-500/90 p-1.5 rounded-full"
+              >
+                <MicOff className="w-3 h-3 text-white" />
+              </motion.div>
+            )}
+            {!isVideoEnabled && (
+              <motion.div 
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="bg-red-500/90 p-1.5 rounded-full"
+              >
+                <VideoOff className="w-3 h-3 text-white" />
+              </motion.div>
+            )}
+          </div>
+          
+          <div className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-medium">
+            You
+          </div>
+        </motion.div>
+
+       
+        <AnimatePresence>
+          {(showControls || !callAccepted) && callAccepted && !callEnded && (
+            <motion.div
+              initial={{ y: 100, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 100, opacity: 0 }}
+              className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+            >
+              <div className="flex items-center gap-4 bg-black/40 backdrop-blur-lg rounded-2xl p-4 border border-white/10 shadow-2xl">
+                
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={toggleAudio}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    isAudioEnabled 
+                      ? "bg-slate-700 hover:bg-slate-600 text-white" 
+                      : "bg-red-500 hover:bg-red-600 text-white shadow-lg"
+                  }`}
+                >
+                  {isAudioEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+                </motion.button>
+
+               
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={toggleVideo}
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    isVideoEnabled 
+                      ? "bg-slate-700 hover:bg-slate-600 text-white" 
+                      : "bg-red-500 hover:bg-red-600 text-white shadow-lg"
+                  }`}
+                >
+                  {isVideoEnabled ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
+                </motion.button>
+
+                {/* End Call */}
+                <motion.button
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={endCall}
+                  className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-white transition-all duration-200 shadow-lg"
+                >
+                  <PhoneOff className="w-6 h-6" />
+                </motion.button>
+
+               
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-12 h-12 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center text-white transition-all duration-200"
+                >
+                  <MoreVertical className="w-5 h-5" />
+                </motion.button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+       
+        {(isCalling && !callAccepted) && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-15"
           >
-            <PhoneOff /> End Call
-          </button>
+            <div className="text-center">
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full mx-auto mb-4"
+              />
+              <p className="text-white text-xl font-semibold">Calling...</p>
+              <p className="text-white/70 text-sm mt-2">Waiting for response</p>
+            </div>
+          </motion.div>
         )}
       </div>
 
+     
       <AnimatePresence>
         {showIncomingPopup && incomingCall && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
           >
-            <div className="bg-white p-6 rounded-lg shadow-xl flex flex-col items-center gap-4">
-              <button
-                className="absolute top-2 right-2"
-                onClick={() => setShowIncomingPopup(false)}
-              >
-                <X />
-              </button>
-              <Video className="text-blue-500" size={40} />
-              <p className="text-lg font-semibold">
-                Incoming call from {incomingCall.name}
-              </p>
-              <div className="flex gap-4">
-                <button
-                  className="bg-green-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-green-600"
-                  onClick={handleAcceptCall}
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: 50 }}
+              className="bg-white rounded-3xl p-8 shadow-2xl max-w-md w-full mx-4 relative overflow-hidden"
+            >
+              {/* Background decoration */}
+              <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 to-purple-600" />
+              
+              <div className="text-center">
+                <motion.div 
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg"
                 >
-                  <Phone /> Accept
-                </button>
-                <button
-                  className="bg-red-500 text-white px-5 py-2 rounded-full flex items-center gap-2 hover:bg-red-600"
-                  onClick={handleRejectCall}
-                >
-                  <PhoneOff /> Reject
-                </button>
+                  <Video className="w-10 h-10 text-white" />
+                </motion.div>
+                
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Incoming Call</h3>
+                <p className="text-gray-600 mb-8 text-lg">
+                  <span className="font-semibold">{incomingCall.name}</span> is calling you
+                </p>
+                
+                <div className="flex gap-6 justify-center">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleRejectCall}
+                    className="w-16 h-16 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-white shadow-lg transition-all duration-200"
+                  >
+                    <PhoneOff className="w-6 h-6" />
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleAcceptCall}
+                    className="w-16 h-16 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white shadow-lg transition-all duration-200"
+                  >
+                    <Phone className="w-6 h-6" />
+                  </motion.button>
+                </div>
+                
+                <div className="flex justify-center gap-8 mt-6 text-sm text-gray-500">
+                  <span>Decline</span>
+                  <span>Accept</span>
+                </div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
 
 
 

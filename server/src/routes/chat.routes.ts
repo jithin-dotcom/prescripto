@@ -9,7 +9,7 @@ import { verifyAccessToken } from "../middlewares/auth.middleware";
 
 const router = Router();
 
-// Instantiate repo, service, and controller
+
 const chatRepository = new ChatRepository();
 const messageRepository = new MessageRepository();
 const chatService = new ChatService(chatRepository, messageRepository);

@@ -182,11 +182,11 @@ const EditDoctor: React.FC = () => {
       <Navbar />
       <div className="flex flex-1">
         <SidebarAdmin />
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-y-auto mt-12">
           <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-6 shadow rounded">
-            <h2 className="text-2xl mb-4">Edit Doctor (Admin)</h2>
+            <h2 className="text-2xl mb-4">Edit Doctor </h2>
 
-            {/* Photo upload */}
+           
             <div className="flex items-center gap-4 mb-4">
               <label htmlFor="photo">
                 <img
@@ -204,30 +204,9 @@ const EditDoctor: React.FC = () => {
               <span className="text-sm text-gray-600">Change photo</span>
             </div>
 
-            {/* Basic info */}
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input name="name" value={form.name} onChange={handleFieldChange} placeholder="Name" className="border px-3 py-2" />
-              <input name="email" value={form.email} onChange={handleFieldChange} placeholder="Email" className="border px-3 py-2" />
-              <input name="educationDetails" value={form.educationDetails} onChange={handleFieldChange} placeholder="Education (MBBS/MD)" className="border px-3 py-2" />
-              <input name="yearOfExperience" value={form.yearOfExperience} onChange={handleFieldChange} placeholder="Experience (years)" className="border px-3 py-2" />
-              <select name="specialization" value={form.specialization} onChange={handleFieldChange} className="border px-3 py-2">
-                <option value="">Select specialization</option>
-                {daysOfWeek.map(v => <option key={v} value={v}>{v}</option>)}
-              </select>
-              <input name="registrationNumber" value={form.registrationNumber} onChange={handleFieldChange} placeholder="Reg Number" className="border px-3 py-2" />
-              <input name="registrationYear" value={form.registrationYear} onChange={handleFieldChange} placeholder="Reg Year" className="border px-3 py-2" />
-              <input name="fee" value={form.fee} onChange={handleFieldChange} placeholder="Fee" className="border px-3 py-2" />
-              <input type="file" multiple accept=".pdf,image/*" className="border" onChange={e => setProofDocuments(e.target.files)} />
-            </div>
 
-            <textarea name="about" value={form.about} onChange={handleFieldChange}
-              placeholder="About doctor" className="w-full border px-3 py-2 mt-4" rows={4} /> */}
-
-
-
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-  {/* Name */}
+ <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  
   <div className="flex flex-col">
     <label htmlFor="name" className="mb-1 text-sm font-medium text-gray-700">Name</label>
     <input
@@ -240,7 +219,7 @@ const EditDoctor: React.FC = () => {
     />
   </div>
 
-  {/* Email */}
+ 
   <div className="flex flex-col">
     <label htmlFor="email" className="mb-1 text-sm font-medium text-gray-700">Email</label>
     <input
@@ -253,7 +232,7 @@ const EditDoctor: React.FC = () => {
     />
   </div>
 
-  {/* Education Details */}
+  
   <div className="flex flex-col">
     <label htmlFor="educationDetails" className="mb-1 text-sm font-medium text-gray-700">Education</label>
     <input
@@ -266,7 +245,7 @@ const EditDoctor: React.FC = () => {
     />
   </div>
 
-  {/* Experience */}
+ 
   <div className="flex flex-col">
     <label htmlFor="yearOfExperience" className="mb-1 text-sm font-medium text-gray-700">Experience (years)</label>
     <input
@@ -279,7 +258,7 @@ const EditDoctor: React.FC = () => {
     />
   </div>
 
-  {/* Specialization */}
+ 
   <div className="flex flex-col">
     <label htmlFor="specialization" className="mb-1 text-sm font-medium text-gray-700">Specialization</label>
     <select
@@ -298,7 +277,7 @@ const EditDoctor: React.FC = () => {
     </select>
   </div>
 
-  {/* Registration Number */}
+ 
   <div className="flex flex-col">
     <label htmlFor="registrationNumber" className="mb-1 text-sm font-medium text-gray-700">Registration Number</label>
     <input
@@ -311,7 +290,7 @@ const EditDoctor: React.FC = () => {
     />
   </div>
 
-  {/* Registration Year */}
+ 
   <div className="flex flex-col">
     <label htmlFor="registrationYear" className="mb-1 text-sm font-medium text-gray-700">Registration Year</label>
     <input
@@ -324,7 +303,7 @@ const EditDoctor: React.FC = () => {
     />
   </div>
 
-  {/* Fee */}
+ 
   <div className="flex flex-col">
     <label htmlFor="fee" className="mb-1 text-sm font-medium text-gray-700">Consultation Fee (₹)</label>
     <input
@@ -337,7 +316,7 @@ const EditDoctor: React.FC = () => {
     />
   </div>
 
-  {/* File Upload */}
+ 
   <div className="flex flex-col">
     <label htmlFor="documents" className="mb-1 text-sm font-medium text-gray-700">Proof Documents</label>
     <input
@@ -364,141 +343,6 @@ const EditDoctor: React.FC = () => {
     placeholder="Write a brief description about the doctor..."
   />
 </div>
-
-            {/* Availability */}
-         
-            {/* <div className="mt-6">
-  <h3 className="font-semibold mb-3 text-lg">Availability</h3>
-
-  <div className="flex flex-col gap-3">
-    {form.availability.map((slot, i) => (
-      <div key={i} className="border p-4 rounded bg-gray-50">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-3">
-            <label className="text-sm font-medium">Day:</label>
-            <select
-              value={slot.day}
-              onChange={(e) => {
-              
-                const selectedDay = e.target.value;
-                const isDuplicate = form.availability.some((a, idx) => idx !== i && a.day === selectedDay);
-                if (isDuplicate) {
-                  toast.error(`Day "${selectedDay}" is already selected. Cannot add duplicate day`);
-                  return;
-                }
-                
-                const updated = [...form.availability];
-                updated[i].day = e.target.value;
-                setForm({ ...form, availability: updated });
-              }}
-              className="border px-2 py-1 rounded text-sm"
-            >
-              <option value="">Select Day</option>
-              {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map((day) => (
-                <option key={day} value={day}>
-                  {day}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button
-            type="button"
-            className="text-red-500 text-sm"
-            onClick={() => {
-              const updated = [...form.availability];
-              updated.splice(i, 1);
-              setForm({ ...form, availability: updated });
-            }}
-          >
-            Remove Day
-          </button>
-        </div>
-
-       
-        <div className="flex flex-wrap gap-3">
-          {slot.slots.map((blk, j) => (
-            <div key={j} className="flex items-center gap-2 bg-white border px-2 py-1 rounded shadow-sm">
-              <select
-                value={blk.from}
-                onChange={(e) => {
-                  const updated = [...form.availability];
-                  updated[i].slots[j].from = e.target.value;
-                  setForm({ ...form, availability: updated });
-                }}
-                className="border px-1 py-1 rounded text-sm"
-              >
-                <option value="">From</option>
-                {timeOptions.map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-
-              <span>-</span>
-
-              <select
-                value={blk.to}
-                onChange={(e) => {
-                  const updated = [...form.availability];
-                  updated[i].slots[j].to = e.target.value;
-                  setForm({ ...form, availability: updated });
-                }}
-                className="border px-1 py-1 rounded text-sm"
-              >
-                <option value="">To</option>
-                {timeOptions.map((t) => (
-                  <option key={t} value={t}>{t}</option>
-                ))}
-              </select>
-
-              <button
-                type="button"
-                onClick={() => {
-                  const updated = [...form.availability];
-                  updated[i].slots.splice(j, 1);
-                  setForm({ ...form, availability: updated });
-                }}
-                className="text-xs text-red-600 ml-2"
-              >
-                ❌
-              </button>
-            </div>
-          ))}
-
-         
-          <button
-            type="button"
-            onClick={() => {
-              const updated = [...form.availability];
-              updated[i].slots.push({ from: "", to: "" });
-              setForm({ ...form, availability: updated });
-            }}
-            className="text-blue-600 text-sm"
-          >
-            ➕ Add Time Block
-          </button>
-        </div>
-      </div>
-    ))}
-  </div>
-
-  
-  <button
-    type="button"
-    className="mt-4 text-green-600 text-sm"
-    onClick={() => {
-      setForm({
-        ...form,
-        availability: [...form.availability, { day: "", slots: [{ from: "", to: "" }] }],
-      });
-    }}
-  >
-    ➕ Add New Day
-  </button>
-</div> */}
-
-
-
-
 
 <div className="mt-10">
   <h3 className="text-xl font-semibold text-gray-800 mb-4">Availability</h3>
@@ -625,12 +469,6 @@ const EditDoctor: React.FC = () => {
     </button>
   </div>
 </div>
-
-
-
-
-
-
 
 
 
