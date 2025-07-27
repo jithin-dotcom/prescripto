@@ -40,9 +40,8 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
 
     socket.data.userId = userId;
     connectedUsers.set(userId, socket);
-    console.log(`User ${userId} joined room: ${userId}`);
     socket.join(userId); 
-    console.log(`Socket ${socket.id} rooms:`, socket.rooms);
+    
   });
 
   socket.on("join-call-room", ({ appointmentId, userId, doctorId, patientId }) => {
@@ -51,9 +50,8 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
       socket.emit("error", { message: "Invalid join-call-room data" });
       return;
     }
-    console.log(`User ${userId} joined appointment room: ${appointmentId}`);
     socket.join(appointmentId);
-    console.log(`Socket ${socket.id} rooms:`, socket.rooms);
+   
   });
 
   
@@ -100,13 +98,12 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
   activeCalls.set(from, session);
   activeCalls.set(to, session);
 
-  console.log(`Valid call initiated from ${from} to ${to} for appointment ${appointmentId}`);
+  
   io.to(to).emit("incoming-call", { from, name, signal });
 });
 
 
   socket.on("answer-call", ({ to, signal, appointmentId }) => {
-    console.log(`answer-call event from ${socket.data.userId} to ${to}`);
     io.to(to).emit("call-accepted", { signal });
   });
 
@@ -136,7 +133,7 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
           callType: "video",
           callStatus: "completed",
         });
-        console.log(`Call logged for appointment: ${session.appointmentId}`);
+        
       } catch (err) {
         console.error("Error logging call:", err);
       }
@@ -149,7 +146,7 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
   });
 
   socket.on("ice-candidate", ({ to, candidate }) => {
-    console.log(`ICE candidate from ${socket.data.userId} to ${to}`);
+    
     io.to(to).emit("ice-candidate", { candidate });
   });
 

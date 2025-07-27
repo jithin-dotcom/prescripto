@@ -16,36 +16,6 @@ import type { ChatListItem, Message, Appointment } from "../../interfaces/IChat"
 
 dayjs.extend(customParseFormat);
 
-// interface Participant {
-//   _id: string;
-//   name: string;
-//   photo: string;
-// }
-
-// interface ChatListItem {
-//   _id: string;
-//   appointmentId: Appointment;
-//   doctorId: Participant;
-//   userId: Participant;
-//   lastMessage?: string;
-//   timestamp: string;
-// }
-
-// interface Message {
-//   _id: string;
-//   sender: string;
-//   content: string;
-//   type: "text" | "image";
-//   read: boolean;
-//   timestamp: string | number;
-// }
-
-// interface Appointment {
-//   _id: string;
-//   day: string;
-//   time: string;
-//   status?: string;
-// }
 
 const ChatDashboard = () => {
   const token = useAuthStore.getState().accessToken;
@@ -136,9 +106,7 @@ const ChatDashboard = () => {
       try {
         const res = await axiosInstance.get(`${APIChatRoutes.GET_MESSAGES}/${selectedChat.appointmentId._id}`);
         setMessages(res.data.messages || []);
-        console.log("res.data.messages",res.data.messages);
-        
-        
+              
         scrollToBottom();
       } catch (err) {
         console.error("Failed to fetch messages:", err);
@@ -213,7 +181,7 @@ const ChatDashboard = () => {
     };
   }, [selectedChat, token, hasHydrated]);
 
-  // Auto-focus input when chat is selected
+  
   useEffect(() => {
     if (selectedChat) {
       inputRef.current?.focus();
@@ -242,6 +210,10 @@ const ChatDashboard = () => {
     if (!socket || !selectedChat) return;
     if (!input && !selectedImage) return;
 
+    console.log("input : ",input);
+
+   
+
     const newMessage = {
       appointmentId: selectedChat.appointmentId._id,
       content: selectedImage ? imagePreview : input,
@@ -249,6 +221,8 @@ const ChatDashboard = () => {
       doctorId: selectedChat.doctorId._id,
       userId: selectedChat.userId._id,
     };
+
+    console.log("new message : ",newMessage)
 
     socket.emit("sendMessage", newMessage);
     setInput("");

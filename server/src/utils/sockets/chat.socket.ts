@@ -15,8 +15,6 @@ const onlineUsers = new Map<string, string>();
 export const chatSocketHandler = (io: Namespace, socket: Socket) => {
   const user = socket.data.user;
 
-  console.log("user in socket connect", user);
-
   if (!user || !user.id || !user.role) {
     console.error("Socket connection rejected: User not authenticated.");
     socket.disconnect();
@@ -113,10 +111,8 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
     }
 
     try {
-      console.log("chatid:  ",chatId);
-    
+          
       const chat = await chatService.getChatById(chatId);
-      console.log("chateeee : ", chat);
       
       if (!chat) {
         console.log("chat not found ddd ")

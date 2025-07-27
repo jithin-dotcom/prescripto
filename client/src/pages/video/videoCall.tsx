@@ -51,7 +51,7 @@ export default function MyVideoCall() {
   const durationInterval = useRef<NodeJS.Timeout  | undefined>(undefined);
   const controlsTimeout = useRef<NodeJS.Timeout  | undefined>(undefined);
 
-  // Auto-hide controls after 3 seconds of inactivity
+  
   useEffect(() => {
     if (showControls && callAccepted) {
       clearTimeout(controlsTimeout.current);
@@ -60,7 +60,7 @@ export default function MyVideoCall() {
     return () => clearTimeout(controlsTimeout.current);
   }, [showControls, callAccepted]);
 
-  // Call duration timer
+  
   useEffect(() => {
     if (callAccepted && !callEnded) {
       callStartTime.current = Date.now();

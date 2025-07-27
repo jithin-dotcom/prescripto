@@ -7,7 +7,7 @@ import { assets } from "../../assets/assets1";
 import axiosInstance from "../../utils/axios";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-import axios from "axios";
+// import axios from "axios";
 import type { Slot, DoctorProfile, Availability } from "../../interfaces/IAppointments";
 import { APIUserRoutes } from "../../constants/routes.constants";
 import ConfirmModal from "../../components/ConfirmModal";
@@ -206,12 +206,7 @@ const Appointment: React.FC = () => {
           setActiveTime(generatedSlots[0].times[0]);
         }
       } catch (err) {
-        // console.error("Failed to fetch doctor data:", err);
-        if(axios.isAxiosError(err)){
-          toast.error(err.response?.data?.message)
-        }else{
-          toast.error("Failed to load doctor profile");
-        }
+        console.error("Failed to fetch doctor data:", err);
         
       }
     }

@@ -297,12 +297,12 @@ const MyAppointments: React.FC = () => {
 
 
 <div className="flex flex-col gap-2 justify-start sm:justify-end text-sm text-center sm:text-right">
-  {/* Razorpay and Stripe if not paid */}
+  
   {item.status === "confirmed" && item.payment !== "paid" && (
     <>
-      <MotionButton className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-100 transition">
+      {/* <MotionButton className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-100 transition">
         <img className="h-5 w-auto" src={assets.stripe_logo} alt="Stripe" />
-      </MotionButton>
+      </MotionButton> */}
 
       <MotionButton
         onClick={(e) => {
