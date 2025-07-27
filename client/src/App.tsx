@@ -87,15 +87,15 @@ const App: React.FC = () => {
         
         <Route
           path="/user-dashboard"
-          element={isAuthenticated && role === "user" ? <UserDashboard /> : <Navigate to="/login" replace />}
+          element={isAuthenticated && role === "user" ? <UserDashboard /> : <Navigate to="/login" />}
         />
         <Route
           path="/doctor-dashboard"
-          element={isAuthenticated && role === "doctor" ? <DoctorDashboard /> : <Navigate to="/login" replace />}
+          element={isAuthenticated && role === "doctor" ? <DoctorDashboard /> : <Navigate to="/login" />}
         />
         <Route
           path="/admin-dashboard"
-          element={isAuthenticated && role === "admin" ? <AdminDashboard /> : <Navigate to="/login" replace />}
+          element={isAuthenticated && role === "admin" ? <AdminDashboard /> : <Navigate to="/login" />}
         />
         <Route
           path="/auth/google/callback"

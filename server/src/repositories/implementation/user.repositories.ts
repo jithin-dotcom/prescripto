@@ -32,7 +32,7 @@ export class UserRepository
   }
 
   async findTopDoctors(limit: number = 4): Promise<(IUser & Document)[] | null> {
-    return await this.model.find({ role: "doctor", isBlocked: false }).sort({createdAt:-1}).limit(limit);
+    return await this.model.find({ role: "doctor", isBlocked: false, isVerified: true }).sort({createdAt:-1}).limit(limit);
   }
 
   async findAll(

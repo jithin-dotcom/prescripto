@@ -11,6 +11,14 @@ import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import { UserModel } from "../../models/user.models";
+import { string } from "zod";
+
+interface IQuery  {
+  role: "user" | "doctor";
+  isBlocked: boolean;
+  isVerified: boolean;
+  name?:  string | { $regex: string; $options?: string };
+}
 
 
 export class UserService implements IUserService {
@@ -63,9 +71,10 @@ async getAllDoctors(
     const skip = (page - 1) * limit;
 
     if (!specialty) {
-      const query: any = {
+      const query: IQuery = {
         role: "doctor",
         isBlocked: false,
+        isVerified: true,
         name: { $regex: search, $options: "i" },
       };
 
@@ -221,9 +230,9 @@ async updateUserOrDoctor(
     }
 
     return `User with ID ${userId} updated successfully`;
-  } catch (error:any) {
+  } catch (error) {
     console.error("Error in updateUserOrDoctor:", error);
-    throw new Error(error.message || "Something went wrong while updating the user or doctor.");
+    throw new Error(error instanceof Error && error.message ? error.message : "Something went wrong while updating");
   }
 }
 
