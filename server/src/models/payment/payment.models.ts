@@ -30,7 +30,7 @@ const paymentSchema: Schema = new Schema<IPayment>(
     },
     status: {
       type: String,
-      enum: ["created", "paid", "failed"], // Razorpay-specific statuses
+      enum: ["created", "paid", "failed"], 
       default: "created",
     },
     razorpayOrderId: {

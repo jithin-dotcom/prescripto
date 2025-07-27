@@ -18,7 +18,6 @@ const appointmentSchema = new Schema<IAppointment>(
         transactionId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Transaction",
-            required: false,
         },
         appointmentNo: {
             type: Number,

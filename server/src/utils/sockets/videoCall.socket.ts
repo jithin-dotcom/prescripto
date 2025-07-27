@@ -5,12 +5,19 @@ import { Server, Socket } from "socket.io";
 import { CallLogService } from "../../services/implementation/callLog.service";
 import { CallLogRepository } from "../../repositories/implementation/callLog.repository";
 import { AppointmentRepository } from "../../repositories/implementation/appointment.repositories";
+import { WalletRepository } from "../../repositories/implementation/wallet.repository";
+import { WalletHistoryRepository } from "../../repositories/implementation/walletHistory.repository";
+
+
 import mongoose from "mongoose";
 import { Namespace } from "socket.io";
 
 const callLogRepository = new CallLogRepository();
 const appointmentRepository = new AppointmentRepository();
-const callLogService = new CallLogService(callLogRepository, appointmentRepository);
+const walletRepository = new WalletRepository();
+const walletHistoryRepository = new WalletHistoryRepository();
+ 
+const callLogService = new CallLogService(callLogRepository, appointmentRepository, walletRepository, walletHistoryRepository);
 
 interface CallSession {
   doctorId: string;
@@ -133,6 +140,16 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
           callType: "video",
           callStatus: "completed",
         });
+
+        const wallet = await callLogService.paymentDoctor({
+           userId: new mongoose.Types.ObjectId(session.doctorId),
+           role: "doctor",
+        })
+
+        await callLogService.doctorPaymentHistory({
+          appointmentId: new mongoose.Types.ObjectId(session.appointmentId),
+          walletId: wallet._id as mongoose.Types.ObjectId,
+        })
         
       } catch (err) {
         console.error("Error logging call:", err);
