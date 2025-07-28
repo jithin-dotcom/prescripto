@@ -167,7 +167,22 @@ export default function MyVideoCall() {
     socket.on("end-call", () => {
       handleRemoteEnd();
       toast.success("Call completed successfully");
-      navigate(isDoctor ? "/doctor-appointments" : "/my-appointments", { replace: true });
+      // navigate(isDoctor ? "/doctor-appointments" : "/my-appointments,", { replace: true });
+       if (isDoctor) {
+    navigate("/doctor-appointments", { replace: true });
+  } else {
+    console.log("appointmentId video : ",appointmentId);
+    console.log("patientId video : ", patientId);
+    console.log("doctorId video : ", doctorId);
+    navigate("/rate-doctor", {
+      replace: true,
+      state: {
+        appointmentId,
+        userId : patientId,
+        doctorId,
+      },
+    });
+  }
     });
 
     socket.on("user-disconnected", (payload) => {
@@ -308,7 +323,22 @@ export default function MyVideoCall() {
       appointmentId,
     });
     toast.success("Call completed successfully");
-    navigate(isDoctor ? "/doctor-appointments" : "/my-appointments");
+    // navigate(isDoctor ? "/doctor-appointments" : "/my-appointments");
+       if (isDoctor) {
+    navigate("/doctor-appointments", { replace: true });
+  } else {
+    console.log("appointmentId video : ",appointmentId);
+    console.log("patientId video : ", patientId);
+    console.log("doctorId video : ", doctorId);
+    navigate("/rate-doctor", {
+      replace: true,
+      state: {
+        appointmentId,
+        userId : patientId,
+        doctorId,
+      },
+    });
+  }
   };
 
   const handleRemoteEnd = () => {

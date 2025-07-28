@@ -24,6 +24,8 @@ export interface IDoctorProfile extends Document {
   about: string;
   createdAt: Date;
   updatedAt: Date;
+  averageRating?: number;
+  ratingCount?: number;
 
   availability?: IAvailabilitySlot[];
   slotDuration?: number;

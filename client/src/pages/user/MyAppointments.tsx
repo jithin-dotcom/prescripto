@@ -71,14 +71,11 @@ const MyAppointments: React.FC = () => {
   const handleCancelAppointment = async () => {
     if (!appointmentToCancel) return;
     try {
-      await axiosInstance.patch(`${APIRoutes.CANCEL_APPOINTMENTS}/${appointmentToCancel._id}`, { status: "cancelled" });
-      // const updated = appointments.map((item) =>
-      //   item._id === appointmentToCancel._id ? { ...item, status: "cancelled" as Appointment["status"] } : item
-      // );
+     await axiosInstance.patch(`${APIRoutes.CANCEL_APPOINTMENTS}/${appointmentToCancel._id}`, { status: "cancelled" });
       
-    const updated = appointments.map((item) => {
-      if (item._id === appointmentToCancel._id) {
-        return {
+     const updated = appointments.map((item) => {
+       if (item._id === appointmentToCancel._id) {
+         return {
           ...item,
           status: "cancelled" as Appointment["status"],
           payment:

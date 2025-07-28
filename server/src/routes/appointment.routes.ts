@@ -9,6 +9,8 @@ import { DoctorProfileRepository } from "../repositories/implementation/doctorPr
 import { PatientProfileRepository } from "../repositories/implementation/patientProfile.repositories";
 import { UserRepository } from "../repositories/implementation/user.repositories";
 import { ChatRepository } from "../repositories/implementation/chat.repositories";
+import { WalletRepository } from "../repositories/implementation/wallet.repository";
+import { WalletHistoryRepository } from "../repositories/implementation/walletHistory.repository";
 
 const router = Router();
 
@@ -16,9 +18,19 @@ const router = Router();
 const appointmentRepository = new AppointmentRepository();
 const doctorProfileRepository = new DoctorProfileRepository();
 const patientProfileRepository = new PatientProfileRepository();
-const chatRepository = new ChatRepository()
-const userRepository = new UserRepository()
-const appointmentService = new AppointmentService(appointmentRepository,doctorProfileRepository,patientProfileRepository, userRepository, chatRepository);
+const chatRepository = new ChatRepository();
+const userRepository = new UserRepository();
+const walletRepository = new WalletRepository();
+const walletHistoryRepository = new WalletHistoryRepository();
+const appointmentService = new AppointmentService(
+    appointmentRepository,
+    doctorProfileRepository,
+    patientProfileRepository, 
+    userRepository, 
+    chatRepository,
+    walletRepository,
+    walletHistoryRepository,
+);
 const appointmentController = new AppointmentController(appointmentService);
 
 

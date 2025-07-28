@@ -13,11 +13,10 @@ const WalletHistorySchema = new Schema<IWalletHistory>(
             ref: "Appointment",
             required: true,
         },
-        // paymentId: {
-        //     type: mongoose.Schema.Types.ObjectId,
-        //     ref: "Payment",
-        //     required: true,
-        // },
+        transactionId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Payment",
+        },
         amount: {
             type: Number,
             required: true,

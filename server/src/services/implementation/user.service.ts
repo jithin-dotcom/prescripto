@@ -11,7 +11,7 @@ import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import { UserModel } from "../../models/user.models";
-import { string } from "zod";
+
 
 interface IQuery  {
   role: "user" | "doctor";

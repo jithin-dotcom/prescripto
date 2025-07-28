@@ -97,7 +97,7 @@ const Navbar = () => {
 
   return (
     <>
-      <header className="w-full bg-white border-b shadow-sm px-4 sm:px-6 lg:px-8 py-3 fixed top-0 z-50 ">
+      <header className="w-full bg-white border-b shadow-sm px-4 sm:px-6 lg:px-8 py-3  ">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           {/* Left Section: Logo and Role */}
           <div className="flex items-center gap-3">
@@ -203,6 +203,16 @@ const Navbar = () => {
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
                     >
                       Change Email
+                    </button>
+                     <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        setMenuOpen(false);
+                        navigate("/wallet");
+                      }}
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
+                    >
+                      Wallet
                     </button>
                     <button
                       onClick={() => {

@@ -37,6 +37,8 @@ import VideoCall from "./pages/video/videoCall";
 import AppointmentDetails from "./pages/doctor/AppointmentDetails";
 import AdminAppointmentDetails from "./pages/admin/AdminAppointmentDetails";
 import UserAppointmentDetails from "./pages/user/UserAppointmentDetails";
+import WalletPage from "./components/WalletPage";
+import { RateDoctor } from "./pages/user/DoctorRating";
 
 const App: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -207,6 +209,16 @@ const App: React.FC = () => {
         <Route
           path="/change-password"
           element={isAuthenticated && (role === "doctor" || role === "user")? <ChangePassword /> : <Navigate to="/login" replace />}
+        />
+
+        <Route
+          path="/wallet"
+          element={isAuthenticated && (role === "doctor" || role === "user")? <WalletPage /> : <Navigate to="/login" replace />}
+        />
+
+        <Route
+          path="/rate-doctor"
+          element={isAuthenticated && ( role === "user")? <RateDoctor /> : <Navigate to="/login" replace />}
         />
 
         <Route

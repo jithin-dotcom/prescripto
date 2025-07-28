@@ -40,6 +40,8 @@ const DoctorProfileSchema = new Schema<IDoctorProfile>(
     proofDocuments: [{ type: String }],
     fee: { type: Number, required: true },
     about: { type: String, required: true },
+    averageRating: { type: Number, default: 0},
+    ratingCount: {type: Number, default: 0},
     availability: {
       type: [AvailabilitySlotSchema],
       default: [], 

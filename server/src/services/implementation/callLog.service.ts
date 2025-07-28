@@ -73,7 +73,12 @@ export class CallLogService implements ICallLogService {
         if(appointment.payment !== "paid"){
            throw new Error("Payment is not done");
         }
-        const amount = appointment.fee;
+        let amount = 0;
+        if(appointment.fee){
+            amount = appointment.fee - Math.floor(appointment.fee/10);
+        }
+        
+        console.log("amount : ", amount);
         const walletHistory = await this._WalletHistoryRepo.create(
           {
             walletId: data.walletId, 
@@ -81,6 +86,7 @@ export class CallLogService implements ICallLogService {
             amount, 
             type: "credit",
             source: "consultation",
+            transactionId: appointment.transactionId,
           }
         );
        

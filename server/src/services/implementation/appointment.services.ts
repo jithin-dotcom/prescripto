@@ -9,6 +9,8 @@ import { IAppointmentWithUserResponse } from "../interface/IAppointmentService";
 import { IPatientProfileRepository } from "../../repositories/interface/IPatientProfileRepository";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { IChatRepository } from "../../repositories/interface/IChatRepository";
+import { IWalletRepository } from "../../repositories/interface/IWalletRepository";
+import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
 
 
 export class AppointmentService implements IAppointmentService {
@@ -18,6 +20,8 @@ export class AppointmentService implements IAppointmentService {
     private _patientRepo: IPatientProfileRepository,
     private _userRepo: IUserRepository,
     private _chatRepo: IChatRepository,
+    private _walletRepo: IWalletRepository,
+    private _walletHistoryRepo: IWalletHistoryRepository,
   ) {}
 
 
@@ -489,8 +493,49 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
     let success = false;
 
     if (status === "cancelled") {
-      success = await this._appointmentRepo.cancelWithRefundIfPaid(appointmentId);
-    } else {
+      
+      const appointment = await this._appointmentRepo.findById(appointmentId);
+      if(!appointment){
+         throw new Error("Appointment not found");
+      }
+      console.log("appointment : ",appointment);
+      if(appointment?.payment === "paid"){
+        console.log("entered into appointnt if");
+          const userId = appointment.userId;
+          let wallet = await this._walletRepo.findOne({userId});
+          console.log("wallet : ",wallet);
+          if(!wallet){
+            console.log("entered into wallet if");
+            wallet = await this._walletRepo.create({
+              userId: new mongoose.Types.ObjectId(appointment.userId),
+              role: "user",
+            })
+            console.log("createWallet : ", wallet);
+            if(!wallet){
+              throw new Error("Failed to create wallet");
+            }
+          } 
+    
+      const walletHistory = await this._walletHistoryRepo.create({
+          walletId: wallet?._id as mongoose.Types.ObjectId, 
+          appointmentId: new mongoose.Types.ObjectId(appointmentId),
+          amount: appointment?.fee,
+          type: "credit",
+          source: "refund",
+          transactionId: appointment?.transactionId,
+      })
+      console.log("walletHistory : ",walletHistory);
+      if(!walletHistory){
+          throw new Error("failed to create Wallet History");
+      }
+      const update = await this._walletRepo.updateById(wallet._id as mongoose.Types.ObjectId,{$inc:{balance:appointment.fee}});
+      if(!update){
+        throw new Error("Failed to update wallet balance");
+      } 
+     }
+     success = await this._appointmentRepo.cancelWithRefundIfPaid(appointmentId);
+
+    }else {
       const update = await this._appointmentRepo.updateById(appointmentId, { status });
       console.log("update: ", update);
       const appId = update?._id as mongoose.Types.ObjectId;

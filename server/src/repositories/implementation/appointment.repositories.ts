@@ -69,8 +69,8 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
    }
 
 
-   async updatePaymentStatus(appointmentId: string, status: "paid" | "not paid"): Promise<void> {
-     await AppointmentModel.findByIdAndUpdate(appointmentId, { payment: status });
+   async updatePaymentStatus(appointmentId: string, status: "paid" | "not paid", transactionId: mongoose.Types.ObjectId): Promise<void> {
+     await AppointmentModel.findByIdAndUpdate(appointmentId, { payment: status, transactionId });
    }
 
   async cancelWithRefundIfPaid(id: string): Promise<boolean> {

@@ -18,6 +18,7 @@ import paymentRouter from "./routes/payment.routes";
 import cloudinaryRoutes from "./routes/coudinary.routes";
 import appointmentRouter from "./routes/appointment.routes";
 import chatRouter from "./routes/chat.routes";
+import walletRouter from "./routes/wallet.routes";
 
 import { requestLogger } from './middlewares/requestLogger.middleware';
 import { errorHandler } from './middlewares/errorHandler.middleware';
@@ -73,6 +74,7 @@ app.use("/api", cloudinaryRoutes);
 app.use("/api", appointmentRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api",chatRouter);
+app.use("/api",walletRouter);
 
 
 app.use(errorHandler);

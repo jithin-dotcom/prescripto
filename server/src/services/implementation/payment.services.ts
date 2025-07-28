@@ -63,16 +63,16 @@ export class PaymentService implements IPaymentService {
     }
 
     if (expectedSignature === razorpaySignature) {
-      // Update payment status
+      
       await this._paymentRepo.updateById(payment._id as string, {
         razorpayPaymentId,
         razorpaySignature,
         status: "paid",
       });
 
-      // ✅ Update appointment payment status
-      if (payment.appointmentId) {
-        await this._appointmentRepo.updatePaymentStatus(payment.appointmentId.toString(), "paid");
+     
+      if (payment.appointmentId && payment._id) {
+        await this._appointmentRepo.updatePaymentStatus(payment.appointmentId.toString(), "paid",new mongoose.Types.ObjectId(payment._id.toString()));
       }
 
       return { success: true, message: "Payment verified successfully" };

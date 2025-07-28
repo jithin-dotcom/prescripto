@@ -127,6 +127,7 @@ async updateStatus(req: Request, res: Response, next: NextFunction): Promise<voi
     try {
        const appointmentId = req.params.appointmentId;
        const {status} = req.body;
+       
        console.log("status : ",status);
        if(!appointmentId || !status){
           res.status(StatusCode.BAD_REQUEST).json({message: "AppointmentId or Status Missing"});

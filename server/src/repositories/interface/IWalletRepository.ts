@@ -6,4 +6,5 @@ import mongoose from "mongoose";
 
 export interface IWalletRepository extends IBaseRepository<IWallet> {
     create(data:Partial<IWallet>): Promise<IWallet>;
+    
 }
