@@ -171,17 +171,32 @@ export default function MyVideoCall() {
        if (isDoctor) {
     navigate("/doctor-appointments", { replace: true });
   } else {
-    console.log("appointmentId video : ",appointmentId);
-    console.log("patientId video : ", patientId);
-    console.log("doctorId video : ", doctorId);
-    navigate("/rate-doctor", {
-      replace: true,
-      state: {
-        appointmentId,
-        userId : patientId,
-        doctorId,
-      },
-    });
+    // console.log("appointmentId video : ",appointmentId);
+    // console.log("patientId video : ", patientId);
+    // console.log("doctorId video : ", doctorId);
+    // navigate("/rate-doctor", {
+    //   replace: true,
+    //   state: {
+    //     appointmentId,
+    //     userId : patientId,
+    //     doctorId,
+    //   },
+    // });
+
+
+
+
+    sessionStorage.setItem(
+  'ratingData',
+  JSON.stringify({
+    appointmentId,
+    userId: patientId,
+    doctorId,
+  })
+);
+
+navigate("/rate-doctor?rate=true", { replace: true });
+
   }
     });
 

@@ -12,13 +12,14 @@ import connectDB from './config/db.config';
 import authRoutes from "./routes/auth.routes";
 import patientProfileRoutes from "./routes/patientProfile.routes";
 import doctorProfileRoutes from "./routes/doctorProfile.routes";
-import adminRouter from "./routes/admin.routes";
-import userRouter from "./routes/user.routes";
-import paymentRouter from "./routes/payment.routes";
+import adminRoutes from "./routes/admin.routes";
+import userRoutes from "./routes/user.routes";
+import paymentRoutes from "./routes/payment.routes";
 import cloudinaryRoutes from "./routes/coudinary.routes";
-import appointmentRouter from "./routes/appointment.routes";
-import chatRouter from "./routes/chat.routes";
-import walletRouter from "./routes/wallet.routes";
+import appointmentRoutes from "./routes/appointment.routes";
+import chatRoutes from "./routes/chat.routes";
+import walletRoutes from "./routes/wallet.routes";
+import doctorRatingRoutes from "./routes/doctorRating.routes";
 
 import { requestLogger } from './middlewares/requestLogger.middleware';
 import { errorHandler } from './middlewares/errorHandler.middleware';
@@ -68,13 +69,14 @@ app.use(requestLogger);
 app.use("/api/auth", authRoutes);
 app.use("/api/patient", patientProfileRoutes);
 app.use("/api/doctor", doctorProfileRoutes);
-app.use("/api/admin", adminRouter);
-app.use("/api/user", userRouter);
+app.use("/api/admin", adminRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api", cloudinaryRoutes);
-app.use("/api", appointmentRouter);
-app.use("/api/payments", paymentRouter);
-app.use("/api",chatRouter);
-app.use("/api",walletRouter);
+app.use("/api", appointmentRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api",chatRoutes);
+app.use("/api",walletRoutes);
+app.use("/api",doctorRatingRoutes)
 
 
 app.use(errorHandler);

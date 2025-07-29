@@ -10,4 +10,5 @@ export interface IDoctorRating extends Document {
   rating: number; 
   review?: string;
   createdAt: Date;
+  updatedAt: Date;
 }
