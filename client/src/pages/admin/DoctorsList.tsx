@@ -32,7 +32,7 @@ const DoctorsList: React.FC = () => {
   const [pageSize, setPageSize] = useState<number>(4);
 
   const navigate = useNavigate();
-  // const limit = 2;
+  
 
   const getDoctor = async (page = 1, query = "", selectedSpecialty = "", limit = pageSize) => {
     setLoading(true);
@@ -167,6 +167,83 @@ const DoctorsList: React.FC = () => {
                         <p className="text-sm text-[#5C5C5C]">
                           {profile.specialization || "Specialization N/A"}
                         </p>
+{/* 
+                        {profile.averageRating !== undefined && profile.ratingCount !== undefined && (
+                        <div className="flex items-center gap-2 mt-1 text-sm text-yellow-600" onClick={(e) => {
+                           e.stopPropagation();
+                           sessionStorage.setItem("doctorId",doctor._id);
+                           navigate("/rating");
+
+                        }}>
+                          <span className="font-semibold">{profile.averageRating.toFixed(1)} {"⭐".repeat(Math.round(profile.averageRating))}</span>
+                          <span className="text-gray-500">({profile.ratingCount})</span>
+                        </div>
+                        )} */}
+
+
+                        {/* {profile.averageRating !== undefined && profile.ratingCount !== undefined && (
+                        <div className="flex items-center gap-2 mt-1 text-sm text-yellow-600">
+                          <span className="font-semibold">{profile.averageRating.toFixed(1)} {"⭐".repeat(Math.round(profile.averageRating))}</span>
+                          <span className="text-gray-500">({profile.ratingCount})</span>
+                          <span className="py-0.5 px-2 border text-xs rounded-full ml-2 cursor-pointer" onClick={(e) => {
+                              e.stopPropagation();
+                              sessionStorage.setItem("doctorId",doctor._id);
+                              navigate("/rating");
+                          }}>
+                              view Rating
+                          </span>
+                        </div>
+                        )} */}
+
+
+{/* 
+                        {profile.averageRating !== undefined && profile.ratingCount !== undefined && (
+  <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2 mt-1 text-sm text-yellow-600">
+    <div className="flex items-center gap-1">
+      <span className="font-semibold text-base">
+        {profile.averageRating.toFixed(1)} {"⭐".repeat(Math.round(profile.averageRating))}
+      </span>
+      <span className="text-gray-500">({profile.ratingCount})</span>
+    </div>
+
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        sessionStorage.setItem("doctorId", doctor._id);
+        navigate("/rating");
+      }}
+      className="mt-1 sm:mt-0 py-0.5 px-2 border border-yellow-500 text-xs rounded-full text-yellow-700 hover:bg-yellow-100 transition duration-200 "
+    >
+      View Ratings
+    </button>
+  </div>
+)} */}
+
+
+
+
+{profile.averageRating !== undefined && profile.ratingCount !== undefined && (
+  <div className="flex items-center gap-2 mt-1 text-sm text-yellow-600 flex-wrap sm:flex-nowrap">
+    <div className="flex items-center gap-1 flex-shrink-0">
+      <span className="font-semibold text-base whitespace-nowrap">
+        {profile.averageRating.toFixed(1)} {"⭐".repeat(Math.round(profile.averageRating))}
+      </span>
+      <span className="text-gray-500 whitespace-nowrap">({profile.ratingCount})</span>
+    </div>
+
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        sessionStorage.setItem("doctorId", doctor._id);
+        navigate("/rating");
+      }}
+      className="py-0.5 px-2 border border-yellow-500 text-xs rounded-full text-yellow-700 hover:bg-yellow-100 transition duration-200 whitespace-nowrap flex-shrink-0"
+    >
+      View Ratings
+    </button>
+  </div>
+)}
+
 
                         <div className="mt-3 flex items-center gap-2 text-sm">
                           <input
@@ -196,11 +273,7 @@ const DoctorsList: React.FC = () => {
             
               <div className="mt-8">
                 {totalPages >= 1 && (
-                  // <Pagination
-                  //   currentPage={currentPage}
-                  //   totalPages={totalPages}
-                  //   onPageChange={(page) => setCurrentPage(page)}
-                  // />
+                  
                 <Pagination
                  currentPage={currentPage}
                  totalPages={totalPages}

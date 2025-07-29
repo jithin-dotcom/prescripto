@@ -74,6 +74,12 @@ const TopDoctors = () => {
                   <p className="text-sm text-[#5C5C5C]">
                     {profile.specialization || "Specialization N/A"}
                   </p>
+                  {profile.averageRating !== undefined && profile.ratingCount !== undefined && (
+                  <div className="flex items-center gap-2 mt-1 text-sm text-yellow-600">
+                    <span className="font-semibold">{profile.averageRating.toFixed(1)} {"⭐".repeat(Math.round(profile.averageRating))}</span>
+                    <span className="text-gray-500">({profile.ratingCount})</span>
+                  </div>
+                  )}
                 </div>
               </div>
             );

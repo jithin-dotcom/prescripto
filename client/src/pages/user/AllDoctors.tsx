@@ -43,7 +43,7 @@ const AllDoctors = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  // const limit = 2;
+  
   const [searchInput, setSearchInput] = useState("");
   const [specialty, setSpecialty] = useState("");
   const [debouncedSearchInput, setDebouncedSearchInput] = useState(searchInput);
@@ -68,6 +68,8 @@ const AllDoctors = () => {
       const res = await axiosInstance.get(
         `${APIUserRoutes.ALL_DOCTORS}?page=${page}&limit=${pageSize}&search=${debouncedSearchInput}&specialty=${specialty}`
       );
+
+      
       setDoctors(res.data.data);
       setTotalPages(res.data.totalPages);
     } catch (error) {
@@ -180,6 +182,13 @@ const AllDoctors = () => {
                         <p className="text-[#5C5C5C] text-sm">
                           {profile.specialization || "Specialization N/A"}
                         </p>
+                        
+                        {profile.averageRating !== undefined && profile.ratingCount !== undefined && (
+                        <div className="flex items-center gap-2 mt-1 text-sm text-yellow-600">
+                          <span className="font-semibold">{profile.averageRating.toFixed(1)} {"⭐".repeat(Math.round(profile.averageRating))}</span>
+                          <span className="text-gray-500">({profile.ratingCount})</span>
+                        </div>
+                        )}
                       </div>
                     </motion.div>
                   );

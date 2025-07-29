@@ -15,6 +15,8 @@ export interface ICreateAppointment {
     educationDetails: string;
     isBlocked: boolean;
     specialization: string ;
+    averageRating?: number;
+    ratingCount?: number;
     about: string;
     yearOfExperience: number;
     fee: number;
@@ -45,6 +47,8 @@ export interface IAppointmentResponse {
     photo?: string;
     isVerified: boolean;
     educationDetails: string;
+    averageRating?: number;
+    ratingCount?: number;
     isBlocked: boolean;
     specialization: string ;
     yearOfExperience: number;

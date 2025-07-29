@@ -5,9 +5,10 @@ import { IDoctorRatingService } from "../../services/interface/IDoctorRatingServ
 import { doctorRatingSchema } from "../../validations/doctorRating.schema";
 import { StatusCode } from "../../constants/statusCode.enum";
 import { StatusMessage } from "../../constants/statusMessage";
+import { IDoctorRatingController } from "../interface/IDoctorRatingController";
 
 
-export class DoctorRatingController {
+export class DoctorRatingController implements IDoctorRatingController{
      constructor(
         private _doctorRatingService: IDoctorRatingService,
      ){}
@@ -18,6 +19,7 @@ export class DoctorRatingController {
             const {doctorId, appointmentId, rating, review} = req.body;
             if(!doctorId || !appointmentId || !rating || !review || !userId){
                 res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+                return;
             }
 
             const validate = doctorRatingSchema.parse({
@@ -39,4 +41,56 @@ export class DoctorRatingController {
             next(error);
         }
      }
+
+    //  async getRatingByDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
+    //     try {
+            
+    //         const { doctorId } = req.params;
+    //         const page = parseInt(req.query.page as string) || 1;
+    //         const limit = parseInt(req.query.limit as string) || 10;
+    //         if(!doctorId){
+    //             res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+    //             return;
+    //         }
+
+    //         const response = await this._doctorRatingService.getRatingByDoctor(doctorId, page, limit);
+    //         if(response.data.length === 0){
+    //             res.status(StatusCode.NOT_FOUND).json({message: "No ratings found for the Doctor"});
+    //         }
+
+    //         res.status(StatusCode.OK).json(response);
+
+    //     }catch (error) {
+    //        next(error); 
+    //     }
+    //  }
+
+
+
+
+
+    async getRatingByDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { doctorId } = req.params;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    if (!doctorId) {
+      res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+      return;
+    }
+
+    const response = await this._doctorRatingService.getRatingByDoctor(doctorId, page, limit);
+
+    res.status(StatusCode.OK).json(response);
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+
+
+
+
 }

@@ -214,6 +214,16 @@ const Navbar = () => {
                     >
                       Wallet
                     </button>
+                     <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        setMenuOpen(false);
+                        navigate("/rating");
+                      }}
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
+                    >
+                      Rating
+                    </button>
                     <button
                       onClick={() => {
                         setDropdownOpen(false);

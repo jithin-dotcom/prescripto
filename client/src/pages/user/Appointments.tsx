@@ -11,6 +11,7 @@ import { toast } from "react-toastify";
 import type { Slot, DoctorProfile, Availability } from "../../interfaces/IAppointments";
 import { APIUserRoutes } from "../../constants/routes.constants";
 import ConfirmModal from "../../components/ConfirmModal";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -101,6 +102,7 @@ const Appointment: React.FC = () => {
   const [activeSlotIndex, setActiveSlotIndex] = useState(0);
   const [activeTime, setActiveTime] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const navigate = useNavigate();
 
 
   const handleBooking = async () => {
@@ -182,6 +184,7 @@ const Appointment: React.FC = () => {
 
         console.log("slot duration : ",firstDoctor.slotDuration);
         const transformedDoctor: DoctorProfile = {
+          _id: firstDoctor._id,
           name: firstDoctor.name,
           profilePhoto: firstDoctor.photo,
           specialization: firstDoctor.specialization,
@@ -190,6 +193,8 @@ const Appointment: React.FC = () => {
           about: firstDoctor.about,
           isVerified: firstDoctor.isVerified,
           yearOfExperience: firstDoctor.yearOfExperience || 0,
+          averageRating: firstDoctor.averageRating || 0,
+          ratingCount: firstDoctor.ratingCount || 0,
           availability: firstDoctor.availability || [],
           slotDuration: firstDoctor.slotDuration || 30,
         };
@@ -251,6 +256,18 @@ const Appointment: React.FC = () => {
                     {doctor.yearOfExperience} years
                   </span>
                 </p>
+                 {doctor.averageRating !== undefined && doctor.ratingCount !== undefined && (
+                        <div className="flex items-center gap-2 mt-1 text-sm text-yellow-600">
+                          <span className="font-semibold">{doctor.averageRating.toFixed(1)} {"⭐".repeat(Math.round(doctor.averageRating))}</span>
+                          <span className="text-gray-500">({doctor.ratingCount})</span>
+                          <span className="py-0.5 px-2 border text-xs rounded-full ml-2 cursor-pointer" onClick={() => {
+                              sessionStorage.setItem("doctorId",doctor._id);
+                              navigate("/rating");
+                          }}>
+                              view Rating
+                          </span>
+                        </div>
+                        )}
                 <p className="text-gray-600 text-sm">{doctor.about}</p>
                 <p className="text-gray-700 font-medium pt-2">
                   Consultation Fee: ₹{doctor.fee}

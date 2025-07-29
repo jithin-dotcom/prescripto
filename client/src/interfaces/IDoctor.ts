@@ -9,5 +9,7 @@ export interface Doctor {
   isVerified: boolean;
   profile: {
     specialization?: string;
+    averageRating?: number;
+    ratingCount?: number;
   }[];
 }

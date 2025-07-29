@@ -4,12 +4,16 @@
 import { IDoctorRating } from "../../models/DoctorRating/IDoctorRating";
 import { IDoctorRatingRepository } from "../../repositories/interface/IDoctorRatingRepository";
 import mongoose from "mongoose";
-import { IData, IDoctorRatingService } from "../interface/IDoctorRatingService";
+import { IData, IDoctorRatingService, IRatingByDoctorPaginated } from "../interface/IDoctorRatingService";
+import { IRatingByDoctor } from "../interface/IDoctorRatingService";
+import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 
 
 export class DoctorRatingService implements IDoctorRatingService{
     constructor(
         private _doctorRatingRepo: IDoctorRatingRepository,
+        private _doctorProfileRepo: IDoctorProfileRepository,
+        
     ){}
 
     async rateDoctor(data: IData): Promise<void> {
@@ -25,6 +29,22 @@ export class DoctorRatingService implements IDoctorRatingService{
             if(!createRating){
                 throw new Error("Failed to create Rating");
             }
+             
+            const doctorProfile = await this._doctorProfileRepo.findOne({doctorId});
+            if(!doctorProfile){
+                throw new Error("Doctor profile not found");
+            }
+            
+            const oldAvg = doctorProfile?.averageRating || 0;
+            const oldCount = doctorProfile?.ratingCount || 0;
+            const newCount = oldCount + 1;
+            const newAvg = parseFloat(((oldAvg * oldCount + rating) / newCount).toFixed(2));
+
+            const updatedDoctor = await this._doctorProfileRepo.updateByDoctorId(doctorId,{averageRating: newAvg, ratingCount: newCount});
+            if(!updatedDoctor){
+                throw new Error("Failed to update doctor");
+            }
+            console.log("updated doctor : ",updatedDoctor);
 
         }catch (error) {
             if(error instanceof Error){
@@ -34,4 +54,119 @@ export class DoctorRatingService implements IDoctorRatingService{
             }
         }
     }
+
+
+
+    // async getRatingByDoctor(appointmentId: string):Promise<IRatingByDoctor[]> {
+    //     try {
+    //         if(!appointmentId){
+    //             throw new Error("AppointmentId is missing");
+    //         }
+    //         const result: IRatingByDoctor[] = [];
+    //         const res = await this._doctorRatingRepo.getDoctorRating(appointmentId);
+    //         if(!res){
+    //             throw new Error("Failed to get Doctor's Rating");
+    //         }
+    //          res.forEach((obj) => {
+                
+    //              result.push({
+    //                 userName: obj.patientId?.name,
+    //                 rating: obj.rating,
+    //                 review: obj?.review,
+    //                 time: obj.createdAt,
+    //              })
+    //            })
+    //            if(result.length === 0){
+    //               throw new Error("Failed to fetch doctor rating ");
+    //            }
+    //            return result;
+    //     } catch (error) {
+    //         if(error instanceof Error){
+    //             throw error;
+    //         }else{
+    //             throw new Error("Something went wrong");
+    //         }
+    //     }
+    // }
+
+
+
+//     async getRatingByDoctor(doctorId: string, page: number, limit: number): Promise<IRatingByDoctorPaginated> {
+//        if (!doctorId) {
+//           throw new Error("Doctor ID is missing.");
+//        }
+
+//        const skip = (page - 1) * limit;
+
+//        const {ratings, total} = await this._doctorRatingRepo.getDoctorRating(doctorId, skip, limit);
+
+//        if (!ratings || ratings.length === 0) {
+//           throw new Error("No ratings found for this appointment.");
+//        }
+
+    
+//        const result: IRatingByDoctor[] = ratings.map((rating) => {
+//           const patient = rating.patientId as unknown as { name: string };
+
+//           return {
+//              userName: patient.name || "Unknown",
+//              rating: rating.rating,
+//              review: rating.review,
+//              time: rating.createdAt,
+//           };
+//         });
+
+//     //    return result;
+
+//           return {
+//     currentPage: page,
+//     totalPages: Math.ceil(total / limit),
+//     totalItems: total,
+//     itemsPerPage: limit,
+//     data: result,
+//   };
+//     }
+
+
+
+
+
+async getRatingByDoctor(
+  doctorId: string,
+  page: number,
+  limit: number
+): Promise<IRatingByDoctorPaginated & {
+  totalReviews: number;
+  averageRating: number;
+  satisfactionPercent: number;
+}> {
+  if (!doctorId) throw new Error("Doctor ID is missing");
+
+  const skip = (page - 1) * limit;
+  const { ratings, total } = await this._doctorRatingRepo.getDoctorRating(doctorId, skip, limit);
+  const stats = await this._doctorRatingRepo.getDoctorRatingStats(doctorId);
+
+  const result: IRatingByDoctor[] = ratings.map((rating) => {
+    const patient = rating.patientId as unknown as { name: string };
+    return {
+      userName: patient.name || "Unknown",
+      rating: rating.rating,
+      review: rating.review,
+      time: rating.createdAt,
+    };
+  });
+
+  return {
+    currentPage: page,
+    totalPages: Math.ceil(total / limit),
+    totalItems: total,
+    itemsPerPage: limit,
+    data: result,
+    totalReviews: stats.totalReviews,
+    averageRating: stats.averageRating,
+    satisfactionPercent: stats.satisfactionPercent,
+  };
+}
+
+
 }

@@ -2,6 +2,8 @@
 
 export interface DoctorProfile {
   specialization?: string;
+  averageRating?: number;
+  ratingCount?: number;
 }
 
 export interface Doctor {

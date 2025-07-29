@@ -20,6 +20,7 @@ export interface Availability {
 
 
 export interface DoctorProfile {
+  _id: string;
   name: string;
   profilePhoto: string;
   specialization: string;
@@ -28,6 +29,8 @@ export interface DoctorProfile {
   about: string;
   isVerified: boolean;
   yearOfExperience: number;
+  averageRating?: number;
+  ratingCount?: number;
   availability: Availability[];
   slotDuration: number;
 }
