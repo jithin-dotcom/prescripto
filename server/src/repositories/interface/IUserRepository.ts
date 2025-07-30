@@ -11,6 +11,7 @@ export interface IUserRepository extends IBaseRepository< IUser & Document >{
     updatePasswordByEmail(email: string, hashedPassword: string): Promise<void>;
     updatePhoto(userId: string, photoUrl: string): Promise<(IUser & Document) | null>;
     findTopDoctors(limit: number): Promise<(IUser & Document)[] | null>;
+    
     findAll(
       filter: FilterQuery<IUser>,
       skip?: number,

@@ -27,6 +27,7 @@ export const useAuthStore = create<AuthState>()(
         set({ accessToken: null, role: null, user: null });
         localStorage.removeItem("auth-storage");
         sessionStorage.removeItem("doctorId");
+        sessionStorage.removeItem('ratingData');
       },
 
       setHasHydrated: (hydrated) => set({ hasHydrated: hydrated }),

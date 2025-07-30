@@ -11,7 +11,7 @@ import mongoose from "mongoose";
 
 
 export class AppointmentController implements IAppointmentController {
-  constructor(private readonly _appointmentService: IAppointmentService) {}
+  constructor(private  _appointmentService: IAppointmentService) {}
 
   async createAppointment(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {

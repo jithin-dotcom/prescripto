@@ -18,7 +18,12 @@ export class DoctorRatingService implements IDoctorRatingService{
 
     async rateDoctor(data: IData): Promise<void> {
         try {
+           console.log("entered into rateDoctor services");
             const {userId, doctorId, appointmentId, rating, review} = data;
+            const rated = await this._doctorRatingRepo.findOne({appointmentId});
+            if(rated){
+               throw new Error("You have already rated this doctor for this appointment");
+            }
             const createRating = await this._doctorRatingRepo.create({
                  patientId: new mongoose.Types.ObjectId(userId),
                  doctorId: new mongoose.Types.ObjectId(doctorId),

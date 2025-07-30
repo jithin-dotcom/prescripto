@@ -17,7 +17,7 @@ export class DoctorRatingController implements IDoctorRatingController{
         try {
             const userId = req.user?.id;
             const {doctorId, appointmentId, rating, review} = req.body;
-            if(!doctorId || !appointmentId || !rating || !review || !userId){
+            if(!doctorId || !appointmentId || !rating  || !userId){
                 res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
                 return;
             }

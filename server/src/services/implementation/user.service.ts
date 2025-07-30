@@ -9,7 +9,7 @@ import { IPatientProfile } from "../../models/patient/IPatientProfile";
 
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import bcrypt from "bcrypt";
-import mongoose from "mongoose";
+import mongoose,{ Document} from "mongoose";
 import { UserModel } from "../../models/user.models";
 
 
@@ -55,6 +55,103 @@ export class UserService implements IUserService {
    }
 
 
+// async getAllDoctors(
+//   page: number = 1,
+//   limit: number = 4,
+//   search: string = "",
+//   sort: string = "createdAt",
+//   specialty: string = "",
+// ): Promise<{
+//   data: ({ profile: IDoctorProfile[] } & IUser)[]; 
+//   total: number;
+//   totalPages: number;
+//   page: number;
+// }> {
+//   try {
+//     console.log("entered into service ");
+//     const skip = (page - 1) * limit;
+
+//     if (!specialty) {
+//       const query: IQuery = {
+//         role: "doctor",
+//         isBlocked: false,
+//         isVerified: true,
+//         name: { $regex: search, $options: "i" },
+//       };
+
+//       const sortField = sort.startsWith("-") ? sort.slice(1) : sort;
+//       const sortOrder = sort.startsWith("-") ? 1 : -1;
+      
+
+
+//       console.log("sortedField : ", sortField);
+//       console.log("sortedOrder : ", sortOrder);
+//       const [users, total] = await Promise.all([
+//         this._userRepo.findAll(query, skip, limit, { [sortField]: sortOrder }),
+//         this._userRepo.count(query),
+//       ]);
+
+//       const items = await Promise.all(
+//         users.map(async (doc) => {
+//           const profile = await this._doctorRepo.findAll({ doctorId: doc._id });
+
+//           return {
+//             ...doc.toObject(), 
+//             profile,
+//           };
+//         })
+//       );
+ 
+
+//       return {
+//         data: items,
+//         total,
+//         totalPages: Math.ceil(total / limit),
+//         page,
+//       };
+//     }
+
+   
+//     const matchedProfiles = await this._doctorRepo.findAll({ specialization: specialty });
+
+//     const matchedDoctors: ({ profile: IDoctorProfile[] } & IUser)[] = [];
+
+//     for (const profile of matchedProfiles) {
+//       const user = await this._userRepo.findOne({
+//         _id: profile.doctorId,
+//         isBlocked: false,
+//         role: "doctor",
+//         name: { $regex: search, $options: "i" },
+//       });
+
+//       if (!user) continue;
+
+//       matchedDoctors.push({
+//         ...user.toObject(),   
+//         profile: [profile],
+//       });
+//     }
+
+//     console.log("matched doctors : ", matchedDoctors);
+
+//     const total = matchedDoctors.length;
+//     const paginated = matchedDoctors.slice(skip, skip + limit);
+
+//     return {
+//       data: paginated,
+//       total,
+//       totalPages: Math.ceil(total / limit),
+//       page,
+//     };
+//   } catch (error) {
+//     console.error("Error in getAllDoctors:", error);
+//     throw new Error("Failed to fetch paginated doctors");
+//   }
+// }
+
+
+
+
 async getAllDoctors(
   page: number = 1,
   limit: number = 4,
@@ -62,7 +159,7 @@ async getAllDoctors(
   sort: string = "createdAt",
   specialty: string = "",
 ): Promise<{
-  data: ({ profile: IDoctorProfile[] } & IUser)[]; 
+  data: ({ profile: IDoctorProfile[] } & IUser)[];
   total: number;
   totalPages: number;
   page: number;
@@ -70,64 +167,66 @@ async getAllDoctors(
   try {
     const skip = (page - 1) * limit;
 
-    if (!specialty) {
-      const query: IQuery = {
-        role: "doctor",
-        isBlocked: false,
-        isVerified: true,
-        name: { $regex: search, $options: "i" },
-      };
+    const baseQuery: IQuery = {
+      role: "doctor",
+      isBlocked: false,
+      isVerified: true,
+      name: { $regex: search, $options: "i" },
+    };
 
-      const sortField = sort.startsWith("-") ? sort.slice(1) : sort;
-      const sortOrder = sort.startsWith("-") ? 1 : -1;
+    let users: (IUser & Document)[] = [];
 
-      const [users, total] = await Promise.all([
-        this._userRepo.findAll(query, skip, limit, { [sortField]: sortOrder }),
-        this._userRepo.count(query),
-      ]);
+    if (specialty) {
+      
+      const profiles = await this._doctorRepo.findAll({ specialization: specialty });
+      const userIds = profiles.map((p) => p.doctorId);
 
-      const items = await Promise.all(
-        users.map(async (doc) => {
-          const profile = await this._doctorRepo.findAll({ doctorId: doc._id });
-
-          return {
-            ...doc.toObject(), 
-            profile,
-          };
-        })
-      );
-
-      return {
-        data: items,
-        total,
-        totalPages: Math.ceil(total / limit),
-        page,
-      };
+      
+      users = await this._userRepo.findAll({
+        _id: { $in: userIds },
+        ...baseQuery,
+      });
+    } else {
+      
+      users = await this._userRepo.findAll(baseQuery);
     }
 
    
-    const matchedProfiles = await this._doctorRepo.findAll({ specialization: specialty });
+    const doctorsWithProfiles = await Promise.all(
+      users.map(async (user) => {
+        const profile = await this._doctorRepo.findAll({ doctorId: user._id });
+        return {
+          ...user.toObject(),
+          profile,
+        };
+      })
+    );
 
-    const matchedDoctors: ({ profile: IDoctorProfile[] } & IUser)[] = [];
+    // Sorting logic
+    const sortField = sort.startsWith("-") ? sort.slice(1) : sort;
+    const sortOrder = sort.startsWith("-") ? "asc" : "desc";
 
-    for (const profile of matchedProfiles) {
-      const user = await this._userRepo.findOne({
-        _id: profile.doctorId,
-        isBlocked: false,
-        role: "doctor",
-        name: { $regex: search, $options: "i" },
-      });
+    const sortedDoctors = doctorsWithProfiles.sort((a, b) => {
+      let valA = 0;
+      let valB = 0;
 
-      if (!user) continue;
+      if (sortField === "experience") {
+        valA = a.profile?.[0]?.yearOfExperience ?? 0;
+        valB = b.profile?.[0]?.yearOfExperience ?? 0;
+      } else if (sortField === "rating") {
+        valA = a.profile?.[0]?.averageRating ?? 0;
+        valB = b.profile?.[0]?.averageRating ?? 0;
+      } else {
+        // fallback to sorting by user fields
+        valA = a[sortField] ?? 0;
+        valB = b[sortField] ?? 0;
+      }
 
-      matchedDoctors.push({
-        ...user.toObject(),   
-        profile: [profile],
-      });
-    }
+      return sortOrder === "asc" ? valA - valB : valB - valA;
+    });
 
-    const total = matchedDoctors.length;
-    const paginated = matchedDoctors.slice(skip, skip + limit);
+    const total = sortedDoctors.length;
+    const paginated = sortedDoctors.slice(skip, skip + limit);
 
     return {
       data: paginated,
@@ -140,6 +239,130 @@ async getAllDoctors(
     throw new Error("Failed to fetch paginated doctors");
   }
 }
+
+
+
+
+
+
+
+
+// async getAllDoctors(
+//   page: number = 1,
+//   limit: number = 4,
+//   search: string = "",
+//   sortBy: string = "createdAt",
+//   specialty: string = "",
+// ): Promise<{
+//   data: ({ profile: IDoctorProfile[] } & IUser)[];
+//   total: number;
+//   totalPages: number;
+//   page: number;
+// }> {
+//   try {
+//     const skip = (page - 1) * limit;
+
+//     const query: IQuery = {
+//       role: "doctor",
+//       isBlocked: false,
+//       isVerified: true,
+//       name: { $regex: search, $options: "i" },
+//     };
+
+//     let doctors: IUser[] = [];
+
+//     // Sort helpers
+//     const isProfileSort = sortBy.includes("experience") || sortBy.includes("rating");
+//     // const sortField = sort.startsWith("-") ? sort.slice(1) : sort;
+//     // const sortOrder = sort.startsWith("-") ? 1 : -1;
+//     const sortField = "averageRating";
+//     const sortOrder = -1;
+//     console.log("sortField : ", sortField);
+//     console.log("sortOrder :" ,sortOrder);
+
+
+//     // Specialty filtering path
+//     if (specialty) {
+//       const matchedProfiles = await this._doctorRepo.findAll({ specialization: specialty });
+
+//       const matchedDoctors: ({ profile: IDoctorProfile[] } & IUser)[] = [];
+
+//       for (const profile of matchedProfiles) {
+//         const user = await this._userRepo.findOne({
+//           _id: profile.doctorId,
+//           isBlocked: false,
+//           role: "doctor",
+//           name: { $regex: search, $options: "i" },
+//         });
+
+//         if (!user) continue;
+
+//         matchedDoctors.push({
+//           ...user.toObject(),
+//           profile: [profile],
+//         });
+//       }
+
+      
+//       // Sort based on profile field
+//       if (isProfileSort) {
+//         matchedDoctors.sort((a, b) => {
+//           const valA = a.profile?.[0]?.[sortField] || 0;
+//           const valB = b.profile?.[0]?.[sortField] || 0;
+//           return sortOrder === -1 ? valB - valA : valA - valB;
+//         });
+//       }
+
+//       const total = matchedDoctors.length;
+//       const paginated = matchedDoctors.slice(skip, skip + limit);
+
+//       return {
+//         data: paginated,
+//         total,
+//         totalPages: Math.ceil(total / limit),
+//         page,
+//       };
+//     }
+
+//     // No specialty filtering path
+//     const [users, total] = await Promise.all([
+//       this._userRepo.findAll(query, skip, limit, isProfileSort ? {} : { [sortField]: sortOrder }),
+//       this._userRepo.count(query),
+//     ]);
+
+//     const items = await Promise.all(
+//       users.map(async (doc) => {
+//         const profile = await this._doctorRepo.findAll({ doctorId: doc._id });
+//         return {
+//           ...doc.toObject(),
+//           profile,
+//         };
+//       })
+//     );
+
+//     // Sort by experience or rating from profile (if needed)
+//     if (isProfileSort) {
+//       items.sort((a, b) => {
+//         const valA = a.profile?.[0]?.[sortField] || 0;
+//         const valB = b.profile?.[0]?.[sortField] || 0;
+//         return sortOrder === -1 ? valB - valA : valA - valB;
+//       });
+//     }
+
+
+//     // console.log("matched profile : ", items);
+//     return {
+//       data: items,
+//       total,
+//       totalPages: Math.ceil(total / limit),
+//       page,
+//     };
+//   } catch (error) {
+//     console.error("Error in getAllDoctors:", error);
+//     throw new Error("Failed to fetch paginated doctors");
+//   }
+// }
+
 
 
 

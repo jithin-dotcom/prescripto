@@ -4,6 +4,7 @@ import { DoctorProfileModel } from "../../models/doctor/doctorProfile.models";
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import mongoose, { Document } from "mongoose";
 import { IDoctorProfileRepository } from "../interface/IDoctorProfileRepository";
+import { IDoctorProfileDashboard } from "../../models/doctor/IDoctorProfile";
 
 export class DoctorProfileRepository extends BaseRepository<IDoctorProfile & Document> implements IDoctorProfileRepository {
   constructor() {
@@ -20,5 +21,12 @@ export class DoctorProfileRepository extends BaseRepository<IDoctorProfile & Doc
     const id = typeof doctorId === "string" ? new mongoose.Types.ObjectId(doctorId) : doctorId;
     return await this.model.findOneAndUpdate({ doctorId: id }, data, { new: true });
   }
+
+  // async getDoctorForDashboard(doctorId: string ) {
+  //    return await this.model.find({doctorId}).populate("doctorId").sort({averageRating: -1});
+  // }
+
+
+ 
 
 }

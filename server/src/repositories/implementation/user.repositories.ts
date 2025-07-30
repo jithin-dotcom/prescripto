@@ -39,13 +39,16 @@ export class UserRepository
   filter: Partial<IUser>,
   skip = 0,
   limit = 8,
-  sort: Record<string, SortOrder> = { createdAt: -1 }
+  sort: Record<string, SortOrder> = { createdAt: -1}
   ): Promise<(IUser & Document)[]> {
+   
     return await this.model.find(filter).skip(skip).limit(limit).sort(sort);
   }
 
   async count(filter: Partial<IUser>): Promise<number> {
     return await this.model.countDocuments(filter);
   }
+
+   
  
 }

@@ -328,7 +328,7 @@ navigate("/rate-doctor?rate=true", { replace: true });
        if (isDoctor) {
     navigate("/doctor-appointments", { replace: true });
   } else {
-    console.log("before saving session storage");
+    
     sessionStorage.setItem(
   'ratingData',
   JSON.stringify({

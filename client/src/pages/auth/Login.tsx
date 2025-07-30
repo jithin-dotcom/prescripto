@@ -8,7 +8,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import type { GoogleCredentialResponse } from "../../interfaces/IGoogleCredentials";
-import { Eye, EyeOff } from "lucide-react"; // ✅ Lucide for show/hide icons
+import { Eye, EyeOff } from "lucide-react"; 
 import logo from '../../assets/Screenshot 2025-07-08 170708.png';
 import { APIAuthRoutes } from "../../constants/routes.constants";
 

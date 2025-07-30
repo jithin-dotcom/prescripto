@@ -218,7 +218,7 @@ export const RateDoctor = () => {
   }, [location.search, navigate]);
 
   const handleClose = () => {
-    sessionStorage.removeItem('ratingData');
+    // sessionStorage.removeItem('ratingData');
     navigate('/my-appointments');
   };
 
@@ -243,11 +243,11 @@ export const RateDoctor = () => {
 
       console.log('res : ', res);
       toast.success('Thank you for your feedback!');
-      sessionStorage.removeItem('ratingData');
+      // sessionStorage.removeItem('ratingData');
       handleClose();
     } catch (err) {
       console.error(err);
-      toast.error('Failed to submit rating.');
+      // toast.error('Failed to submit rating.');
     }
   };
 

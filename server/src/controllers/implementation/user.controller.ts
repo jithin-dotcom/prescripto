@@ -27,8 +27,9 @@ export class UserController implements IUserController {
        const page = parseInt(req.query.page as string) || 1;
        const limit = parseInt(req.query.limit as string) || 4;
        const search = (req.query.search as string) || "";
-       const sort = (req.query.sort as string) || "createdAt";
+       const sort = (req.query.sortBy as string) || "createdAt";
        const specialty = (req.query.specialty as string) || "";
+      //  console.log("req.query : ", req.query);
        const result = await this._userService.getAllDoctors(page, limit, search, sort, specialty);
 
        res.status(StatusCode.OK).json({
