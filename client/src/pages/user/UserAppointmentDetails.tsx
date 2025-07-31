@@ -233,6 +233,7 @@ interface IMed {
   dosage: string;
   frequency: string;
   duration: string;
+  instructions: string;
 }
 
 interface IPrescription {
@@ -249,11 +250,57 @@ const UserAppointmentDetails: React.FC = () => {
   const [prescription, setPrescription] = useState<IPrescription | null>(null);
   const appointment = location.state?.appointment;
 
+
+
+  const downloadInvoice = async(appointmentId: string) => {
+      try {
+            const response = await axiosInstance.get(
+                      `payments/get-payment/${appointmentId}`,
+    {
+      responseType: "blob",
+    }
+  );
+
+  const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `receipt-${appointmentId}.pdf`;
+  a.click();
+  window.URL.revokeObjectURL(url);
+      } catch (error) {
+         console.error(error);
+      }
+  }
+
+
+  const downloadPrescription = async (appointmentId: string) => {
+      try {
+        const response = await axiosInstance.get(
+           `/download-prescription/${appointmentId}`,
+           {
+             responseType: 'blob',
+           }
+         );
+
+         const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+         const link = document.createElement('a');
+         link.href = url;
+         link.setAttribute('download', `prescription-${appointmentId}.pdf`);
+         document.body.appendChild(link);
+         link.click();
+         link.remove();
+         window.URL.revokeObjectURL(url);
+      }catch (error) {
+         console.error('Error downloading PDF:', error);
+      }
+  }
+
   useEffect(() => {
     const fetchPrescription = async () => {
       if (!appointment?._id) return;
       try {
         const { data } = await axiosInstance.get(`/get-prescription/${appointment._id}`);
+        console.log(data);
         if (data) setPrescription(data);
       } catch (err) {
         console.error("Prescription fetch error:", err);
@@ -312,8 +359,8 @@ const UserAppointmentDetails: React.FC = () => {
                 </button>
               </div>
               <nav className="space-y-4">
-                <button onClick={() => navigate("/appointments")} className="block w-full text-left hover:text-blue-300">Appointments</button>
-                <button onClick={() => navigate("/patients")} className="block w-full text-left hover:text-blue-300">Patients</button>
+                <button onClick={() => downloadPrescription(appointment._id)} className="block w-full text-left hover:text-blue-300">Download Prescription</button>
+                <button onClick={() => downloadInvoice(appointment._id)} className="block w-full text-left hover:text-blue-300">Download Invoice</button>
                 <button onClick={() => navigate("/settings")} className="block w-full text-left hover:text-blue-300">Settings</button>
               </nav>
             </motion.aside>
@@ -397,7 +444,7 @@ const UserAppointmentDetails: React.FC = () => {
                       <ul className="list-disc ml-6 mt-1">
                         {prescription.medicines.map((med, idx) => (
                           <li key={idx}>
-                            {med.name} – {med.dosage} – {med.frequency} – {med.duration}
+                            {med.name} – {med.dosage} – {med.frequency} – {med.duration} - {med.instructions}
                           </li>
                         ))}
                       </ul>

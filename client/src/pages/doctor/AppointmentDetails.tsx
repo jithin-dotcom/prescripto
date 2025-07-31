@@ -314,6 +314,7 @@ interface IMed {
   dosage: string;
   frequency: string;
   duration: string;
+  instructions: string;
 }
 
 interface IPrescription {
@@ -380,7 +381,7 @@ const AppointmentDetails: React.FC = () => {
               Write Prescription
             </button>
             <button
-              onClick={() => navigate("/edit-prescription")}
+              onClick={() => navigate("/edit-prescription", { state: { appointment } })}
               className="block w-full text-left hover:text-blue-300"
             >
               Edit Prescription
@@ -452,7 +453,7 @@ const AppointmentDetails: React.FC = () => {
                     <ul className="list-disc ml-6 mt-1">
                       {prescription.medicines?.map((med: IMed, idx: number) => (
                         <li key={idx}>
-                          {med.name} - {med.dosage} - {med.frequency} - {med.duration}
+                         {med.name}  -  {med.dosage} - {med.frequency} - {med.duration} - {med.instructions}
                         </li>
                       ))}
                     </ul>

@@ -355,6 +355,7 @@ interface IMed {
   dosage: string;
   frequency: string;
   duration: string;
+  instructions: string;
 }
 
 interface IPrescription {
@@ -524,11 +525,11 @@ const AdminAppointmentDetails: React.FC = () => {
                     </p>
                   )}
                   <div>
-                    <strong>Medicines:</strong>
+                    <strong>Medicines: </strong>
                     <ul className="list-disc ml-6 mt-1">
                       {prescription.medicines.map((med, idx) => (
                         <li key={idx}>
-                          {med.name} - {med.dosage} - {med.frequency} - {med.duration}
+                          {med.name} - {med.dosage} - {med.frequency} - {med.duration} - {med.instructions}
                         </li>
                       ))}
                     </ul>

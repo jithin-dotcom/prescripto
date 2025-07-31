@@ -178,6 +178,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
 import type { Variants } from "framer-motion";
+import { toast } from "react-toastify";
 import { 
   ArrowLeft, 
   PlusCircle, 
@@ -239,6 +240,23 @@ const CreatePrescription: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+  if (!diagnosis.trim() || !notes.trim()) {
+    toast.error("Diagnosis and notes  are required.");
+    return;
+  }
+
+
+  for (let i = 0; i < medicines.length; i++) {
+    const med = medicines[i];
+    const fields = ["name", "dosage", "frequency", "duration", "instructions"] as (keyof Medicine)[];
+    for (const field of fields) {
+      if (!med[field].trim()) {
+        toast.error(`Medicine #${i + 1} is missing a value for "${field}".`);
+        return;
+      }
+    }
+  }
+
     try {
       const payload = {
         appointmentId: appointment._id,
@@ -253,14 +271,14 @@ const CreatePrescription: React.FC = () => {
       
 
 
-     const res = await axiosInstance.post("create-prescription", payload);
+     const res = await axiosInstance.post("/create-prescription", payload);
      console.log("res : ",res);
       
-      alert("Prescription created successfully!");
+      toast.success("Prescription created successfully!");
       navigate("/doctor-appointments");
     } catch (error) {
       console.error("Error submitting prescription:", error);
-      alert("Failed to create prescription.");
+      
     }
   };
 
@@ -426,7 +444,7 @@ const medicineVariants: Variants = {
                 <motion.input
                   value={diagnosis}
                   onChange={(e) => setDiagnosis(e.target.value)}
-                  required
+                  
                   className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-200 text-gray-700 font-medium"
                   placeholder="Enter primary diagnosis..."
                   whileFocus={{ scale: 1.02 }}
