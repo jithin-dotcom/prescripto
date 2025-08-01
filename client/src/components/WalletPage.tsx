@@ -396,6 +396,7 @@ const WalletPage = () => {
         const res = await axiosInstance.get(
           `/get-wallet?page=${currentPage}&limit=${pageSize}`
         );
+        console.log("res.data : ",res.data);
         setWalletData(res.data);
       } catch (error) {
         console.error("Error fetching wallet data:", error);

@@ -15,6 +15,7 @@ import type { Appointment } from "../../interfaces/IMyAppointments";
 import { Video } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { APIUserRoutes, APIRoutes } from "../../constants/routes.constants";
+import { CreditCard } from "lucide-react";
 
 
 
@@ -37,6 +38,10 @@ const MyAppointments: React.FC = () => {
   const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+
+  const [walletPaymentModalOpen, setWalletPaymentModalOpen] = useState(false);
+  const [appointmentToPay, setAppointmentToPay] = useState<Appointment | null>(null);
+
 
   const userId = useAuthStore((state) => state.user?._id);
   const name = useAuthStore((state) => state.user?.name);
@@ -67,6 +72,45 @@ const MyAppointments: React.FC = () => {
 
     fetchAppointments();
   }, [userId, selectedStatus, currentPage, pageSize]);
+
+
+  // const handleWalletPayment = async(item: Appointment) => {
+  //    try {
+  //       console.log(item);
+  //       const res = await axiosInstance.get(`/wallet-payment/${item._id}`);
+  //       console.log("res : ",res);
+  //       toast.success("Payment is successful and Appointment is Confirmed");
+  //    }catch (error) {
+  //       console.log(error);
+  //    }
+  // }
+
+
+  const handleConfirmWalletPayment = async () => {
+  if (!appointmentToPay) return;
+  try {
+    await axiosInstance.get(`/wallet-payment/${appointmentToPay._id}`);
+    toast.success("Payment is successful and Appointment is Confirmed");
+    
+    // Update appointment list
+    setAppointments((prev) =>
+      prev.map((a) =>
+        a._id === appointmentToPay._id
+          ? { ...a, payment: "paid", status: "confirmed" }
+          : a
+      )
+    );
+  } catch (error) {
+    console.log(error);
+    toast.error("Wallet payment failed");
+  } finally {
+    setWalletPaymentModalOpen(false);
+    setAppointmentToPay(null);
+  }
+};
+
+
+
 
   const handleCancelAppointment = async () => {
     if (!appointmentToCancel) return;
@@ -157,12 +201,14 @@ const MyAppointments: React.FC = () => {
             razorpaySignature: response.razorpay_signature,
           });
 
-          toast.success(verifyRes.data?.message || "Payment successful");
+          console.log(verifyRes.data?.message || "Payment successful");
+
+          toast.success("Payment verified successfully and Appointment is Confirmed");
 
           
           setAppointments((prev) =>
             prev.map((a) =>
-              a._id === appointment._id ? { ...a, payment: "paid" } : a
+              a._id === appointment._id ? { ...a, payment: "paid", status: "confirmed" } : a
             )
           );
         } catch (err) {
@@ -295,11 +341,24 @@ const MyAppointments: React.FC = () => {
 
 <div className="flex flex-col gap-2 justify-start sm:justify-end text-sm text-center sm:text-right">
   
-  {item.status === "confirmed" && item.payment !== "paid" && (
+  {item.status === "pending" && item.payment !== "paid" && (
     <>
       {/* <MotionButton className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-100 transition">
-        <img className="h-5 w-auto" src={assets.stripe_logo} alt="Stripe" />
+        <img className="h-5 w-auto" src={assets.stripe_logo} alt="Stripe" /> 
       </MotionButton> */}
+      <MotionButton className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-gray-100 transition"
+        onClick={(e) => {
+          e.stopPropagation()
+          // handleWalletPayment(item)
+
+           setAppointmentToPay(item);
+           setWalletPaymentModalOpen(true);
+
+        }}
+      >
+        <CreditCard className="h-5 w-5 text-indigo-600" />
+          Wallet
+      </MotionButton>
 
       <MotionButton
         onClick={(e) => {
@@ -386,9 +445,23 @@ const MyAppointments: React.FC = () => {
           setAppointmentToCancel(null);
         }}
       />
+      <ConfirmationModal
+  isOpen={walletPaymentModalOpen}
+  title="Confirm Wallet Payment"
+  description={`Pay ₹${appointmentToPay?.doctor.fee} from wallet to confirm your appointment with Dr. ${appointmentToPay?.doctor.name} on ${appointmentToPay?.date} at ${appointmentToPay?.time}?`}
+  onConfirm={handleConfirmWalletPayment}
+  onClose={() => {
+    setWalletPaymentModalOpen(false);
+    setAppointmentToPay(null);
+  }}
+/>
+
     </div>
   );
 };
+
+
+
 
 export default MyAppointments;
 

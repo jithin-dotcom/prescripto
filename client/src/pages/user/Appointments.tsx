@@ -141,7 +141,7 @@ const Appointment: React.FC = () => {
       time: activeTime,
     });
     console.log("response : ", res);
-    toast.success("Appointment booked successfully!");
+    toast.success("Make Payment to Confirm your Appointment ");
 
        
     setSlots(prevSlots => {
@@ -160,6 +160,7 @@ const Appointment: React.FC = () => {
    
     const updatedTimes = slots[activeSlotIndex].times.filter(time => time !== activeTime);
     setActiveTime(updatedTimes.length > 0 ? updatedTimes[0] : "");
+    navigate("/my-appointments");
   } catch (err) {
     console.log("error : ",err);
    
