@@ -63,6 +63,7 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
 
       if (!appointmentId || !content || !type || !doctorId || !userId) {
         socket.emit("error", { message: "Missing required fields" });
+        console.log("missing data");
         return;
       }
 
@@ -70,8 +71,11 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
       if (!chat) {
         chat = await chatService.createChat(appointmentId, [userId, doctorId]);
       }
+      
 
       let finalContent = content;
+
+      console.log("type : ",type);
 
       if (type === "image") {
         const matches = content.match(/^data:(.+);base64,(.+)$/);
@@ -96,6 +100,8 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
         finalContent,
         type
       );
+
+      // console.log("message : ", message);
 
       io.to(appointmentId).emit("receiveMessage", message);
     } catch (error) {
@@ -122,6 +128,8 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
 
       await chatService.markMessagesAsRead(chatId, user.id);
       const updatedMessages = await chatService.getReadMessages(chatId, user.id);
+
+      // console.log("updated message : ", updatedMessages);
 
       io.to(chat.appointmentId.toString()).emit("messagesRead", {
         chatId,
@@ -164,11 +172,6 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
     socket.broadcast.emit("user-offline", user.id);
   });
 };
-
-
-
-
-
 
 
 

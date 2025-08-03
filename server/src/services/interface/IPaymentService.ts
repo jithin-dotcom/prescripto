@@ -19,4 +19,7 @@ export interface IPaymentService {
     razorpayPaymentId: string,
     razorpaySignature: string
   ): Promise<{ success: boolean; message: string }>;
+
+  downloadRecept(appointmentId: string): Promise<Buffer>;
+  generateReceiptPDF(data: any): Promise<Buffer>;
 }

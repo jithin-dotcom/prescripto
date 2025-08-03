@@ -2,8 +2,9 @@
 
 import { IChat } from "../../models/chat/IChat";
 import { Document } from "mongoose";
+import { IBaseRepository } from "./IBaseRepository";
 
-export interface IChatRepository {
+export interface IChatRepository extends IBaseRepository<IChat>{
   findByAppointmentId(appointmentId: string): Promise<(IChat & Document) | null>;
   findByDoctorId(doctorId: string): Promise<(IChat & Document) | null>;
   findByUserId(userId: string): Promise<(IChat & Document) | null>;

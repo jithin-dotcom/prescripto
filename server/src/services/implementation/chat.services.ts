@@ -6,6 +6,7 @@ import { IChatService } from "../interface/IChatService";
 import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IMessageRepository } from "../../repositories/interface/IMessageRepository";
 import mongoose from "mongoose";
+import { timeStamp } from "console";
 
 export class ChatService implements IChatService {
   constructor(
@@ -91,6 +92,11 @@ export class ChatService implements IChatService {
         read: false,
       });
 
+      const updateChat = await this._chatRepo.updateById(chatId,{lastMessage:{
+        content,
+      }});
+      console.log("updateChat : ",updateChat);
+
       return message;
     } catch (error) {
       console.error("Error creating message:", error);
@@ -109,7 +115,10 @@ export class ChatService implements IChatService {
 
   async getUserChats(userId: string): Promise<IChat[]> {
     try {
-      return await this._chatRepo.getChatsByUser(userId);
+      
+      const result =  await this._chatRepo.getChatsByUser(userId);
+  
+      return result;
     } catch (error) {
       console.error("Error fetching user chats:", error);
       throw error;

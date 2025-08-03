@@ -40,8 +40,9 @@ import UserAppointmentDetails from "./pages/user/UserAppointmentDetails";
 import WalletPage from "./components/WalletPage";
 import { RateDoctor } from "./pages/user/DoctorRating";
 import DoctorRatingsPage from "./components/DoctorRatingsPage";
-import CreatePrescription from "./pages/doctor/createPrescription";
+import CreatePrescription from "./pages/doctor/CreatePrescription";
 import EditPrescription from "./pages/doctor/EditPrescription";
+import RaiseConcernPage from "./pages/user/RaiseConcernPage";
 
 const App: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -242,6 +243,11 @@ const App: React.FC = () => {
         <Route
           path="/edit-prescription"
           element={isAuthenticated && (role === "doctor")? <EditPrescription /> : <Navigate to="/login" replace />}
+        />
+
+         <Route
+          path="/get-concern"
+          element={isAuthenticated && (role === "user")? <RaiseConcernPage /> : <Navigate to="/login" replace />}
         />
 
         

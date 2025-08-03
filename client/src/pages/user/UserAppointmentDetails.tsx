@@ -361,7 +361,7 @@ const UserAppointmentDetails: React.FC = () => {
               <nav className="space-y-4">
                 <button onClick={() => downloadPrescription(appointment._id)} className="block w-full text-left hover:text-blue-300">Download Prescription</button>
                 <button onClick={() => downloadInvoice(appointment._id)} className="block w-full text-left hover:text-blue-300">Download Invoice</button>
-                <button onClick={() => navigate("/settings")} className="block w-full text-left hover:text-blue-300">Settings</button>
+                {/* <button onClick={() => navigate("/settings")} className="block w-full text-left hover:text-blue-300">Settings</button> */}
               </nav>
             </motion.aside>
           )}

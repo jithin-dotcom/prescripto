@@ -265,7 +265,7 @@ const CreatePrescription: React.FC = () => {
         diagnosis,
         notes,
         medicines,
-        followUpDate
+        followUpDate: followUpDate || null,
       };
 
       

@@ -41,6 +41,10 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
     const doctor = await this._doctorRepo.findOne({ doctorId });
     if (!doctor) throw new Error("Doctor not found");
 
+    const patientProfile = await this._patientRepo.findOne({patientId:data.userId});
+    if(!patientProfile){
+       throw new Error("Please complete your Profile to Book Appointments");
+    }
   
     if (doctor.fee) {
       data.fee = doctor.fee;
@@ -100,7 +104,7 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
       throw new Error("Slot not available for the selected date and time");
     }
 
-    // Final appointment object
+    
     const appointmentData: IAppointment = {
       ...data,
       userId: new mongoose.Types.ObjectId(data.userId),
@@ -494,6 +498,91 @@ async getAllAppointments(
 
 
 
+// async updateStatus(appointmentId: string, status: string): Promise<{ message: string }> {
+//   try {
+//     let success = false;
+
+//     if (status === "cancelled") {
+      
+//       const appointment = await this._appointmentRepo.findById(appointmentId);
+//       if(!appointment){
+//          throw new Error("Appointment not found");
+//       }
+//       console.log("appointment : ",appointment);
+//       if(appointment?.payment === "paid"){
+//         console.log("entered into appointnt if");
+//           const userId = appointment.userId;
+          
+//           let wallet = await this._walletRepo.findOne({userId});
+          
+//           if(!wallet){
+            
+//             wallet = await this._walletRepo.create({
+//               userId: new mongoose.Types.ObjectId(appointment.userId),
+//               role: "user",
+//             })
+           
+//             if(!wallet){
+//               throw new Error("Failed to create wallet");
+//             }
+//           } 
+    
+//       const walletHistory = await this._walletHistoryRepo.create({
+//           walletId: wallet?._id as mongoose.Types.ObjectId, 
+//           appointmentId: new mongoose.Types.ObjectId(appointmentId),
+//           amount: appointment?.fee,
+//           type: "credit",
+//           source: "refund",
+//           transactionId: appointment?.transactionId,
+//       })
+//       console.log("walletHistory : ",walletHistory);
+//       if(!walletHistory){
+//           throw new Error("failed to create Wallet History");
+//       }
+//       const update = await this._walletRepo.updateById(wallet._id as mongoose.Types.ObjectId,{$inc:{balance:appointment.fee}});
+//       if(!update){
+//         throw new Error("Failed to update wallet balance");
+//       } 
+//      }
+//      success = await this._appointmentRepo.cancelWithRefundIfPaid(appointmentId);
+
+//     }else {
+//       const update = await this._appointmentRepo.updateById(appointmentId, { status });
+//       console.log("update: ", update);
+//       const appId = update?._id as mongoose.Types.ObjectId;
+//       const userId = update?.userId as mongoose.Types.ObjectId;
+//       const doctorId = update?.doctorId as mongoose.Types.ObjectId;
+//       const participants = [userId, doctorId] as mongoose.Types.ObjectId[];
+//       const existingChat = await this._chatRepo.findByAppointmentId(appointmentId);
+//       console.log("existing chat : ", existingChat);
+//       if(!existingChat){
+//          await this._chatRepo.createChat({appointmentId: appId, userId, doctorId, participants})
+//       }
+    
+//       success = !!update;
+//     }
+
+//     if (!success) {
+//       throw new Error(`Failed to ${status} the appointment`);
+//     }
+
+//     return {
+//       message: `Appointment ${status} successfully`,
+//     };
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       throw error;
+//     } else {
+//       throw new Error("Something went wrong");
+//     }
+//   }
+// }
+
+
+
+
+
+
 async updateStatus(appointmentId: string, status: string): Promise<{ message: string }> {
   try {
     let success = false;
@@ -508,15 +597,61 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
       if(appointment?.payment === "paid"){
         console.log("entered into appointnt if");
           const userId = appointment.userId;
-          let wallet = await this._walletRepo.findOne({userId});
-          console.log("wallet : ",wallet);
+          const doctorId = appointment.doctorId;
+          let walletDoctor = await this._walletRepo.findOne({userId:doctorId});
+              const doctorIdRaw = typeof appointment.doctorId === "string"
+                              ? appointment.doctorId
+                              : appointment.doctorId._id?.toString?.();
+
+          if (!doctorIdRaw) {
+             throw new Error("Invalid doctorId");
+          }
+
+          // console.log("walletDoctor1 : ", walletDoctor);
+          if(!walletDoctor){
+             walletDoctor = await this._walletRepo.create({
+                userId: new mongoose.Types.ObjectId(doctorIdRaw),
+                role: "doctor",
+             })
+             if(!walletDoctor){
+               throw new Error("Failed to create Doctor wallet");
+             }
+          }
+          // console.log("walletDoctor2 : ", walletDoctor);
+          let amount = 0;
+          if(appointment?.fee){
+              amount = Math.floor(appointment?.fee - (appointment?.fee/10))
+          }
+          
+          const walletHistoryDoctor = await this._walletHistoryRepo.create({
+             walletId: walletDoctor?._id as mongoose.Types.ObjectId, 
+             appointmentId: new mongoose.Types.ObjectId(appointmentId),
+             amount: amount,
+             type: "debit",
+             source: "cancel appointment",
+             transactionId: appointment?.transactionId,
+           })
+          //  console.log("walletHistoryDoctor : ", walletHistoryDoctor);
+          if(!walletHistoryDoctor){
+             throw new Error("Failed to create Doctor Wallet History");
+          }
+
+          const updateDoctor = await this._walletRepo.updateById(walletDoctor._id as mongoose.Types.ObjectId,{$inc:{balance: -amount}});
+          console.log("updateDoctor : ",updateDoctor);
+          if(!updateDoctor){
+             throw new Error("Failed to update wallet balance");
+          } 
+
+  
+          
+          let wallet = await this._walletRepo.findOne({userId});        
           if(!wallet){
-            console.log("entered into wallet if");
+            
             wallet = await this._walletRepo.create({
               userId: new mongoose.Types.ObjectId(appointment.userId),
               role: "user",
             })
-            console.log("createWallet : ", wallet);
+           
             if(!wallet){
               throw new Error("Failed to create wallet");
             }

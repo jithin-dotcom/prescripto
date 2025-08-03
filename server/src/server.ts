@@ -21,6 +21,7 @@ import chatRoutes from "./routes/chat.routes";
 import walletRoutes from "./routes/wallet.routes";
 import doctorRatingRoutes from "./routes/doctorRating.routes";
 import prescriptionRoutes from "./routes/prescription.routes";
+import concernRoutes from "./routes/concern.routes";
 
 import { requestLogger } from './middlewares/requestLogger.middleware';
 import { errorHandler } from './middlewares/errorHandler.middleware';
@@ -79,6 +80,7 @@ app.use("/api", chatRoutes);
 app.use("/api", walletRoutes);
 app.use("/api", doctorRatingRoutes);
 app.use("/api", prescriptionRoutes);
+app.use("/api", concernRoutes);
 
 
 app.use(errorHandler);

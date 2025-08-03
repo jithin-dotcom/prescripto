@@ -5,18 +5,23 @@ import { WalletRepository } from "../repositories/implementation/wallet.reposito
 import { WalletHistoryRepository } from "../repositories/implementation/walletHistory.repository";
 import { WalletService } from "../services/implementation/wallet.services";
 import { WalletController } from "../controllers/implementation/wallet.controller";
+import { AppointmentRepository } from "../repositories/implementation/appointment.repositories";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
+import { ChatRepository } from "../repositories/implementation/chat.repositories";
 
 
 const router = Router();
 const walletRepository = new WalletRepository();
 const walletHistoryRepository = new WalletHistoryRepository();
-const walletService = new WalletService(walletRepository, walletHistoryRepository);
+const appointmentRepository = new AppointmentRepository();
+const chatRepository = new ChatRepository()
+const walletService = new WalletService(walletRepository, walletHistoryRepository, appointmentRepository, chatRepository);
 const walletController = new WalletController(walletService);
 
 router.use(verifyAccessToken);
 
 router.get("/get-wallet",walletController.getWallet.bind(walletController));
+router.get("/wallet-payment/:appointmentId", walletController.makeWalletPayment.bind(walletController));
 
 export default router;
 

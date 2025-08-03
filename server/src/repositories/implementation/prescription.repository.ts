@@ -26,4 +26,9 @@ export class PrescriptionRepository extends BaseRepository<IPrescription> implem
                                .populate("doctorId")
                                .populate("patientId")
      }
+
+     async updatePrescription(appointmentId: mongoose.Types.ObjectId, data: IPrescription) {
+        return await this.model.findOneAndUpdate({ appointmentId }, data, { new: true });
+     }
+     
 }

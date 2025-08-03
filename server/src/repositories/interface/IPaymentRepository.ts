@@ -13,4 +13,5 @@ export interface IPaymentRepository {
   // findOne(filter: Partial<IPayment>): Promise<IPayment | null>;
   deleteById(id: string | mongoose.Types.ObjectId): Promise<void>;
   deleteByFilter(filter: Partial<IPayment>): Promise<void>;
+  getPaymentInfo(appointmentId: string): Promise<IPayment | null>;
 }

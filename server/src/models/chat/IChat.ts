@@ -4,6 +4,12 @@ import mongoose, { Document, Types} from "mongoose";
 
 
 
+export interface ILastMessage {
+  content: string;
+  timestamp: Date; 
+}
+
+
 
 export interface IChat extends Document {
     _id: mongoose.Types.ObjectId;
@@ -14,4 +20,5 @@ export interface IChat extends Document {
     participants: mongoose.Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
+    lastMessage?: ILastMessage;
 }

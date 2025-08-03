@@ -12,12 +12,18 @@ export interface ChatListItem {
   appointmentId: Appointment;
   doctorId: Participant;
   userId: Participant;
-  lastMessage?: string;
+  lastMessage?: {
+     content: string;
+     timestamp: string | number;
+     
+  } | null;
   timestamp: string;
 }
 
 export interface Message {
   _id: string;
+  
+  chatId: string;
   sender: string;
   content: string;
   type: "text" | "image";

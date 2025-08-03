@@ -8,7 +8,7 @@ export interface IWalletHistory extends Document {
   transactionId?: mongoose.Types.ObjectId;
   amount: number;
   type: 'credit' | 'debit';
-  source: 'refund' | 'consultation' | 'admin_adjustment';
+  source: 'refund' | 'consultation' | 'admin_adjustment' | 'cancel appointment';
   status: 'success' | 'pending' | 'failed';
   createdAt: Date;
   updatedAt: Date;

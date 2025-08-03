@@ -11,7 +11,7 @@ const PrescriptionSchema = new Schema<IPrescription>(
       type: Schema.Types.ObjectId,
       ref: "Appointment",
       required: true,
-      unique: true, 
+      
     },
     doctorId: {
       type: Schema.Types.ObjectId,

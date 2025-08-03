@@ -56,4 +56,21 @@ export class WalletController implements IWalletController {
   }
 }
 
+
+   async makeWalletPayment(req: Request, res: Response, next: NextFunction): Promise<void> {
+      try {
+         const userId = req.user?.id;  
+         const role = req.user?.role;
+         const { appointmentId } = req.params; 
+         if(!userId && role === "user" && !appointmentId){
+            res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+            return;
+         }
+         const response = await this._walletService.makeWalletPayment(userId as string, appointmentId);
+         res.status(StatusCode.OK).json(response);
+      }catch (error) {
+         next(error);
+      }
+   }
+
 }

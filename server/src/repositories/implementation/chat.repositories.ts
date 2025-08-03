@@ -36,6 +36,9 @@ export class ChatRepository extends BaseRepository<IChat & Document> implements 
       .populate("appointmentId")
       .populate("userId", "name photo")
       .populate("doctorId", "name photo")
-      .sort({ updatedAt: -1 });
+      .sort({ "lastMessage.timestamp": -1 } as Record<string, 1 | -1>);
   }
+
+  
+
 }

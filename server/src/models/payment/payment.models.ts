@@ -17,7 +17,7 @@ const paymentSchema: Schema = new Schema<IPayment>(
     },
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Doctor",
+      ref: "User",
       required: true,
     },
     amount: {

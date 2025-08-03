@@ -19,5 +19,8 @@ export class PaymentRepository
     return await this.model.findOne({ razorpayOrderId: orderId });
   }
 
+  async getPaymentInfo(appointmentId: string): Promise<IPayment | null> {
+    return await this.model.findOne({appointmentId}).populate("appointmentId doctorId");
+  }
   
 }

@@ -3,6 +3,7 @@
 
 import mongoose from "mongoose";
 import { IWalletHistory } from "../../models/walletHistory/IWalletHistory";
+import { IWallet } from "../../models/wallet/IWallet";
 
 // export interface IWalletServiceResponse  {
 //      userId: mongoose.Types.ObjectId;
@@ -44,4 +45,9 @@ export interface IWalletService {
   page: number,
   limit: number
 ): Promise<IWalletServiceResponse>;
+
+
+makeWalletPayment(userId: string, appointmentId: string): Promise<IWallet | null>
+
+
 }

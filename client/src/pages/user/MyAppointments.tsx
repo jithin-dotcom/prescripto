@@ -12,7 +12,7 @@ import { toast } from "react-toastify";
 import ConfirmationModal from "../../components/ConfirmModal";
 import axios from "axios";
 import type { Appointment } from "../../interfaces/IMyAppointments";
-import { Video } from "lucide-react";
+import { Video, MessageCircleWarning } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { APIUserRoutes, APIRoutes } from "../../constants/routes.constants";
 import { CreditCard } from "lucide-react";
@@ -102,7 +102,7 @@ const MyAppointments: React.FC = () => {
     );
   } catch (error) {
     console.log(error);
-    toast.error("Wallet payment failed");
+    
   } finally {
     setWalletPaymentModalOpen(false);
     setAppointmentToPay(null);
@@ -373,7 +373,35 @@ const MyAppointments: React.FC = () => {
     </>
   )}
 
-  {/* Video Call and Chat if paid */}
+
+
+{item.status === "completed" && item.payment === "paid" && (
+    <>
+
+     <MotionButton
+  onClick={(e) => {
+    e.stopPropagation();
+    navigate("/get-concern", {
+      state: {
+        appointmentId: item._id,
+        userId: item.userId,
+        doctorId: item.doctor._id,
+      },
+    });
+  }}
+  className="flex items-center justify-center gap-2 px-4 py-2 border rounded-md hover:bg-red-600 hover:text-white transition"
+>
+  <MessageCircleWarning size={18} strokeWidth={1.5} />
+  <span>Raise Concern</span>
+</MotionButton>
+
+    </>
+  )}
+
+
+
+
+  
   {item.status === "confirmed" && item.payment === "paid" && (
     <>
       <MotionButton

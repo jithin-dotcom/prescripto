@@ -1,5 +1,22 @@
 import { Schema, model } from "mongoose";
-import { IChat } from "./IChat";
+import { IChat, ILastMessage } from "./IChat";
+
+
+
+
+
+
+
+const lastMessageSchema = new Schema<ILastMessage>(
+  {
+    content: { type: String, required: true },
+    timestamp: { type: Date, default: Date.now }, 
+  },
+  { _id: false } 
+);
+
+
+
 
 const chatSchema = new Schema<IChat>(
   {
@@ -29,6 +46,11 @@ const chatSchema = new Schema<IChat>(
       type: Boolean,
       default: true,
     },
+    lastMessage: {
+       type: lastMessageSchema,
+       require: false,
+    },
+   
   },
   { timestamps: true }
 );

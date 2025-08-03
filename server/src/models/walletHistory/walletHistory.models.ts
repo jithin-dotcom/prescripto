@@ -28,7 +28,7 @@ const WalletHistorySchema = new Schema<IWalletHistory>(
         },
         source: {
             type: String,
-            enum: ["refund", "consultation", "admin_adjustment"],
+            enum: ["refund", "consultation", "admin_adjustment","cancel appointment"],
             required: true,
         },
         status: {

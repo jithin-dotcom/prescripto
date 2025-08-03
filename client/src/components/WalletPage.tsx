@@ -345,7 +345,7 @@ import Pagination from "./Pagination";
 import NavbarAdmin from "./NavbarAdmin"
 import {
   Wallet,
-  Plus,
+  // Plus,
   ArrowUpRight,
   ArrowDownLeft,
   Calendar,
@@ -353,7 +353,7 @@ import {
   TrendingUp,
   History,
   CreditCard,
-  Send,
+  // Send,
   Download,
 } from "lucide-react";
 
@@ -477,22 +477,22 @@ const WalletPage = () => {
           </div>
           
           <div className="flex gap-3 mt-4 sm:mt-0">
-            <motion.button
+            {/* <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition shadow-lg flex items-center gap-2"
             >
               <Plus className="w-4 h-4" />
               Add Money
-            </motion.button>
-            <motion.button
+            </motion.button> */}
+            {/* <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="bg-[#5F6FFF] text-white px-4 py-2 rounded-lg hover:bg-[#4a54e1] transition shadow-lg flex items-center gap-2"
             >
               <Send className="w-4 h-4" />
               Send Money
-            </motion.button>
+            </motion.button> */}
           </div>
         </motion.div>
 

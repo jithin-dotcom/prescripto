@@ -386,12 +386,12 @@ const AppointmentDetails: React.FC = () => {
             >
               Edit Prescription
             </button>
-            <button
+            {/* <button
               onClick={() => navigate("/settings")}
               className="block w-full text-left hover:text-blue-300"
             >
               Settings
-            </button>
+            </button> */}
           </nav>
         </aside>
 
