@@ -2,7 +2,7 @@
 
 
 import { IConcern } from "../../models/concern/IConcern";
-import { IConcernRepository } from "../../repositories/interface/IConcernrepository";
+import { IConcernRepository } from "../../repositories/interface/IConcernRepository";
 import { IConcernService } from "../interface/IConcernService";
 
 export class ConcernService implements IConcernService {

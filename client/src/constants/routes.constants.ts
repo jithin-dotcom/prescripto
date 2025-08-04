@@ -11,6 +11,7 @@ export const APIRoutes = {
    ADMIN_VERIFY_TOGGLE: "/admin/verify-toggle",
    ADMIN_GET_USER_EDIT: "/admin/get-user", 
    ADMIN_UPDATE_USERS: "/admin/update-user",
+   ALL_CONCERNS: "/get-allConcerns",
 } as const
 
 
@@ -26,6 +27,7 @@ export const APIUserRoutes = {
    APPOINTMENTS: "/user-appointments",
    PAYMENT_CREATE_ORDER: "/payments/create-order",
    PAYMENT_VERIFY_ORDER: "/payments/verify",
+   GET_WALLET: "/get-wallet",
 } as const
 
 

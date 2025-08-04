@@ -1,9 +1,5 @@
 
 
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -126,14 +122,7 @@ const EditPrescription: React.FC = () => {
     }
   };
 
-//   useEffect(()=>{
-//    async function myFun(){
-//        const res = await axiosInstance.get(`/get-prescription/${appointment._id}`);
-//        console.log("res : ", res);
-//        setCurrentData(res.data)
-//     }
-//      myFun();
-//   },[])
+
 
 const formatDateForInput = (dateString: string) => {
   const date = new Date(dateString);

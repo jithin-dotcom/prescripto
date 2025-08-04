@@ -57,18 +57,3 @@ export default router;
 
 
 
-
-
-// import multer from 'multer';
-// const upload = multer({ dest: 'uploads/' }); // Disk storage, change as needed
-
-// const uploadFields = upload.fields([
-//   { name: 'photo', maxCount: 1 },
-//   { name: 'proofDocument', maxCount: 10 },
-// ]);
-
-// router.post(
-//   '/create-users',
-//   uploadFields,
-//   adminController.createUserOrDoctor.bind(adminController)
-// );

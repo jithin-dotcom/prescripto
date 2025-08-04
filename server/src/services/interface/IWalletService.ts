@@ -5,13 +5,7 @@ import mongoose from "mongoose";
 import { IWalletHistory } from "../../models/walletHistory/IWalletHistory";
 import { IWallet } from "../../models/wallet/IWallet";
 
-// export interface IWalletServiceResponse  {
-//      userId: mongoose.Types.ObjectId;
-//      role: "user" | "doctor";
-//      balance: number;
-//      history:IWalletHistoryServiceResponse[];
-    
-// } 
+ 
 
 export interface IWalletServiceResponse {
   userId: mongoose.Types.ObjectId;

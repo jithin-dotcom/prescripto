@@ -343,9 +343,10 @@ import { useAuthStore } from "../store/authStore";
 import { motion } from "framer-motion";
 import Pagination from "./Pagination";
 import NavbarAdmin from "./NavbarAdmin"
+import type { WalletData } from "../interfaces/IWalletPage";
+import { APIUserRoutes } from "../constants/routes.constants";
 import {
   Wallet,
-  // Plus,
   ArrowUpRight,
   ArrowDownLeft,
   Calendar,
@@ -353,29 +354,10 @@ import {
   TrendingUp,
   History,
   CreditCard,
-  // Send,
   Download,
 } from "lucide-react";
 
-interface Transaction {
-  _id: string;
-  walletId: string;
-  appointmentId?: string;
-  transactionId?: string;
-  amount: number;
-  type: "credit" | "debit";
-  source: string;
-  status: "success" | "pending" | "failed";
-  createdAt: string;
-}
 
-interface WalletData {
-  userId: string;
-  role: string;
-  balance: number;
-  history: Transaction[];
-  totalTransactions: number;
-}
 
 const WalletPage = () => {
   const userId = useAuthStore((state) => state.user?._id);
@@ -394,7 +376,7 @@ const WalletPage = () => {
       try {
         setLoading(true);
         const res = await axiosInstance.get(
-          `/get-wallet?page=${currentPage}&limit=${pageSize}`
+          `${APIUserRoutes.GET_WALLET}?page=${currentPage}&limit=${pageSize}`
         );
         console.log("res.data : ",res.data);
         setWalletData(res.data);

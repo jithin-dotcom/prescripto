@@ -43,6 +43,9 @@ import DoctorRatingsPage from "./components/DoctorRatingsPage";
 import CreatePrescription from "./pages/doctor/CreatePrescription";
 import EditPrescription from "./pages/doctor/EditPrescription";
 import RaiseConcernPage from "./pages/user/RaiseConcernPage";
+import AllConcerns from "./pages/admin/AllConcern";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 const App: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -248,6 +251,21 @@ const App: React.FC = () => {
          <Route
           path="/get-concern"
           element={isAuthenticated && (role === "user")? <RaiseConcernPage /> : <Navigate to="/login" replace />}
+        />
+
+        <Route
+          path="/all-concerns"
+          element={isAuthenticated && (role === "admin")? <AllConcerns /> : <Navigate to="/login" replace />}
+        />
+
+        <Route
+          path="/about"
+          element={isAuthenticated && (role === "user")? <About /> : <Navigate to="/login" replace />}
+        />
+         
+         <Route
+          path="/contact"
+          element={isAuthenticated && (role === "user")? <Contact /> : <Navigate to="/login" replace />}
         />
 
         

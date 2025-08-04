@@ -13,11 +13,9 @@ export class DoctorRatingRepository extends BaseRepository<IDoctorRating> implem
         super(DoctorRatingModel);
     }
     
-    // async getDoctorRating(doctorId:string): Promise<IDoctorRating[]>{
-    //     return await this.model.find({doctorId}).populate("patientId");
-    // }
+    
 
-    async getDoctorRating(
+async getDoctorRating(
   doctorId: string,
   skip: number,
   limit: number
@@ -34,11 +32,6 @@ export class DoctorRatingRepository extends BaseRepository<IDoctorRating> implem
 
   return { ratings, total };
 }
-
-
-
-
-
 
 
 

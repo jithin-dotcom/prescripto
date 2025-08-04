@@ -4,7 +4,6 @@ import { ICallLog } from "../../models/VideoCall/ICallLog";
 import { ICallLogRepository } from "../../repositories/interface/ICallLogRepository";
 import { IAppointmentRepository } from "../../repositories/interface/IAppointmentRepository";
 import { IWallet } from "../../models/wallet/IWallet";
-// import { IWalletHistory } from "../../models/walletHistory/IWalletHistory";
 import { IWalletRepository } from "../../repositories/interface/IWalletRepository";
 import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
 import mongoose from "mongoose";

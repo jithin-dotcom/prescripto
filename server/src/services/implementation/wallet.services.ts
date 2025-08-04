@@ -20,48 +20,6 @@ export class WalletService implements IWalletService {
     ){}
 
 
-    // async getWallet(userId: string, role: "user" | "doctor"): Promise<IWalletServiceResponse> {
-    //     try {
-    //         let wallet = await this._walletRepo.findOne({userId});
-    //         if(!wallet){
-    //             wallet = await this._walletRepo.create({
-    //                 userId: new mongoose.Types.ObjectId(userId),
-    //                 role,
-    //                 balance: 0,
-    //             })
-    //         }
-    //         if(!wallet ){
-    //             throw new Error("Failed to create Wallet")
-    //         }
-
-    //         const walletId = wallet._id;
-
-    //         const walletHistory = await this._walletHistoryRepo.findAll({walletId});
-    //         if(!walletHistory){
-    //             throw new Error("Wallet History not found");
-    //         }
-
-    //         return {
-    //             userId: wallet.userId,
-    //             role,
-    //             balance: wallet.balance,
-    //             history: walletHistory,
-    //         }
-
-
-    //     } catch (error) {
-    //         if(error instanceof Error){
-    //             throw error;
-    //         }else{
-    //             throw new Error("Fail to fetch wallet");
-    //         }
-    //     }
-    // }
-
-
-
-
-
     async getWallet(
      userId: string,
      role: "user" | "doctor",

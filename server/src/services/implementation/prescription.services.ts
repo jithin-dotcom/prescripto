@@ -84,8 +84,7 @@ export class PrescriptionService implements IPrescriptionService{
       const doc = new PDFDocument({ margin: 50 });
       const buffers: any[] = [];
 
-      
-
+    
       doc.on("data", buffers.push.bind(buffers));
       doc.on("end", () => {
         const pdfBuffer = Buffer.concat(buffers);
@@ -95,8 +94,7 @@ export class PrescriptionService implements IPrescriptionService{
       
        
     const logoPath = path.join(__dirname, "../../../public/images/logo2.png"); 
-    //   const logoPath = path.resolve(__dirname, "../../public/images/logo2.png");
-
+  
       if (fs.existsSync(logoPath)) {
         doc.image(logoPath, 130, 25, { width: 70 });
       }

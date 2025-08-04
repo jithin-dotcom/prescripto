@@ -22,11 +22,6 @@ export class DoctorProfileRepository extends BaseRepository<IDoctorProfile & Doc
     return await this.model.findOneAndUpdate({ doctorId: id }, data, { new: true });
   }
 
-  // async getDoctorForDashboard(doctorId: string ) {
-  //    return await this.model.find({doctorId}).populate("doctorId").sort({averageRating: -1});
-  // }
-
-
- 
+   
 
 }

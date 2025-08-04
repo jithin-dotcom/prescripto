@@ -498,91 +498,6 @@ async getAllAppointments(
 
 
 
-// async updateStatus(appointmentId: string, status: string): Promise<{ message: string }> {
-//   try {
-//     let success = false;
-
-//     if (status === "cancelled") {
-      
-//       const appointment = await this._appointmentRepo.findById(appointmentId);
-//       if(!appointment){
-//          throw new Error("Appointment not found");
-//       }
-//       console.log("appointment : ",appointment);
-//       if(appointment?.payment === "paid"){
-//         console.log("entered into appointnt if");
-//           const userId = appointment.userId;
-          
-//           let wallet = await this._walletRepo.findOne({userId});
-          
-//           if(!wallet){
-            
-//             wallet = await this._walletRepo.create({
-//               userId: new mongoose.Types.ObjectId(appointment.userId),
-//               role: "user",
-//             })
-           
-//             if(!wallet){
-//               throw new Error("Failed to create wallet");
-//             }
-//           } 
-    
-//       const walletHistory = await this._walletHistoryRepo.create({
-//           walletId: wallet?._id as mongoose.Types.ObjectId, 
-//           appointmentId: new mongoose.Types.ObjectId(appointmentId),
-//           amount: appointment?.fee,
-//           type: "credit",
-//           source: "refund",
-//           transactionId: appointment?.transactionId,
-//       })
-//       console.log("walletHistory : ",walletHistory);
-//       if(!walletHistory){
-//           throw new Error("failed to create Wallet History");
-//       }
-//       const update = await this._walletRepo.updateById(wallet._id as mongoose.Types.ObjectId,{$inc:{balance:appointment.fee}});
-//       if(!update){
-//         throw new Error("Failed to update wallet balance");
-//       } 
-//      }
-//      success = await this._appointmentRepo.cancelWithRefundIfPaid(appointmentId);
-
-//     }else {
-//       const update = await this._appointmentRepo.updateById(appointmentId, { status });
-//       console.log("update: ", update);
-//       const appId = update?._id as mongoose.Types.ObjectId;
-//       const userId = update?.userId as mongoose.Types.ObjectId;
-//       const doctorId = update?.doctorId as mongoose.Types.ObjectId;
-//       const participants = [userId, doctorId] as mongoose.Types.ObjectId[];
-//       const existingChat = await this._chatRepo.findByAppointmentId(appointmentId);
-//       console.log("existing chat : ", existingChat);
-//       if(!existingChat){
-//          await this._chatRepo.createChat({appointmentId: appId, userId, doctorId, participants})
-//       }
-    
-//       success = !!update;
-//     }
-
-//     if (!success) {
-//       throw new Error(`Failed to ${status} the appointment`);
-//     }
-
-//     return {
-//       message: `Appointment ${status} successfully`,
-//     };
-//   } catch (error) {
-//     if (error instanceof Error) {
-//       throw error;
-//     } else {
-//       throw new Error("Something went wrong");
-//     }
-//   }
-// }
-
-
-
-
-
-
 async updateStatus(appointmentId: string, status: string): Promise<{ message: string }> {
   try {
     let success = false;
@@ -607,7 +522,7 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
              throw new Error("Invalid doctorId");
           }
 
-          // console.log("walletDoctor1 : ", walletDoctor);
+         
           if(!walletDoctor){
              walletDoctor = await this._walletRepo.create({
                 userId: new mongoose.Types.ObjectId(doctorIdRaw),
@@ -617,7 +532,7 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
                throw new Error("Failed to create Doctor wallet");
              }
           }
-          // console.log("walletDoctor2 : ", walletDoctor);
+         
           let amount = 0;
           if(appointment?.fee){
               amount = Math.floor(appointment?.fee - (appointment?.fee/10))
@@ -631,7 +546,7 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
              source: "cancel appointment",
              transactionId: appointment?.transactionId,
            })
-          //  console.log("walletHistoryDoctor : ", walletHistoryDoctor);
+         
           if(!walletHistoryDoctor){
              throw new Error("Failed to create Doctor Wallet History");
           }

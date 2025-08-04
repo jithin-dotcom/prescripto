@@ -5,8 +5,8 @@ import { IBaseRepository } from "./IBaseRepository";
 
 
 export interface IDoctorRatingRepository extends IBaseRepository<IDoctorRating> {
-    // getDoctorRating(doctorId:string): Promise<IDoctorRating[]>;
-    getDoctorRating(
+   
+getDoctorRating(
   doctorId: string,
   skip: number,
   limit: number

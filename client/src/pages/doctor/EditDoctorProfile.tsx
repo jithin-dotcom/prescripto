@@ -212,7 +212,7 @@ const EditDoctorProfile: React.FC = () => {
           <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-6 shadow rounded">
             <h2 className="text-2xl mb-4">Edit Doctor Profile</h2>
 
-            {/* Profile Photo */}
+           
             <div className="flex items-center gap-4 mb-4">
               <label htmlFor="photo">
                 <img

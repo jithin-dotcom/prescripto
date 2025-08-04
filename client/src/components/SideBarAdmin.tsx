@@ -5,6 +5,7 @@ import { NavLink } from 'react-router-dom';
 import { assets } from '../assets/assets2';
 import { useAuthStore } from '../store/authStore';
 import { Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 const Sidebar = () => {
   const role = useAuthStore((state) => state.role);
@@ -35,6 +36,7 @@ const Sidebar = () => {
         </svg>
       ),
     },
+    { to: '/all-concerns', label: 'Concerns', icon: <AlertTriangle className="w-5 h-5" /> },
   ];
 
   const doctorNavItems = [

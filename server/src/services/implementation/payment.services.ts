@@ -85,7 +85,6 @@ export class PaymentService implements IPaymentService {
 
      
       if (payment.appointmentId && payment._id) {
-        // await this._appointmentRepo.updatePaymentStatus(payment.appointmentId.toString(), "paid",new mongoose.Types.ObjectId(payment._id.toString()));
         await this._appointmentRepo.updateById(payment.appointmentId,{status:"confirmed",payment:"paid"});
       }
 
@@ -146,12 +145,12 @@ export class PaymentService implements IPaymentService {
 
   async downloadRecept(appointmentId: string): Promise<Buffer> {
        try {
-         console.log("entered into service");
+         
          const data = await this._paymentRepo.getPaymentInfo(appointmentId);
          if(!data){
             throw new Error("Failed to get payment details");
          }
-         console.log("data: ", data);
+         
          return this.generateReceiptPDF(data);
        }catch (error) {
          if(error instanceof Error){
@@ -175,7 +174,7 @@ export class PaymentService implements IPaymentService {
       resolve(pdfBuffer);
     });
 
-    // Load logo
+    
     const logoPath = path.resolve(__dirname, "../../../public/images/logo2.png");
     if (fs.existsSync(logoPath)) {
       doc.image(logoPath, 130, 30, { width: 60 });
@@ -185,7 +184,7 @@ export class PaymentService implements IPaymentService {
     doc.fontSize(10).text("123 Health Lane, Wellness City, India", 130, 75);
     doc.moveDown(2);
 
-    // Header
+   
     doc
       .fontSize(16)
       .fillColor("#000")
@@ -203,7 +202,6 @@ export class PaymentService implements IPaymentService {
       .text(`Appointment No: ${data.appointmentId.appointmentNo}`)
       .text(`Doctor: Dr. ${data.doctorId.name}`)
       .text(`Payment ID: ${data.razorpayPaymentId}`)
-      // .text(`Status: ${data.status}`)
       .moveDown();
 
     

@@ -10,8 +10,6 @@ export class WalletRepository extends BaseRepository<IWallet> implements IWallet
     constructor(){
         super(WalletModel);
     }
-
-
-    
+ 
      
 } 

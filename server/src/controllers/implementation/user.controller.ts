@@ -29,7 +29,7 @@ export class UserController implements IUserController {
        const search = (req.query.search as string) || "";
        const sort = (req.query.sortBy as string) || "createdAt";
        const specialty = (req.query.specialty as string) || "";
-      //  console.log("req.query : ", req.query);
+    
        const result = await this._userService.getAllDoctors(page, limit, search, sort, specialty);
 
        res.status(StatusCode.OK).json({

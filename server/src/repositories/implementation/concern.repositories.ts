@@ -14,7 +14,8 @@ export class ConcernRepository extends BaseRepository<IConcern> {
     async findAllConcern(page: number, limit: number): Promise<{ data: IConcern[]; total: number }> {
     const skip = (page - 1) * limit;
     const [data, total] = await Promise.all([
-      ConcernModel.find()
+       this.model.find()
+       .populate("appointmentId userId doctorId")
         .skip(skip)
         .limit(limit)
         .exec(),

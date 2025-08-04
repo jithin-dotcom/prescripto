@@ -101,8 +101,6 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
         type
       );
 
-      // console.log("message : ", message);
-
       io.to(appointmentId).emit("receiveMessage", message);
     } catch (error) {
       console.error("sendMessage error:", error);

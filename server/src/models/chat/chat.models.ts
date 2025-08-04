@@ -3,10 +3,6 @@ import { IChat, ILastMessage } from "./IChat";
 
 
 
-
-
-
-
 const lastMessageSchema = new Schema<ILastMessage>(
   {
     content: { type: String, required: true },
@@ -14,7 +10,6 @@ const lastMessageSchema = new Schema<ILastMessage>(
   },
   { _id: false } 
 );
-
 
 
 

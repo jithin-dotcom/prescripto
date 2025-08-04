@@ -58,24 +58,6 @@ export class PaymentController implements IPaymentController {
   }
 
 
-  // async getPaymentRecept(req: Request, res: Response, next: NextFunction): Promise<void> {
-  //   try {
-  //     console.log("entered into controller");
-  //      const { appointmentId } = req.params;
-  //      if(!appointmentId){
-  //        res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
-  //      } 
-  //      const response = await this._paymentService.downloadRecept(appointmentId);
-  //      if(!response){
-  //         res.status(StatusCode.INTERNAL_SERVER_ERROR).json(StatusMessage.INTERNAL_SERVER_ERROR);
-  //      }
-  //      res.status(StatusCode.OK).json(StatusMessage.OK);
-  //   }catch (error) {
-  //      next(error);      
-  //   }
-  // }
-
-
 
   async getPaymentRecept(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
