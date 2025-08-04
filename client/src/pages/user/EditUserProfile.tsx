@@ -88,6 +88,37 @@ const EditUserProfile = () => {
     fetchUser();
   }, [id]);
 
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+
+      const validImageType = ["image/jpeg","image/png","image/webp","image/jpg"];
+
+      console.log("file.type : ",file?.type);
+
+      if(file && !validImageType.includes(file?.type)){
+          toast.error("Image can only have JPG, PNG, WEBP Files");
+          return;
+      }
+
+      const maxSize = 2 * 1024 * 1024;
+      if(file && file?.size > maxSize){
+         toast.error("Image greater than 2MB are not allowed");
+         return;
+      }
+
+      if(file){
+         setProfilePhoto(file);
+         setPhotoPreview(URL.createObjectURL(file));
+      }
+      
+
+  }
+  useEffect(() => {
+     return () => {
+       if (photoPreview) URL.revokeObjectURL(photoPreview);
+     };
+  },[photoPreview]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -126,9 +157,9 @@ const EditUserProfile = () => {
     const formData = new FormData();
     formData.append("userData", JSON.stringify(userData));
     formData.append("profileData", JSON.stringify(profileData));
-    if (profilePhoto) {
-      formData.append("photo", profilePhoto);
-    }
+    // if (profilePhoto) {
+    //   formData.append("photo", profilePhoto);
+    // }
 
     try {
       const endpoint = id ? `${APIUserRoutes.UPDATE_USER}/${id}` : APIUserRoutes.CREATE_USER;
@@ -180,7 +211,8 @@ const EditUserProfile = () => {
                   id="photo"
                   accept="image/*"
                   hidden
-                  onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)}
+                  // onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)}
+                  onChange={handlePhotoChange}
                 />
                 <p>
                   Upload user <br /> profile photo

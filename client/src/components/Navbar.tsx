@@ -60,6 +60,18 @@ const Navbar = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const validFileType = ["image/jpeg","image/png","image/jpg","image/webp"];
+    if(!validFileType.includes(file.type)){
+       toast.error("Image can only have JPG, JPEG, PNG, WEBP Files");
+       return;
+    } 
+
+    const maxSize = 2 * 1024 * 1024;
+    if(file.size > maxSize){
+       toast.error("Image can have a max size of 2MB");
+       return;
+    }
+
     const formData = new FormData();
     formData.append("photo", file);
 
@@ -100,7 +112,7 @@ const Navbar = () => {
           ))}
         </ul>
 
-        {/* Right side */}
+       
         <div className="flex items-center gap-4 relative">
           {!accessToken ? (
             <button

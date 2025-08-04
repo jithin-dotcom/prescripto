@@ -7,11 +7,9 @@ import { StatusCode } from "../../constants/statusCode.enum";
 import { StatusMessage } from "../../constants/statusMessage";
 import mongoose from "mongoose";
 import { prescriptionSchema } from "../../validations/prescription.schema";
-import PDFDocument from "pdfkit";
 import z from "zod"
 
-import fs from "fs";
-import path from "path";
+
 
 
 export class PrescriptionController implements IPrescriptionController{

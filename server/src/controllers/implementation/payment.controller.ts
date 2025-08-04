@@ -4,8 +4,7 @@
 import { Request, Response, NextFunction } from "express";
 import { IPaymentService } from "../../services/interface/IPaymentService";
 import { IPaymentController } from "../interface/IPaymentController";
-import { StatusCode } from "../../constants/statusCode.enum";
-import { StatusMessage } from "../../constants/statusMessage";
+
 
 export class PaymentController implements IPaymentController {
   constructor(private _paymentService: IPaymentService) {}
