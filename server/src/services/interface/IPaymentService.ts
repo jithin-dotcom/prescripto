@@ -1,3 +1,7 @@
+
+
+import { IPayout } from "../../models/payout/IPayout";
+
 export interface RazorpayOrderInput {
   appointmentId: string;
   userId: string;
@@ -22,4 +26,7 @@ export interface IPaymentService {
 
   downloadRecept(appointmentId: string): Promise<Buffer>;
   generateReceiptPDF(data: any): Promise<Buffer>;
+  createPayout(doctorId: string, amount: number, reason: string): Promise<IPayout>;
+  getPayout(): Promise<IPayout[] | []>;
+  getDoctorPayout(doctorId: string): Promise<IPayout[] | []>;
 }

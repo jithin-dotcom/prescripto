@@ -6,6 +6,7 @@ import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 
 
 
+
 export interface IUserService {
    
     getTopDoctors():Promise<({user: IUser, profile: IPatientProfile | null})[]>;
@@ -34,4 +35,6 @@ export interface IUserService {
     changePassword(userId: string, oldPassword: string, newPassword: string):Promise<void>;
 
     changeEmail(userId: string, password: string, newEmail: string):Promise<void>;
+
+    getUserById(userId:string): Promise<IUser | null>;
 }

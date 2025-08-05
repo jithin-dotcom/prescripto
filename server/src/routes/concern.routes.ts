@@ -14,8 +14,10 @@ const concernController = new ConcernController(concernService);
 router.use(verifyAccessToken);
 
 
-router.post("/raise-concern",concernController.createConcern.bind(concernController));
+router.post("/raise-concern", concernController.createConcern.bind(concernController));
 router.get("/get-allConcerns", concernController.getAllConcerns.bind(concernController));
+router.patch("/update-concern/:id", concernController.updateStatus.bind(concernController));
+router.get("/user-concerns", concernController.getConcernsByUser.bind(concernController));
 
 export default router;
 

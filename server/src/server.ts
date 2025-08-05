@@ -28,6 +28,7 @@ import { errorHandler } from './middlewares/errorHandler.middleware';
 import { socketAuthMiddleware } from './middlewares/socketAuth.middleware';
 import { chatSocketHandler } from './utils/sockets/chat.socket';
 import { videoCallSocketHandler } from './utils/sockets/videoCall.socket';
+import { notFound } from './middlewares/notFound.middleware';
 
 const app = express();
 const server = http.createServer(app); 
@@ -82,7 +83,7 @@ app.use("/api", doctorRatingRoutes);
 app.use("/api", prescriptionRoutes);
 app.use("/api", concernRoutes);
 
-
+app.use(notFound);
 app.use(errorHandler);
 
 

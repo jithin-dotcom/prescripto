@@ -345,8 +345,10 @@ import Pagination from "./Pagination";
 import NavbarAdmin from "./NavbarAdmin"
 import type { WalletData } from "../interfaces/IWalletPage";
 import { APIUserRoutes } from "../constants/routes.constants";
+import { useNavigate } from "react-router-dom";
 import {
   Wallet,
+  Send,
   ArrowUpRight,
   ArrowDownLeft,
   Calendar,
@@ -359,15 +361,31 @@ import {
 
 
 
+
 const WalletPage = () => {
   const userId = useAuthStore((state) => state.user?._id);
   const role = useAuthStore((state) => state.user?.role);
+  const navigate = useNavigate();
+  // const [currentRole, setCurrentRole] = useState<string>("");
+  // if(role){
+  //    setCurrentRole(role);
+  // }
   const [walletData, setWalletData] = useState<WalletData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageSize, setPageSize] = useState<number>(5);
   const totalPages = walletData ? Math.ceil(walletData.totalTransactions/ pageSize) : 1;
+
+  const handlePayout = () => {
+     if(role === "doctor"){
+       navigate("/get-requestPayout",{
+          state:{
+             balance: walletData?.balance,
+          }
+       })
+      }
+    }    
 
   useEffect(() => {
     if (!userId) return;
@@ -467,14 +485,15 @@ const WalletPage = () => {
               <Plus className="w-4 h-4" />
               Add Money
             </motion.button> */}
-            {/* <motion.button
+            <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={handlePayout}
               className="bg-[#5F6FFF] text-white px-4 py-2 rounded-lg hover:bg-[#4a54e1] transition shadow-lg flex items-center gap-2"
             >
               <Send className="w-4 h-4" />
               Send Money
-            </motion.button> */}
+            </motion.button>
           </div>
         </motion.div>
 

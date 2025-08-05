@@ -11,6 +11,7 @@ import { AppointmentRepository } from "../repositories/implementation/appointmen
 import { WalletRepository } from "../repositories/implementation/wallet.repository";
 import { WalletHistoryRepository } from "../repositories/implementation/walletHistory.repository";
 import { ChatRepository } from "../repositories/implementation/chat.repositories";
+import { PayoutRepository } from "../repositories/implementation/payout.repositories";
 
 
 const router = Router();
@@ -27,7 +28,8 @@ const appointmentRepository = new AppointmentRepository();
 const walletRepository = new WalletRepository();
 const walletHistoryRepository = new WalletHistoryRepository();
 const chatRepository = new ChatRepository()
-const paymentService = new PaymentService(paymentRepository, razorpayInstance, appointmentRepository, walletRepository, walletHistoryRepository, chatRepository);
+const payoutRepository = new PayoutRepository()
+const paymentService = new PaymentService(paymentRepository, razorpayInstance, appointmentRepository, walletRepository, walletHistoryRepository, chatRepository, payoutRepository);
 const paymentController = new PaymentController(paymentService);
 
 
@@ -37,5 +39,8 @@ router.use(verifyAccessToken);
 router.post("/create-order", paymentController.createRazorpayOrder.bind(paymentController));
 router.post("/verify", paymentController.verifyPaymentSignature.bind(paymentController));
 router.get("/get-payment/:appointmentId", paymentController.getPaymentRecept.bind(paymentController));
+router.post("/create-payout", paymentController.createPayout.bind(paymentController));
+router.get("/get-allPayout", paymentController.getPayouts.bind(paymentController));
+router.get("/get-doctorPayout", paymentController.getDoctorPayouts.bind(paymentController));
 
 export default router;

@@ -303,4 +303,15 @@ async changeEmail(userId: string, password: string, newEmail: string):Promise<vo
 }
 
 
+async getUserById(userId:string): Promise<IUser | null> {
+  try {
+     const id = new mongoose.Types.ObjectId(userId); 
+     const user = await this._userRepo.findById(id);
+     return user;
+  }catch (error) {
+    throw new Error("Failed to get User");
+  }
+}
+
+
 }

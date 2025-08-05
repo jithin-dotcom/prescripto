@@ -8,10 +8,11 @@ const concernSchema = new Schema<IConcern>(
   {
     appointmentId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "Appointment" },
     userId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
+    doctorName: { type: String},
     doctorId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: "User" },
     title: { type: String, required: true },
     description: { type: String, required: true },
-    status: { type: String, enum: ["pending", "resolved", "dismissed"], default: "pending" },
+    status: { type: String, enum: ["pending", "resolved", "rejected"], default: "pending" },
   },
   { timestamps: true }
 );

@@ -386,6 +386,7 @@ const MyAppointments: React.FC = () => {
         appointmentId: item._id,
         userId: item.userId,
         doctorId: item.doctor._id,
+        doctorName: item.doctor.name,
       },
     });
   }}

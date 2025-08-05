@@ -4,6 +4,10 @@
 import { Request, Response, NextFunction } from "express";
 import { IPaymentService } from "../../services/interface/IPaymentService";
 import { IPaymentController } from "../interface/IPaymentController";
+import { StatusCode } from "../../constants/statusCode.enum";
+import { StatusMessage } from "../../constants/statusMessage";
+import logger from "../../utils/logger";
+
 
 
 export class PaymentController implements IPaymentController {
@@ -54,6 +58,59 @@ export class PaymentController implements IPaymentController {
     } catch (error) {
       next(error);
     }
+  }
+
+
+  async createPayout(req: Request, res: Response, next: NextFunction): Promise<void> {
+      try {
+         logger.info("Entered into controller");
+         
+         const { amount, reason } = req.body;
+         const doctorId = req.user?.id;
+         const amountInt = parseInt(amount);
+         if(!doctorId || ! amountInt || !reason){
+            res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+            return;
+         }
+        
+
+         await this._paymentService.createPayout(doctorId, amount, reason);
+         res.status(StatusCode.OK).json({message: "Successfully created Payout Request"});
+
+      }catch (error) {
+        next(error);
+      }
+  }
+
+
+
+  async getPayouts(req: Request, res: Response, next: NextFunction): Promise<void> {
+      try {
+         const response = await this._paymentService.getPayout();
+         if(response){
+            res.status(StatusCode.OK).json(response);
+         } 
+      }catch (error) {
+         next(error); 
+      }
+  }
+
+
+
+   async getDoctorPayouts(req: Request, res: Response, next: NextFunction): Promise<void> {
+      try {
+
+         const doctorId = req.user?.id;
+         if(doctorId){
+            const response = await this._paymentService.getDoctorPayout(doctorId);
+            if(response){
+               res.status(StatusCode.OK).json(response);
+            } 
+         }
+        
+      }catch (error) {
+         next(error); 
+      }
   }
 
 

@@ -9,6 +9,7 @@ interface LocationState {
   appointmentId: string;
   userId: string;
   doctorId: string;
+  doctorName: string;
 }
 
 const RaiseConcernPage: React.FC = () => {
@@ -28,7 +29,7 @@ const RaiseConcernPage: React.FC = () => {
   ];
 
   useEffect(() => {
-    if (!state?.appointmentId || !state?.userId || !state?.doctorId) {
+    if (!state?.appointmentId || !state?.userId || !state?.doctorId || !state?.doctorName) {
       setError("Invalid data. Please go back and try again.");
     }
   }, [state]);
@@ -37,7 +38,7 @@ const RaiseConcernPage: React.FC = () => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    if (!state?.appointmentId || !state?.userId || !state?.doctorId) {
+    if (!state?.appointmentId || !state?.userId || !state?.doctorId || !state?.doctorName) {
       setError("Missing required data. Please go back and try again.");
       return;
     }
@@ -46,6 +47,7 @@ const RaiseConcernPage: React.FC = () => {
         appointmentId: state.appointmentId,
         userId: state.userId,
         doctorId: state.doctorId,
+        doctorName: state.doctorName,
         title,
         description,
       });

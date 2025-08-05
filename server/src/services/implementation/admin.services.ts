@@ -10,7 +10,7 @@ import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
 import { CreateUserOrDoctorInput } from "../interface/IAdminService";
 import bcrypt from "bcrypt";
-
+import redisClient from "../../config/redisClient";
 
 
 export class AdminService implements IAdminService {
@@ -318,6 +318,55 @@ async toggleBlockUser(userId: string): Promise<{ message: string; isBlocked: boo
       throw (error);
     }
 }
+
+
+
+// scaling auth middleware 
+
+  // async toggleBlockUser(userId: string): Promise<{ message: string; isBlocked: boolean }> {
+  //   try {
+  //     const user = await this._adminRepo.findById(userId);
+  //     if (!user) throw new Error("User not found");
+
+  //     const isBlocked = !user.isBlocked;
+  //     const updatedUser = await this._adminRepo.updateById(userId, { isBlocked });
+
+  //     // Update Redis cache for block status
+  //     const cacheKey = `user:${userId}:blocked`;
+  //     await redisClient.setEx(cacheKey, 3600, isBlocked.toString()); // TTL as number
+
+  //     // If blocking the user, invalidate refresh tokens and blacklist access token
+  //     if (isBlocked) {
+  //       // Delete all refresh tokens for this user
+  //       const refreshTokenKeys = await redisClient.keys(`refreshToken:${userId}:*`);
+  //       if (refreshTokenKeys.length > 0) {
+  //         for (const key of refreshTokenKeys) {
+  //           const lookupKey = await redisClient.get(key);
+  //           if (lookupKey) {
+  //             await redisClient.del(`refreshTokenLookup:${lookupKey}`);
+  //           }
+  //           await redisClient.del(key);
+  //         }
+  //       }
+
+  //       // Blacklist access token for immediate session termination
+  //       await redisClient.setEx(`blacklist:accessToken:${userId}`, 3600, "true"); // TTL as number
+  //     } else {
+  //       // If unblocking, remove the blacklist key to allow new logins
+  //       await redisClient.del(`blacklist:accessToken:${userId}`);
+  //     }
+
+  //     return {
+  //       message: `User ${isBlocked ? "blocked" : "unblocked"} successfully`,
+  //       isBlocked,
+  //     };
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+
+
 
 
 async toggleVerifyUser(userId: string): Promise<{ message: string; isVerified: boolean | undefined;}> {

@@ -40,12 +40,15 @@ import UserAppointmentDetails from "./pages/user/UserAppointmentDetails";
 import WalletPage from "./components/WalletPage";
 import { RateDoctor } from "./pages/user/DoctorRating";
 import DoctorRatingsPage from "./components/DoctorRatingsPage";
-import CreatePrescription from "./pages/doctor/CreatePrescription";
+// import CreatePrescription from "./pages/doctor/CreatePrescription";
+import CreatePrescription from "./pages/doctor/createPrescription";
 import EditPrescription from "./pages/doctor/EditPrescription";
 import RaiseConcernPage from "./pages/user/RaiseConcernPage";
-import AllConcerns from "./pages/admin/AllConcern";
+import AllConcerns from "./components/AllConcern";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import RequestPayout from "./pages/doctor/RequestPayout";
+import PayoutRequests from "./pages/admin/PayoutRequests";
 
 const App: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -255,7 +258,7 @@ const App: React.FC = () => {
 
         <Route
           path="/all-concerns"
-          element={isAuthenticated && (role === "admin")? <AllConcerns /> : <Navigate to="/login" replace />}
+          element={isAuthenticated && (role === "admin" || role === "user" || role === "doctor")? <AllConcerns /> : <Navigate to="/login" replace />}
         />
 
         <Route
@@ -266,6 +269,16 @@ const App: React.FC = () => {
          <Route
           path="/contact"
           element={isAuthenticated && (role === "user")? <Contact /> : <Navigate to="/login" replace />}
+        />
+
+         <Route
+          path="/get-requestPayout"
+          element={isAuthenticated && (role === "doctor")? <RequestPayout /> : <Navigate to="/login" replace />}
+        />
+
+          <Route
+          path="/all-payouts"
+          element={isAuthenticated && (role === "admin")? <PayoutRequests /> : <Navigate to="/login" replace />}
         />
 
         

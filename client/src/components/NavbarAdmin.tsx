@@ -208,6 +208,16 @@ const Navbar = () => {
                       onClick={() => {
                         setDropdownOpen(false);
                         setMenuOpen(false);
+                        navigate("/all-concerns");
+                      }}
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
+                    >
+                      Concerns
+                    </button>
+                     <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        setMenuOpen(false);
                         navigate("/wallet");
                       }}
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"

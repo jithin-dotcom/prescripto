@@ -36,6 +36,7 @@ export interface Concern {
   _id: string;
   appointmentId: Appointment;
   userId: User;
+  doctorName: string;
   doctorId: User;
   title: string;
   description: string;
