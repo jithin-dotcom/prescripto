@@ -48,7 +48,7 @@ import AllConcerns from "./components/AllConcern";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import RequestPayout from "./pages/doctor/RequestPayout";
-import PayoutRequests from "./pages/admin/PayoutRequests";
+import PayoutRequests from "./components/PayoutRequests";
 
 const App: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -278,7 +278,7 @@ const App: React.FC = () => {
 
           <Route
           path="/all-payouts"
-          element={isAuthenticated && (role === "admin")? <PayoutRequests /> : <Navigate to="/login" replace />}
+          element={isAuthenticated && (role === "admin" || role === "doctor")? <PayoutRequests /> : <Navigate to="/login" replace />}
         />
 
         

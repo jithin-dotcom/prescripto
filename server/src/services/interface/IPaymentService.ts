@@ -27,6 +27,10 @@ export interface IPaymentService {
   downloadRecept(appointmentId: string): Promise<Buffer>;
   generateReceiptPDF(data: any): Promise<Buffer>;
   createPayout(doctorId: string, amount: number, reason: string): Promise<IPayout>;
-  getPayout(): Promise<IPayout[] | []>;
-  getDoctorPayout(doctorId: string): Promise<IPayout[] | []>;
+  // getPayout(): Promise<IPayout[] | []>;
+  // getDoctorPayout(doctorId: string): Promise<IPayout[] | []>;
+  getPayout(page: number, limit: number): Promise<{ payouts: IPayout[] | [], total: number, totalPages: number }>;
+  getDoctorPayout(doctorId: string, page: number, limit: number): Promise<{ payouts: IPayout[] | [], total: number, totalPages: number }>;
+  createPayout(doctorId: string, amount: number, reason: string): Promise<IPayout>;
+  initiatePayout(payoutId: string, amount: number, doctorId: string): Promise<void>;
 }

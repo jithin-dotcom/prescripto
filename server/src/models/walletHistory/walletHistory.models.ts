@@ -11,7 +11,7 @@ const WalletHistorySchema = new Schema<IWalletHistory>(
         appointmentId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Appointment",
-            required: true,
+            // required: true,
         },
         transactionId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -28,7 +28,7 @@ const WalletHistorySchema = new Schema<IWalletHistory>(
         },
         source: {
             type: String,
-            enum: ["refund", "consultation", "admin_adjustment","cancel appointment"],
+            enum: ["refund", "consultation", "admin_adjustment", "cancel appointment", "payout"],
             required: true,
         },
         status: {

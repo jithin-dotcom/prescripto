@@ -264,19 +264,23 @@ const AllConcerns: React.FC = () => {
       console.log("id : ", id);
       setRole(role);
        console.log("role", role);
+       let res = null
        if(role === "admin"){
-            const res = await axiosInstance.get<ApiResponse>(
+             res = await axiosInstance.get<ApiResponse>(
            `${APIRoutes.ALL_CONCERNS}?page=${page}&limit=${limit}&search=${query}&status=${status === "all" ? "" : status}`
            );
          setConcerns(res.data.data);
          setTotalPages(res.data.pagination.pages);
        }else{
-            const res = await axiosInstance.get<ApiResponse>(
+             res = await axiosInstance.get<ApiResponse>(
            `/user-concerns?page=${page}&limit=${limit}&search=${query}&status=${status === "all" ? "" : status}`
            );
+
+           
          setConcerns(res.data.data);
          setTotalPages(res.data.pagination.pages);
        }
+       
      
     } catch (error) {
       console.error("Failed to fetch concerns", error);

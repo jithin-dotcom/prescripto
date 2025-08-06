@@ -6,6 +6,7 @@ import { assets } from '../assets/assets2';
 import { useAuthStore } from '../store/authStore';
 import { Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { AlertTriangle } from 'lucide-react';
+import { IndianRupee } from 'lucide-react';
 
 const Sidebar = () => {
   const role = useAuthStore((state) => state.role);
@@ -37,7 +38,7 @@ const Sidebar = () => {
       ),
     },
     { to: '/all-concerns', label: 'Concerns', icon: <AlertTriangle className="w-5 h-5" /> },
-     { to: '/all-payouts', label: 'Payouts', icon: <AlertTriangle className="w-5 h-5" /> },
+     { to: '/all-payouts', label: 'Payouts', icon: <IndianRupee className="w-4 h-4" /> },
   ];
 
   const doctorNavItems = [

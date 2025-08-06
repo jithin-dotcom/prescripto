@@ -4,11 +4,11 @@ import mongoose,{ Document} from "mongoose";
 
 export interface IWalletHistory extends Document {
   walletId: mongoose.Types.ObjectId;
-  appointmentId: mongoose.Types.ObjectId;
+  appointmentId?: mongoose.Types.ObjectId;
   transactionId?: mongoose.Types.ObjectId;
   amount: number;
   type: 'credit' | 'debit';
-  source: 'refund' | 'consultation' | 'admin_adjustment' | 'cancel appointment';
+  source: 'refund' | 'consultation' | 'admin_adjustment' | 'cancel appointment' | 'payout';
   status: 'success' | 'pending' | 'failed';
   createdAt: Date;
   updatedAt: Date;

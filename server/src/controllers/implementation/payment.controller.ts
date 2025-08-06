@@ -85,33 +85,114 @@ export class PaymentController implements IPaymentController {
 
 
   async getPayouts(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+
+            
+            if (page < 1 || limit < 1) {
+                throw new Error("Page and limit must be positive integers");
+            }
+            if (limit > 100) {
+                throw new Error("Limit cannot exceed 100");
+            }
+
+            const response = await this._paymentService.getPayout(page, limit);
+            res.status(StatusCode.OK).json({
+                data: response.payouts,
+                pagination: {
+                    total: response.total,
+                    totalPages: response.totalPages,
+                    currentPage: page
+                }
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
+
+
+
+
+  async getDoctorPayouts(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const doctorId = req.user?.id;
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+
+           
+            if (!doctorId) {
+                throw new Error("Doctor ID is required");
+            }
+            if (page < 1 || limit < 1) {
+                throw new Error("Page and limit must be positive integers");
+            }
+            if (limit > 100) {
+                throw new Error("Limit cannot exceed 100");
+            }
+
+            const response = await this._paymentService.getDoctorPayout(doctorId, page, limit);
+            res.status(StatusCode.OK).json({
+                data: response.payouts,
+                pagination: {
+                    total: response.total,
+                    totalPages: response.totalPages,
+                    currentPage: page
+                }
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+
+
+  async initiatePayout(req: Request, res: Response, next: NextFunction): Promise<void> {
       try {
-         const response = await this._paymentService.getPayout();
-         if(response){
-            res.status(StatusCode.OK).json(response);
-         } 
-      }catch (error) {
-         next(error); 
-      }
-  }
-
-
-
-   async getDoctorPayouts(req: Request, res: Response, next: NextFunction): Promise<void> {
-      try {
-
-         const doctorId = req.user?.id;
-         if(doctorId){
-            const response = await this._paymentService.getDoctorPayout(doctorId);
-            if(response){
-               res.status(StatusCode.OK).json(response);
-            } 
+         const { payoutId, doctorId, amount } = req.body;
+         if(!payoutId || !doctorId || !amount){
+           res.status(StatusCode.BAD_REQUEST).json({ message: "Missing required fields: payoutId, doctorId, amount"});
+           return;
          }
-        
+         const amountInt = parseInt(amount);
+         if(isNaN(amountInt) || amountInt <= 0){
+            res.status(StatusCode.BAD_REQUEST).json({message: "Invalid amount"});
+            return;
+         }
+         await this._paymentService.initiatePayout(payoutId, amountInt, doctorId);
+         res.status(StatusCode.OK).json({ message: "Payout initiated successfully" });
+
       }catch (error) {
-         next(error); 
+         next(error);
       }
   }
+
+
+    
+  // async initiatePayout(req: Request, res: Response, next: NextFunction): Promise<void> {
+  //   try {
+  //     const { payoutId, doctorId, amount } = req.body;
+
+  //     if (!payoutId || !doctorId || !amount) {
+  //       res.status(StatusCode.BAD_REQUEST).json({ message: "Missing required fields: payoutId, doctorId, amount" });
+  //       return;
+  //     }
+
+  //     const amountInt = parseInt(amount);
+  //     if (isNaN(amountInt) || amountInt <= 0) {
+  //       res.status(StatusCode.BAD_REQUEST).json({ message: "Invalid amount" });
+  //       return;
+  //     }
+
+  //     await this._paymentService.initiatePayout(payoutId, amountInt, doctorId);
+  //     res.status(StatusCode.OK).json({ message: "Payout initiated successfully" });
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
+
 
 
 
@@ -138,3 +219,47 @@ export class PaymentController implements IPaymentController {
 
   
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //  async getDoctorPayouts(req: Request, res: Response, next: NextFunction): Promise<void> {
+  //     try {
+
+  //        const doctorId = req.user?.id;
+  //        if(doctorId){
+  //           const response = await this._paymentService.getDoctorPayout(doctorId);
+  //           if(response){
+  //              res.status(StatusCode.OK).json(response);
+  //           } 
+  //        }
+        
+  //     }catch (error) {
+  //        next(error); 
+  //     }
+  // }
+
+
+
+
+
+  
+  // async getPayouts(req: Request, res: Response, next: NextFunction): Promise<void> {
+  //     try {
+  //        const response = await this._paymentService.getPayout();
+  //        if(response){
+  //           res.status(StatusCode.OK).json(response);
+  //        } 
+  //     }catch (error) {
+  //        next(error); 
+  //     }
+  // }

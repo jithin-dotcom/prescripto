@@ -42,5 +42,6 @@ router.get("/get-payment/:appointmentId", paymentController.getPaymentRecept.bin
 router.post("/create-payout", paymentController.createPayout.bind(paymentController));
 router.get("/get-allPayout", paymentController.getPayouts.bind(paymentController));
 router.get("/get-doctorPayout", paymentController.getDoctorPayouts.bind(paymentController));
+router.post("/initiate-payout", paymentController.initiatePayout.bind(paymentController));
 
 export default router;

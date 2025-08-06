@@ -7,6 +7,11 @@ import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
 import { Buffer } from "buffer";
+import { getAuthToken } from "../../utils/cashfreeClient";
+import axios from "axios";
+import { getDecentroHeaders } from "../../utils/decentroClient";
+
+import { v4 as uuidv4 } from "uuid";
 
 import { IPaymentService, RazorpayOrderInput, IRazorpayOrderResponse } from "../interface/IPaymentService";
 import { IPaymentRepository } from "../../repositories/interface/IPaymentRepository";
@@ -16,7 +21,7 @@ import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHi
 import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IPayoutRepository } from "../../repositories/interface/IPayoutRepository";
 import { IPayout } from "../../models/payout/IPayout";
-import logger from "../../utils/logger";
+
 
 
 export class PaymentService implements IPaymentService {
@@ -176,33 +181,633 @@ export class PaymentService implements IPaymentService {
   }
 
 
-  async getPayout(): Promise<IPayout[] | []> {
-     try {
-        const payout = await this._payoutRepo.getAllPayout();
-        return payout;
-     }catch (error) {
-        if(error instanceof Error){
-          throw error;
-        }else{
-          throw new Error("Failed to fetch Payouts");
-        }    
-     }
-  }
+  
+    async getPayout(page: number, limit: number): Promise<{ payouts: IPayout[] | [], total: number, totalPages: number }> {
+        try {
+            const skip = (page - 1) * limit;
+            const { payouts, total } = await this._payoutRepo.getAllPayout(skip, limit);
+            const totalPages = Math.ceil(total / limit);
+            return { payouts, total, totalPages };
+        } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            } else {
+                throw new Error("Failed to fetch Payouts");
+            }
+        }
+    }
+
+
+  
+    async getDoctorPayout(doctorId: string, page: number, limit: number): Promise<{ payouts: IPayout[] | [], total: number, totalPages: number }> {
+        try {
+            const skip = (page - 1) * limit;
+            const { payouts, total } = await this._payoutRepo.getDoctorPayout(doctorId, skip, limit);
+            const totalPages = Math.ceil(total / limit);
+            return { payouts, total, totalPages };
+        } catch (error) {
+            if (error instanceof Error) {
+                throw error;
+            } else {
+                throw new Error("Failed to fetch Doctor Payouts");
+            }
+        }
+    }
+
+
+       async initiatePayout(payoutId: string, amount: number, doctorId: string): Promise<void> {
+           try {
+              const payment = new mongoose.Types.ObjectId(payoutId);
+              const payout = await this._payoutRepo.findById( payoutId );
+              if(!payout){
+                 throw new Error("Payout request not found");
+              }
+              if(payout.status !== "pending"){
+                 throw new Error("Payment request already processed");
+              }
+              const wallet = await this._walletRepo.findOne({userId: doctorId});
+              if(!wallet || wallet.balance < amount){
+                 throw new Error("Wallet don't have sufficient balance for Payout");
+              }
+
+              const approve = await this._payoutRepo.updateById(payoutId,{
+                 status: "approved",
+                 approvedAt: new Date(),
+              })
+
+              this._walletRepo.updateById(wallet._id as mongoose.Types.ObjectId,{
+                 $inc: {balance: -amount},
+              })
+
+              await this._walletHistoryRepo.create({
+                 walletId: wallet._id as mongoose.Types.ObjectId,
+                 amount: amount,
+                 type: "debit",
+                 source: "payout",
+                 status: "success",
+                 transactionId: new mongoose.Types.ObjectId(payoutId),
+              });
+
+           }catch (error) {
+              if (error instanceof Error) {
+                throw error;
+              }else{
+                throw new Error("Failed to initiate payout");
+              }
+               
+           }
+       }
+
+
+  //   async initiatePayout(payoutId: string, doctorId: string, amount: number): Promise<void> {
+  //   try {
+  //     // Validate payout request
+  //     const payout = await this._payoutRepo.findById(payoutId);
+  //     if (!payout) {
+  //       throw new Error("Payout request not found");
+  //     }
+  //     if (payout.status !== "pending") {
+  //       throw new Error("Payout request is already processed");
+  //     }
+
+  //     // Check wallet balance
+  //     const wallet = await this._walletRepo.findOne({ userId: new mongoose.Types.ObjectId(doctorId) });
+  //     if (!wallet || wallet.balance < amount) {
+  //       throw new Error("Insufficient wallet balance");
+  //     }
+
+      
+  //     // const fundAccountId = process.env.RAZORPAY_TEST_FUND_ACCOUNT_ID; 
+  //     const fundAccountId = "FA1234567890"
+  //     if (!fundAccountId) {
+  //       throw new Error("Fund account ID not configured");
+  //     }
+
+  //     // Create Razorpay payout
+  //     const amountInPaise = amount * 100; // Convert to paise
+  //     const razorpayPayout = await (this._razorpayInstance as any).payouts.create({
+  //       // account_number: process.env.RAZORPAY_TEST_ACCOUNT_NUMBER, // Your Razorpay account number
+  //       account_number: "7878787878787878",
+  //       fund_account_id: fundAccountId,
+  //       amount: amountInPaise,
+  //       currency: "INR",
+  //       mode: "IMPS", // Use IMPS for test mode
+  //       purpose: "payout",
+  //       queue_if_low_balance: false,
+  //       reference_id: payoutId,
+  //       narration: `Payout for request ${payoutId}`,
+  //     });
+
+  //     // Update payout status
+  //     await this._payoutRepo.updateById(payoutId, {
+  //       status: "approved",
+  //       razorpayPayoutId: razorpayPayout.id,
+  //       updatedAt: new Date(),
+  //     });
+
+  //     // Deduct amount from wallet
+  //     await this._walletRepo.updateById(wallet._id as mongoose.Types.ObjectId, {
+  //       $inc: { balance: -amount },
+  //     });
+
+  //     // Log wallet history
+  //     await this._walletHistoryRepo.create({
+  //       walletId: wallet._id as mongoose.Types.ObjectId,
+  //       amount: amount,
+  //       type: "debit",
+  //       source: "payout",
+  //       transactionId: new mongoose.Types.ObjectId(payoutId),
+  //     });
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       throw error;
+  //     } else {
+  //       throw new Error("Failed to initiate payout");
+  //     }
+  //   }
+  // }
+  
 
 
 
-    async getDoctorPayout(doctorId: string): Promise<IPayout[] | []> {
-     try {
-        const payout = await this._payoutRepo.findAll({doctorId});
-        return payout;
-     }catch (error) {
-        if(error instanceof Error){
-          throw error;
-        }else{
-          throw new Error("Failed to fetch Payouts");
-        }    
-     }
-  }
+
+//   async initiatePayout(payoutId: string, doctorId: string, amount: number): Promise<void> {
+//   try {
+//     const payout = await this._payoutRepo.findById(payoutId);
+//     if (!payout) throw new Error("Payout request not found");
+//     if (payout.status !== "pending") throw new Error("Payout already processed");
+
+//     const wallet = await this._walletRepo.findOne({ userId: new mongoose.Types.ObjectId(doctorId) });
+//     if (!wallet || wallet.balance < amount) throw new Error("Insufficient balance");
+
+//     const token = await getAuthToken();
+
+//     // Create Beneficiary first (once per doctor)
+//     const beneficiaryId = `doctor_${doctorId}`;
+//     await axios.post("https://payout-gamma.cashfree.com/payout/v1/addBeneficiary", {
+//       beneId: beneficiaryId,
+//       name: "Doctor Name", // You can fetch from doctor profile
+//       email: "doctor@example.com",
+//       phone: "9999999999",
+//       bankAccount: "0000111122223333",
+//       ifsc: "HDFC0001234",
+//       address1: "Any address",
+//     }, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "application/json"
+//       }
+//     });
+
+//     // Initiate Payout
+//     const response = await axios.post("https://payout-gamma.cashfree.com/payout/v1/requestTransfer", {
+//       beneId: beneficiaryId,
+//       amount,
+//       transferId: payoutId,
+//       transferMode: "IMPS",
+//       remarks: "Doctor Payout"
+//     }, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "application/json"
+//       }
+//     });
+
+//     const { referenceId } = response.data.data;
+
+//     await this._payoutRepo.updateById(payoutId, {
+//       status: "approved",
+//       razorpayPayoutId: referenceId, // You can rename this field to cashfreePayoutId
+//       updatedAt: new Date(),
+//     });
+
+//     await this._walletRepo.updateById(wallet._id as mongoose.Types.ObjectId, {
+//       $inc: { balance: -amount },
+//     });
+
+//     await this._walletHistoryRepo.create({
+//       walletId: wallet._id as mongoose.Types.ObjectId,
+//       amount,
+//       type: "debit",
+//       source: "payout",
+//       transactionId: new mongoose.Types.ObjectId(payoutId),
+//     });
+
+//   } catch (error: any) {
+//     // console.error("Cashfree payout failed:", error);
+//     // throw new Error("Cashfree payout failed");
+//      if (axios.isAxiosError(error)) {
+//     console.error("Cashfree API error:", error.response?.data || error.message);
+//   } else {
+//     console.error("Unexpected error:", error);
+//   }
+//   throw new Error("Cashfree payout failed");
+//   }
+// }
+
+
+
+
+
+
+
+// async initiatePayout(payoutId: string, doctorId: string, amount: number): Promise<void> {
+//   try {
+//     const payout = await this._payoutRepo.findById(payoutId);
+//     if (!payout || payout.status !== "pending") throw new Error("Invalid payout request");
+
+//     const wallet = await this._walletRepo.findOne({ userId: new mongoose.Types.ObjectId(doctorId) });
+//     if (!wallet || wallet.balance < amount) throw new Error("Insufficient wallet balance");
+
+//     const headers = getDecentroHeaders();
+
+//     // Step 1: Initiate Payout
+//     const transferRes = await axios.post(`${process.env.DECENTRO_BASE_URL}/v3/core_banking/money_transfer/initiate`, {
+//       bene_account_number: "123456789012", // Replace with actual doctor bank details
+//       bene_ifsc: "HDFC0001234",
+//       amount: amount.toFixed(2),
+//       bene_name: "Dr. John Doe",
+//       remarks: "Doctor Payout",
+//       unique_ref_no: payoutId,
+//       transfer_mode: "IMPS"
+//     }, { headers });
+
+//     const txnRef = transferRes.data.transaction_id || transferRes.data.data?.transaction_id;
+
+//     // Update DB
+//     await this._payoutRepo.updateById(payoutId, {
+//       status: "approved",
+//       razorpayPayoutId: txnRef,  // Rename this field if necessary
+//       updatedAt: new Date(),
+//     });
+
+//     await this._walletRepo.updateById(wallet._id, { $inc: { balance: -amount } });
+
+//     await this._walletHistoryRepo.create({
+//       walletId: wallet._id,
+//       amount,
+//       type: "debit",
+//       source: "payout",
+//       transactionId: new mongoose.Types.ObjectId(payoutId),
+//     });
+
+//   } catch (error) {
+//     console.error("Decentro Payout Error:", error?.response?.data || error);
+//     throw new Error("Decentro payout failed");
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+// async initiatePayout(payoutId: string, doctorId: string, amount: number): Promise<void> {
+//   try {
+//     const payout = await this._payoutRepo.findById(payoutId);
+//     if (!payout || payout.status !== "pending") throw new Error("Invalid payout request");
+
+//     const wallet = await this._walletRepo.findOne({ userId: new mongoose.Types.ObjectId(doctorId) });
+//     if (!wallet || wallet.balance < amount) throw new Error("Insufficient wallet balance");
+
+//     const headers = getDecentroHeaders();
+
+//     // Temporary hardcoded values – replace with actual doctor info
+//     const rawName = "Dr. John Doe";
+
+//     // ✅ Sanitize bene_name to remove special characters
+//     const sanitizeName = (name: string) => {
+//       return name.replace(/[.@#$%^&*!;:'"~`?=+)(]/g, '').trim();
+//     };
+
+//     const bene_name = sanitizeName(rawName);
+//     console.log("providerId : ",payoutId);
+//     // Step 1: Initiate Payout
+//     const transferRes = await axios.post(`${process.env.DECENTRO_BASE_URL}/v3/core_banking/money_transfer/initiate`, {
+//       reference_id: payoutId, 
+//       bene_account_number: "123456789012", // Replace with actual doctor bank details
+//       bene_ifsc: "HDFC0001234",
+//       transfer_amount: amount,
+//       bene_name, // ✅ sanitized name
+//       remarks: "Doctor Payout",
+//       unique_ref_no: payoutId,
+//       transfer_mode: "IMPS"
+//     }, { headers });
+
+//     const txnRef = transferRes.data.transaction_id || transferRes.data.data?.transaction_id;
+
+//     // Update DB
+//     await this._payoutRepo.updateById(payoutId, {
+//       status: "approved",
+//       razorpayPayoutId: txnRef,  // Rename this field if necessary
+//       updatedAt: new Date(),
+//     });
+
+//     await this._walletRepo.updateById(wallet._id, { $inc: { balance: -amount } });
+
+//     await this._walletHistoryRepo.create({
+//       walletId: wallet._id,
+//       amount,
+//       type: "debit",
+//       source: "payout",
+//       transactionId: new mongoose.Types.ObjectId(payoutId),
+//     });
+
+//   } catch (error) {
+//     console.error("Decentro Payout Error:", error?.response?.data || error);
+//     throw new Error("Decentro payout failed");
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+// async initiatePayout(payoutId: string, doctorId: string, amount: number): Promise<void> {
+//   try {
+//     const payout = await this._payoutRepo.findById(payoutId);
+//     if (!payout || payout.status !== "pending") throw new Error("Invalid payout request");
+
+//     const wallet = await this._walletRepo.findOne({ userId: new mongoose.Types.ObjectId(doctorId) });
+//     if (!wallet || wallet.balance < amount) throw new Error("Insufficient wallet balance");
+
+//     const headers = getDecentroHeaders();
+
+//     const rawName = "Dr. John Doe";
+//     const sanitizeName = (name: string) => {
+//       return name.replace(/[.@#$%^&*!;:'"~`?=+)(]/g, '').trim();
+//     };
+//     const bene_name = sanitizeName(rawName);
+
+//     const requestBody = {
+//       reference_id: payoutId,
+//       bene_account_number: "123456789012", // Replace with real value
+//       bene_ifsc: "HDFC0001234",
+//       transfer_amount: amount,
+//       bene_name,
+//       remarks: "Doctor Payout",
+//       unique_ref_no: payoutId,
+//       transfer_mode: "IMPS"
+//     };
+
+//     console.log("🔹 Initiating payout with request:", requestBody);
+
+//     const transferRes = await axios.post(
+//       `${process.env.DECENTRO_BASE_URL}/v3/core_banking/money_transfer/initiate`,
+//       requestBody,
+//       { headers }
+//     );
+
+//     const txnRef = transferRes.data.transaction_id || transferRes.data.data?.transaction_id;
+
+//     await this._payoutRepo.updateById(payoutId, {
+//       status: "approved",
+//       razorpayPayoutId: txnRef,
+//       updatedAt: new Date(),
+//     });
+
+//     await this._walletRepo.updateById(wallet._id, { $inc: { balance: -amount } });
+
+//     await this._walletHistoryRepo.create({
+//       walletId: wallet._id,
+//       amount,
+//       type: "debit",
+//       source: "payout",
+//       transactionId: new mongoose.Types.ObjectId(payoutId),
+//     });
+
+//   } catch (error: any) {
+//     console.error("❌ Decentro Payout Error");
+
+//     if (error.response) {
+//       console.error("🔸 Response Data:", error.response.data);
+//       console.error("🔸 Status Code:", error.response.status);
+//       console.error("🔸 Headers:", error.response.headers);
+//     } else if (error.request) {
+//       console.error("🔸 No response received. Request:", error.request);
+//     } else {
+//       console.error("🔸 Error Message:", error.message);
+//     }
+
+//     console.error("🔸 Axios Error Object:", error.toJSON ? error.toJSON() : error);
+
+//     throw new Error("Decentro payout failed");
+//   }
+// }
+
+
+
+
+
+ // Import uuid
+
+//  async  initiatePayout(payoutId: string, amount: number, bene_name: string) {
+//   const uniqueRefId = `${payoutId}-${uuidv4()}`; // ensures uniqueness
+
+//   const headers = {
+//     client_id: process.env.DECENTRO_CLIENT_ID,
+//     client_secret: process.env.DECENTRO_CLIENT_SECRET,
+//     module_secret: process.env.DECENTRO_MODULE_SECRET,
+//     provider_secret: process.env.DECENTRO_PROVIDER_SECRET,
+//     "Content-Type": "application/json",
+//   };
+
+//   const requestData = {
+//     reference_id: uniqueRefId,
+//     bene_account_number: "123456789012", // 🔁 replace with actual doctor account number
+//     bene_ifsc: "HDFC0001234",           // 🔁 replace with actual IFSC
+//     transfer_amount: amount,
+//     bene_name,
+//     remarks: "Doctor Payout",
+//     unique_ref_no: uniqueRefId,
+//     transfer_mode: "IMPS",
+//   };
+
+//   try {
+//     console.log("📤 Initiating payout with request:", requestData);
+
+//     const response = await axios.post(
+//       `${process.env.DECENTRO_BASE_URL}/v3/core_banking/money_transfer/initiate`,
+//       requestData,
+//       { headers }
+//     );
+
+//     console.log("✅ Payout Response:", response.data);
+
+//     if (response.data.api_status !== "SUCCESS") {
+//       throw new Error(`Decentro payout failed: ${response.data.message}`);
+//     }
+
+//     return {
+//       success: true,
+//       txnId: response.data.decentro_txn_id,
+//       message: response.data.message,
+//     };
+
+//   } catch (error: any) {
+//     console.error("❌ Decentro Payout Error");
+
+//     if (error.response) {
+//       console.error("🔸 Response Data:", error.response.data);
+//       console.error("🔸 Status Code:", error.response.status);
+//       console.error("🔸 Headers:", error.response.headers);
+//     }
+
+//     throw new Error("Decentro payout failed");
+//   }
+// }
+
+
+
+
+
+
+// async initiatePayout(payoutId: string, amount: number, bene_name: string) {
+//   const uniqueRefId = uuidv4(); // ✅ Safe: 36 characters
+
+//   const headers = {
+//     client_id: process.env.DECENTRO_CLIENT_ID,
+//     client_secret: process.env.DECENTRO_CLIENT_SECRET,
+//     module_secret: process.env.DECENTRO_MODULE_SECRET,
+//     provider_secret: process.env.DECENTRO_PROVIDER_SECRET,
+//     "Content-Type": "application/json",
+//   };
+
+//   function sanitizeName(name: string) {
+//   return name.replace(/[.@#$%^&*!;:'"~`?=+)(]/g, "");
+// }
+
+// const sanitizedName = sanitizeName("Dr. Anjali Sharma");
+
+//   const requestData = {
+//     reference_id: uniqueRefId,
+//     bene_account_number: "123456789012", // Replace later with actual value
+//     bene_ifsc: "HDFC0001234",            // Replace later with actual value
+//     transfer_amount: amount,             // ✅ amount should be number, not string
+//     // bene_name: bene_name,                // ✅ should be a string
+//      bene_name: sanitizeName,
+//     remarks: "Doctor Payout",
+//     unique_ref_no: uniqueRefId,
+//     transfer_mode: "IMPS",
+//   };
+
+//   try {
+//     console.log("📤 Initiating payout with request:", requestData);
+
+//     const response = await axios.post(
+//       `${process.env.DECENTRO_BASE_URL}/v3/core_banking/money_transfer/initiate`,
+//       requestData,
+//       { headers }
+//     );
+
+//     console.log("✅ Payout Response:", response.data);
+
+//     if (response.data.api_status !== "SUCCESS") {
+//       throw new Error(`Decentro payout failed: ${response.data.message}`);
+//     }
+
+//     return {
+//       success: true,
+//       txnId: response.data.decentro_txn_id,
+//       message: response.data.message,
+//     };
+
+//   } catch (error: any) {
+//     console.error("❌ Decentro Payout Error");
+
+//     if (error.response) {
+//       console.error("🔸 Response Data:", error.response.data);
+//       console.error("🔸 Status Code:", error.response.status);
+//       console.error("🔸 Headers:", error.response.headers);
+//     }
+
+//     throw new Error("Decentro payout failed");
+//   }
+// }
+
+
+
+
+
+
+
+
+// async initiatePayout(payoutId: string, amount: number, bene_name: string) {
+//   const uniqueRefId = uuidv4(); // ✅ Safe and unique
+
+//   const headers = {
+//     client_id: process.env.DECENTRO_CLIENT_ID,
+//     client_secret: process.env.DECENTRO_CLIENT_SECRET,
+//     module_secret: process.env.DECENTRO_MODULE_SECRET,
+//     provider_secret: process.env.DECENTRO_PROVIDER_SECRET,
+//     "Content-Type": "application/json",
+//   };
+
+//   function sanitizeName(name: string) {
+//     return name.replace(/[.@#$%^&*!;:'"~`?=+)(]/g, "");
+//   }
+
+//   const sanitizedName = sanitizeName(bene_name);
+
+//   const requestData = {
+//     reference_id: uniqueRefId,
+//     bene_account_number: "0001111122223333", // ✅ Replace with real account later
+//     bene_ifsc: "HDFC0000001",            // ✅ Replace with real IFSC later
+//     transfer_amount: amount,             // ✅ Ensure it's a number
+//     bene_name: "anjali",            // ✅ Use the cleaned string, not the function
+//     remarks: "Doctor Payout",
+//     unique_ref_no: uniqueRefId,
+//     transfer_mode: "IMPS",
+//   };
+
+//   try {
+//     console.log("📤 Initiating payout with request:", requestData);
+
+//     const response = await axios.post(
+//       `${process.env.DECENTRO_BASE_URL}/v3/core_banking/money_transfer/initiate`,
+//       requestData,
+//       { headers }
+//     );
+
+//     console.log("✅ Payout Response:", response.data);
+
+//     if (response.data.api_status !== "SUCCESS") {
+//       throw new Error(`Decentro payout failed: ${response.data.message}`);
+//     }
+
+//     return {
+//       success: true,
+//       txnId: response.data.decentro_txn_id,
+//       message: response.data.message,
+//     };
+
+//   } catch (error: any) {
+//     console.error("❌ Decentro Payout Error");
+
+//     if (error.response) {
+//       console.error("🔸 Response Data:", error.response.data);
+//       console.error("🔸 Status Code:", error.response.status);
+//       console.error("🔸 Headers:", error.response.headers);
+//     } else {
+//       console.error("🔸 Error Message:", error.message);
+//     }
+
+//     throw new Error("Decentro payout failed");
+//   }
+// }
+
+
 
 
   async downloadRecept(appointmentId: string): Promise<Buffer> {
@@ -358,6 +963,42 @@ export class PaymentService implements IPaymentService {
 
 
 
+
+
+
+
+  // async getPayout(): Promise<IPayout[] | []> {
+  //    try {
+  //       const payout = await this._payoutRepo.getAllPayout();
+  //       return payout;
+  //    }catch (error) {
+  //       if(error instanceof Error){
+  //         throw error;
+  //       }else{
+  //         throw new Error("Failed to fetch Payouts");
+  //       }    
+  //    }
+  // }
+
+
+
+
+
+  
+
+
+  //   async getDoctorPayout(doctorId: string): Promise<IPayout[] | []> {
+  //    try {
+  //       const payout = await this._payoutRepo.findAll({doctorId});
+  //       return payout;
+  //    }catch (error) {
+  //       if(error instanceof Error){
+  //         throw error;
+  //       }else{
+  //         throw new Error("Failed to fetch Payouts");
+  //       }    
+  //    }
+  // }
 
 
 
