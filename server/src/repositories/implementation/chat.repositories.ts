@@ -39,6 +39,12 @@ export class ChatRepository extends BaseRepository<IChat & Document> implements 
       .sort({ "lastMessage.timestamp": -1 } as Record<string, 1 | -1>);
   }
 
+  // async updateChatByUserId(userId: string, time: Date): Promise<void> {
+  //     this.model.updateMany({userId},{lastSeenUser: time});
+  // }
   
+  //  async updateChatByDoctorId(doctorId: string, time: Date): Promise<void> {
+  //     this.model.updateMany({doctorId},{lastSeenDoctor: time});
+  // }
 
 }

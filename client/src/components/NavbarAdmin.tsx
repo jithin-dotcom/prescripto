@@ -284,17 +284,17 @@ const Navbar = () => {
 
       {user?.role === "doctor" && !user?.isVerified && (
         <div
-          className="bg-orange-500 border-b border-red-300 overflow-hidden h-10 cursor-pointer mt-16 sm:mt-0"
+          className="bg-orange-500 border-b border-red-300 overflow-hidden h-8 cursor-pointer mt-16 sm:mt-0 flex items-center"
           onClick={() => navigate("/doctor-profile")}
         >
-          <div className="marquee text-sm text-white font-medium whitespace-nowrap py-4">
+          <div className="marquee text-m text-white font-semibold whitespace-nowrap ">
             <span>
               Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
             </span>
-            <span className="mx-4">
+            <span className="mx-2">
               Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
             </span>
-            <span className="mx-4">
+            <span className="mx-2">
               Your account is not verified. Please upload your certificates to get verified and start receiving appointments.
             </span>
           </div>

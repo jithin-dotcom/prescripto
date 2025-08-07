@@ -13,4 +13,5 @@ export interface IChatService {
   getUserChats(userId: string): Promise<IChat[]>;
   markMessagesAsRead(chatId: string, readerId: string): Promise<void>;
   getReadMessages(chatId: string, readerId: string): Promise<IMessage[]>;
+  // onlineUserDoctor(id: string, role: string): Promise<void>;
 }

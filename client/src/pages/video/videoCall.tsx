@@ -647,5 +647,432 @@ navigate("/rate-doctor?rate=true", { replace: true });
 
 
 
+// import { useEffect, useRef, useState } from "react";
+// import { useLocation, useNavigate } from "react-router-dom";
+// import { AnimatePresence, motion } from "framer-motion";
+// import {  PhoneOff, Video, Mic, MicOff, VideoOff, Users, MoreVertical } from "lucide-react";
+// import { socket } from "../../App"; // Import global socket
+// import { useAuthStore } from "../../store/authStore";
+// import { toast } from "react-toastify";
 
+// type SignalData = RTCSessionDescriptionInit;
 
+// export default function MyVideoCall() {
+//   const { state } = useLocation();
+//   const { user: currentUser } = useAuthStore();
+//   const myId = currentUser?._id;
+//   const { signal, appointmentId, userId: patientId, doctorId, isCaller } = state || {};
+//   const navigate = useNavigate();
+
+//   const isDoctor = myId === doctorId;
+//   const peerId = isDoctor ? patientId : doctorId;
+
+//   const [stream, setStream] = useState<MediaStream | null>(null);
+//   const [callAccepted, setCallAccepted] = useState(false);
+//   const [callEnded, setCallEnded] = useState(false);
+//   const [isCalling, setIsCalling] = useState(isCaller || false);
+//   const [connectionStatus, setConnectionStatus] = useState("connecting");
+//   const [callDuration, setCallDuration] = useState(0);
+//   const [showControls, setShowControls] = useState(true);
+//   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
+//   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
+
+//   const myVideo = useRef<HTMLVideoElement>(null);
+//   const userVideo = useRef<HTMLVideoElement>(null);
+//   const peerConnection = useRef<RTCPeerConnection | null>(null);
+//   const hasShownMediaErrorRef = useRef(false);
+//   const callStartTime = useRef<number>(0);
+//   const durationInterval = useRef<NodeJS.Timeout | undefined>(undefined);
+//   const controlsTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+
+//   useEffect(() => {
+//     if (showControls && callAccepted) {
+//       clearTimeout(controlsTimeout.current);
+//       controlsTimeout.current = setTimeout(() => setShowControls(false), 3000);
+//     }
+//     return () => clearTimeout(controlsTimeout.current);
+//   }, [showControls, callAccepted]);
+
+//   useEffect(() => {
+//     if (callAccepted && !callEnded) {
+//       callStartTime.current = Date.now();
+//       durationInterval.current = setInterval(() => {
+//         setCallDuration(Math.floor((Date.now() - callStartTime.current) / 1000));
+//       }, 1000);
+//     } else {
+//       clearInterval(durationInterval.current);
+//     }
+//     return () => clearInterval(durationInterval.current);
+//   }, [callAccepted, callEnded]);
+
+//   const formatDuration = (seconds: number) => {
+//     const mins = Math.floor(seconds / 60);
+//     const secs = seconds % 60;
+//     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+//   };
+
+//   const toggleAudio = () => {
+//     if (stream) {
+//       stream.getAudioTracks().forEach((track) => {
+//         track.enabled = !track.enabled;
+//       });
+//       setIsAudioEnabled((prev) => !prev);
+//     }
+//   };
+
+//   const toggleVideo = () => {
+//     if (stream) {
+//       stream.getVideoTracks().forEach((track) => {
+//         track.enabled = !track.enabled;
+//       });
+//       setIsVideoEnabled((prev) => !prev);
+//     }
+//   };
+
+//   const showControlsTemporarily = () => {
+//     setShowControls(true);
+//   };
+
+//   useEffect(() => {
+//     if (!myId || !appointmentId || !patientId || !doctorId || !peerId) {
+//       toast.error("Missing required parameters.");
+//       navigate(isDoctor ? "/doctor-appointments" : "/my-appointments");
+//       return;
+//     }
+
+//     // Ensure socket is connected
+//     if (!socket.connected) {
+//       socket.auth = { token: useAuthStore.getState().accessToken, userId: myId };
+//       socket.connect();
+//     }
+
+//     socket.emit("join-call-room", { appointmentId, userId: myId, doctorId, patientId });
+
+//     navigator.mediaDevices
+//       .getUserMedia({ video: true, audio: true })
+//       .then((currentStream) => {
+//         setStream(currentStream);
+//         if (myVideo.current) myVideo.current.srcObject = currentStream;
+//         setConnectionStatus("ready");
+//       })
+//       .catch((err) => {
+//         if (!hasShownMediaErrorRef.current) {
+//           toast.error(
+//             err?.message?.includes("Permission denied")
+//               ? "Please allow access to camera and microphone."
+//               : "Could not access media devices."
+//           );
+//           hasShownMediaErrorRef.current = true;
+//         }
+//         setConnectionStatus("error");
+//         return;
+//       });
+
+//     const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+//     peerConnection.current = pc;
+
+//     if (stream) {
+//       stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+//     }
+
+//     pc.ontrack = (event) => {
+//       if (userVideo.current) userVideo.current.srcObject = event.streams[0];
+//       setCallAccepted(true);
+//       setConnectionStatus("connected");
+//     };
+
+//     pc.onicecandidate = (event) => {
+//       if (event.candidate) {
+//         socket.emit("ice-candidate", {
+//           to: peerId,
+//           candidate: event.candidate,
+//           appointmentId,
+//         });
+//       }
+//     };
+
+//     const handleIceCandidate = async ({ candidate }: { candidate: RTCIceCandidateInit }) => {
+//       if (candidate && pc) {
+//         await pc.addIceCandidate(new RTCIceCandidate(candidate)).catch((error) =>
+//           console.error("Error adding ICE candidate:", error)
+//         );
+//       }
+//     };
+
+//     const handleCallAccepted = async ({ signal }: { signal: SignalData }) => {
+//       if (isCaller && signal) {
+//         await pc.setRemoteDescription(new RTCSessionDescription(signal)).catch((error) =>
+//           console.error("Error setting remote description:", error)
+//         );
+//       }
+//     };
+
+//     const handleEndCall = () => {
+//       handleRemoteEnd();
+//       toast.success("Call completed successfully");
+//       navigate(isDoctor ? "/doctor-appointments" : "/rate-doctor?rate=true", {
+//         replace: true,
+//         state: { appointmentId, userId: patientId, doctorId },
+//       });
+//     };
+
+//     const handleUserDisconnected = () => {
+//       peerConnection.current?.close();
+//       toast.error("The other user disconnected. Please try to connect again");
+//       setConnectionStatus("disconnected");
+//       handleRemoteEnd();
+//     };
+
+//     const handleError = (err: { message: string }) => {
+//       console.error("Socket error:", err);
+//       toast.error(err?.message || "An unknown error occurred");
+//       setConnectionStatus("ended");
+//     };
+
+//     socket.on("ice-candidate", handleIceCandidate);
+//     socket.on("call-accepted", handleCallAccepted);
+//     socket.on("end-call", handleEndCall);
+//     socket.on("user-disconnected", handleUserDisconnected);
+//     socket.on("error", handleError);
+
+//     if (signal) {
+//       if (isCaller) {
+//         pc.setRemoteDescription(new RTCSessionDescription(signal)).catch((error) =>
+//           console.error("Error setting remote description:", error)
+//         );
+//       } else {
+//         pc.setRemoteDescription(new RTCSessionDescription(signal))
+//           .then(() => pc.createAnswer())
+//           .then((answer) => {
+//             pc.setLocalDescription(answer);
+//             socket.emit("answer-call", {
+//               to: peerId,
+//               signal: answer,
+//               appointmentId,
+//             });
+//           })
+//           .catch((error) => console.error("Error creating answer:", error));
+//       }
+//     }
+
+//     return () => {
+//       peerConnection.current?.close();
+//       stream?.getTracks().forEach((track) => track.stop());
+//       socket.off("ice-candidate", handleIceCandidate);
+//       socket.off("call-accepted", handleCallAccepted);
+//       socket.off("end-call", handleEndCall);
+//       socket.off("user-disconnected", handleUserDisconnected);
+//       socket.off("error", handleError);
+//       clearInterval(durationInterval.current);
+//       clearTimeout(controlsTimeout.current);
+//     };
+//   }, [myId, appointmentId, patientId, doctorId, peerId, isCaller, signal, navigate, isDoctor]);
+
+//   const endCall = () => {
+//     setCallEnded(true);
+//     setCallAccepted(false);
+//     setIsCalling(false);
+//     setConnectionStatus("ended");
+//     peerConnection.current?.close();
+//     socket.emit("end-call", {
+//       from: myId,
+//       to: peerId,
+//       appointmentId,
+//     });
+//     toast.success("Call completed successfully");
+//     navigate(isDoctor ? "/doctor-appointments" : "/rate-doctor?rate=true", {
+//       replace: true,
+//       state: { appointmentId, userId: patientId, doctorId },
+//     });
+//   };
+
+//   const handleRemoteEnd = () => {
+//     setCallAccepted(false);
+//     setCallEnded(true);
+//     setIsCalling(false);
+//     setConnectionStatus("ended");
+//     peerConnection.current?.close();
+//   };
+
+//   return (
+//     <div className="h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+//       <div className="absolute inset-0 opacity-5">
+//         <div
+//           className="absolute inset-0"
+//           style={{
+//             backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+//                            radial-gradient(circle at 75% 75%, rgba(147, 51, 234, 0.3) 0%, transparent 50%)`,
+//           }}
+//         />
+//       </div>
+
+//       <motion.div
+//         initial={{ y: -50, opacity: 0 }}
+//         animate={{ y: 0, opacity: 1 }}
+//         className="absolute top-0 left-0 right-0 z-20 p-6"
+//       >
+//         <div className="flex items-center justify-between">
+//           <div className="flex items-center space-x-4">
+//             {callAccepted && (
+//               <div className="text-white text-sm bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm">
+//                 {formatDuration(callDuration)}
+//               </div>
+//             )}
+//           </div>
+//           <div className="text-white text-lg font-semibold">
+//             {isDoctor ? "Patient Consultation" : "Doctor Consultation"}
+//           </div>
+//         </div>
+//       </motion.div>
+
+//       <div className="h-full w-full relative" onMouseMove={showControlsTemporarily}>
+//         {callAccepted ? (
+//           <video
+//             ref={userVideo}
+//             autoPlay
+//             playsInline
+//             className="w-full h-full object-cover"
+//           />
+//         ) : (
+//           <div className="w-full h-full flex items-center justify-center">
+//             <div className="text-center">
+//               <motion.div
+//                 animate={{
+//                   scale: isCalling ? [1, 1.1, 1] : 1,
+//                   rotate: isCalling ? [0, 5, -5, 0] : 0,
+//                 }}
+//                 transition={{
+//                   duration: 2,
+//                   repeat: isCalling ? Infinity : 0,
+//                   ease: "easeInOut",
+//                 }}
+//                 className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl"
+//               >
+//                 <Users className="w-16 h-16 text-white" />
+//               </motion.div>
+//               <h2 className="text-white text-2xl font-bold mb-4">
+//                 {isCalling
+//                   ? "Connecting..."
+//                   : connectionStatus === "error"
+//                   ? "Connection Error"
+//                   : "Ready to Connect"}
+//               </h2>
+//               {connectionStatus === "error" && (
+//                 <p className="text-red-400 mb-6">Please check your camera and microphone permissions</p>
+//               )}
+//             </div>
+//           </div>
+//         )}
+
+//         <motion.div
+//           initial={{ scale: 0, opacity: 0 }}
+//           animate={{ scale: 1, opacity: 1 }}
+//           transition={{ delay: 0.5 }}
+//           className="absolute top-20 right-6 w-48 h-36 rounded-xl overflow-hidden shadow-2xl border-2 border-white/20 bg-black/50 backdrop-blur-sm z-10"
+//         >
+//           <video
+//             ref={myVideo}
+//             muted
+//             autoPlay
+//             playsInline
+//             className="w-full h-full object-cover"
+//           />
+//           <div className="absolute bottom-2 left-2 flex gap-1">
+//             {!isAudioEnabled && (
+//               <motion.div
+//                 initial={{ scale: 0 }}
+//                 animate={{ scale: 1 }}
+//                 className="bg-red-500/90 p-1.5 rounded-full"
+//               >
+//                 <MicOff className="w-3 h-3 text-white" />
+//               </motion.div>
+//             )}
+//             {!isVideoEnabled && (
+//               <motion.div
+//                 initial={{ scale: 0 }}
+//                 animate={{ scale: 1 }}
+//                 className="bg-red-500/90 p-1.5 rounded-full"
+//               >
+//                 <VideoOff className="w-3 h-3 text-white" />
+//               </motion.div>
+//             )}
+//           </div>
+//           <div className="absolute bottom-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs font-medium">
+//             You
+//           </div>
+//         </motion.div>
+
+//         <AnimatePresence>
+//           {(showControls || !callAccepted) && callAccepted && !callEnded && (
+//             <motion.div
+//               initial={{ y: 100, opacity: 0 }}
+//               animate={{ y: 0, opacity: 1 }}
+//               exit={{ y: 100, opacity: 0 }}
+//               className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+//             >
+//               <div className="flex items-center gap-4 bg-black/40 backdrop-blur-lg rounded-2xl p-4 border border-white/10 shadow-2xl">
+//                 <motion.button
+//                   whileHover={{ scale: 1.1 }}
+//                   whileTap={{ scale: 0.9 }}
+//                   onClick={toggleAudio}
+//                   className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
+//                     isAudioEnabled
+//                       ? "bg-slate-700 hover:bg-slate-600 text-white"
+//                       : "bg-red-500 hover:bg-red-600 text-white shadow-lg"
+//                   }`}
+//                 >
+//                   {isAudioEnabled ? <Mic className="w-5 h-5" /> : <MicOff className="w-5 h-5" />}
+//                 </motion.button>
+//                 <motion.button
+//                   whileHover={{ scale: 1.1 }}
+//                   whileTap={{ scale: 0.9 }}
+//                   onClick={toggleVideo}
+//                   className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${
+//                     isVideoEnabled
+//                       ? "bg-slate-700 hover:bg-slate-600 text-white"
+//                       : "bg-red-500 hover:bg-red-600 text-white shadow-lg"
+//                   }`}
+//                 >
+//                   {isVideoEnabled ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
+//                 </motion.button>
+//                 <motion.button
+//                   whileHover={{ scale: 1.1, rotate: 5 }}
+//                   whileTap={{ scale: 0.9 }}
+//                   onClick={endCall}
+//                   className="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center text-white transition-all duration-200 shadow-lg"
+//                 >
+//                   <PhoneOff className="w-6 h-6" />
+//                 </motion.button>
+//                 <motion.button
+//                   whileHover={{ scale: 1.1 }}
+//                   whileTap={{ scale: 0.9 }}
+//                   className="w-12 h-12 rounded-full bg-slate-700 hover:bg-slate-600 flex items-center justify-center text-white transition-all duration-200"
+//                 >
+//                   <MoreVertical className="w-5 h-5" />
+//                 </motion.button>
+//               </div>
+//             </motion.div>
+//           )}
+//         </AnimatePresence>
+
+//         {(isCalling && !callAccepted) && (
+//           <motion.div
+//             initial={{ opacity: 0 }}
+//             animate={{ opacity: 1 }}
+//             className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-15"
+//           >
+//             <div className="text-center">
+//               <motion.div
+//                 animate={{ rotate: 360 }}
+//                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+//                 className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full mx-auto mb-4"
+//               />
+//               <p className="text-white text-xl font-semibold">Calling...</p>
+//               <p className="text-white/70 text-sm mt-2">Waiting for response</p>
+//             </div>
+//           </motion.div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// }

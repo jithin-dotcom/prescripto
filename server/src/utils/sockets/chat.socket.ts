@@ -26,8 +26,13 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
   onlineUsers.set(user.id, socket.id);
   socket.broadcast.emit("user-online", user.id);
 
-  socket.on("get-online-users", () => {
+  // socket.emit("online-users", Array.from(onlineUsers.keys()));
+  // console.log("online users : ", onlineUsers);
+
+  socket.on("get-online-users", async() => {
+    console.log("online users : ", onlineUsers);
     socket.emit("online-users", Array.from(onlineUsers.keys()));
+    // await chatService.onlineUserDoctor(user.id, user.role);
   });
 
   socket.on("joinRoom", async ({ appointmentId }: { appointmentId: string }) => {
@@ -164,7 +169,15 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
     socket.to(appointmentId).emit("stopTyping", { senderId });
   });
 
-  socket.on("disconnect", () => {
+  // socket.on("saveToDb", async() => {
+    
+  //   console.log("user.ID : ",user.id);
+  //   console.log("user.ID : ",user.role);
+  //    await chatService.lastSeenUserDoctor(user.id, user.role);
+  //    console.log("userId lasttime : ", user.id);
+  // })
+
+  socket.on("disconnect", async() => {
     console.log(`User ${user.id} disconnected`);
     onlineUsers.delete(user.id);
     socket.broadcast.emit("user-offline", user.id);

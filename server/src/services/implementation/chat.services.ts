@@ -142,6 +142,37 @@ export class ChatService implements IChatService {
       throw error;
     }
   }
+
+
+  // async lastSeenUserDoctor(id: string, role: string): Promise<void> {
+  //    try {
+  //       const now =  new Date;
+  //       console.log("entered into services : ", id, role);
+  //       if(role === "user"){
+  //          await this._chatRepo.updateChatByUserId(id, now);
+  //       }else{
+  //          await this._chatRepo.updateChatByDoctorId(id, now);
+  //       }
+  //    }catch (error) {
+  //      throw error;
+  //    }
+  // }
+
+
+  //   async onlineUserDoctor(id: string, role: string): Promise<void> {
+  //    try {
+  //       const now =  new Date;
+  //       console.log("entered into services : ", id, role);
+  //       if(role === "user"){
+  //          await this._chatRepo.updateChatByUserId(id, null);
+  //       }else{
+  //          await this._chatRepo.updateChatByDoctorId(id, null);
+  //       }
+  //    }catch (error) {
+  //      throw error;
+  //    }
+  // }
+  
 }
 
 

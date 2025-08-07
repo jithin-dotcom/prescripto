@@ -45,6 +45,15 @@ const chatSchema = new Schema<IChat>(
        type: lastMessageSchema,
        require: false,
     },
+    // lastSeenUser: {
+    //    type: Date,
+    //    default: Date.now,
+       
+    // },
+    // lastSeenDoctor: {
+    //    type: Date,
+    //    default: Date.now
+    // }
    
   },
   { timestamps: true }
