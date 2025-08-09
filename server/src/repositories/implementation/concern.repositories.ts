@@ -1,9 +1,10 @@
 
 
-import { IConcern } from "../../models/concern/IConcern";
+import { IConcern, IConcernDocPopulated } from "../../models/concern/IConcern";
 import { BaseRepository } from "./base.repositories";
 import  mongoose, { FilterQuery } from "mongoose";
 import { ConcernModel } from "../../models/concern/concern.models";
+
 
 
 export class ConcernRepository extends BaseRepository<IConcern> {
@@ -29,13 +30,14 @@ export class ConcernRepository extends BaseRepository<IConcern> {
 
 
 
-  async getConcerns(skip: number, limit: number, query: FilterQuery<IConcern>): Promise<IConcern[]> {
-  return this.model
+  async getConcerns(skip: number, limit: number, query: FilterQuery<IConcern>): Promise<IConcernDocPopulated[]> {
+  const result =  this.model
     .find(query)
     .populate("appointmentId userId doctorId")
     .skip(skip)
     .limit(limit)
     .exec();
+   return result as unknown as IConcernDocPopulated[];
 }
 
 async countConcerns(query: FilterQuery<IConcern>): Promise<number> {

@@ -53,7 +53,8 @@ useEffect(() => {
   const toggleBlockStatus = async (userId: string) => {
     try {
       await axiosInstance.patch(`${APIRoutes.ADMIN_BLOCK_TOGGLE}/${userId}`);
-      setUsers(prev => prev.map(user => user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user));
+      // setUsers(prev => prev.map(user => user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user));
+      setUsers(prev => prev.map(user => user.id === userId ? { ...user, isBlocked: !user.isBlocked } : user));
       toast.success("Successfully toggled block status");
     } catch (error) {
       const message = error instanceof AxiosError ? error.message : "Error toggling block status";
@@ -64,7 +65,8 @@ useEffect(() => {
   const toggleVerifiedStatus = async (userId: string) => {
     try {
       await axiosInstance.patch(`${APIRoutes.ADMIN_VERIFY_TOGGLE}/${userId}`);
-      setUsers(prev => prev.map(user => user._id === userId ? { ...user, isVerified: !user.isVerified } : user));
+      // setUsers(prev => prev.map(user => user._id === userId ? { ...user, isVerified: !user.isVerified } : user));
+     setUsers(prev => prev.map(user => user.id === userId ? { ...user, isVerified: !user.isVerified } : user));
       toast.success("Successfully toggled verify status");
     } catch (error) {
       const message = error instanceof AxiosError ? error.message : "Error toggling verify status";
@@ -106,10 +108,13 @@ useEffect(() => {
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {users.map((user) => {
                   const profile = user.profile?.[0] || {};
+                  console.log("users : ", user);
                   return (
                     <div
-                      key={user._id}
-                      onClick={() => navigate(`/edit-user/${user._id}`)}
+                      // key={user._id}
+                      key={user.id}
+                      // onClick={() => navigate(`/edit-user/${user._id}`)}
+                       onClick={() => navigate(`/edit-user/${user.id}`)}
                       className="border border-[#C9D8FF] rounded-xl bg-white shadow-sm overflow-hidden cursor-pointer group transition hover:shadow-lg hover:scale-105"
                     >
                       <img
@@ -127,7 +132,8 @@ useEffect(() => {
                             <input
                               type="checkbox"
                               checked={user.isVerified}
-                              onChange={() => toggleVerifiedStatus(user._id)}
+                              // onChange={() => toggleVerifiedStatus(user._id)}
+                              onChange={() => toggleVerifiedStatus(user.id)}
                               onClick={(e) => e.stopPropagation()}
                               readOnly
                             />
@@ -137,7 +143,8 @@ useEffect(() => {
                             <input
                               type="checkbox"
                               checked={user.isBlocked}
-                              onChange={() => toggleBlockStatus(user._id)}
+                              // onChange={() => toggleBlockStatus(user._id)}
+                              onChange={() => toggleBlockStatus(user.id)}
                               onClick={(e) => e.stopPropagation()}
                               readOnly
                             />

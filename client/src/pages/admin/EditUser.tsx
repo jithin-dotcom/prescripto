@@ -67,6 +67,7 @@ const EditUser = () => {
       try {
         const response = await axiosInstance.get(`${APIRoutes.ADMIN_GET_USER_EDIT}/${id}`);
         const user = response.data.data;
+        console.log("user : ",user);
         const profile = user.profile?.[0];
 
         setForm({

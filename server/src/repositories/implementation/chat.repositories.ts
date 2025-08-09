@@ -6,6 +6,7 @@ import { IChat } from "../../models/chat/IChat";
 import { BaseRepository } from "./base.repositories";
 import { Document } from "mongoose";
 
+
 export class ChatRepository extends BaseRepository<IChat & Document> implements IChatRepository {
   constructor() {
     super(Chat);
@@ -32,11 +33,12 @@ export class ChatRepository extends BaseRepository<IChat & Document> implements 
   }
 
   async getChatsByUser(userId: string): Promise<IChat[]> {
-    return await Chat.find({ participants: userId })
+    return await this.model.find({ participants: userId })
       .populate("appointmentId")
       .populate("userId", "name photo")
       .populate("doctorId", "name photo")
       .sort({ "lastMessage.timestamp": -1 } as Record<string, 1 | -1>);
+     
   }
 
   // async updateChatByUserId(userId: string, time: Date): Promise<void> {

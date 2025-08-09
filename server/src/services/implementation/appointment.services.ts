@@ -5,12 +5,13 @@ import mongoose from "mongoose";
 import { IAvailabilitySlot, ITimeBlock } from "../../models/doctor/IDoctorProfile";
 
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
-import { IAppointmentWithUserResponse } from "../interface/IAppointmentService";
+import { IAppointmentWithUserResponse, IDoctorInfo } from "../interface/IAppointmentService";
 import { IPatientProfileRepository } from "../../repositories/interface/IPatientProfileRepository";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IWalletRepository } from "../../repositories/interface/IWalletRepository";
 import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
+import { mapAppointmentToDTO } from "../../utils/mapper/appointmentService.mapper";
 
 
 export class AppointmentService implements IAppointmentService {
@@ -143,7 +144,7 @@ async getAppointmentsByUser(
 }> {
   try {
     const skip = (page - 1) * limit;
-    const filter: any = { userId: new mongoose.Types.ObjectId(userId) };
+    const filter: {userId: mongoose.Types.ObjectId, status?: string} = { userId: new mongoose.Types.ObjectId(userId) };
 
     if (status) {
       filter.status = status;
@@ -155,7 +156,7 @@ async getAppointmentsByUser(
     const responses: IAppointmentResponse[] = [];
 
     for (const appointment of appointments) {
-      const doctorUser = appointment.doctorId as any;
+      const doctorUser = appointment.doctorId as IDoctorInfo;
 
       if (!doctorUser || !doctorUser._id) continue;
 
@@ -165,31 +166,35 @@ async getAppointmentsByUser(
 
       if (!profile) continue;
 
-      responses.push({
-        _id: (appointment._id as mongoose.Types.ObjectId).toString(),
-        doctor: {
-          _id: doctorUser._id.toString(),
-          name: doctorUser.name,
-          email: doctorUser.email,
-          photo: doctorUser.photo,
-          isVerified: doctorUser.isVerified,
-          isBlocked: doctorUser.isBlocked,
-          educationDetails: profile.educationDetails,
-          averageRating: profile.averageRating || 0,
-          ratingCount: profile.ratingCount || 0,
-          specialization: profile.specialization || "",
-          yearOfExperience: profile.yearOfExperience || 0,
-          fee: profile.fee || 0,
-        },
-        userId: appointment.userId.toString(),
-        date: appointment.day,
-        time: appointment.time,
-        status: appointment.status,
-        appointmentNo: appointment.appointmentNo || 0,
-        transactionId: appointment.transactionId?.toString(),
-        payment: appointment.payment,
-      });
+      // responses.push({
+      //   _id: (appointment._id as mongoose.Types.ObjectId).toString(),
+      //   doctor: {
+      //     _id: doctorUser._id.toString(),
+      //     name: doctorUser.name,
+      //     email: doctorUser.email,
+      //     photo: doctorUser.photo,
+      //     isVerified: doctorUser.isVerified,
+      //     isBlocked: doctorUser.isBlocked,
+      //     educationDetails: profile.educationDetails,
+      //     averageRating: profile.averageRating || 0,
+      //     ratingCount: profile.ratingCount || 0,
+      //     specialization: profile.specialization || "",
+      //     yearOfExperience: profile.yearOfExperience || 0,
+      //     fee: profile.fee || 0,
+      //   },
+      //   userId: appointment.userId.toString(),
+      //   date: appointment.day,
+      //   time: appointment.time,
+      //   status: appointment.status,
+      //   appointmentNo: appointment.appointmentNo || 0,
+      //   transactionId: appointment.transactionId?.toString(),
+      //   payment: appointment.payment,
+      // });
+      const mapped = mapAppointmentToDTO(appointment, doctorUser, profile);
+      responses.push(mapped)
     }
+
+ 
 
     return {
       data: responses,

@@ -596,6 +596,8 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { APIChatRoutes } from "../../constants/routes.constants";
 import EmojiPicker from "emoji-picker-react";
 import type { ChatListItem, Message, Appointment } from "../../interfaces/IChat";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 dayjs.extend(customParseFormat);
 
@@ -924,55 +926,237 @@ useEffect(() => {
     }
   };
 
-  const handleSend = () => {
-    console.log("handleSend called, input:", input, "selectedImage:", selectedImage);
-    const socket = socketRef.current;
-    if (!socket || !selectedChat) return;
-    if (!input && (!selectedImage || !imagePreview)) return;
+  // const handleSend = () => {
+  //   console.log("handleSend called, input:", input, "selectedImage:", selectedImage);
+  //   const socket = socketRef.current;
+  //   if (!socket || !selectedChat) return;
+  //   if (!input && (!selectedImage || !imagePreview)) return;
 
-    console.log("input : ", input);
+  //   console.log("input : ", input);
 
-    const newMessage = {
-      appointmentId: selectedChat.appointmentId._id,
-      content: selectedImage ? imagePreview : input,
-      type: selectedImage ? "image" : "text",
-      doctorId: selectedChat.doctorId._id,
-      userId: selectedChat.userId._id,
-    };
+  //   const newMessage = {
+  //     appointmentId: selectedChat.appointmentId._id,
+  //     content: selectedImage ? imagePreview : input,
+  //     type: selectedImage ? "image" : "text",
+  //     doctorId: selectedChat.doctorId._id,
+  //     userId: selectedChat.userId._id,
+  //   };
 
-    console.log("new message : ", newMessage);
+  //   console.log("new message : ", newMessage);
 
-    socket.emit("sendMessage", newMessage);
+  //   socket.emit("sendMessage", newMessage);
 
     
-    setChatList((prev) => {
-      const updatedList = prev
-        .map((chat) =>
-          chat._id === selectedChat._id
-            ? {
-                ...chat,
-                lastMessage: {
-                  content: selectedImage ? "[Image]" : input,
-                  timestamp: new Date().toISOString(),
-                },
-              }
-            : chat
-        )
-        .sort((a, b) => {
-          const timeA = a.lastMessage?.timestamp ? new Date(a.lastMessage.timestamp).getTime() : 0;
-          const timeB = b.lastMessage?.timestamp ? new Date(b.lastMessage.timestamp).getTime() : 0;
-          return timeB - timeA; // Sort descending (newest first)
-        });
-      console.log("Updated chatList after send:", updatedList);
-      return updatedList;
-    });
+  //   setChatList((prev) => {
+  //     const updatedList = prev
+  //       .map((chat) =>
+  //         chat._id === selectedChat._id
+  //           ? {
+  //               ...chat,
+  //               lastMessage: {
+  //                 content: selectedImage ? "[Image]" : input,
+  //                 timestamp: new Date().toISOString(),
+  //               },
+  //             }
+  //           : chat
+  //       )
+  //       .sort((a, b) => {
+  //         const timeA = a.lastMessage?.timestamp ? new Date(a.lastMessage.timestamp).getTime() : 0;
+  //         const timeB = b.lastMessage?.timestamp ? new Date(b.lastMessage.timestamp).getTime() : 0;
+  //         return timeB - timeA; // Sort descending (newest first)
+  //       });
+  //     console.log("Updated chatList after send:", updatedList);
+  //     return updatedList;
+  //   });
 
-    setInput("");
-    setSelectedImage(null);
-    setImagePreview(null);
-    setShowEmojiPicker(false);
-    inputRef.current?.focus();
+  //   setInput("");
+  //   setSelectedImage(null);
+  //   setImagePreview(null);
+  //   setShowEmojiPicker(false);
+  //   inputRef.current?.focus();
+  // };
+
+
+
+
+//   const handleSend = async () => {
+//   console.log("handleSend called, input:", input, "selectedImage:", selectedImage);
+//   const socket = socketRef.current;
+//   if (!socket || !selectedChat) return;
+
+//   // Don't send empty messages
+//   if (!input && !selectedImage) return;
+
+//   let finalContent = input;
+//   let type = "text";
+
+//   // If sending image
+//   if (selectedImage) {
+//     type = "image";
+//     try {
+//       const formData = new FormData();
+//       formData.append("file", selectedImage); // The actual File object
+//       formData.append("upload_preset", "chat_images"); // Set your unsigned preset here
+//       formData.append("folder", "chat_images"); // Optional: store inside a folder
+
+//       const res = await fetch(`https://api.cloudinary.com/v1_1/dniyeshry/image/upload`, {
+//         method: "POST",
+//         body: formData,
+//       });
+
+//       if (!res.ok) throw new Error("Image upload failed");
+
+//       const data = await res.json();
+//       console.log("☁️ Cloudinary upload success:", data);
+//       finalContent = data.secure_url; // Use Cloudinary URL instead of base64
+
+//     } catch (err) {
+//       console.error("Cloudinary upload error:", err);
+//       alert("Failed to upload image. Please try again.");
+//       return; // Stop sending if upload fails
+//     }
+//   }
+
+//   const newMessage = {
+//     appointmentId: selectedChat.appointmentId._id,
+//     content: finalContent,
+//     type,
+//     doctorId: selectedChat.doctorId._id,
+//     userId: selectedChat.userId._id,
+//   };
+
+//   console.log("📤 Sending new message:", newMessage);
+//   socket.emit("sendMessage", newMessage);
+
+//   // Update UI instantly (optimistic UI)
+//   setChatList((prev) => {
+//     const updatedList = prev
+//       .map((chat) =>
+//         chat._id === selectedChat._id
+//           ? {
+//               ...chat,
+//               lastMessage: {
+//                 content: type === "image" ? "[Image]" : finalContent,
+//                 timestamp: new Date().toISOString(),
+//               },
+//             }
+//           : chat
+//       )
+//       .sort((a, b) => {
+//         const timeA = a.lastMessage?.timestamp ? new Date(a.lastMessage.timestamp).getTime() : 0;
+//         const timeB = b.lastMessage?.timestamp ? new Date(b.lastMessage.timestamp).getTime() : 0;
+//         return timeB - timeA; // Newest first
+//       });
+//     return updatedList;
+//   });
+
+//   // Reset inputs
+//   setInput("");
+//   setSelectedImage(null);
+//   setImagePreview(null);
+//   setShowEmojiPicker(false);
+//   inputRef.current?.focus();
+// };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const handleSend = async () => {
+  console.log("handleSend called, input:", input, "selectedImage:", selectedImage);
+  const socket = socketRef.current;
+  if (!socket || !selectedChat) return;
+
+ 
+  if (!input && !selectedImage) return;
+
+  let finalContent = input;
+  let type = "text";
+
+  
+  if (selectedImage) {
+    type = "image";
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedImage); 
+      formData.append("upload_preset", "chat_images_unsigned"); 
+      formData.append("folder", "chat_images"); 
+
+      const res = await axios.post(
+        `https://api.cloudinary.com/v1_1/dniyeshry/image/upload`,
+        formData
+      );
+
+      console.log("☁️ Cloudinary upload success:", res.data);
+      finalContent = res.data.secure_url; 
+
+    } catch (err) {
+      console.error(" Cloudinary upload error:", err);
+      toast.error("Failed to upload image. Please try again.");
+      return; 
+    }
+  }
+
+  const newMessage = {
+    appointmentId: selectedChat.appointmentId._id,
+    content: finalContent,
+    type,
+    doctorId: selectedChat.doctorId._id,
+    userId: selectedChat.userId._id,
   };
+
+  console.log(" Sending new message:", newMessage);
+  socket.emit("sendMessage", newMessage);
+
+  
+  setChatList((prev) => {
+    const updatedList = prev
+      .map((chat) =>
+        chat._id === selectedChat._id
+          ? {
+              ...chat,
+              lastMessage: {
+                content: type === "image" ? "[Image]" : finalContent,
+                timestamp: new Date().toISOString(),
+              },
+            }
+          : chat
+      )
+      .sort((a, b) => {
+        const timeA = a.lastMessage?.timestamp ? new Date(a.lastMessage.timestamp).getTime() : 0;
+        const timeB = b.lastMessage?.timestamp ? new Date(b.lastMessage.timestamp).getTime() : 0;
+        return timeB - timeA;
+      });
+    return updatedList;
+  });
+
+  
+  setInput("");
+  setSelectedImage(null);
+  setImagePreview(null);
+  setShowEmojiPicker(false);
+  inputRef.current?.focus();
+};
+
+
+
+
+
+
+
+
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);

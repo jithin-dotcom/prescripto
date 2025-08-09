@@ -7,6 +7,7 @@ import { IWalletRepository } from "../../repositories/interface/IWalletRepositor
 import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
 import { IAppointmentRepository } from "../../repositories/interface/IAppointmentRepository";
 import { IChatRepository } from "../../repositories/interface/IChatRepository";
+import { IPaymentRepository } from "../../repositories/interface/IPaymentRepository";
 import mongoose from "mongoose";
 
 
@@ -17,6 +18,7 @@ export class WalletService implements IWalletService {
         private _walletHistoryRepo: IWalletHistoryRepository,
         private _appointmentRepo: IAppointmentRepository,
         private _chatRepo: IChatRepository,
+        private _paymentRepo: IPaymentRepository,
     ){}
 
 
@@ -64,7 +66,7 @@ export class WalletService implements IWalletService {
     }
 
 
-    async makeWalletPayment(userId: string, appointmentId: string): Promise<IWallet | null> {
+    async makeWalletPayment(userId: string, appointmentId: string): Promise<{message: string}> {
        try {
           const walletUser = await this._walletRepo.findOne({userId});
           if(!walletUser){
@@ -91,6 +93,8 @@ export class WalletService implements IWalletService {
               if(!walletDoctor){
                   throw new Error("Failed to create Doctor wallet");
               }
+
+             
           }
           if(appointment.fee && walletUser.balance < appointment?.fee){
              throw new Error("Wallet don't have  sufficient Balance");
@@ -113,6 +117,27 @@ export class WalletService implements IWalletService {
           if(!walletHistoryUser){
               throw new Error("failed to create Wallet History");
           }
+
+
+
+         const DoctorId = new mongoose.Types.ObjectId( typeof appointment.doctorId === "string" ? appointment.doctorId : appointment.doctorId._id);
+
+         const createPayment = await this._paymentRepo.create({
+            appointmentId: new mongoose.Types.ObjectId(appointmentId),
+            doctorId: DoctorId,
+            userId: appointment.userId,
+            amount: appointment.fee,
+            currency: "INR",
+            status: "paid",
+            paymentMethod: "wallet",
+            razorpayOrderId: Math.floor(100000 + Math.random() * 900000).toString(),
+
+          })
+          
+          if(!createPayment){
+            throw new Error("Failed to create Payment");
+          }    
+
 
           if(appointment.fee){
             const amount = Math.floor(appointment.fee - (appointment.fee / 10))
@@ -151,7 +176,7 @@ export class WalletService implements IWalletService {
               });
           }
          
-          return updatedWallet;
+          return { message: "Wallet Payment made successfully"};
        }catch (error) {
           if(error instanceof Error){
             throw error;

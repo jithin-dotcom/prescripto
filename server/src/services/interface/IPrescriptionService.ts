@@ -1,11 +1,13 @@
 
-import { IPrescription } from "../../models/prescription/IPrescription"
+import { IPrescription, IPrescriptionClean } from "../../models/prescription/IPrescription"
 
 export interface IPrescriptionService {
-    createPrescription(data: Partial<IPrescription>): Promise<IPrescription>;
-    getPrescription(appointmentId: string): Promise<IPrescription | null>;
-    editPrescription(appointmentId: string, data: Partial<IPrescription>): Promise<IPrescription | null>;
+    createPrescription(data: Partial<IPrescription>): Promise<{message: string}>;
+    // getPrescription(appointmentId: string): Promise<IPrescription | null>;
+    editPrescription(appointmentId: string, data: Partial<IPrescription>): Promise<{message: string}>;
     generatePrescriptionPDF(prescription: any): Promise<Buffer>;
+    getEditPrescription(appointmentId: string): Promise<IPrescriptionClean | null>; 
+    getPrescription(appointmentId: string): Promise<IPrescriptionClean | null>;
 }
 
 

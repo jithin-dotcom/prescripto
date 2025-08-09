@@ -7,8 +7,9 @@ import { IWallet } from "../../models/wallet/IWallet";
 import { IWalletRepository } from "../../repositories/interface/IWalletRepository";
 import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
 import mongoose from "mongoose";
-import { ICallLogService } from "../interface/ICallLogService";
+import { ICallLogService, IWalletHistoryDTO } from "../interface/ICallLogService";
 import { IWalletHistory } from "../../models/walletHistory/IWalletHistory";
+import { mapWalletHistoryToDTO } from "../../utils/mapper/callLogService.mapper";
 
 export class CallLogService implements ICallLogService {
   constructor(
@@ -18,7 +19,7 @@ export class CallLogService implements ICallLogService {
     private _WalletHistoryRepo: IWalletHistoryRepository,
   ) {}
 
-  async logCall(data: Partial<ICallLog>): Promise<ICallLog> {
+  async logCall(data: Partial<ICallLog>): Promise<void> {
     try {
       const appointmentId = data.appointmentId;
       if(!appointmentId){
@@ -28,7 +29,8 @@ export class CallLogService implements ICallLogService {
          await this._appointmentRepo.updateById(appointmentId,{status:"completed"});
       }
 
-      return await this._callLogRepo.createLog(data);
+     await this._callLogRepo.createLog(data);
+    
     } catch (error) {
       throw error
     }
@@ -56,7 +58,7 @@ export class CallLogService implements ICallLogService {
      }
   } 
   
-  async doctorPaymentHistory(data: Partial<IWalletHistory>): Promise<IWalletHistory> {
+  async doctorPaymentHistory(data: Partial<IWalletHistory>): Promise<IWalletHistoryDTO> {
       try {
         const appointmentId = data.appointmentId;
         if(!appointmentId){
@@ -96,7 +98,9 @@ export class CallLogService implements ICallLogService {
         if(!updatedBalance){
           throw new Error("Failed to update Wallet Balance");
         }
-        return walletHistory;
+        // console.log("wallethistory : ",walletHistory);
+        // return walletHistory;
+         return mapWalletHistoryToDTO(walletHistory);
       }catch (error) {
         console.log("error in doctorPaymentHistory : ", error);
         if(error instanceof Error){

@@ -114,7 +114,7 @@ const EditPrescription: React.FC = () => {
      const res = await axiosInstance.post(`/update-prescription/${appointment._id}`, payload);
      console.log("res : ",res);
       setCurrentData(res.data);
-      toast.success("Prescription created successfully!");
+      toast.success("Prescription Updated  successfully!");
       navigate("/doctor-appointments");
     } catch (error) {
       console.error("Error submitting prescription:", error);
@@ -136,8 +136,8 @@ const formatDateForInput = (dateString: string) => {
 useEffect(() => {
   async function fetchPrescription() {
     try {
-      const res = await axiosInstance.get(`/get-prescription/${appointment._id}`);
-      console.log("res:", res);
+      const res = await axiosInstance.get(`/get-editPrescription/${appointment._id}`);
+      // console.log("res:", res);
 
       const data = res.data;
       setCurrentData(data);
@@ -149,6 +149,7 @@ useEffect(() => {
         name: "", dosage: "", frequency: "", duration: "", instructions: ""
       }]);
     } catch (error) {
+      navigate("/doctor-appointments");
       console.error("Error fetching prescription:", error);
     }
   }

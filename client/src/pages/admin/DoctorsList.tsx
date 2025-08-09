@@ -40,6 +40,7 @@ const DoctorsList: React.FC = () => {
       const res = await axiosInstance.get(
         `${APIRoutes.ADMIN_GET_USERS}?role=doctor&page=${page}&limit=${limit}&search=${query}&specialty=${selectedSpecialty}`
       );
+      console.log("doctors : ", res.data.data.items);
       setDoctors(res.data.data.items);
       setTotalPages(res.data.data.totalPages);
     } catch (error) {
@@ -66,7 +67,7 @@ const DoctorsList: React.FC = () => {
       await axiosInstance.patch(`${APIRoutes.ADMIN_BLOCK_TOGGLE}/${doctorId}`);
       setDoctors((prev) =>
         prev.map((doc) =>
-          doc._id === doctorId ? { ...doc, isBlocked: !doc.isBlocked } : doc
+          doc.id === doctorId ? { ...doc, isBlocked: !doc.isBlocked } : doc
         )
       );
       toast.success("Successfully toggled block status");
@@ -82,7 +83,7 @@ const DoctorsList: React.FC = () => {
       await axiosInstance.patch(`${APIRoutes.ADMIN_VERIFY_TOGGLE}/${doctorId}`);
       setDoctors((prev) =>
         prev.map((doc) =>
-          doc._id === doctorId ? { ...doc, isVerified: !doc.isVerified } : doc
+          doc.id === doctorId ? { ...doc, isVerified: !doc.isVerified } : doc
         )
       );
       toast.success("Successfully toggled verification status");
@@ -150,8 +151,8 @@ const DoctorsList: React.FC = () => {
                   const profile = doctor.profile?.[0] || {};
                   return (
                     <div
-                      key={doctor._id}
-                      onClick={() => navigate(`/edit-doctor/${doctor._id}`)}
+                      key={doctor.id}
+                      onClick={() => navigate(`/edit-doctor/${doctor.id}`)}
                       className="border border-[#C9D8FF] rounded-xl bg-white shadow-sm overflow-hidden cursor-pointer group transition hover:shadow-lg hover:scale-105"
                     >
                       <img
@@ -185,7 +186,7 @@ const DoctorsList: React.FC = () => {
     <button
       onClick={(e) => {
         e.stopPropagation();
-        sessionStorage.setItem("doctorId", doctor._id);
+        sessionStorage.setItem("doctorId", doctor.id);
         navigate("/rating");
       }}
       className="py-0.5 px-2 border border-yellow-500 text-xs rounded-full text-yellow-700 hover:bg-yellow-100 transition duration-200 whitespace-nowrap flex-shrink-0"
@@ -200,7 +201,7 @@ const DoctorsList: React.FC = () => {
                           <input
                             type="checkbox"
                             checked={doctor.isVerified}
-                            onChange={() => toggleVerifiedStatus(doctor._id)}
+                            onChange={() => toggleVerifiedStatus(doctor.id)}
                             onClick={(e) => e.stopPropagation()}
                             readOnly
                           />
@@ -209,7 +210,7 @@ const DoctorsList: React.FC = () => {
                           <input
                             type="checkbox"
                             checked={doctor.isBlocked}
-                            onChange={() => toggleBlockStatus(doctor._id)}
+                            onChange={() => toggleBlockStatus(doctor.id)}
                             onClick={(e) => e.stopPropagation()}
                             readOnly
                           />

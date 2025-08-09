@@ -1,6 +1,6 @@
 
 
-import { IAdminService } from "../interface/IAdminService";
+import { IAdminService, IUserWithProfileResponse } from "../interface/IAdminService";
 import { IAdminRepository } from "../../repositories/interface/IAdminRepository";
 import { IUser } from "../../types/user.type";
 import { IPatientProfileRepository } from "../../repositories/interface/IPatientProfileRepository";
@@ -11,6 +11,7 @@ import { IPatientProfile } from "../../models/patient/IPatientProfile";
 import { CreateUserOrDoctorInput } from "../interface/IAdminService";
 import bcrypt from "bcrypt";
 import redisClient from "../../config/redisClient";
+import { mapUserToDTO } from "../../utils/mapper/adminService.mapper";
 
 
 export class AdminService implements IAdminService {
@@ -22,7 +23,7 @@ export class AdminService implements IAdminService {
 
  
 
-async getUserById(userId: string): Promise<object> {
+async getUserById(userId: string): Promise<IUserWithProfileResponse> {
   try {
       const user = await this._adminRepo.findById(userId);
       let profile = null;
@@ -32,10 +33,12 @@ async getUserById(userId: string): Promise<object> {
       }else if(user.role === "doctor"){
          profile = await this._doctorProfileRepo.findAll({doctorId: userId});
       }
-      return {
-        ...user.toObject(),
-        profile
-      }
+      // console.log({...user.toObject(),profile});
+      // return {
+      //   ...user.toObject(),
+      //   profile
+      // }
+       return mapUserToDTO(user, profile);
   } catch (error) {
      throw new Error("Failed in fetching user");
   }
@@ -87,10 +90,11 @@ async getAllByRole(
               ? await this._doctorProfileRepo.findAll({ doctorId: user._id })
               : await this._patientProfileRepo.findAll({ patientId: user._id });
 
-          return {
-            ...user.toObject(),
-            profile,
-          };
+          // return {
+          //   ...user.toObject(),
+          //   profile,
+          // };
+          return mapUserToDTO(user , profile);
         })
       );
 
@@ -117,14 +121,15 @@ async getAllByRole(
 
           if (!nameMatches) return null;
 
-          return {
-            ...user.toObject(),
-            profile: [profile],
-          };
+          // return {
+          //   ...user.toObject(),
+          //   profile: [profile],
+          // };
+          return mapUserToDTO(user, [profile]);
         })
       );
 
-      const filtered = matchedDoctors.filter(Boolean);
+      const filtered = matchedDoctors.filter(Boolean) as IUserWithProfileResponse[];;
       const paginated = filtered.slice(skip, skip + safeLimit);
 
       return {
@@ -145,10 +150,11 @@ async getAllByRole(
         items.map(async (user) => {
           const profile = await this._patientProfileRepo.findAll({ patientId: user._id });
 
-          return {
-            ...user.toObject(),
-            profile,
-          };
+          // return {
+          //   ...user.toObject(),
+          //   profile,
+          // };
+          return mapUserToDTO(user, profile);
         })
       );
 

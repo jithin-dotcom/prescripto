@@ -13,7 +13,7 @@ import { getDecentroHeaders } from "../../utils/decentroClient";
 
 import { v4 as uuidv4 } from "uuid";
 
-import { IPaymentService, RazorpayOrderInput, IRazorpayOrderResponse } from "../interface/IPaymentService";
+import { IPaymentService, RazorpayOrderInput, IRazorpayOrderResponse, IPayoutClean } from "../interface/IPaymentService";
 import { IPaymentRepository } from "../../repositories/interface/IPaymentRepository";
 import { IAppointmentRepository } from "../../repositories/interface/IAppointmentRepository";
 import { IWalletRepository } from "../../repositories/interface/IWalletRepository";
@@ -21,6 +21,7 @@ import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHi
 import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IPayoutRepository } from "../../repositories/interface/IPayoutRepository";
 import { IPayout } from "../../models/payout/IPayout";
+import { mapPayouts } from "../../utils/mapper/paymentService.mapper";
 
 
 
@@ -51,6 +52,7 @@ export class PaymentService implements IPaymentService {
       amount: data.amount,
       currency: "INR",
       status: "created",
+      paymentMethod: "razorpay",
       razorpayOrderId: order.id,
     });
 
@@ -152,7 +154,7 @@ export class PaymentService implements IPaymentService {
 
 
 
-  async createPayout(doctorId: string, amount: number, reason: string): Promise<IPayout> {
+  async createPayout(doctorId: string, amount: number, reason: string): Promise<{message: string}> {
     try {
        const newDoctorId = new mongoose.Types.ObjectId(doctorId);
        
@@ -170,7 +172,7 @@ export class PaymentService implements IPaymentService {
        if(!payout){
          throw new Error("Failed to create Payment");
        }
-       return payout;
+       return {message: "Payout created successfully"};
     }catch (error) {
        if(error instanceof Error){
          throw error;
@@ -182,12 +184,14 @@ export class PaymentService implements IPaymentService {
 
 
   
-    async getPayout(page: number, limit: number): Promise<{ payouts: IPayout[] | [], total: number, totalPages: number }> {
+    async getPayout(page: number, limit: number): Promise<{ payouts: IPayoutClean[] | [], total: number, totalPages: number }> {
         try {
             const skip = (page - 1) * limit;
             const { payouts, total } = await this._payoutRepo.getAllPayout(skip, limit);
             const totalPages = Math.ceil(total / limit);
-            return { payouts, total, totalPages };
+            // console.log({payouts, total, totalPages});
+            const cleanedPayouts = mapPayouts(payouts);
+            return { payouts: cleanedPayouts, total, totalPages };
         } catch (error) {
             if (error instanceof Error) {
                 throw error;
@@ -199,12 +203,13 @@ export class PaymentService implements IPaymentService {
 
 
   
-    async getDoctorPayout(doctorId: string, page: number, limit: number): Promise<{ payouts: IPayout[] | [], total: number, totalPages: number }> {
+    async getDoctorPayout(doctorId: string, page: number, limit: number): Promise<{ payouts: IPayoutClean[] | [], total: number, totalPages: number }> {
         try {
             const skip = (page - 1) * limit;
             const { payouts, total } = await this._payoutRepo.getDoctorPayout(doctorId, skip, limit);
             const totalPages = Math.ceil(total / limit);
-            return { payouts, total, totalPages };
+            const cleanedPayouts = mapPayouts(payouts);
+            return { payouts: cleanedPayouts, total, totalPages };
         } catch (error) {
             if (error instanceof Error) {
                 throw error;
@@ -868,7 +873,7 @@ export class PaymentService implements IPaymentService {
       .text(`Receipt Date: ${createdAt}`)
       .text(`Appointment No: ${data.appointmentId.appointmentNo}`)
       .text(`Doctor: Dr. ${data.doctorId.name}`)
-      .text(`Payment ID: ${data.razorpayPaymentId}`)
+      .text(`Payment ID: ${data.razorpayOrderId}`)
       .moveDown();
 
     

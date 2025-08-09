@@ -12,7 +12,8 @@ export interface IAdminService {
 
 
   getAllByRole(role: string, page: number, limit: number, search: string, specialty: string): Promise<{
-    items: IUser[];
+    // items: IUser[];
+    items: IUserWithProfileResponse[];
     currentPage: number;
     totalPages: number;
     totalItems: number;
@@ -38,4 +39,20 @@ export interface IAdminService {
 
 }
 
+
+
+
+
+
+export interface IUserWithProfileResponse {
+  id: string;
+  name: string;
+  email: string;
+  role: "user" | "doctor" | "admin";
+  isVerified?: boolean;
+  isBlocked: boolean;
+  authProvider?: string;
+  photo?: string;
+  profile: IDoctorProfile[] | IPatientProfile[] | null; 
+}
 

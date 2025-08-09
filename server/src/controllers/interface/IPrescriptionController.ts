@@ -7,4 +7,5 @@ export interface IPrescriptionController {
     getPrescription(req: Request, res: Response, next: NextFunction): Promise<void>;
     editPrescription(req: Request, res: Response, next: NextFunction): Promise<void>;
     downloadPrescription(req: Request, res: Response, next: NextFunction): Promise<void>;
+    getEditPrescription(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

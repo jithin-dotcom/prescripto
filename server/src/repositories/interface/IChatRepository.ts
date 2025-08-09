@@ -1,7 +1,7 @@
 
 
 import { IChat } from "../../models/chat/IChat";
-import { Document } from "mongoose";
+import mongoose, { Document, ObjectId } from "mongoose";
 import { IBaseRepository } from "./IBaseRepository";
 
 export interface IChatRepository extends IBaseRepository<IChat>{
@@ -15,3 +15,96 @@ export interface IChatRepository extends IBaseRepository<IChat>{
   // updateChatByUserId(userId: string, time: Date | null): Promise<void>;
   // updateChatByDoctorId(doctorId: string, time: Date | null): Promise<void>;
 }
+
+
+
+
+
+
+
+
+
+
+export interface Appointment {
+  _id: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+  doctorId: mongoose.Types.ObjectId;
+  appointmentNo: number;
+  day: string; // e.g., "10/08/2025"
+  time: string; // e.g., "9:30 PM"
+  status: "confirmed" | "pending" | "cancelled"; // adjust based on your app
+  fee: number;
+  payment: "paid" | "unpaid"; // adjust as needed
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  __v: number;
+}
+
+export interface Doctor {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  photo: string;
+}
+
+export interface User {
+  _id: mongoose.Types.ObjectId;
+  name: string;
+  photo: string;
+}
+
+export interface LastMessage {
+  content: string;
+  timestamp: string; // ISO date string
+}
+
+export interface Chat {
+  _id: mongoose.Types.ObjectId;
+  appointmentId: Appointment;
+  doctorId: Doctor;
+  userId: User;
+  participants: string[]; // array of ObjectId strings
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  lastMessage?: LastMessage; // optional in case there's no message yet
+}
+
+export type GetUserChatResponse = Chat[];
+
+
+
+
+
+
+
+
+
+
+
+
+
+// export type IChatPopulated = Omit<IChat, 'appointmentId' | 'doctorId' | 'userId'> & {
+//   appointmentId: {
+//     _id: ObjectId;
+//     userId: ObjectId;
+//     doctorId: ObjectId;
+//     appointmentNo: number;
+//     day: string;
+//     time: string;
+//     status: string;
+//     fee: number;
+//     payment: string;
+//     createdAt: Date;
+//   };
+//   doctorId: {
+//     _id: ObjectId;
+//     name: string;
+//     photo: string;
+//   };
+//   userId: {
+//     _id: ObjectId;
+//     name: string;
+//     photo: string;
+//   };
+// };

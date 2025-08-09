@@ -1,7 +1,7 @@
 
 
 import { UserModel } from "../../models/user.models";
-import { IUser } from "../../types/user.type";
+import { IUser, IUserDb } from "../../types/user.type";
 import { IUserRepository } from "../interface/IUserRepository";
 import { BaseRepository } from "./base.repositories";
 import { Document, SortOrder } from "mongoose";
@@ -34,6 +34,14 @@ export class UserRepository
   async findTopDoctors(limit: number = 4): Promise<(IUser & Document)[] | null> {
     return await this.model.find({ role: "doctor", isBlocked: false, isVerified: true }).sort({createdAt:-1}).limit(limit);
   }
+
+//   async findTopDoctors(limit: number = 4): Promise<IUserDb[]> {
+//   return this.model
+//     .find({ role: "doctor", isBlocked: false, isVerified: true })
+//     .sort({ createdAt: -1 })
+//     .limit(limit)
+//     .lean<IUserDb[]>(); // ensures plain objects with IUserDb type
+// }
 
   async findAll(
   filter: Partial<IUser>,

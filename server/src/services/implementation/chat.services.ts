@@ -2,11 +2,12 @@
 
 import { IChat } from "../../models/chat/IChat";
 import { IMessage } from "../../models/message/IMessage";
-import { IChatService } from "../interface/IChatService";
+import { ChatDTO, IChatService, IMessageClean } from "../interface/IChatService";
 import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IMessageRepository } from "../../repositories/interface/IMessageRepository";
 import mongoose from "mongoose";
-import { timeStamp } from "console";
+// import { timeStamp } from "console";
+import { mapMessagesClean, mapToChatDTO} from "../../utils/mapper/chatService.mapper";
 
 export class ChatService implements IChatService {
   constructor(
@@ -14,7 +15,7 @@ export class ChatService implements IChatService {
     public _messageRepo: IMessageRepository
   ) {}
 
-  async createChat(appointmentId: string, participants: string[]): Promise<IChat> {
+  async createChat(appointmentId: string, participants: string[]): Promise<ChatDTO | null> {
     try {
       if (!appointmentId || participants.length < 2) {
         throw new Error("Invalid appointment ID or participants");
@@ -33,7 +34,8 @@ export class ChatService implements IChatService {
         userId: new mongoose.Types.ObjectId(participants[1]),
       });
 
-      return chat;
+      // return chat;
+      return mapToChatDTO(chat);
     } catch (error) {
       console.error("Error creating chat:", error);
       throw error;
@@ -52,20 +54,29 @@ export class ChatService implements IChatService {
     }
   }
 
-  async getChatByAppointmentId(appointmentId: string): Promise<IChat | null> {
+  async getChatByAppointmentId(appointmentId: string): Promise<ChatDTO | null> {
     try {
-      return await this._chatRepo.findByAppointmentId(appointmentId);
+      const result =  await this._chatRepo.findByAppointmentId(appointmentId);
+      if(!result){
+        return null;
+      }
+      // console.log("resiult : ",result);
+      // return result;
       // return await this._chatRepo.findById(chatId);
+      return mapToChatDTO(result);
     } catch (error) {
       console.error("Error fetching chat:", error);
       throw error;
     }
   }
 
-  async getChatById(chatId: string): Promise<IChat | null> {
+  async getChatById(chatId: string): Promise<ChatDTO | null> {
     try {
       // return await this._chatRepo.findByAppointmentId(appointmentId);
-      return await this._chatRepo.findById(chatId);
+      const result =  await this._chatRepo.findById(chatId);
+      
+      return result ? mapToChatDTO(result) : null;
+      
     } catch (error) {
       console.error("Error fetching chat:", error);
       throw error;
@@ -95,8 +106,8 @@ export class ChatService implements IChatService {
       const updateChat = await this._chatRepo.updateById(chatId,{lastMessage:{
         content,
       }});
-      console.log("updateChat : ",updateChat);
-
+      // console.log("updateChat : ",updateChat);
+      // console.log("message : ",message);
       return message;
     } catch (error) {
       console.error("Error creating message:", error);
@@ -104,9 +115,12 @@ export class ChatService implements IChatService {
     }
   }
 
-  async getMessagesByChatId(chatId: string): Promise<IMessage[]> {
+  async getMessagesByChatId(chatId: string): Promise<IMessageClean[]> {
     try {
-      return await this._messageRepo.getMessagesByChatId(chatId);
+      const result =  await this._messageRepo.getMessagesByChatId(chatId);
+      console.log("result : mesage : ", result);
+
+      return mapMessagesClean(result);
     } catch (error) {
       console.error("Error fetching messages:", error);
       throw error;
@@ -118,7 +132,10 @@ export class ChatService implements IChatService {
       
       const result =  await this._chatRepo.getChatsByUser(userId);
   
+      console.log("result getUserChat : ",result);
       return result;
+      
+      
     } catch (error) {
       console.error("Error fetching user chats:", error);
       throw error;
@@ -134,9 +151,10 @@ export class ChatService implements IChatService {
     }
   }
 
-  async getReadMessages(chatId: string, readerId: string): Promise<IMessage[]> {
+  async getReadMessages(chatId: string, readerId: string): Promise<IMessageClean[]> {
     try {
-      return await this._messageRepo.getReadMessages(chatId, readerId);
+      const result =  await this._messageRepo.getReadMessages(chatId, readerId);
+      return mapMessagesClean(result);
     } catch (error) {
       console.error("Error fetching read messages:", error);
       throw error;

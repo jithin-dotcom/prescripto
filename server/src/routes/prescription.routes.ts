@@ -17,6 +17,7 @@ router.use(verifyAccessToken)
 
 router.post("/create-prescription", prescriptionController.createPrescription.bind(prescriptionController));
 router.get("/get-prescription/:appointmentId", prescriptionController.getPrescription.bind(prescriptionController));
+router.get("/get-editPrescription/:appointmentId", prescriptionController.getEditPrescription.bind(prescriptionController));
 router.post("/update-prescription/:appointmentId", prescriptionController.editPrescription.bind(prescriptionController));
 router.get("/download-prescription/:appointmentId", prescriptionController.downloadPrescription.bind(prescriptionController));
 export default router;

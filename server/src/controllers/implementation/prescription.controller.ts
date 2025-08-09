@@ -61,7 +61,30 @@ async createPrescription(req: Request, res: Response, next: NextFunction): Promi
         }
         console.log("appointmentId : ",appointmentId);
         const response = await this._prescriptionService.getPrescription(appointmentId);
-        
+    
+        res.status(StatusCode.OK).json(response); 
+    } catch (error) {
+        next(error);
+    }
+  }
+
+
+
+
+  
+  async getEditPrescription(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const { appointmentId } = req.params
+        if(!appointmentId){
+            res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+            return;
+        }
+        console.log("appointmentId : ",appointmentId);
+        const response = await this._prescriptionService.getPrescription(appointmentId);
+        if(!response){
+           res.status(StatusCode.NOT_FOUND).json({message: "Prescription not Found"});
+           return;
+        }
         res.status(StatusCode.OK).json(response); 
     } catch (error) {
         next(error);

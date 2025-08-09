@@ -11,7 +11,7 @@ export  class DoctorProfileService implements IDoctorProfileService{
     async createDoctorProfile(
        DoctorId: string,
        data: Partial<IDoctorProfile>
-     ): Promise<IDoctorProfile> {
+     ): Promise<{message: string}> {
         try {
            if (!DoctorId) {
                throw new Error("Doctor ID is required");
@@ -27,8 +27,8 @@ export  class DoctorProfileService implements IDoctorProfileService{
                DoctorId: new mongoose.Types.ObjectId(DoctorId),
            };
 
-           const createProfile = await this._DoctorRepo.create(profileData);
-           return createProfile;
+           await this._DoctorRepo.create(profileData);
+           return {message: "profile created successfully"};
 
         }catch (error) {
            console.error("Error in creating profile:", error);
@@ -37,7 +37,7 @@ export  class DoctorProfileService implements IDoctorProfileService{
     }
 
 
-    async editDoctorProfile(DoctorId: string, data: Partial<IDoctorProfile>): Promise<IDoctorProfile> {
+    async editDoctorProfile(DoctorId: string, data: Partial<IDoctorProfile>): Promise<{message: string}> {
        try {
          const existing = await this._DoctorRepo.findByDoctorId(DoctorId);
          if (!existing) {
@@ -49,7 +49,8 @@ export  class DoctorProfileService implements IDoctorProfileService{
            throw new Error("Failed to update profile");
          }
 
-         return updated;
+        //  console.log("updated : ",updated)
+         return {message: "Updated successfully"};
 
        }catch (error) {
          console.error("Error in editing profile: ", error);

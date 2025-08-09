@@ -4,6 +4,37 @@ import { IAppointment } from "../../models/appointment/IAppointment";
 
 
 
+
+
+export interface IDoctorInfo {
+  _id: string;
+  name: string;
+  email: string;
+  photo: string;
+  isVerified: boolean;
+  isBlocked: boolean;
+  educationDetails: string;
+  averageRating: number;
+  ratingCount: number;
+  specialization: string;
+  yearOfExperience: number;
+  fee: number;
+}
+
+export interface IAppointmentResponse {
+  _id: string;
+  doctor: IDoctorInfo;
+  userId: string;
+  date: string;
+  time: string;
+  status: "pending" | "confirmed" | "cancelled" | "completed";
+  appointmentNo: number;
+  transactionId?: string;
+  payment: "paid" | "not paid" | "refund";
+}
+
+
+
 export interface ICreateAppointment {
   _id: string;
     doctor: {
@@ -38,31 +69,31 @@ export interface ICreateAppointmentResponse {
   timeArray: {}; 
 }
 
-export interface IAppointmentResponse {
-  _id: string;
-    doctor: {
-    _id: string;
-    name: string;
-    email: string;
-    photo?: string;
-    isVerified: boolean;
-    educationDetails: string;
-    averageRating?: number;
-    ratingCount?: number;
-    isBlocked: boolean;
-    specialization: string ;
-    yearOfExperience: number;
-    fee: number;
+// export interface IAppointmentResponse {
+//   _id: string;
+//     doctor: {
+//     _id: string;
+//     name: string;
+//     email: string;
+//     photo?: string;
+//     isVerified: boolean;
+//     educationDetails: string;
+//     averageRating?: number;
+//     ratingCount?: number;
+//     isBlocked: boolean;
+//     specialization: string ;
+//     yearOfExperience: number;
+//     fee: number;
 
-  };
-  userId: string;
-  date: string;           
-  time: string;
-  appointmentNo: number;
-  payment: "paid" | "not paid" | "refund";
-  status: "pending" | "confirmed" | "cancelled" | "completed"; 
-  transactionId?: string;
-}
+//   };
+//   userId: string;
+//   date: string;           
+//   time: string;
+//   appointmentNo: number;
+//   payment: "paid" | "not paid" | "refund";
+//   status: "pending" | "confirmed" | "cancelled" | "completed"; 
+//   transactionId?: string;
+// }
 
 
 export interface IDoctorUser  {

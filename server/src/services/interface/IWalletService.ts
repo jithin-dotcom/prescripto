@@ -41,7 +41,7 @@ export interface IWalletService {
 ): Promise<IWalletServiceResponse>;
 
 
-makeWalletPayment(userId: string, appointmentId: string): Promise<IWallet | null>
+makeWalletPayment(userId: string, appointmentId: string): Promise<{message: string}>
 
 
 }

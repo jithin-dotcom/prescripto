@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import axiosInstance from "../../utils/axios";
 import logo from '../../assets/Screenshot 2025-07-08 170708.png';
+import { toast } from "react-toastify";
 
 interface IMed {
   name: string;
@@ -34,6 +35,7 @@ const AppointmentDetails: React.FC = () => {
       if (!appointment?._id) return;
       try {
         const { data } = await axiosInstance.get(`/get-prescription/${appointment._id}`);
+        console.log("data : ", data);
         if (data) setPrescription(data);
       } catch (error) {
         console.error("Prescription not found or fetch failed", error);
@@ -73,13 +75,13 @@ const AppointmentDetails: React.FC = () => {
           <h2 className="text-2xl font-bold mb-8">Dashboard</h2>
           <nav className="space-y-4">
             <button
-              onClick={() => navigate("/create-prescription", { state: { appointment } })}
+              onClick={() => appointment.status === "completed" ? navigate("/create-prescription", { state: { appointment } }): toast.error("Consultation not Completed")}
               className="block w-full text-left hover:text-blue-300"
             >
               Write Prescription
             </button>
             <button
-              onClick={() => navigate("/edit-prescription", { state: { appointment } })}
+              onClick={() => appointment.status === "completed" ? navigate("/edit-prescription", { state: { appointment } }) : toast.error("Consultation not Completed")}
               className="block w-full text-left hover:text-blue-300"
             >
               Edit Prescription

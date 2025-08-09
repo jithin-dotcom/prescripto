@@ -2,10 +2,12 @@
 
 
 import mongoose from "mongoose";
-import { IConcern } from "../../models/concern/IConcern";
+import { IConcern, IConcernDocPopulated } from "../../models/concern/IConcern";
 import { IConcernRepository } from "../../repositories/interface/IConcernRepository";
 import { IConcernService } from "../interface/IConcernService";
 import { FilterQuery } from "mongoose";
+import { IConcernPopulated } from "../interface/IConcernService";
+import { mapConcernsClean } from "../../utils/mapper/concernService.mapper";
 
 export class ConcernService implements IConcernService {
     constructor(
@@ -73,7 +75,7 @@ export class ConcernService implements IConcernService {
 
 
   async getAllConcerns(page: number, limit: number, search: string, status: string): Promise<{
-  data: IConcern[];
+  data: IConcernPopulated[];
   total: number;
   page: number;
   pages: number;
@@ -107,7 +109,9 @@ export class ConcernService implements IConcernService {
 
     const pages = Math.ceil(total / limit);
 
-    return { data, total, page, pages };
+   
+    const newData = mapConcernsClean(data);
+    return { data: newData, total, page, pages };
   } catch (error) {
     throw error instanceof Error ? error : new Error("Something went wrong while fetching concerns");
   }
@@ -138,7 +142,7 @@ export class ConcernService implements IConcernService {
 
 
   async getConcernByUser(id: string, role: string, page: number, limit: number,  search: string, status: string): Promise<{
-  data: IConcern[];
+  data: IConcernPopulated[];
   total: number;
   page: number;
   pages: number;
@@ -182,7 +186,9 @@ export class ConcernService implements IConcernService {
 
     const pages = Math.ceil(total / limit);
 
-    return { data, total, page, pages };
+    const newData = mapConcernsClean(data);
+
+    return { data: newData, total, page, pages };
   } catch (error) {
     throw error instanceof Error ? error : new Error("Something went wrong while fetching concerns");
   }

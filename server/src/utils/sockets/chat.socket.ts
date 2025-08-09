@@ -61,57 +61,188 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
     }
   });
 
-  socket.on("sendMessage", async (data: any) => {
-    try {
-      console.log("entered into message read");
-      const { appointmentId, content, type, doctorId, userId } = data;
+  // socket.on("sendMessage", async (data: any) => {
+  //   try {
+  //     console.log("entered into message read");
+  //     const { appointmentId, content, type, doctorId, userId } = data;
 
-      if (!appointmentId || !content || !type || !doctorId || !userId) {
-        socket.emit("error", { message: "Missing required fields" });
-        console.log("missing data");
-        return;
-      }
+  //     if (!appointmentId || !content || !type || !doctorId || !userId) {
+  //       socket.emit("error", { message: "Missing required fields" });
+  //       console.log("missing data");
+  //       return;
+  //     }
 
-      let chat = await chatService.getChatByAppointmentId(appointmentId);
-      if (!chat) {
-        chat = await chatService.createChat(appointmentId, [userId, doctorId]);
-      }
+  //     let chat = await chatService.getChatByAppointmentId(appointmentId);
+  //     if (!chat) {
+  //       chat = await chatService.createChat(appointmentId, [userId, doctorId]);
+  //     }
       
 
-      let finalContent = content;
+  //     let finalContent = content;
 
-      console.log("type : ",type);
+  //     console.log("type : ",type);
 
-      if (type === "image") {
-        const matches = content.match(/^data:(.+);base64,(.+)$/);
-        if (!matches || matches.length !== 3) {
-          socket.emit("error", { message: "Invalid image format." });
-          return;
-        }
+  //     if (type === "image") {
+  //       const matches = content.match(/^data:(.+);base64,(.+)$/);
+  //       if (!matches || matches.length !== 3) {
+  //         socket.emit("error", { message: "Invalid image format." });
+  //         return;
+  //       }
 
-        const buffer = Buffer.from(matches[2], "base64");
-        try {
-          finalContent = await uploadToCloudinary(buffer, "chat_images");
-        } catch (uploadErr) {
-          console.error("Cloudinary upload error:", uploadErr);
-          socket.emit("error", { message: "Image upload failed." });
-          return;
-        }
-      }
+  //       const buffer = Buffer.from(matches[2], "base64");
+  //       try {
+  //         finalContent = await uploadToCloudinary(buffer, "chat_images");
+  //       } catch (uploadErr) {
+  //         console.error("Cloudinary upload error:", uploadErr);
+  //         socket.emit("error", { message: "Image upload failed." });
+  //         return;
+  //       }
+  //     }
 
-      const message = await chatService.createMessage(
-        chat._id.toString(),
-        user.id,
-        finalContent,
-        type
-      );
+  //     if(!chat){
+  //        throw new Error("Chat does not exists");
+  //     }
+  //     const message = await chatService.createMessage(
+  //       chat._id.toString(),
+  //       user.id,
+  //       finalContent,
+  //       type
+  //     );
 
-      io.to(appointmentId).emit("receiveMessage", message);
-    } catch (error) {
-      console.error("sendMessage error:", error);
-      socket.emit("error", { message: "Internal server error" });
+  //     io.to(appointmentId).emit("receiveMessage", message);
+  //   } catch (error) {
+  //     console.error("sendMessage error:", error);
+  //     socket.emit("error", { message: "Internal server error" });
+  //   }
+  // });
+
+
+
+
+
+
+
+
+
+
+//   socket.on("sendMessage", async (data: any) => {
+//   try {
+//     console.log("📩 Incoming message data:", data);
+
+//     const { appointmentId, content, type, doctorId, userId } = data;
+
+//     if (!appointmentId || !content || !type || !doctorId || !userId) {
+//       console.warn("❌ Missing required fields:", { appointmentId, content, type, doctorId, userId });
+//       socket.emit("error", { message: "Missing required fields" });
+//       return;
+//     }
+
+//     let chat = await chatService.getChatByAppointmentId(appointmentId);
+//     if (!chat) {
+//       console.log("💬 No chat found — creating new one");
+//       chat = await chatService.createChat(appointmentId, [userId, doctorId]);
+//     }
+
+//     let finalContent = content;
+//     console.log("🖼 Message type received:", type);
+
+//     if (type === "image") {
+//       console.log("🔍 Checking base64 format...");
+//       const matches = content.match(/^data:(.+);base64,(.+)$/);
+
+//       if (!matches) {
+//         console.error("❌ Invalid image format. Content:", content.substring(0, 50) + "...");
+//         socket.emit("error", { message: "Invalid image format." });
+//         return;
+//       }
+
+//       console.log("✅ Base64 detected, uploading to Cloudinary...");
+//       const buffer = Buffer.from(matches[2], "base64");
+
+//       try {
+//         finalContent = await uploadToCloudinary(buffer, "chat_images");
+//         console.log("☁️ Uploaded to Cloudinary:", finalContent);
+//       } catch (uploadErr) {
+//         console.error("❌ Cloudinary upload error:", uploadErr);
+//         socket.emit("error", { message: "Image upload failed." });
+//         return;
+//       }
+//     }
+
+//     const message = await chatService.createMessage(
+//       chat._id.toString(),
+//       user.id,
+//       finalContent,
+//       type
+//     );
+
+//     console.log("📤 Message saved and broadcasting:", message);
+//     io.to(appointmentId).emit("receiveMessage", message);
+//   } catch (error) {
+//     console.error("💥 sendMessage error:", error);
+//     socket.emit("error", { message: "Internal server error" });
+//   }
+// });
+
+
+
+
+
+
+
+socket.on("sendMessage", async (data: any) => {
+  try {
+    console.log("📩 Incoming message data:", data);
+
+    const { appointmentId, content, type, doctorId, userId } = data;
+
+    // Validate required fields
+    if (!appointmentId || !content || !type || !doctorId || !userId) {
+      console.warn(" Missing required fields:", { appointmentId, content, type, doctorId, userId });
+      socket.emit("error", { message: "Missing required fields" });
+      return;
     }
-  });
+
+   
+    if (type === "image" && !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/i.test(content)) {
+      console.error("Invalid image URL format:", content);
+      socket.emit("error", { message: "Invalid image URL format." });
+      return;
+    }
+
+   
+    let chat = await chatService.getChatByAppointmentId(appointmentId);
+    if (!chat) {
+      console.log("No chat found — creating new one");
+      chat = await chatService.createChat(appointmentId, [userId, doctorId]);
+    }
+
+    if(!chat){
+       throw new Error("Failed to create chat");
+    }
+    const message = await chatService.createMessage(
+      chat._id.toString(),
+      user.id, 
+      content,
+      type
+    );
+
+    console.log("Message saved and broadcasting:", message);
+
+  
+    io.to(appointmentId).emit("receiveMessage", message);
+
+  } catch (error) {
+    console.error("sendMessage error:", error);
+    socket.emit("error", { message: "Internal server error" });
+  }
+});
+
+
+
+
+
+
 
   socket.on("markAsRead", async ({ chatId }: { chatId: string }) => {
     if (!chatId || !mongoose.Types.ObjectId.isValid(chatId)) {
@@ -169,16 +300,11 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
     socket.to(appointmentId).emit("stopTyping", { senderId });
   });
 
-  // socket.on("saveToDb", async() => {
-    
-  //   console.log("user.ID : ",user.id);
-  //   console.log("user.ID : ",user.role);
-  //    await chatService.lastSeenUserDoctor(user.id, user.role);
-  //    console.log("userId lasttime : ", user.id);
-  // })
+ 
 
-  socket.on("disconnect", async() => {
+  socket.on("disconnect", async(reason) => {
     console.log(`User ${user.id} disconnected`);
+    console.log(`User ${user.id} disconnected. Reason: ${reason}`);
     onlineUsers.delete(user.id);
     socket.broadcast.emit("user-offline", user.id);
   });

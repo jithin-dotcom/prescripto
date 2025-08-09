@@ -6,7 +6,8 @@ export interface UserProfile {
 }
 
 export interface User {
-  _id: string;
+  // _id: string;
+  id: string;
   name: string;
   email: string;
   photo?: string;

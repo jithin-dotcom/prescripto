@@ -7,7 +7,7 @@ export interface DoctorProfile {
 }
 
 export interface Doctor {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   photo?: string;

@@ -9,6 +9,7 @@ export interface IPayment extends Document {
   amount: number;
   currency: string;
   status: "created" | "paid" | "failed"; 
+  paymentMethod?: string;
   razorpayOrderId: string;
   razorpayPaymentId?: string;
   razorpaySignature?: string;

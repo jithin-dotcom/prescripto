@@ -66,7 +66,7 @@ const EditDoctor: React.FC = () => {
       .then(res => {
         const user = res.data.data;
         const p = user.profile?.[0] || {};
-
+        console.log("user.data.data : ", user);
         const availability: AvailabilitySlot[] = (p.availability || []).map((slot: AvailabilitySlot) => ({
           day: slot.day,
           slots: (slot.slots || []).map((b: TimeBlock) => ({
@@ -114,7 +114,7 @@ const EditDoctor: React.FC = () => {
       if (isNaN(+form.yearOfExperience)) throw new Error("Experience must be numeric");
       if (isNaN(+form.fee)) throw new Error("Fee must be numeric");
 
-      // Process availability
+      
       const seenDays = new Set<string>();
       const convertedAvail: AvailabilitySlot[] = [];
 

@@ -1,6 +1,6 @@
 
 
-import { IUser } from "../../types/user.type";
+import { IUser, ITopDoctorClean } from "../../types/user.type";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 
@@ -10,6 +10,7 @@ import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 export interface IUserService {
    
     getTopDoctors():Promise<({user: IUser, profile: IPatientProfile | null})[]>;
+    // getTopDoctors(): Promise<ITopDoctorClean[]> 
    
     getAllDoctors(
      page: number,

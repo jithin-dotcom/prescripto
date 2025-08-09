@@ -1,5 +1,5 @@
 
-import { IUser } from "../../types/user.type";
+import { IUser, IUserDb } from "../../types/user.type";
 import { Document, SortOrder, FilterQuery } from "mongoose";
 import { IBaseRepository } from "./IBaseRepository";
 
@@ -11,6 +11,7 @@ export interface IUserRepository extends IBaseRepository< IUser & Document >{
     updatePasswordByEmail(email: string, hashedPassword: string): Promise<void>;
     updatePhoto(userId: string, photoUrl: string): Promise<(IUser & Document) | null>;
     findTopDoctors(limit: number): Promise<(IUser & Document)[] | null>;
+    // findTopDoctors(limit: number): Promise<IUserDb[] | null>;
     
     findAll(
       filter: FilterQuery<IUser>,

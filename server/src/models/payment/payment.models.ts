@@ -2,6 +2,7 @@
 
 import mongoose, { Schema } from "mongoose";
 import { IPayment } from "./IPayment";
+import { string } from "zod";
 
 const paymentSchema: Schema = new Schema<IPayment>(
   {
@@ -32,6 +33,9 @@ const paymentSchema: Schema = new Schema<IPayment>(
       type: String,
       enum: ["created", "paid", "failed"], 
       default: "created",
+    },
+    paymentMethod: {
+       type: String,
     },
     razorpayOrderId: {
       type: String,

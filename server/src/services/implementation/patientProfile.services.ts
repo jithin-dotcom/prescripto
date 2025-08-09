@@ -16,7 +16,7 @@ export  class PatientProfileService implements IPatientProfileService{
     async createPatientProfile(
        patientId: string,
        data: Partial<IPatientProfile>
-     ): Promise<IPatientProfile> {
+     ): Promise<{message: string}> {
         try {
            if (!patientId) {
                throw new Error("Patient ID is required");
@@ -32,8 +32,8 @@ export  class PatientProfileService implements IPatientProfileService{
                patientId: new mongoose.Types.ObjectId(patientId),
            };
 
-           const createProfile = await this._patientRepo.create(profileData);
-           return createProfile;
+           await this._patientRepo.create(profileData);
+           return {message: "Successfully Created Profile"};
 
         }catch (error) {
            console.error("Error in creating profile:", error);
@@ -42,7 +42,7 @@ export  class PatientProfileService implements IPatientProfileService{
     }
 
 
-    async editPatientProfile(patientId: string, data: Partial<IPatientProfile>): Promise<IPatientProfile> {
+    async editPatientProfile(patientId: string, data: Partial<IPatientProfile>): Promise<{message: string}> {
        try {
          const existing = await this._patientRepo.findByPatientId(patientId);
          if (!existing) {
@@ -54,7 +54,7 @@ export  class PatientProfileService implements IPatientProfileService{
            throw new Error("Failed to update profile");
          }
 
-         return updated;
+         return { message: "Profile Edited successfully"};
 
        }catch (error) {
          console.error("Error in editing profile: ", error);

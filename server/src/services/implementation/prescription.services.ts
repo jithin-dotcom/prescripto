@@ -1,12 +1,13 @@
 
 
-import { IPrescription } from "../../models/prescription/IPrescription";
+import { IPrescription, IPrescriptionClean } from "../../models/prescription/IPrescription";
 import { IPrescriptionRepository } from "../../repositories/interface/IPrescriptionRepository";
 import mongoose from "mongoose";
 import { IPrescriptionService } from "../interface/IPrescriptionService";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
+import { mapPrescription } from "../../utils/mapper/prescriptionService.mapper";
 
 
 export class PrescriptionService implements IPrescriptionService{
@@ -14,13 +15,13 @@ export class PrescriptionService implements IPrescriptionService{
         private _prescriptionRepo: IPrescriptionRepository,
     ){}
 
-    async createPrescription(data: IPrescription): Promise<IPrescription> {
+    async createPrescription(data: IPrescription): Promise<{message: string}> {
         try {
             const prescription = await this._prescriptionRepo.create(data);
             if(!prescription){
                 throw new Error("Failed to create Prescription");
             }
-            return prescription;
+            return {message: "Prescription created Successfully"};
             
         } catch (error) {
             if(error instanceof Error){
@@ -32,17 +33,18 @@ export class PrescriptionService implements IPrescriptionService{
     }
 
 
-    async getPrescription(appointmentId: string): Promise<IPrescription | null> {
+    async getPrescription(appointmentId: string): Promise<IPrescriptionClean | null> {
         try {
             if(!appointmentId){
                 throw new Error("AppointmentId missing");
             }
             const appId = new mongoose.Types.ObjectId(appointmentId);
             const prescription = await this._prescriptionRepo.getPrescription(appId);
-            // if(!prescription){
-            //     throw new Error("Prescription not found");
-            // }
-            return prescription;
+            if (!prescription) {
+              return null; 
+            }
+           
+            return mapPrescription(prescription);
         } catch (error) {
             if(error instanceof Error){
                 throw error;
@@ -53,20 +55,51 @@ export class PrescriptionService implements IPrescriptionService{
     }
 
 
-    async editPrescription(appointmentId: string, data: Partial<IPrescription>): Promise<IPrescription | null> {
+
+    
+    async getEditPrescription(appointmentId: string): Promise<IPrescriptionClean | null> {
         try {
-            console.log("entered into service ");
+            if(!appointmentId){
+                throw new Error("AppointmentId missing");
+            }
+            const appId = new mongoose.Types.ObjectId(appointmentId);
+            const prescription = await this._prescriptionRepo.getPrescription(appId);
+            if(!prescription){
+                throw new Error("Prescription not found");
+            }
+            return mapPrescription(prescription);
+        } catch (error) {
+            if(error instanceof Error){
+                throw error;
+            }else{
+                throw new Error("Something went wrong");
+            }
+        }
+    }
+   
+
+
+    async editPrescription(appointmentId: string, data: Partial<IPrescription>): Promise<{message: string}> {
+        try {
+            
             if(!appointmentId){
                 throw new Error("AppointmentId required");
             }
             const appId = new mongoose.Types.ObjectId(appointmentId);
+
+            const prescription = await this._prescriptionRepo.findOne({appointmentId:appId});
+            // console.log("prescription : ",prescription );
+            if(!prescription){
+               throw new Error("No Prescription Found");
+            
+            }
             
             const result = await this._prescriptionRepo.updatePrescription(appId,data);
             
             if(!result){
                 throw new Error("Failed to update Prescription");
             }
-            return result;
+            return {message: "Prescription Updated Successfully"};
         } catch (error) {
             if(error instanceof Error){
                 throw error;
