@@ -2,7 +2,7 @@
 
 export const APIRoutes = {
    UPLOAD_PATIENT_PHOTO: "/patient/upload-photo", 
-   TOP_DOCTORS: "/user/top-doctors",
+   TOP_DOCTORS: "/doctor/top-doctor-rating",
    ADMIN_CREATE_USERS: "/admin/create-users",
    CANCEL_APPOINTMENTS: "/cancel-appointment",
    USERS_COUNT: "/admin/users-count",
@@ -12,6 +12,7 @@ export const APIRoutes = {
    ADMIN_GET_USER_EDIT: "/admin/get-user", 
    ADMIN_UPDATE_USERS: "/admin/update-user",
    ALL_CONCERNS: "/get-allConcerns",
+   
 } as const
 
 

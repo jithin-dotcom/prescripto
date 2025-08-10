@@ -1,7 +1,9 @@
 
-import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
+import { IDoctorProfile, IDoctorProfileDashboard } from "../../models/doctor/IDoctorProfile";
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 import { IDoctorProfileService } from "../interface/IDoctorService";
+import { mapDoctorProfiles } from "../../utils/mapper/doctorProfileServices";
+import { IDoctorProfileDashboardClean } from "../../utils/mapper/doctorProfileServices";
 import mongoose from "mongoose";
 
 export  class DoctorProfileService implements IDoctorProfileService{
@@ -71,5 +73,56 @@ export  class DoctorProfileService implements IDoctorProfileService{
             throw error;
         }
     }
+
+
+
+    // async findDoctorProfileWithRatings(): Promise<(IDoctorProfileDashboard | null)[]> {
+    //   try {
+    //      const doctorProfile = await this._DoctorRepo.findTopDoctorsWithRating();
+    //      console.log("doctorProfile : ", doctorProfile)
+    //      return doctorProfile;
+    //   } catch (error) {
+    //     throw new Error("Failed to fetch Top doctors");
+    //   }
+    // }
+
+
+
+// async findDoctorProfileWithRatings(): Promise<IDoctorProfileDashboardClean[]> {
+//   try {
+//     const doctorProfiles = await this._DoctorRepo.findTopDoctorsWithRating();
+//     // console.log("doctorProfile : ", doctorProfiles);
+//     const nonNullProfiles = doctorProfiles.filter(
+//       (profile): profile is NonNullable<typeof profile> => profile !== null
+//     );
+
+//     // console.log("mappde doctors : ",mapDoctorProfiles(nonNullProfiles))
+//     return mapDoctorProfiles(nonNullProfiles);
+//   } catch (error) {
+//     throw new Error("Failed to fetch Top doctors");
+//   }
+// }
+
+
+
+
+async findDoctorProfileWithRatings(): Promise<IDoctorProfileDashboardClean[]> {
+  try {
+    const doctorProfiles = await this._DoctorRepo.findTopDoctorsWithRating();
+
+    const nonNullProfiles = doctorProfiles.filter(
+      (profile): profile is NonNullable<typeof profile> => profile !== null
+    );
+
+    return mapDoctorProfiles(nonNullProfiles);
+  } catch (error) {
+    console.error("Error in findDoctorProfileWithRatings:", error);
+    throw error; 
+  }
+}
+
+
+
+
 
 }

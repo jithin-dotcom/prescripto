@@ -65,5 +65,18 @@ export class DoctorProfileController implements IDoctorProfileController {
      }
 
     }
-
+    
+    async findDoctorWithRating(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const response = await this._doctorProfileService.findDoctorProfileWithRatings();
+            console.log("response controller: ", response);
+            if(!response){
+                res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: "Doctors not found"});
+                return;
+            }
+            res.status(StatusCode.OK).json(response);
+        } catch (error) {
+            next(error);
+        }
+    }
 }

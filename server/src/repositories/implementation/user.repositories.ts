@@ -4,7 +4,7 @@ import { UserModel } from "../../models/user.models";
 import { IUser, IUserDb } from "../../types/user.type";
 import { IUserRepository } from "../interface/IUserRepository";
 import { BaseRepository } from "./base.repositories";
-import { Document, SortOrder } from "mongoose";
+import { Document, FilterQuery, SortOrder } from "mongoose";
 
 
 export class UserRepository
@@ -35,28 +35,42 @@ export class UserRepository
     return await this.model.find({ role: "doctor", isBlocked: false, isVerified: true }).sort({createdAt:-1}).limit(limit);
   }
 
+
+
+
+
+
+
 //   async findTopDoctors(limit: number = 4): Promise<IUserDb[]> {
 //   return this.model
 //     .find({ role: "doctor", isBlocked: false, isVerified: true })
 //     .sort({ createdAt: -1 })
 //     .limit(limit)
-//     .lean<IUserDb[]>(); // ensures plain objects with IUserDb type
+//     .lean<IUserDb[]>(); 
 // }
 
-  async findAll(
-  filter: Partial<IUser>,
-  skip = 0,
-  limit = 8,
-  sort: Record<string, SortOrder> = { createdAt: -1}
-  ): Promise<(IUser & Document)[]> {
+  // async findAll(
+  // filter: Partial<IUser>,
+  // skip = 0,
+  // limit = 8,
+  // sort: Record<string, SortOrder> = { createdAt: -1}
+  // ): Promise<(IUser & Document)[]> {
    
-    return await this.model.find(filter).skip(skip).limit(limit).sort(sort);
-  }
+  //   return await this.model.find(filter).skip(skip).limit(limit).sort(sort);
+  // }
 
   async count(filter: Partial<IUser>): Promise<number> {
     return await this.model.countDocuments(filter);
   }
 
-   
+  //  async findAll(filter: FilterQuery<IUser>): Promise<(IUser & Document)[]> {
+  //       return await  this.model.find(filter);
+  //  }
+
+
+ 
+
+
+  
  
 }

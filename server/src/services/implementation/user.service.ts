@@ -3,9 +3,9 @@ import { IUserService } from "../interface/IUserService";
 import { IPatientProfileRepository } from "../../repositories/interface/IPatientProfileRepository";
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
-import { IUser, ITopDoctorClean, IDoctorProfileDb } from "../../types/user.type";
+import { IUser, ITopDoctorClean } from "../../types/user.type";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
-import { mapTopDoctor } from "../../utils/mapper/userService.mapper";
+import { mapTopDoctors } from "../../utils/mapper/userService.mapper";
 
 
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
@@ -32,54 +32,35 @@ export class UserService implements IUserService {
     ){}
 
 
-    async getTopDoctors(): Promise<({user: IUser, profile: IPatientProfile | null})[]> {
-      try {
-       const users = await this._userRepo.findTopDoctors(4); 
+  //   async getTopDoctors(): Promise<({user: IUser, profile: IPatientProfile | null})[]> {
+  //     try {
+  //      const users = await this._userRepo.findTopDoctors(4); 
 
-       if (!users || users.length === 0) return [];
+  //      if (!users || users.length === 0) return [];
 
-       const items = await Promise.all(users.map(async (doc) => {
-          const profile = await this._doctorRepo.findAll({ doctorId: doc._id });
-
-
-
-          return {
-           ...doc.toObject(),
-           profile, 
-         };
-       }));
-
-       console.log("items : ",items);
-
-       return items;
-
-     } catch (error) {
-       console.error(error);
-       throw new Error(`Failed to fetch doctors`);
-     }
-   }
+  //      const items = await Promise.all(users.map(async (doc) => {
+  //         const profile = await this._doctorRepo.findAll({ doctorId: doc._id });
 
 
 
+  //         return {
+  //          ...doc.toObject(),
+  //          profile, 
+  //        };
+  //      }));
 
-  // async getTopDoctors(): Promise<ITopDoctorClean[]> {
-  //   try {
-  //     const users = await this._userRepo.findTopDoctors(4); // IUserDb[]
-  //     if (!users || users.length === 0) return [];
+  //      console.log("items : ",items);
 
-  //     const items = await Promise.all(
-  //       users.map(async (user) => {
-  //         const profiles = await this._doctorRepo.findAll({ doctorId: user._id });
-  //         return mapTopDoctor(user, profiles as unknown as IDoctorProfileDb[]);
-  //       })
-  //     );
+  //      return items;
 
-  //     return items;
-  //   } catch (error) {
-  //     console.error("Error in getTopDoctors:", error);
-  //     throw new Error("Failed to fetch top doctors");
-  //   }
-  // }
+  //    } catch (error) {
+  //      console.error(error);
+  //      throw new Error(`Failed to fetch doctors`);
+  //    }
+  //  }
+
+
+
 
 
 

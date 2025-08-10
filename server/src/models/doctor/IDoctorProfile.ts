@@ -52,3 +52,35 @@ export interface IDoctorProfileDashboard extends Document {
   availability?: IAvailabilitySlot[];
   slotDuration?: number;
 }
+
+
+
+
+export interface IDoctorProfileDashboardClean {
+  _id: string;
+  doctorId: {
+    _id: string;
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+    isVerified: boolean;
+    authProvider: string;
+    isBlocked: boolean;
+    createdAt: string;
+    photo: string;
+  };
+  educationDetails: string;
+  specialization: string;
+  registrationNumber: string;
+  registrationYear: string;
+  yearOfExperience: number;
+  proofDocuments: string[];
+  fee: number;
+  about: string;
+  createdAt: string;
+  availability?: IAvailabilitySlot[];
+  slotDuration?: number;
+  averageRating?: number;
+  ratingCount?: number;
+}
