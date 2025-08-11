@@ -7,5 +7,5 @@ export interface IPaymentController {
     createPayout(req: Request, res: Response, next: NextFunction): Promise<void>;
     getPayouts(req: Request, res: Response, next: NextFunction): Promise<void>;
     getDoctorPayouts(req: Request, res: Response, next: NextFunction): Promise<void>;
-    // initiatePayout(req: Request, res: Response, next: NextFunction): Promise<void>;
+    
 }

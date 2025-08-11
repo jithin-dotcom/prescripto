@@ -7,7 +7,6 @@ import { assets } from "../../assets/assets1";
 import axiosInstance from "../../utils/axios";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
-// import axios from "axios";
 import type { Slot, DoctorProfile, Availability } from "../../interfaces/IAppointments";
 import { APIUserRoutes } from "../../constants/routes.constants";
 import ConfirmModal from "../../components/ConfirmModal";
@@ -180,10 +179,7 @@ const Appointment: React.FC = () => {
           toast.error("Doctor not found.");
           return;
         }
-        console.log("timeArray :  ",res.data?.timeArray);
-        // setBookedSlot(res.data?.timeArray);
-
-        console.log("slot duration : ",firstDoctor.slotDuration);
+       
         const transformedDoctor: DoctorProfile = {
           _id: firstDoctor._id,
           name: firstDoctor.name,

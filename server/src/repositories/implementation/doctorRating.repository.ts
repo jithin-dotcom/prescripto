@@ -12,8 +12,7 @@ export class DoctorRatingRepository extends BaseRepository<IDoctorRating> implem
     constructor(){
         super(DoctorRatingModel);
     }
-    
-    
+      
 
 async getDoctorRating(
   doctorId: string,

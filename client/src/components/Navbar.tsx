@@ -185,15 +185,7 @@ const Navbar = () => {
                     >
                       Wallet
                     </button>
-                       {/* <button
-                      onClick={() => {
-                        setDropdownOpen(false);
-                        navigate("/rate-doctor");
-                      }}
-                      className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
-                    >
-                      Rate Doctor
-                    </button> */}
+                      
 
                      <button
                       onClick={() => {

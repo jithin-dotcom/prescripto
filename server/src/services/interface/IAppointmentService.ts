@@ -1,5 +1,5 @@
 
-import mongoose from "mongoose";
+
 import { IAppointment } from "../../models/appointment/IAppointment";
 
 
@@ -69,31 +69,6 @@ export interface ICreateAppointmentResponse {
   timeArray: {}; 
 }
 
-// export interface IAppointmentResponse {
-//   _id: string;
-//     doctor: {
-//     _id: string;
-//     name: string;
-//     email: string;
-//     photo?: string;
-//     isVerified: boolean;
-//     educationDetails: string;
-//     averageRating?: number;
-//     ratingCount?: number;
-//     isBlocked: boolean;
-//     specialization: string ;
-//     yearOfExperience: number;
-//     fee: number;
-
-//   };
-//   userId: string;
-//   date: string;           
-//   time: string;
-//   appointmentNo: number;
-//   payment: "paid" | "not paid" | "refund";
-//   status: "pending" | "confirmed" | "cancelled" | "completed"; 
-//   transactionId?: string;
-// }
 
 
 export interface IDoctorUser  {

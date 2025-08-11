@@ -1,8 +1,5 @@
 
 
-
-
-
 import { IWalletHistory } from "../../models/walletHistory/IWalletHistory";
 import { IWalletHistoryDTO } from "../../services/interface/ICallLogService";
 import mongoose from "mongoose";

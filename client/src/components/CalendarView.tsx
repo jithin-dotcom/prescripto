@@ -1,7 +1,5 @@
 
 
-
-// components/CalendarView.tsx
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -12,8 +10,8 @@ import "@fullcalendar/timegrid/main.css";
 
 interface Appointment {
   _id: string;
-  date: string;   // "2025-08-02"
-  time: string;   // "14:30"
+  date: string;   
+  time: string;   
   status: string;
   user: { name: string };
   fee: number;

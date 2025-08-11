@@ -436,7 +436,7 @@ const EditDoctor: React.FC = () => {
             </div>
           ))}
 
-          {/* Add Time Block */}
+          
           <button
             type="button"
             onClick={() => {
@@ -453,7 +453,7 @@ const EditDoctor: React.FC = () => {
     ))}
   </div>
 
-  {/* Add New Day */}
+  
   <div className="mt-6">
     <button
       type="button"

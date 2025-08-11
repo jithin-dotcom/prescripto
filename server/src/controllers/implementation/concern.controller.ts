@@ -48,37 +48,6 @@ export class ConcernController {
 
 
 
-  //   async getAllConcerns(req: Request, res: Response, next: NextFunction): Promise<void> {
-  //   try {
-  //     const page = parseInt(req.query.page as string) || 1;
-  //     const limit = parseInt(req.query.limit as string) || 10;
-  //     const { data, total, page: currentPage, pages } = await this._concernService.getAllConcerns(page, limit);
-  //     res.status(StatusCode.OK).json({
-  //       status: "success",
-  //       data,
-  //       pagination: {
-  //         total,
-  //         page: currentPage,
-  //         pages,
-  //         limit,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     if (error instanceof Error) {
-  //       res.status(StatusCode.BAD_REQUEST).json({
-  //         status: "fail",
-  //         message: error.message,
-  //       });
-  //     } else {
-  //       next(error);
-  //     }
-  //   }
-  // }
-
-
-
-
-
 
   async getAllConcerns(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -164,8 +133,7 @@ export class ConcernController {
       console.log("entered into controller");
        const { id } = req.params;
        const { status } = req.body;
-      //  console.log("id : ",id);
-      //  console.log("status : ", status);
+      
        if(!id || (status !== "resolved" && status !== "rejected")){
         
           res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);

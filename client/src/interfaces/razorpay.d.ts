@@ -39,12 +39,3 @@ interface Window {
 }
 
 
-
-// declare global {
-//   interface Window {
-//     Razorpay: RazorpayConstructor;
-//   }
-
-//   const Razorpay: RazorpayConstructor;
-// }
-

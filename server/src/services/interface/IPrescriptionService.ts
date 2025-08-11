@@ -3,7 +3,6 @@ import { IPrescription, IPrescriptionClean } from "../../models/prescription/IPr
 
 export interface IPrescriptionService {
     createPrescription(data: Partial<IPrescription>): Promise<{message: string}>;
-    // getPrescription(appointmentId: string): Promise<IPrescription | null>;
     editPrescription(appointmentId: string, data: Partial<IPrescription>): Promise<{message: string}>;
     generatePrescriptionPDF(prescription: any): Promise<Buffer>;
     getEditPrescription(appointmentId: string): Promise<IPrescriptionClean | null>; 

@@ -36,41 +36,10 @@ export class UserRepository
   }
 
 
-
-
-
-
-
-//   async findTopDoctors(limit: number = 4): Promise<IUserDb[]> {
-//   return this.model
-//     .find({ role: "doctor", isBlocked: false, isVerified: true })
-//     .sort({ createdAt: -1 })
-//     .limit(limit)
-//     .lean<IUserDb[]>(); 
-// }
-
-  // async findAll(
-  // filter: Partial<IUser>,
-  // skip = 0,
-  // limit = 8,
-  // sort: Record<string, SortOrder> = { createdAt: -1}
-  // ): Promise<(IUser & Document)[]> {
-   
-  //   return await this.model.find(filter).skip(skip).limit(limit).sort(sort);
-  // }
-
   async count(filter: Partial<IUser>): Promise<number> {
     return await this.model.countDocuments(filter);
   }
 
-  //  async findAll(filter: FilterQuery<IUser>): Promise<(IUser & Document)[]> {
-  //       return await  this.model.find(filter);
-  //  }
-
-
  
-
-
-  
  
 }

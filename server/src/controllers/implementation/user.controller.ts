@@ -9,18 +9,7 @@ import { StatusMessage } from "../../constants/statusMessage";
 
 export class UserController implements IUserController {
     constructor (private _userService: IUserService){}
-
-    // async getTopDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
-    //     try {
-    //         const result = await this._userService.getTopDoctors();
-    //         res.status(StatusCode.OK).json({message: StatusMessage.OK, data: result});
-    //         return;
-    //     } catch (error) {
-    //         next(error);
-    //     }
-
-    // }
-   
+ 
 
    async getAllDoctors(req: Request, res: Response, next: NextFunction): Promise<void> {
      try {

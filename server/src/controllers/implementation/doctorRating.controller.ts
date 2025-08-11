@@ -65,8 +65,4 @@ export class DoctorRatingController implements IDoctorRatingController{
 }
 
 
-
-
-
-
 }

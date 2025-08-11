@@ -13,17 +13,9 @@ export class PrescriptionRepository extends BaseRepository<IPrescription> implem
         super(PrescriptionModel);
      }
 
-   //   async getPrescription(appointmentId: mongoose.Types.ObjectId) {
-   //       return await this.model.findOne({appointmentId})
-   //                              .populate("appointmentId")
-   //                              .populate("patientId")
-   //                              .populate("doctorId")
-                                                     
-   //   }
 
 
-
-   async getPrescription(
+async getPrescription(
   appointmentId: mongoose.Types.ObjectId
 ): Promise<IPrescriptionDocPopulated | null> {
   return this.model
@@ -37,17 +29,15 @@ export class PrescriptionRepository extends BaseRepository<IPrescription> implem
 
 
 
-
-
-     async getAllPrescription(patientId: mongoose.Types.ObjectId) {
-        return await this.model.find({patientId})
+   async getAllPrescription(patientId: mongoose.Types.ObjectId) {
+      return await this.model.find({patientId})
                                .populate("appointmentId")
                                .populate("doctorId")
                                .populate("patientId")
-     }
+   }
 
-     async updatePrescription(appointmentId: mongoose.Types.ObjectId, data: IPrescription) {
-        return await this.model.findOneAndUpdate({ appointmentId }, data, { new: true });
-     }
+   async updatePrescription(appointmentId: mongoose.Types.ObjectId, data: IPrescription) {
+      return await this.model.findOneAndUpdate({ appointmentId }, data, { new: true });
+   }
      
 }

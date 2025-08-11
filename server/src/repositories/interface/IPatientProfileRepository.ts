@@ -8,5 +8,4 @@ export interface IPatientProfileRepository extends IBaseRepository<IPatientProfi
   findByPatientId(patientId: string | mongoose.Types.ObjectId): Promise<IPatientProfile | null>;
   updateByPatientId(patientId: string | mongoose.Types.ObjectId, data: Partial<IPatientProfile>): Promise<IPatientProfile | null>;
  
-
 }

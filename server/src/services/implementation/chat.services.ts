@@ -6,7 +6,6 @@ import { ChatDTO, IChatService, IMessageClean } from "../interface/IChatService"
 import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IMessageRepository } from "../../repositories/interface/IMessageRepository";
 import mongoose from "mongoose";
-// import { timeStamp } from "console";
 import { mapMessagesClean, mapToChatDTO} from "../../utils/mapper/chatService.mapper";
 
 export class ChatService implements IChatService {
@@ -60,9 +59,7 @@ export class ChatService implements IChatService {
       if(!result){
         return null;
       }
-      // console.log("resiult : ",result);
-      // return result;
-      // return await this._chatRepo.findById(chatId);
+    
       return mapToChatDTO(result);
     } catch (error) {
       console.error("Error fetching chat:", error);
@@ -106,8 +103,7 @@ export class ChatService implements IChatService {
       const updateChat = await this._chatRepo.updateById(chatId,{lastMessage:{
         content,
       }});
-      // console.log("updateChat : ",updateChat);
-      // console.log("message : ",message);
+     
       return message;
     } catch (error) {
       console.error("Error creating message:", error);
@@ -118,7 +114,6 @@ export class ChatService implements IChatService {
   async getMessagesByChatId(chatId: string): Promise<IMessageClean[]> {
     try {
       const result =  await this._messageRepo.getMessagesByChatId(chatId);
-      console.log("result : mesage : ", result);
 
       return mapMessagesClean(result);
     } catch (error) {
@@ -161,35 +156,6 @@ export class ChatService implements IChatService {
     }
   }
 
-
-  // async lastSeenUserDoctor(id: string, role: string): Promise<void> {
-  //    try {
-  //       const now =  new Date;
-  //       console.log("entered into services : ", id, role);
-  //       if(role === "user"){
-  //          await this._chatRepo.updateChatByUserId(id, now);
-  //       }else{
-  //          await this._chatRepo.updateChatByDoctorId(id, now);
-  //       }
-  //    }catch (error) {
-  //      throw error;
-  //    }
-  // }
-
-
-  //   async onlineUserDoctor(id: string, role: string): Promise<void> {
-  //    try {
-  //       const now =  new Date;
-  //       console.log("entered into services : ", id, role);
-  //       if(role === "user"){
-  //          await this._chatRepo.updateChatByUserId(id, null);
-  //       }else{
-  //          await this._chatRepo.updateChatByDoctorId(id, null);
-  //       }
-  //    }catch (error) {
-  //      throw error;
-  //    }
-  // }
   
 }
 

@@ -1,6 +1,6 @@
 
 
-import { IPayout } from "../../models/payout/IPayout";
+
 import mongoose from "mongoose";
 
 export interface RazorpayOrderInput {

@@ -112,7 +112,7 @@ export class PrescriptionService implements IPrescriptionService{
 
 
 
-    async generatePrescriptionPDF(prescription: any): Promise<Buffer> {
+  async generatePrescriptionPDF(prescription: any): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       const doc = new PDFDocument({ margin: 50 });
       const buffers: any[] = [];

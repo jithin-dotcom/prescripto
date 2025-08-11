@@ -1,8 +1,6 @@
 
 
-import { IWalletServiceResponse, IWalletHistoryServiceResponse, IWalletService } from "../interface/IWalletService";
-import { IWallet } from "../../models/wallet/IWallet";
-import { IWalletHistory } from "../../models/walletHistory/IWalletHistory";
+import { IWalletServiceResponse, IWalletService } from "../interface/IWalletService";
 import { IWalletRepository } from "../../repositories/interface/IWalletRepository";
 import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
 import { IAppointmentRepository } from "../../repositories/interface/IAppointmentRepository";

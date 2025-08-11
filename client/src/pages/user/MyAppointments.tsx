@@ -74,25 +74,13 @@ const MyAppointments: React.FC = () => {
   }, [userId, selectedStatus, currentPage, pageSize]);
 
 
-  // const handleWalletPayment = async(item: Appointment) => {
-  //    try {
-  //       console.log(item);
-  //       const res = await axiosInstance.get(`/wallet-payment/${item._id}`);
-  //       console.log("res : ",res);
-  //       toast.success("Payment is successful and Appointment is Confirmed");
-  //    }catch (error) {
-  //       console.log(error);
-  //    }
-  // }
-
-
   const handleConfirmWalletPayment = async () => {
   if (!appointmentToPay) return;
   try {
     await axiosInstance.get(`/wallet-payment/${appointmentToPay._id}`);
     toast.success("Payment is successful and Appointment is Confirmed");
     
-    // Update appointment list
+   
     setAppointments((prev) =>
       prev.map((a) =>
         a._id === appointmentToPay._id

@@ -9,8 +9,6 @@ import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 
 export interface IUserService {
    
-    // getTopDoctors():Promise<({user: IUser, profile: IPatientProfile | null})[]>;
-    // getTopDoctors(): Promise<ITopDoctorClean[]> 
    
     getAllDoctors(
      page: number,

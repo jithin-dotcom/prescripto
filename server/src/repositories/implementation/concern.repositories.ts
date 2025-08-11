@@ -13,23 +13,6 @@ export class ConcernRepository extends BaseRepository<IConcern> {
     }
     
 
-
-  //   async getConcerns(skip: number, limit: number): Promise<IConcern[]> {
-  //   return this.model
-  //     .find()
-  //     .populate("appointmentId userId doctorId")
-  //     .skip(skip)
-  //     .limit(limit)
-  //     .exec();
-  // }
-
-  // async countConcerns(): Promise<number> {
-  //   return this.model.countDocuments();
-  // }
-
-
-
-
   async getConcerns(skip: number, limit: number, query: FilterQuery<IConcern>): Promise<IConcernDocPopulated[]> {
   const result =  this.model
     .find(query)

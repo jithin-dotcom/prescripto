@@ -23,12 +23,9 @@ export class DoctorProfileRepository extends BaseRepository<IDoctorProfile & Doc
     return await this.model.findOneAndUpdate({ doctorId: id }, data, { new: true });
   }
 
-  //  async findTopDoctorsWithRating(): Promise<(IDoctorProfile | null)[]> {
-  //     return await this.model.find().populate("doctorId").sort({averageRating: -1})
-  //  }
 
   async findTopDoctorsWithRating(): Promise<(IDoctorProfileDashboard | null)[]> {
-  return await this.model
+   return await this.model
     .find()
     .populate<{ doctorId: IUser }>("doctorId") 
     .sort({ averageRating: -1 })

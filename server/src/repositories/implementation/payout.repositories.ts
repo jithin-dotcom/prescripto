@@ -13,18 +13,7 @@ export class PayoutRepository extends BaseRepository<IPayout> implements IPayout
     }
     
    
-
-    //  async getAllPayout(skip: number, limit: number): Promise<{ payouts: IPayout[] | [], total: number }> {
-    //     const [payouts, total] = await Promise.all([
-    //         this.model.find().populate("doctorId").skip(skip).limit(limit).exec(),
-    //         this.model.countDocuments().exec()
-    //     ]);
-    //     return { payouts, total };
-    // }
-
-
-
-    async getAllPayout(
+ async getAllPayout(
   skip: number,
   limit: number
 ): Promise<{ payouts: IPayoutDocPopulated[]; total: number }> {
@@ -42,22 +31,6 @@ export class PayoutRepository extends BaseRepository<IPayout> implements IPayout
 }
 
 
-
-
-    // async getDoctorPayout(doctorId: string, skip: number, limit: number): Promise<{ payouts: IPayout[] | [], total: number }> {
-    //     const [payouts, total] = await Promise.all([
-    //         this.model.find({ doctorId: new mongoose.Types.ObjectId(doctorId) })
-    //             .populate("doctorId")
-    //             .skip(skip)
-    //             .limit(limit)
-    //             .exec(),
-    //         this.model.countDocuments({ doctorId: new mongoose.Types.ObjectId(doctorId) }).exec()
-    //     ]);
-    //     return { payouts, total };
-    // }
-
-
-
     
     async getDoctorPayout(doctorId: string, skip: number, limit: number): Promise<{ payouts: IPayoutDocPopulated[] | [], total: number }> {
         const [payouts, total] = await Promise.all([
@@ -72,13 +45,6 @@ export class PayoutRepository extends BaseRepository<IPayout> implements IPayout
         return { payouts, total };
     }
 
-
-
 }
 
 
-
-
- // async getAllPayout(): Promise<IPayout[] | []> {
-    //      return await this.model.find().populate("doctorId");
-    // }

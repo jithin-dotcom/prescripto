@@ -10,13 +10,8 @@ import { DollarSign, FileText, CheckCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const RequestPayout: React.FC = () => {
-//   const { userId, hasHydrated } = useAuthStore((state) => ({
-//     userId: state.user?._id || null,
-//     hasHydrated: state.hasHydrated,
-//   }));
 
   const userId = useAuthStore((state) => state.user?._id);
-//   const role = useAuthStore((state) => state.user?.role);
   const location = useLocation();
   const balance = location.state?.balance;
   const navigate = useNavigate();
@@ -33,17 +28,16 @@ const RequestPayout: React.FC = () => {
     setError(null);
 
     if (amount <= 0) {
-    //   setError("Amount must be greater than zero");
-       toast.error("Amount must be greater than zero")
+      toast.error("Amount must be greater than zero")
       setLoading(false);
       return;
     }
 
     if(reason.trim().length <= 0){
-        // setError("Reason cannot be empty");
+       
         toast.error("Reason cannot be Empty")
-         setLoading(false);
-         return;
+        setLoading(false);
+        return;
     }
     
     if(amount > balance){
@@ -68,7 +62,6 @@ const RequestPayout: React.FC = () => {
       navigate("/wallet");
     }catch (error) {
        console.error(error); 
-    //   toast.error("Failed to submit payout request");
       setError("An error occurred. Please try again.");
     } finally {
       setLoading(false);

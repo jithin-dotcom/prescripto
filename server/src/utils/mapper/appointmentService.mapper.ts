@@ -1,7 +1,5 @@
 
 
-
-// src/services/mappers/appointmentMapper.ts
 import { IAppointment } from "../../models/appointment/IAppointment";
 import { IDoctorUser, IAppointmentResponse } from "../../services/interface/IAppointmentService";
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";

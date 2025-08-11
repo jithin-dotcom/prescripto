@@ -152,14 +152,15 @@ const EditUserProfile = () => {
       state: form.state,
       country: form.country,
       pin: form.pinCode,
+      
     };
 
     const formData = new FormData();
     formData.append("userData", JSON.stringify(userData));
     formData.append("profileData", JSON.stringify(profileData));
-    // if (profilePhoto) {
-    //   formData.append("photo", profilePhoto);
-    // }
+    if (profilePhoto) {
+      formData.append("photo", profilePhoto);
+    }
 
     try {
       const endpoint = id ? `${APIUserRoutes.UPDATE_USER}/${id}` : APIUserRoutes.CREATE_USER;
@@ -211,7 +212,6 @@ const EditUserProfile = () => {
                   id="photo"
                   accept="image/*"
                   hidden
-                  // onChange={(e) => setProfilePhoto(e.target.files?.[0] || null)}
                   onChange={handlePhotoChange}
                 />
                 <p>

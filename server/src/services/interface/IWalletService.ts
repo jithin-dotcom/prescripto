@@ -3,7 +3,7 @@
 
 import mongoose from "mongoose";
 import { IWalletHistory } from "../../models/walletHistory/IWalletHistory";
-import { IWallet } from "../../models/wallet/IWallet";
+
 
  
 
@@ -32,12 +32,12 @@ export interface IWalletHistoryServiceResponse  {
 }
 
 export interface IWalletService {
-    // getWallet(userId: string, role: "user" | "doctor"): Promise<IWalletServiceResponse>;
-    getWallet(
-  userId: string,
-  role: "user" | "doctor",
-  page: number,
-  limit: number
+    
+getWallet(
+   userId: string,
+   role: "user" | "doctor",
+   page: number,
+   limit: number
 ): Promise<IWalletServiceResponse>;
 
 

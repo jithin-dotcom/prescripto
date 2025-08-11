@@ -12,7 +12,6 @@ export interface IAdminService {
 
 
   getAllByRole(role: string, page: number, limit: number, search: string, specialty: string): Promise<{
-    // items: IUser[];
     items: IUserWithProfileResponse[];
     currentPage: number;
     totalPages: number;

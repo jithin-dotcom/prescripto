@@ -12,8 +12,7 @@ export interface IChatRepository extends IBaseRepository<IChat>{
   createChat(data: Partial<IChat>): Promise<IChat & Document>;
   deactivateChat(appointmentId: string): Promise<void | null>;
   getChatsByUser(userId: string): Promise<IChat[]>;
-  // updateChatByUserId(userId: string, time: Date | null): Promise<void>;
-  // updateChatByDoctorId(doctorId: string, time: Date | null): Promise<void>;
+  
 }
 
 

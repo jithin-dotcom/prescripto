@@ -32,42 +32,6 @@ export interface IDoctorProfileDashboardClean {
   slotDuration?: number;
 }
 
-// export function mapDoctorProfiles(
-//   data: IDoctorProfileDashboard[]
-// ): IDoctorProfileDashboardClean[] {
-//   return data.map((profile) => ({
-//     _id: (profile._id as mongoose.Types.ObjectId).toString(),
-//     doctorId: {
-//       _id: (profile.doctorId as any)._id.toString(),
-//       name: (profile.doctorId as IUser).name,
-//       email: (profile.doctorId as IUser).email,
-//       role: (profile.doctorId as IUser).role,
-//       isVerified: (profile.doctorId as IUser).isVerified,
-//       authProvider: (profile.doctorId as IUser).authProvider,
-//       isBlocked: (profile.doctorId as IUser).isBlocked,
-//       createdAt: ((profile.doctorId as any).createdAt as Date).toISOString(),
-//       photo: (profile.doctorId as IUser).photo,
-//     },
-//     educationDetails: profile.educationDetails,
-//     specialization: profile.specialization,
-//     registrationNumber: profile.registrationNumber,
-//     registrationYear: profile.registrationYear,
-//     yearOfExperience: profile.yearOfExperience,
-//     proofDocuments: profile.proofDocuments,
-//     fee: profile.fee,
-//     about: profile.about,
-//     createdAt: profile.createdAt.toISOString(),
-//     averageRating: profile.averageRating,
-//     ratingCount: profile.ratingCount,
-//     availability: profile.availability,
-//     slotDuration: profile.slotDuration,
-//   }));
-// }
-
-
-
-
-
 
 
 export function mapDoctorProfiles(

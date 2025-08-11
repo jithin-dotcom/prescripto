@@ -170,32 +170,7 @@ export class PaymentController implements IPaymentController {
   }
 
 
-    
-  // async initiatePayout(req: Request, res: Response, next: NextFunction): Promise<void> {
-  //   try {
-  //     const { payoutId, doctorId, amount } = req.body;
-
-  //     if (!payoutId || !doctorId || !amount) {
-  //       res.status(StatusCode.BAD_REQUEST).json({ message: "Missing required fields: payoutId, doctorId, amount" });
-  //       return;
-  //     }
-
-  //     const amountInt = parseInt(amount);
-  //     if (isNaN(amountInt) || amountInt <= 0) {
-  //       res.status(StatusCode.BAD_REQUEST).json({ message: "Invalid amount" });
-  //       return;
-  //     }
-
-  //     await this._paymentService.initiatePayout(payoutId, amountInt, doctorId);
-  //     res.status(StatusCode.OK).json({ message: "Payout initiated successfully" });
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // }
-
-
-
-
+   
   async getPaymentRecept(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const { appointmentId } = req.params;
@@ -229,37 +204,3 @@ export class PaymentController implements IPaymentController {
 
 
 
-
-
-
-  //  async getDoctorPayouts(req: Request, res: Response, next: NextFunction): Promise<void> {
-  //     try {
-
-  //        const doctorId = req.user?.id;
-  //        if(doctorId){
-  //           const response = await this._paymentService.getDoctorPayout(doctorId);
-  //           if(response){
-  //              res.status(StatusCode.OK).json(response);
-  //           } 
-  //        }
-        
-  //     }catch (error) {
-  //        next(error); 
-  //     }
-  // }
-
-
-
-
-
-  
-  // async getPayouts(req: Request, res: Response, next: NextFunction): Promise<void> {
-  //     try {
-  //        const response = await this._paymentService.getPayout();
-  //        if(response){
-  //           res.status(StatusCode.OK).json(response);
-  //        } 
-  //     }catch (error) {
-  //        next(error); 
-  //     }
-  // }

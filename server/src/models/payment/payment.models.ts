@@ -2,7 +2,7 @@
 
 import mongoose, { Schema } from "mongoose";
 import { IPayment } from "./IPayment";
-import { string } from "zod";
+
 
 const paymentSchema: Schema = new Schema<IPayment>(
   {

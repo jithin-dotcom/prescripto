@@ -98,8 +98,7 @@ export class CallLogService implements ICallLogService {
         if(!updatedBalance){
           throw new Error("Failed to update Wallet Balance");
         }
-        // console.log("wallethistory : ",walletHistory);
-        // return walletHistory;
+        
          return mapWalletHistoryToDTO(walletHistory);
       }catch (error) {
         console.log("error in doctorPaymentHistory : ", error);

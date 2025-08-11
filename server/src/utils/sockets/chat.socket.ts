@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import { ChatService } from "../../services/implementation/chat.services";
 import { ChatRepository } from "../../repositories/implementation/chat.repositories";
 import { MessageRepository } from "../../repositories/implementation/message.repositories";
-import { uploadToCloudinary } from "../../config/cloudinary";
+
 
 
 const onlineUsers = new Map<string, string>();
@@ -26,13 +26,12 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
   onlineUsers.set(user.id, socket.id);
   socket.broadcast.emit("user-online", user.id);
 
-  // socket.emit("online-users", Array.from(onlineUsers.keys()));
-  // console.log("online users : ", onlineUsers);
+
 
   socket.on("get-online-users", async() => {
     console.log("online users : ", onlineUsers);
     socket.emit("online-users", Array.from(onlineUsers.keys()));
-    // await chatService.onlineUserDoctor(user.id, user.role);
+   
   });
 
   socket.on("joinRoom", async ({ appointmentId }: { appointmentId: string }) => {
@@ -61,142 +60,13 @@ export const chatSocketHandler = (io: Namespace, socket: Socket) => {
     }
   });
 
-  // socket.on("sendMessage", async (data: any) => {
-  //   try {
-  //     console.log("entered into message read");
-  //     const { appointmentId, content, type, doctorId, userId } = data;
-
-  //     if (!appointmentId || !content || !type || !doctorId || !userId) {
-  //       socket.emit("error", { message: "Missing required fields" });
-  //       console.log("missing data");
-  //       return;
-  //     }
-
-  //     let chat = await chatService.getChatByAppointmentId(appointmentId);
-  //     if (!chat) {
-  //       chat = await chatService.createChat(appointmentId, [userId, doctorId]);
-  //     }
-      
-
-  //     let finalContent = content;
-
-  //     console.log("type : ",type);
-
-  //     if (type === "image") {
-  //       const matches = content.match(/^data:(.+);base64,(.+)$/);
-  //       if (!matches || matches.length !== 3) {
-  //         socket.emit("error", { message: "Invalid image format." });
-  //         return;
-  //       }
-
-  //       const buffer = Buffer.from(matches[2], "base64");
-  //       try {
-  //         finalContent = await uploadToCloudinary(buffer, "chat_images");
-  //       } catch (uploadErr) {
-  //         console.error("Cloudinary upload error:", uploadErr);
-  //         socket.emit("error", { message: "Image upload failed." });
-  //         return;
-  //       }
-  //     }
-
-  //     if(!chat){
-  //        throw new Error("Chat does not exists");
-  //     }
-  //     const message = await chatService.createMessage(
-  //       chat._id.toString(),
-  //       user.id,
-  //       finalContent,
-  //       type
-  //     );
-
-  //     io.to(appointmentId).emit("receiveMessage", message);
-  //   } catch (error) {
-  //     console.error("sendMessage error:", error);
-  //     socket.emit("error", { message: "Internal server error" });
-  //   }
-  // });
-
-
-
-
-
-
-
-
-
-
-//   socket.on("sendMessage", async (data: any) => {
-//   try {
-//     console.log("📩 Incoming message data:", data);
-
-//     const { appointmentId, content, type, doctorId, userId } = data;
-
-//     if (!appointmentId || !content || !type || !doctorId || !userId) {
-//       console.warn("❌ Missing required fields:", { appointmentId, content, type, doctorId, userId });
-//       socket.emit("error", { message: "Missing required fields" });
-//       return;
-//     }
-
-//     let chat = await chatService.getChatByAppointmentId(appointmentId);
-//     if (!chat) {
-//       console.log("💬 No chat found — creating new one");
-//       chat = await chatService.createChat(appointmentId, [userId, doctorId]);
-//     }
-
-//     let finalContent = content;
-//     console.log("🖼 Message type received:", type);
-
-//     if (type === "image") {
-//       console.log("🔍 Checking base64 format...");
-//       const matches = content.match(/^data:(.+);base64,(.+)$/);
-
-//       if (!matches) {
-//         console.error("❌ Invalid image format. Content:", content.substring(0, 50) + "...");
-//         socket.emit("error", { message: "Invalid image format." });
-//         return;
-//       }
-
-//       console.log("✅ Base64 detected, uploading to Cloudinary...");
-//       const buffer = Buffer.from(matches[2], "base64");
-
-//       try {
-//         finalContent = await uploadToCloudinary(buffer, "chat_images");
-//         console.log("☁️ Uploaded to Cloudinary:", finalContent);
-//       } catch (uploadErr) {
-//         console.error("❌ Cloudinary upload error:", uploadErr);
-//         socket.emit("error", { message: "Image upload failed." });
-//         return;
-//       }
-//     }
-
-//     const message = await chatService.createMessage(
-//       chat._id.toString(),
-//       user.id,
-//       finalContent,
-//       type
-//     );
-
-//     console.log("📤 Message saved and broadcasting:", message);
-//     io.to(appointmentId).emit("receiveMessage", message);
-//   } catch (error) {
-//     console.error("💥 sendMessage error:", error);
-//     socket.emit("error", { message: "Internal server error" });
-//   }
-// });
-
-
-
-
-
 
 
 socket.on("sendMessage", async (data: any) => {
   try {
-    console.log("📩 Incoming message data:", data);
-
+    
     const { appointmentId, content, type, doctorId, userId } = data;
 
-    // Validate required fields
     if (!appointmentId || !content || !type || !doctorId || !userId) {
       console.warn(" Missing required fields:", { appointmentId, content, type, doctorId, userId });
       socket.emit("error", { message: "Missing required fields" });
@@ -213,7 +83,6 @@ socket.on("sendMessage", async (data: any) => {
    
     let chat = await chatService.getChatByAppointmentId(appointmentId);
     if (!chat) {
-      console.log("No chat found — creating new one");
       chat = await chatService.createChat(appointmentId, [userId, doctorId]);
     }
 
@@ -227,9 +96,7 @@ socket.on("sendMessage", async (data: any) => {
       type
     );
 
-    console.log("Message saved and broadcasting:", message);
-
-  
+     
     io.to(appointmentId).emit("receiveMessage", message);
 
   } catch (error) {
@@ -237,10 +104,6 @@ socket.on("sendMessage", async (data: any) => {
     socket.emit("error", { message: "Internal server error" });
   }
 });
-
-
-
-
 
 
 
@@ -255,7 +118,6 @@ socket.on("sendMessage", async (data: any) => {
       const chat = await chatService.getChatById(chatId);
       
       if (!chat) {
-        console.log("chat not found ddd ")
         socket.emit("error", { message: "Chat not found." });
         return;
       }
@@ -263,7 +125,6 @@ socket.on("sendMessage", async (data: any) => {
       await chatService.markMessagesAsRead(chatId, user.id);
       const updatedMessages = await chatService.getReadMessages(chatId, user.id);
 
-      // console.log("updated message : ", updatedMessages);
 
       io.to(chat.appointmentId.toString()).emit("messagesRead", {
         chatId,
@@ -285,7 +146,6 @@ socket.on("sendMessage", async (data: any) => {
 
       await chatService.deactivateChat(appointmentId);
       io.to(appointmentId).emit("chatEnded");
-      console.log(`Chat ended for appointment ${appointmentId}`);
     } catch (error) {
       console.error("Error ending chat:", error);
       socket.emit("error", { message: "Failed to end chat." });

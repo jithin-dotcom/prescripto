@@ -5,7 +5,7 @@ import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorPr
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { IUser, ITopDoctorClean } from "../../types/user.type";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
-import { mapTopDoctors } from "../../utils/mapper/userService.mapper";
+
 
 
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
@@ -32,39 +32,7 @@ export class UserService implements IUserService {
     ){}
 
 
-  //   async getTopDoctors(): Promise<({user: IUser, profile: IPatientProfile | null})[]> {
-  //     try {
-  //      const users = await this._userRepo.findTopDoctors(4); 
-
-  //      if (!users || users.length === 0) return [];
-
-  //      const items = await Promise.all(users.map(async (doc) => {
-  //         const profile = await this._doctorRepo.findAll({ doctorId: doc._id });
-
-
-
-  //         return {
-  //          ...doc.toObject(),
-  //          profile, 
-  //        };
-  //      }));
-
-  //      console.log("items : ",items);
-
-  //      return items;
-
-  //    } catch (error) {
-  //      console.error(error);
-  //      throw new Error(`Failed to fetch doctors`);
-  //    }
-  //  }
-
-
-
-
-
-
-
+    
 async getAllDoctors(
   page: number = 1,
   limit: number = 4,
@@ -197,6 +165,7 @@ async updateUserOrDoctor(
       userData.password = hashedPassword;
     }
 
+    console.log("profileData : ",profileData);
     if (profileData && 'photo' in profileData && profileData.photo) {
       await this._userRepo.updateById(userId, { photo: profileData.photo });
       delete (profileData as any).photo;

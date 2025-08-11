@@ -39,40 +39,6 @@ export class ConcernService implements IConcernService {
     }
 
 
-  
-
-
-  // async getAllConcerns(page: number, limit: number): Promise<{
-  //   data: IConcern[];
-  //   total: number;
-  //   page: number;
-  //   pages: number;
-  // }> {
-  //   try {
-  //     if (page < 1 || limit < 1) {
-  //       throw new Error("Invalid page or limit value");
-  //     }
-
-  //     const skip = (page - 1) * limit;
-
-  //     const [data, total] = await Promise.all([
-  //       this._concernRepo.getConcerns(skip, limit),
-  //       this._concernRepo.countConcerns()
-  //     ]);
-
-  //     const pages = Math.ceil(total / limit);
-
-  //     return { data, total, page, pages };
-  //   } catch (error) {
-  //     throw error instanceof Error ? error : new Error("Something went wrong while fetching concerns");
-  //   }
-  // }
-
-
-
-
-
-
 
   async getAllConcerns(page: number, limit: number, search: string, status: string): Promise<{
   data: IConcernPopulated[];
@@ -88,8 +54,8 @@ export class ConcernService implements IConcernService {
     const skip = (page - 1) * limit;
 
     
-    // let query: any = {};
-     let query: FilterQuery<IConcern> = {};
+    
+    let query: FilterQuery<IConcern> = {};
     if (search) {
       query.$or = [
         { "title": { $regex: search, $options: "i" } },
@@ -119,9 +85,6 @@ export class ConcernService implements IConcernService {
 
 
 
-
-
-
   async changeConcernStatus(id: string, status: "resolved" | "rejected"): Promise<{message: string}> {
      try {
         const concernId = new mongoose.Types.ObjectId(id);
@@ -139,6 +102,7 @@ export class ConcernService implements IConcernService {
         }
      }
   }
+
 
 
   async getConcernByUser(id: string, role: string, page: number, limit: number,  search: string, status: string): Promise<{
@@ -159,7 +123,7 @@ export class ConcernService implements IConcernService {
    
     const userId = new mongoose.Types.ObjectId(id);
     const doctorId = new mongoose.Types.ObjectId(id);
-    // let query: any = {};
+   
     let query: FilterQuery<IConcern> = {};
     if(role === "user"){
        query = {userId};
@@ -193,9 +157,7 @@ export class ConcernService implements IConcernService {
     throw error instanceof Error ? error : new Error("Something went wrong while fetching concerns");
   }
 
-
-
-  }
+}
 
 
 }

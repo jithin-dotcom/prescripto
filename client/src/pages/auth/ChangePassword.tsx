@@ -84,11 +84,7 @@ const ChangePassword = () => {
       }
       setForm({ currentPassword: "", newPassword: "", rePassword: "" });
     } catch (error) {
-      // if (axios.isAxiosError(error)) {
-      //   toast.error(error.response?.data?.message || "Failed to change password");
-      // } else {
-      //   toast.error("Something went wrong");
-      // }
+      
       console.log("error: ",error);
     }
   };

@@ -67,10 +67,10 @@ const ChangeEmail = () => {
 
       toast.success(res.data.message || "Email updated successfully");
 
-      // Reset form
+     
       setForm({ newEmail: "", confirmEmail: "", password: "" });
 
-      // Navigate by role
+     
       if (role === "doctor") {
         navigate("/doctor-dashboard");
       } else {
@@ -97,7 +97,7 @@ const ChangeEmail = () => {
       </div>
 
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {/* New Email */}
+       
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             New Email
@@ -112,7 +112,7 @@ const ChangeEmail = () => {
           />
         </div>
 
-        {/* Confirm Email */}
+      
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Confirm New Email
@@ -127,7 +127,7 @@ const ChangeEmail = () => {
           />
         </div>
 
-        {/* Password with Show/Hide */}
+        
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Current Password
@@ -151,7 +151,7 @@ const ChangeEmail = () => {
           </div>
         </div>
 
-        {/* Submit Button */}
+       
         <button
           type="submit"
           className="w-full py-2.5 mt-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition"

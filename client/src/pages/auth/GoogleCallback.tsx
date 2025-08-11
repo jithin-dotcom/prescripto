@@ -35,12 +35,12 @@ const GoogleCallback = () => {
 
         const user = JSON.parse(userString);
 
-        // Save tokens and user in Zustand
+       
         setAuth({ accessToken, user });
 
         toast.success("Successfully logged in with Google");
 
-        // Redirect to role-specific dashboard
+       
         navigate(getDashboardRoute(user.role));
       } catch (err: unknown) {
         console.error("Google callback error:", err);

@@ -13,7 +13,7 @@ export interface IChatService {
   getUserChats(userId: string): Promise<IChat[]>;
   markMessagesAsRead(chatId: string, readerId: string): Promise<void>;
   getReadMessages(chatId: string, readerId: string): Promise<IMessageClean[]>;
-  // onlineUserDoctor(id: string, role: string): Promise<void>;
+  
 }
 
 
@@ -50,47 +50,3 @@ export interface IMessageClean {
 
 
 
-
-
-// export interface AppointmentClean {
-//   _id: string;
-//   userId: string;
-//   doctorId: string;
-//   appointmentNo: number;
-//   day: string;
-//   time: string;
-//   status: "confirmed" | "pending" | "cancelled";
-//   fee: number;
-//   payment: "paid" | "unpaid";
-//   createdAt: string;
-// }
-
-// export interface DoctorClean {
-//   _id: string;
-//   name: string;
-//   photo: string;
-// }
-
-// export interface UserClean {
-//   _id: string;
-//   name: string;
-//   photo: string;
-// }
-
-// export interface LastMessageClean {
-//   content: string;
-//   timestamp: string;
-// }
-
-// export interface ChatClean {
-//   _id: string;
-//   appointmentId: AppointmentClean;
-//   doctorId: DoctorClean;
-//   userId: UserClean;
-//   participants: string[];
-//   isActive: boolean;
-//   createdAt: string;
-//   lastMessage?: LastMessageClean;
-// }
-
-// export type GetUserChatCleanResponse = ChatClean[];

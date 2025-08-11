@@ -345,7 +345,7 @@ const medicineVariants: Variants = {
               </motion.div>
             </div>
 
-            {/* Follow-up Date */}
+           
             <motion.div variants={itemVariants}>
               <label className="flex items-center gap-2 text-lg font-semibold text-gray-700 mb-3">
                 <Calendar className="w-5 h-5 text-indigo-600" />
@@ -360,7 +360,7 @@ const medicineVariants: Variants = {
               />
             </motion.div>
 
-            {/* Medicines Section */}
+           
             <motion.div variants={itemVariants}>
               <div className="flex items-center justify-between mb-6">
                 <h3 className="flex items-center gap-2 text-xl font-semibold text-gray-700">
@@ -433,7 +433,7 @@ const medicineVariants: Variants = {
               </AnimatePresence>
             </motion.div>
 
-            {/* Submit Button */}
+           
             <motion.div 
               className="pt-8"
               variants={itemVariants}

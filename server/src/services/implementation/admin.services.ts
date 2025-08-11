@@ -310,66 +310,48 @@ async deleteUserOrDoctor(userId: string): Promise<{ message: string }> {
 }
 
 
-async toggleBlockUser(userId: string): Promise<{ message: string; isBlocked: boolean;}> {
+
+
+  async toggleBlockUser(userId: string): Promise<{ message: string; isBlocked: boolean }> {
     try {
       const user = await this._adminRepo.findById(userId);
-      if(!user) throw new Error("user not found");
+      if (!user) throw new Error("User not found");
 
-      const updatedUser = await this._adminRepo.updateById(userId,{isBlocked: !user.isBlocked});
-        return {
-         message: `User ${updatedUser?.isBlocked ? "blocked" : "unblocked"} successfully`,
-         isBlocked: updatedUser!.isBlocked,
-        };
-    }catch (error) {
-      throw (error);
+      const isBlocked = !user.isBlocked;
+      const updatedUser = await this._adminRepo.updateById(userId, { isBlocked });
+
+      
+      const cacheKey = `user:${userId}:blocked`;
+      await redisClient.setEx(cacheKey, 3600, isBlocked.toString()); 
+
+      if (isBlocked) {
+       
+        const refreshTokenKeys = await redisClient.keys(`refreshToken:${userId}:*`);
+        if (refreshTokenKeys.length > 0) {
+          for (const key of refreshTokenKeys) {
+            const lookupKey = await redisClient.get(key);
+            if (lookupKey) {
+              await redisClient.del(`refreshTokenLookup:${lookupKey}`);
+            }
+            await redisClient.del(key);
+          }
+        }
+
+       
+        await redisClient.setEx(`blacklist:accessToken:${userId}`, 3600, "true"); 
+      } else {
+       
+        await redisClient.del(`blacklist:accessToken:${userId}`);
+      }
+
+      return {
+        message: `User ${isBlocked ? "blocked" : "unblocked"} successfully`,
+        isBlocked,
+      };
+    } catch (error) {
+      throw error;
     }
-}
-
-
-
-// scaling auth middleware 
-
-  // async toggleBlockUser(userId: string): Promise<{ message: string; isBlocked: boolean }> {
-  //   try {
-  //     const user = await this._adminRepo.findById(userId);
-  //     if (!user) throw new Error("User not found");
-
-  //     const isBlocked = !user.isBlocked;
-  //     const updatedUser = await this._adminRepo.updateById(userId, { isBlocked });
-
-  //     // Update Redis cache for block status
-  //     const cacheKey = `user:${userId}:blocked`;
-  //     await redisClient.setEx(cacheKey, 3600, isBlocked.toString()); // TTL as number
-
-  //     // If blocking the user, invalidate refresh tokens and blacklist access token
-  //     if (isBlocked) {
-  //       // Delete all refresh tokens for this user
-  //       const refreshTokenKeys = await redisClient.keys(`refreshToken:${userId}:*`);
-  //       if (refreshTokenKeys.length > 0) {
-  //         for (const key of refreshTokenKeys) {
-  //           const lookupKey = await redisClient.get(key);
-  //           if (lookupKey) {
-  //             await redisClient.del(`refreshTokenLookup:${lookupKey}`);
-  //           }
-  //           await redisClient.del(key);
-  //         }
-  //       }
-
-  //       // Blacklist access token for immediate session termination
-  //       await redisClient.setEx(`blacklist:accessToken:${userId}`, 3600, "true"); // TTL as number
-  //     } else {
-  //       // If unblocking, remove the blacklist key to allow new logins
-  //       await redisClient.del(`blacklist:accessToken:${userId}`);
-  //     }
-
-  //     return {
-  //       message: `User ${isBlocked ? "blocked" : "unblocked"} successfully`,
-  //       isBlocked,
-  //     };
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+  }
 
 
 

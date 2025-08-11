@@ -41,12 +41,5 @@ export class ChatRepository extends BaseRepository<IChat & Document> implements 
      
   }
 
-  // async updateChatByUserId(userId: string, time: Date): Promise<void> {
-  //     this.model.updateMany({userId},{lastSeenUser: time});
-  // }
-  
-  //  async updateChatByDoctorId(doctorId: string, time: Date): Promise<void> {
-  //     this.model.updateMany({doctorId},{lastSeenDoctor: time});
-  // }
 
 }

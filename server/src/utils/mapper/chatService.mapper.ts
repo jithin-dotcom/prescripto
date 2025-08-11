@@ -5,8 +5,7 @@ import { ChatDTO, IMessageClean } from "../../services/interface/IChatService";
 import { IChat } from "../../models/chat/IChat"; 
 import { IMessage } from "../../models/message/IMessage";
 import mongoose from "mongoose";
-// import { GetUserChatCleanResponse,  } from "../../services/interface/IChatService";
-// import { ObjectId } from "mongoose";
+
 
 export function mapToChatDTO(chat: IChat): ChatDTO {
   return {

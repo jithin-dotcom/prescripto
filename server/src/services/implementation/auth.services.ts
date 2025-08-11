@@ -2,7 +2,6 @@
 
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { UserRepository } from "../../repositories/implementation/user.repositories";
 import { generateTokens } from "../../utils/jwt";
 import { IAuthService } from "../interface/IAuthService";
 import { IUser } from "../../types/user.type";
@@ -29,326 +28,212 @@ export class AuthService implements IAuthService {
 
 
 
-
-
-
-// scaling auth middleware 
-
-  // async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string; user: Document }> {
-  //   try {
-  //     const user = await this._userRepo.findByEmail(email);
-  //     if (!user) throw new AppError("Invalid credentials");
-  //     if (user.authProvider === "google") throw new AppError("Use Google login for this account");
-  //     if (user.isBlocked === true) throw new AppError("You are Blocked by admin");
-
-  //     const isMatch = await bcrypt.compare(password, user.password || "");
-  //     if (!isMatch) throw new Error("Invalid credentials");
-
-  //     const { accessToken, refreshToken } = generateTokens({
-  //       id: user._id,
-  //       email: user.email,
-  //       role: user.role,
-  //     });
-
-  //     const userId = (user._id as mongoose.Types.ObjectId).toString();
-  //     const sessionId = crypto.randomUUID();
-
-  //     const redisTokenKey = `refreshToken:${userId}:${sessionId}`;
-  //     const redisLookupKey = `refreshTokenLookup:${refreshToken}`;
-
-  //     await redisClient.set(redisTokenKey, refreshToken, {
-  //       EX: 7 * 24 * 60 * 60,
-  //     });
-
-  //     await redisClient.set(redisLookupKey, `${userId}:${sessionId}`, {
-  //       EX: 7 * 24 * 60 * 60,
-  //     });
-
-  //     // Cache block status
-  //     const cacheKey = `user:${userId}:blocked`;
-  //     await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
-
-  //     return { user, accessToken, refreshToken };
-  //   } catch (error) {
-  //     console.log("Login error:", error);
-  //     throw error;
-  //   }
-  // }
-
-  // async loginWithGoogle(token: string): Promise<LoginResponse> {
-  //   try {
-  //     const { name, email, picture } = await verifyGoogleToken(token);
-
-  //     let user = await this._userRepo.findByEmail(email);
-  //     if (user?.isBlocked === true) {
-  //       throw new Error("You are Blocked by Admin");
-  //     }
-
-  //     if (!user) {
-  //       user = await this._userRepo.createUser({
-  //         name,
-  //         email,
-  //         password: undefined,
-  //         role: "user",
-  //         avatar: picture,
-  //         authProvider: "google",
-  //         isBlocked: false,
-  //       });
-  //     }
-
-  //     const userId = typeof user?._id === "string" ? user._id : String(user?._id ?? "");
-
-  //     const tokens = generateTokens({
-  //       id: user._id,
-  //       email: user.email,
-  //       role: user.role,
-  //     });
-
-  //     const sessionId = crypto.randomUUID();
-
-  //     const redisTokenKey = `refreshToken:${userId}:${sessionId}`;
-  //     const redisLookupKey = `refreshTokenLookup:${tokens.refreshToken}`;
-
-  //     await redisClient.set(redisTokenKey, tokens.refreshToken, {
-  //       EX: 7 * 24 * 60 * 60,
-  //     });
-
-  //     await redisClient.set(redisLookupKey, `${userId}:${sessionId}`, {
-  //       EX: 7 * 24 * 60 * 60,
-  //     });
-
-  //     // Cache block status
-  //     const cacheKey = `user:${userId}:blocked`;
-  //     await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
-
-  //     return {
-  //       message: "Google login successful",
-  //       tokens,
-  //       user: {
-  //         id: userId,
-  //         name: user.name,
-  //         email: user.email,
-  //         role: user.role,
-  //         avatar: user.avatar,
-  //       },
-  //     };
-  //   } catch (error: any) {
-  //     console.error("Error in loginWithGoogle:", error);
-  //     throw new Error(error.message || "Something went wrong during Google login.");
-  //   }
-  // }
-
-  // async verifyOtpAndRegister(email: string, otp: string): Promise<AuthResult> {
-  //   try {
-  //     const otpRecord = await this._otpRepo.findOtp(email);
-  //     if (!otpRecord || otpRecord.otp !== otp) throw new Error("Invalid or expired OTP");
-
-  //     const newUser = await this._userRepo.createUser(otpRecord.user);
-  //     await this._otpRepo.deleteOtp(email);
-
-  //     const tokens = generateTokens({
-  //       id: newUser._id,
-  //       email: newUser.email,
-  //       role: newUser.role,
-  //     });
-
-  //     const userId = (newUser._id as mongoose.Types.ObjectId).toString();
-  //     const sessionId = crypto.randomUUID();
-
-  //     const redisTokenKey = `refreshToken:${userId}:${sessionId}`;
-  //     const redisLookupKey = `refreshTokenLookup:${tokens.refreshToken}`;
-
-  //     await redisClient.set(redisTokenKey, tokens.refreshToken, {
-  //       EX: 7 * 24 * 60 * 60,
-  //     });
-
-  //     await redisClient.set(redisLookupKey, `${userId}:${sessionId}`, {
-  //       EX: 7 * 24 * 60 * 60,
-  //     });
-
-  //     // Cache block status
-  //     const cacheKey = `user:${userId}:blocked`;
-  //     await redisClient.setEx(cacheKey, 3600, newUser.isBlocked.toString()); // Cache for 1 hour
-
-  //     return { user: newUser, ...tokens };
-  //   } catch (error) {
-  //     console.error("Verify OTP error:", error);
-  //     throw error;
-  //   }
-  // }
-
-  // async refreshToken(token: string): Promise<{ accessToken: string; refreshToken: string; user: any }> {
-  //   try {
-  //     if (!token) throw new Error("Refresh token is required");
-
-  //     const lookup = await redisClient.get(`refreshTokenLookup:${token}`);
-  //     if (!lookup) throw new Error("Refresh token not found or has been invalidated");
-
-  //     const [userId, sessionId] = lookup.split(':');
-
-  //     let decoded;
-  //     try {
-  //       decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as {
-  //         id: string;
-  //         email: string;
-  //         role: string;
-  //       };
-  //     } catch (err) {
-  //       throw new Error("Invalid or expired refresh token");
-  //     }
-
-  //     const user = await this._userRepo.findById(decoded.id);
-  //     if (!user) throw new Error("User not found");
-  //     if (user.isBlocked) throw new Error("You are Blocked by Admin");
-
-  //     const newAccessToken = jwt.sign(
-  //       { id: user._id, email: user.email, role: user.role },
-  //       process.env.JWT_ACCESS_SECRET!,
-  //       { expiresIn: "1h" }
-  //     );
-
-  //     const newRefreshToken = jwt.sign(
-  //       { id: user._id, email: user.email, role: user.role },
-  //       process.env.JWT_REFRESH_SECRET!,
-  //       { expiresIn: "7d" }
-  //     );
-
-  //     await redisClient.del(`refreshToken:${userId}:${sessionId}`);
-  //     await redisClient.del(`refreshTokenLookup:${token}`);
-
-  //     const newSessionId = crypto.randomUUID();
-
-  //     await redisClient.set(`refreshToken:${userId}:${newSessionId}`, newRefreshToken, {
-  //       EX: 7 * 24 * 60 * 60,
-  //     });
-
-  //     await redisClient.set(`refreshTokenLookup:${newRefreshToken}`, `${userId}:${newSessionId}`, {
-  //       EX: 7 * 24 * 60 * 60,
-  //     });
-
-  //     // Cache block status
-  //     const cacheKey = `user:${userId}:blocked`;
-  //     await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
-
-  //     return {
-  //       accessToken: newAccessToken,
-  //       refreshToken: newRefreshToken,
-  //       user,
-  //     };
-  //   } catch (error: any) {
-  //     throw new Error(error.message || "Failed to refresh token");
-  //   }
-  // }
-
-
-
-
-
-
-
-
-
-async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string; user: Document }> {
-  try {
-    const user = await this._userRepo.findByEmail(email);
-    // console.log("user : ",user);
-    if (!user) throw new AppError("Invalid credentials");
-    if (user.authProvider === "google") throw new AppError("Use Google login for this account");
-    if(user.isBlocked === true) throw new AppError("You are Blocked by admin");
-
-    const isMatch = await bcrypt.compare(password, user.password || "");
-    if (!isMatch) throw new Error("Invalid credentials");
-
-    const { accessToken, refreshToken } = generateTokens({
-      id: user._id,
-      email: user.email,
-      role: user.role,
-    });
-
-    const userId = (user._id as mongoose.Types.ObjectId).toString();
-  
-    const sessionId = crypto.randomUUID(); 
-
-    const redisTokenKey = `refreshToken:${userId}:${sessionId}`;
-    const redisLookupKey = `refreshTokenLookup:${refreshToken}`;
-
-    await redisClient.set(redisTokenKey, refreshToken, {
-      EX: 7 * 24 * 60 * 60, 
-    });
-
-    await redisClient.set(redisLookupKey, `${userId}:${sessionId}`, {
-      EX: 7 * 24 * 60 * 60,
-    });
-      
-    return { user, accessToken, refreshToken };
-  } catch (error) {
-    console.log("Login error:", error);
-    throw error;
-  }
-}
-
-
-
-
-async loginWithGoogle(token: string): Promise<LoginResponse> {
-  try {
-    const { name, email, picture } = await verifyGoogleToken(token);
-
-    let user = await this._userRepo.findByEmail(email);
-    if (user?.isBlocked === true) {
-      throw new Error("You are Blocked by Admin");
-    }
-
-    if (!user) {
-      user = await this._userRepo.createUser({
-        name,
-        email,
-        password: undefined,
-        role: "user",
-        avatar: picture,
-        authProvider: "google",
-        isBlocked: false,
-      });
-    }
-
-    const userId = typeof user?._id === "string" ? user._id : String(user?._id ?? "");
-
-    const tokens = generateTokens({
-      id: user._id,
-      email: user.email,
-      role: user.role,
-    });
-
-    const sessionId = crypto.randomUUID();
-
-    const redisTokenKey = `refreshToken:${userId}:${sessionId}`;
-    const redisLookupKey = `refreshTokenLookup:${tokens.refreshToken}`;
-
-    await redisClient.set(redisTokenKey, tokens.refreshToken, {
-      EX: 7 * 24 * 60 * 60,
-    });
-
-    await redisClient.set(redisLookupKey, `${userId}:${sessionId}`, {
-      EX: 7 * 24 * 60 * 60,
-    });
-        
-
-    return {
-      message: "Google login successful",
-      tokens,
-      user: {
-        id: userId,
-        name: user.name,
+  async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string; user: Document }> {
+    try {
+      const user = await this._userRepo.findByEmail(email);
+      if (!user) throw new AppError("Invalid credentials");
+      if (user.authProvider === "google") throw new AppError("Use Google login for this account");
+      if (user.isBlocked === true) throw new AppError("You are Blocked by admin");
+
+      const isMatch = await bcrypt.compare(password, user.password || "");
+      if (!isMatch) throw new Error("Invalid credentials");
+
+      const { accessToken, refreshToken } = generateTokens({
+        id: user._id,
         email: user.email,
         role: user.role,
-        avatar: user.avatar,
-      },
-    };
-  } catch (error: any) {
-    console.error("Error in loginWithGoogle:", error);
-    throw new Error(error.message || "Something went wrong during Google login.");
+      });
+
+      const userId = (user._id as mongoose.Types.ObjectId).toString();
+      const sessionId = crypto.randomUUID();
+
+      const redisTokenKey = `refreshToken:${userId}:${sessionId}`;
+      const redisLookupKey = `refreshTokenLookup:${refreshToken}`;
+
+      await redisClient.set(redisTokenKey, refreshToken, {
+        EX: 7 * 24 * 60 * 60,
+      });
+
+      await redisClient.set(redisLookupKey, `${userId}:${sessionId}`, {
+        EX: 7 * 24 * 60 * 60,
+      });
+
+      // Cache block status
+      const cacheKey = `user:${userId}:blocked`;
+      await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
+
+      return { user, accessToken, refreshToken };
+    } catch (error) {
+      console.log("Login error:", error);
+      throw error;
+    }
   }
-}
+
+  async loginWithGoogle(token: string): Promise<LoginResponse> {
+    try {
+      const { name, email, picture } = await verifyGoogleToken(token);
+
+      let user = await this._userRepo.findByEmail(email);
+      if (user?.isBlocked === true) {
+        throw new Error("You are Blocked by Admin");
+      }
+
+      if (!user) {
+        user = await this._userRepo.createUser({
+          name,
+          email,
+          password: undefined,
+          role: "user",
+          avatar: picture,
+          authProvider: "google",
+          isBlocked: false,
+        });
+      }
+
+      const userId = typeof user?._id === "string" ? user._id : String(user?._id ?? "");
+
+      const tokens = generateTokens({
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      });
+
+      const sessionId = crypto.randomUUID();
+
+      const redisTokenKey = `refreshToken:${userId}:${sessionId}`;
+      const redisLookupKey = `refreshTokenLookup:${tokens.refreshToken}`;
+
+      await redisClient.set(redisTokenKey, tokens.refreshToken, {
+        EX: 7 * 24 * 60 * 60,
+      });
+
+      await redisClient.set(redisLookupKey, `${userId}:${sessionId}`, {
+        EX: 7 * 24 * 60 * 60,
+      });
+
+      // Cache block status
+      const cacheKey = `user:${userId}:blocked`;
+      await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
+
+      return {
+        message: "Google login successful",
+        tokens,
+        user: {
+          id: userId,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+        },
+      };
+    } catch (error: any) {
+      console.error("Error in loginWithGoogle:", error);
+      throw new Error(error.message || "Something went wrong during Google login.");
+    }
+  }
+
+  async verifyOtpAndRegister(email: string, otp: string): Promise<AuthResult> {
+    try {
+      const otpRecord = await this._otpRepo.findOtp(email);
+      if (!otpRecord || otpRecord.otp !== otp) throw new Error("Invalid or expired OTP");
+
+      const newUser = await this._userRepo.createUser(otpRecord.user);
+      await this._otpRepo.deleteOtp(email);
+
+      const tokens = generateTokens({
+        id: newUser._id,
+        email: newUser.email,
+        role: newUser.role,
+      });
+
+      const userId = (newUser._id as mongoose.Types.ObjectId).toString();
+      const sessionId = crypto.randomUUID();
+
+      const redisTokenKey = `refreshToken:${userId}:${sessionId}`;
+      const redisLookupKey = `refreshTokenLookup:${tokens.refreshToken}`;
+
+      await redisClient.set(redisTokenKey, tokens.refreshToken, {
+        EX: 7 * 24 * 60 * 60,
+      });
+
+      await redisClient.set(redisLookupKey, `${userId}:${sessionId}`, {
+        EX: 7 * 24 * 60 * 60,
+      });
+
+      // Cache block status
+      const cacheKey = `user:${userId}:blocked`;
+      await redisClient.setEx(cacheKey, 3600, newUser.isBlocked.toString()); // Cache for 1 hour
+
+      return { user: newUser, ...tokens };
+    } catch (error) {
+      console.error("Verify OTP error:", error);
+      throw error;
+    }
+  }
+
+  async refreshToken(token: string): Promise<{ accessToken: string; refreshToken: string; user: any }> {
+    try {
+      if (!token) throw new Error("Refresh token is required");
+
+      const lookup = await redisClient.get(`refreshTokenLookup:${token}`);
+      if (!lookup) throw new Error("Refresh token not found or has been invalidated");
+
+      const [userId, sessionId] = lookup.split(':');
+
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as {
+          id: string;
+          email: string;
+          role: string;
+        };
+      } catch (err) {
+        throw new Error("Invalid or expired refresh token");
+      }
+
+      const user = await this._userRepo.findById(decoded.id);
+      if (!user) throw new Error("User not found");
+      if (user.isBlocked) throw new Error("You are Blocked by Admin");
+
+      const newAccessToken = jwt.sign(
+        { id: user._id, email: user.email, role: user.role },
+        process.env.JWT_ACCESS_SECRET!,
+        { expiresIn: "1h" }
+      );
+
+      const newRefreshToken = jwt.sign(
+        { id: user._id, email: user.email, role: user.role },
+        process.env.JWT_REFRESH_SECRET!,
+        { expiresIn: "7d" }
+      );
+
+      await redisClient.del(`refreshToken:${userId}:${sessionId}`);
+      await redisClient.del(`refreshTokenLookup:${token}`);
+
+      const newSessionId = crypto.randomUUID();
+
+      await redisClient.set(`refreshToken:${userId}:${newSessionId}`, newRefreshToken, {
+        EX: 7 * 24 * 60 * 60,
+      });
+
+      await redisClient.set(`refreshTokenLookup:${newRefreshToken}`, `${userId}:${newSessionId}`, {
+        EX: 7 * 24 * 60 * 60,
+      });
+
+      // Cache block status
+      const cacheKey = `user:${userId}:blocked`;
+      await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
+
+      return {
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken,
+        user,
+      };
+    } catch (error: any) {
+      throw new Error(error.message || "Failed to refresh token");
+    }
+  }
+
 
 
 
@@ -399,42 +284,7 @@ async signup(user: IUser): Promise<{ message: string }> {
   }
 
 
-  async verifyOtpAndRegister(email: string, otp: string): Promise<AuthResult> {
-    try {
-      const otpRecord = await this._otpRepo.findOtp(email);
-      if (!otpRecord || otpRecord.otp !== otp)
-        throw new Error("Invalid or expired OTP");
 
-      const newUser = await this._userRepo.createUser(otpRecord.user);
-      await this._otpRepo.deleteOtp(email);
-
-      const tokens = generateTokens({
-        id: newUser._id,
-        email: newUser.email,
-        role: newUser.role,
-      });
-
-     const userId = (newUser._id as mongoose.Types.ObjectId).toString();
-    
-     const sessionId = crypto.randomUUID();
-
-     const redisTokenKey = `refreshToken:${userId}:${sessionId}`;
-     const redisLookupKey = `refreshTokenLookup:${tokens.refreshToken}`;
-
-     await redisClient.set(redisTokenKey, tokens.refreshToken, {
-       EX: 7 * 24 * 60 * 60,
-     });
-
-     await redisClient.set(redisLookupKey, `${userId}:${sessionId}`, {
-       EX: 7 * 24 * 60 * 60,
-     });
-
-      return { user: newUser, ...tokens };
-    } catch (error) {
-      console.error("Verify OTP error:", error);
-      throw error;
-    }
-  }
 
   async resendOtp(email: string): Promise<{ message: string }> {
     try {
@@ -522,68 +372,6 @@ async signup(user: IUser): Promise<{ message: string }> {
     }
   }
 
-
-
-
-async refreshToken(token: string): Promise<{ accessToken: string; refreshToken: string; user: any }> {
-  try {
-    if (!token) throw new Error("Refresh token is required");
-
-    const lookup = await redisClient.get(`refreshTokenLookup:${token}`);
-    if (!lookup) throw new Error("Refresh token not found or has been invalidated");
-
-    const [userId, sessionId] = lookup.split(':');
-
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as {
-        id: string;
-        email: string;
-        role: string;
-      };
-    } catch (err) {
-      throw new Error("Invalid or expired refresh token");
-    }
-
-    // const userRepo = new UserRepository();
-    const user = await this._userRepo.findById(decoded.id);
-    if (!user) throw new Error("User not found");
-    if (user.isBlocked) throw new Error("You are Blocked by Admin");
-
-    const newAccessToken = jwt.sign(
-      { id: user._id, email: user.email, role: user.role },
-      process.env.JWT_ACCESS_SECRET!,
-      { expiresIn: "1h" }
-    );
-
-    const newRefreshToken = jwt.sign(
-      { id: user._id, email: user.email, role: user.role },
-      process.env.JWT_REFRESH_SECRET!,
-      { expiresIn: "7d" }
-    );
-
-    await redisClient.del(`refreshToken:${userId}:${sessionId}`);
-    await redisClient.del(`refreshTokenLookup:${token}`);
-
-    const newSessionId = crypto.randomUUID();
-
-    await redisClient.set(`refreshToken:${userId}:${newSessionId}`, newRefreshToken, {
-      EX: 7 * 24 * 60 * 60,
-    });
-
-    await redisClient.set(`refreshTokenLookup:${newRefreshToken}`, `${userId}:${newSessionId}`, {
-      EX: 7 * 24 * 60 * 60,
-    });
-
-    return {
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-      user,
-    };
-  } catch (error: any) {
-    throw new Error(error.message || "Failed to refresh token");
-  }
-}
 
 
 

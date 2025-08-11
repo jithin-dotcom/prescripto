@@ -301,28 +301,6 @@ const Navbar = () => {
         </div>
       )}
 
-      {/* <style >{`
-        .marquee {
-          display: inline-block;
-          animation: marquee 20s linear infinite;
-        }
-        @keyframes marquee {
-          0% {
-            transform: translateX(100%);
-          }
-          100% {
-            transform: translateX(-100%);
-          }
-        }
-        @media (max-width: 640px) {
-          .marquee {
-            animation-duration: 15s;
-          }
-          .marquee span {
-            font-size: 0.75rem;
-          }
-        }
-      `}</style> */}
     </>
   );
 };
