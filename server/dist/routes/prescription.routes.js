@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const prescription_repository_1 = require("../repositories/implementation/prescription.repository");
+const prescription_services_1 = require("../services/implementation/prescription.services");
+const prescription_controller_1 = require("../controllers/implementation/prescription.controller");
+const auth_middleware_1 = require("../middlewares/auth.middleware");
+const router = (0, express_1.Router)();
+const prescriptionRepository = new prescription_repository_1.PrescriptionRepository();
+const prescriptionService = new prescription_services_1.PrescriptionService(prescriptionRepository);
+const prescriptionController = new prescription_controller_1.PrescriptionController(prescriptionService);
+router.use(auth_middleware_1.verifyAccessToken);
+router.post("/create-prescription", prescriptionController.createPrescription.bind(prescriptionController));
+router.get("/get-prescription/:appointmentId", prescriptionController.getPrescription.bind(prescriptionController));
+router.get("/get-editPrescription/:appointmentId", prescriptionController.getEditPrescription.bind(prescriptionController));
+router.post("/update-prescription/:appointmentId", prescriptionController.editPrescription.bind(prescriptionController));
+router.get("/download-prescription/:appointmentId", prescriptionController.downloadPrescription.bind(prescriptionController));
+exports.default = router;

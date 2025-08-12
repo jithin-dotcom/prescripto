@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const doctorRating_repository_1 = require("../repositories/implementation/doctorRating.repository");
+const doctorRating_controller_1 = require("../controllers/implementation/doctorRating.controller");
+const doctorRating_services_1 = require("../services/implementation/doctorRating.services");
+const doctorProfile_repositories_1 = require("../repositories/implementation/doctorProfile.repositories");
+const router = (0, express_1.Router)();
+const doctorRatingRepository = new doctorRating_repository_1.DoctorRatingRepository();
+const doctorProfileRepository = new doctorProfile_repositories_1.DoctorProfileRepository();
+const doctorRatingService = new doctorRating_services_1.DoctorRatingService(doctorRatingRepository, doctorProfileRepository);
+const doctorRatingController = new doctorRating_controller_1.DoctorRatingController(doctorRatingService);
+router.post("/rate-doctor", doctorRatingController.rateDoctor.bind(doctorRatingController));
+router.get("/get-rating/:doctorId", doctorRatingController.getRatingByDoctor.bind(doctorRatingController));
+exports.default = router;
