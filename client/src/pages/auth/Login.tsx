@@ -11,6 +11,7 @@ import type { GoogleCredentialResponse } from "../../interfaces/IGoogleCredentia
 import { Eye, EyeOff } from "lucide-react"; 
 import logo from '../../assets/Screenshot 2025-07-08 170708.png';
 import { APIAuthRoutes } from "../../constants/routes.constants";
+import { axiosNoAuth } from "../../utils/axios";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID as string;
 
@@ -50,7 +51,7 @@ const Login: React.FC = () => {
         toast.error("Email and Password cannot be empty");
         return;
       }
-      const res = await axios.post(APIAuthRoutes.LOGIN, { email, password });
+      const res = await axiosNoAuth.post(APIAuthRoutes.LOGIN, { email, password });
       const { accessToken, user } = res.data;
       setAuth({ accessToken, user });
 

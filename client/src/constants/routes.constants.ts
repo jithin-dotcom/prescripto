@@ -35,7 +35,7 @@ export const APIUserRoutes = {
 
 export const APIAuthRoutes = {
    FORGOT_PASSWORD: "/api/auth/forgot-password",
-   LOGIN: "/api/auth/login",
+   LOGIN: "/auth/login",
    GOOGLE_LOGIN: "/api/auth/google-login",
    UPDATE_PASSWORD: "/api/auth/update-password",
    SIGNUP: "/api/auth/signup",

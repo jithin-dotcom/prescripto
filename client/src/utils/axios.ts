@@ -7,7 +7,12 @@ import { useAuthStore } from "../store/authStore";
 import { APIAuthRoutes } from "../constants/routes.constants";
 
 
-console.log("API Base URL:", import.meta.env.VITE_API_BASE_URL);
+
+const axiosNoAuth = axios.create({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  withCredentials: true,
+});
+
 const axiosInstance = axios.create({
   // baseURL: "/api",
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -125,4 +130,5 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+export {axiosNoAuth};
 export default axiosInstance;
