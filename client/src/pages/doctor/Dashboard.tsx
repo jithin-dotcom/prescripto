@@ -538,7 +538,7 @@ const DoctorDashboard: React.FC = () => {
                     label={({ name, value }) => `${name}: ${value}`}
                     labelLine={{ stroke: "#64748b", strokeWidth: 1 }}
                   >
-                    {ageGroups.map((entry, index) => (
+                    {ageGroups.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -565,7 +565,7 @@ const DoctorDashboard: React.FC = () => {
                     label={({ name, value }) => `${name}: ${value}`}
                     labelLine={{ stroke: "#64748b", strokeWidth: 1 }}
                   >
-                    {genderDistribution.map((entry, index) => (
+                    {genderDistribution.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

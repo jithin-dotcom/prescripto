@@ -545,7 +545,7 @@ const AdminDashboard: React.FC = () => {
                     label={({ name, value }) => `${name}: ${value}`}
                     labelLine={{ stroke: "#64748b", strokeWidth: 1 }}
                   >
-                    {appointmentStatus.map((entry, index) => (
+                    {appointmentStatus.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -573,7 +573,7 @@ const AdminDashboard: React.FC = () => {
                     label={({ name, value }) => `${name}: ${value?.toFixed(0)}`}
                     labelLine={{ stroke: "#64748b", strokeWidth: 1 }}
                   >
-                    {paymentMethods.map((entry, index) => (
+                    {paymentMethods.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -601,7 +601,7 @@ const AdminDashboard: React.FC = () => {
                     label={({ name, value }) => `${name}: ${value}`}
                     labelLine={{ stroke: "#64748b", strokeWidth: 1 }}
                   >
-                    {specializationDemand.map((entry, index) => (
+                    {specializationDemand.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
