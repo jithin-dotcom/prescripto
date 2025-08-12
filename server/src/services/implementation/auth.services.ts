@@ -111,7 +111,7 @@ export class AuthService implements IAuthService {
         EX: 7 * 24 * 60 * 60,
       });
 
-      // Cache block status
+     
       const cacheKey = `user:${userId}:blocked`;
       await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
 

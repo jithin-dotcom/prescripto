@@ -74,13 +74,17 @@ export class AuthController implements IAuthController {
       validated.password
     );
 
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false, 
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
-    });
+    const isProduction = process.env.NODE_ENV === "production";
 
+    const cookieOptions = {
+      httpOnly: true,
+      secure: isProduction,          
+      sameSite: (isProduction ? "none" : "lax") as "none" | "lax" | "strict" | boolean | undefined, 
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+
+    res.cookie("refreshToken", refreshToken, cookieOptions);
+   
     res.status(StatusCode.OK).json({ accessToken, user });
   } catch (error) {
     next(error);
@@ -106,12 +110,17 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
        return;
     }
 
-    res.cookie("refreshToken", tokens.refreshToken, {
+
+    const isProduction = process.env.NODE_ENV === "production";
+
+    const cookieOptions = {
       httpOnly: true,
-      secure: false, 
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
-    });
+      secure: isProduction,          
+      sameSite: (isProduction ? "none" : "lax") as "none" | "lax" | "strict" | boolean | undefined, 
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+
+    res.cookie("refreshToken", tokens.refreshToken, cookieOptions);
     
     res.status(StatusCode.OK).json({
       tokens,
@@ -133,12 +142,16 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
         validated.otp
       );
       
-      res.cookie("refreshToken", result.refreshToken, {
-      httpOnly: true,
-      secure: false, 
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
-     });
+      const isProduction = process.env.NODE_ENV === "production";
+
+      const cookieOptions = {
+        httpOnly: true,
+        secure: isProduction,          
+        sameSite: (isProduction ? "none" : "lax") as "none" | "lax" | "strict" | boolean | undefined, 
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      };
+
+      res.cookie("refreshToken", result.refreshToken, cookieOptions);
     
       res.status(StatusCode.OK).json(result);
       return;
@@ -221,12 +234,17 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
     const { accessToken, refreshToken: newRefreshToken, user } =
       await this._authService.refreshToken(refreshToken);
 
-    res.cookie("refreshToken", newRefreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, 
-    });
+
+    const isProduction = process.env.NODE_ENV === "production";
+
+    const cookieOptions = {
+       httpOnly: true,
+       secure: isProduction,          
+       sameSite: (isProduction ? "none" : "lax") as "none" | "lax" | "strict" | boolean | undefined, 
+       maxAge: 7 * 24 * 60 * 60 * 1000,
+      };
+
+      res.cookie("refreshToken", newRefreshToken, cookieOptions);
 
       res.status(StatusCode.OK).json({
       accessToken,
@@ -252,12 +270,15 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
 
     await this._authService.logout(refreshToken);
 
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: false,
-      sameSite: "strict",
+    const isProduction = process.env.NODE_ENV === "production";
 
-    });
+    const cookieOptions = {
+      httpOnly: true,
+      secure: isProduction,          
+      sameSite: (isProduction ? "none" : "lax") as "none" | "lax" | "strict" | boolean | undefined, 
+    };
+
+    res.clearCookie("refreshToken", cookieOptions);
 
      res.json({ message: "Logged out successfully" });
      return;

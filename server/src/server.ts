@@ -34,14 +34,15 @@ const app = express();
 const server = http.createServer(app); 
 
 
+const allowedOrigins = process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",") : [];
+
+
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:3002", "http://localhost:3001", "http://localhost:3000"],
+    origin: allowedOrigins,
     credentials: true,
   },
-  //  maxHttpBufferSize: 5e6,
 });
-
 
 const chatNamespace = io.of("/chat");
 chatNamespace.use(socketAuthMiddleware); 
@@ -59,9 +60,18 @@ videoNamespace.on("connection", (socket) => {
 
 
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3002", "http://localhost:3001", "http://localhost:3000"],
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // Allow non-browser requests like Postman, curl
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS policy: This origin is not allowed"), false);
+    }
+  },
   credentials: true,
 }));
+
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
