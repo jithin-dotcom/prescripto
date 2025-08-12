@@ -8,7 +8,8 @@ import { APIAuthRoutes } from "../constants/routes.constants";
 
 
 const axiosInstance = axios.create({
-  baseURL: "/api",
+  // baseURL: "/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
 
@@ -71,7 +72,7 @@ axiosInstance.interceptors.response.use(
       }
     }
 
-    // 🛠 Handle blob error responses
+   
     let message = "Something went wrong";
     try {
       const isBlobError =
