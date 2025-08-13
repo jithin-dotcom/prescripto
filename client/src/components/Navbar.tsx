@@ -84,8 +84,8 @@ const Navbar = () => {
       });
       setUser(response.data.user);
       toast.success("Profile photo updated!");
-    } catch {
-      toast.error("Failed to upload photo");
+    } catch(error) {
+      console.error("Failed to upload photo : ",error);
     }
   };
 
@@ -241,7 +241,7 @@ const Navbar = () => {
      
       {mobileMenuOpen && (
         <ul className="md:hidden flex flex-col gap-2 p-4 text-sm font-medium text-[#262626] bg-white shadow-sm border-t border-gray-200">
-          {["/", "/all-doctors", "/about", "/contact"].map((path, idx) => (
+          {["/", "/all-doctors", "/contact"].map((path, idx) => (
             <NavLink
               key={path}
               to={path}
@@ -252,7 +252,7 @@ const Navbar = () => {
                 }`
               }
             >
-              {["Home", "All Doctors", "About", "Contact"][idx]}
+              {["Home", "All Doctors", "Contact"][idx]}
             </NavLink>
           ))}
           {!accessToken ? (
@@ -285,6 +285,16 @@ const Navbar = () => {
               >
                 My Chat
               </button>
+
+               <button
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    navigate("/wallet");
+                  }}
+                  className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
+               >
+                  Wallet
+               </button>
                <button
                 onClick={() => {
                   navigate("/my-appointments");

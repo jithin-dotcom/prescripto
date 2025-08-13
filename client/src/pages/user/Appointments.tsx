@@ -38,10 +38,10 @@ function generateSlots(
   slotDuration: number,
   bookedSlotsByDate: Record<string, string[]>
 ): Slot[] {
-  console.log("bookedslotbydate : ", bookedSlotsByDate );
+ 
   const today = new Date();
   const result: Slot[] = [];
-  console.log("availablity : ", availability);
+ 
   for (let i = 0; i < 7; i++) {
     const currentDate = new Date();
     currentDate.setDate(today.getDate() + i);
@@ -55,7 +55,7 @@ function generateSlots(
 
     const daySlots: string[] = [];
 
-    console.log("availabilityForDay.slots : ",availabilityForDay.slots);
+   
     for (const timeRange of availabilityForDay.slots) {
       const [fromHour, fromMinute] = timeRange.from.split(":").map(Number);
       const [toHour, toMinute] = timeRange.to.split(":").map(Number);
@@ -75,7 +75,6 @@ function generateSlots(
         if (!booked.has(timeStr)) {
           daySlots.push(timeStr);
         }
-        console.log("daySlot : ",daySlots);
        
         from = new Date(from.getTime() + slotDuration * 60000);
       }
@@ -90,7 +89,7 @@ function generateSlots(
       });
     }
   }
-  console.log("result : ",result);
+ 
   return result;
 }
 
@@ -134,12 +133,12 @@ const Appointment: React.FC = () => {
   }
 
   try {
-    const res = await axiosInstance.post(APIUserRoutes.CREATE_APPOINTMENTS, {
+     await axiosInstance.post(APIUserRoutes.CREATE_APPOINTMENTS, {
       doctorId,
       date: selectedSlot.date,
       time: activeTime,
     });
-    console.log("response : ", res);
+   
     toast.success("Make Payment to Confirm your Appointment ");
 
        
@@ -171,7 +170,7 @@ const Appointment: React.FC = () => {
     async function fetchDoctorProfile() {
       try {
         const res = await axiosInstance.get(`${APIUserRoutes.GET_ALL_APPOINTMENTS}/${doctorId}`);
-        console.log("adminRes : ", res);
+     
 
         const firstDoctor = res.data.responses?.[0]?.doctor;
 

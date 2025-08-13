@@ -87,7 +87,7 @@ const AllDoctors = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        {/* Search bar and sort */}
+       
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -106,21 +106,7 @@ const AllDoctors = () => {
           </motion.div>
 
           <div className="w-full sm:w-auto">
-            {/* <select
-              value={sortBy}
-              onChange={(e) => {
-                setSortBy(e.target.value);
-                setPage(1);
-              }}
-              className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Filter</option>
-              <option value="rating">Rating</option>
-              <option value="experience">Experience</option>
-            </select> */}
-
-
-
+         
 
             <div className="w-full sm:w-auto flex items-center gap-2">
   <Filter className="text-gray-600 w-5 h-5" />
@@ -132,6 +118,7 @@ const AllDoctors = () => {
     }}
     className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500"
   >
+      
     <option value="">Apply Filter</option>
     <option value="rating">Rating</option>
     <option value="experience">Experience</option>
@@ -141,35 +128,47 @@ const AllDoctors = () => {
         </div>
 
         <div className="grid lg:grid-cols-[auto_1fr] gap-6 items-start">
-          {/* Sidebar filter */}
+         
           <motion.aside
             className="w-full sm:w-auto lg:w-72"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4 }}
           >
+       
+
             <div className="grid grid-cols-2 sm:flex sm:flex-col gap-3 text-base text-gray-700">
-              {specialties.map((specialtyLabel, index) => (
-                <motion.p
-                  key={index}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="pl-5 pr-5 py-3 border border-[#C9D8FF] rounded-lg cursor-pointer transition duration-300 hover:bg-[#5F6FFF] hover:text-white bg-white shadow-2xl text-center sm:text-left"
-                  onClick={() => {
-                    if (specialtyLabel === "Clear Filter") {
-                      setSpecialty("");
-                    } else {
-                      setSpecialty(specialtyLabel);
-                    }
-                  }}
-                >
-                  {specialtyLabel}
-                </motion.p>
-              ))}
-            </div>
+  {specialties.map((specialtyLabel, index) => {
+    const isSelected =
+      (specialtyLabel === "Clear Filter" && specialty === "") ||
+      specialtyLabel === specialty;
+
+    return (
+      <motion.p
+        key={index}
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.98 }}
+        className={`pl-5 pr-5 py-3 border rounded-lg cursor-pointer transition duration-300 shadow-2xl text-center sm:text-left
+          ${isSelected ? "bg-[#5F6FFF] text-white border-[#5F6FFF]" : "bg-white text-gray-700 border-[#C9D8FF]"}
+          hover:bg-[#5F6FFF] hover:text-white`}
+        onClick={() => {
+          if (specialtyLabel === "Clear Filter") {
+            setSpecialty("");
+          } else {
+            setSpecialty(specialtyLabel);
+          }
+          setPage(1); 
+        }}
+      >
+        {specialtyLabel}
+      </motion.p>
+    );
+  })}
+</div>
+
           </motion.aside>
 
-          {/* Doctor Cards */}
+        
           <div className="w-full">
             <motion.div
               variants={containerVariants}

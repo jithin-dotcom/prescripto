@@ -42,14 +42,18 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const setAuth = useAuthStore((state) => state.setAuth);
   const navigate = useNavigate();
-
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      if (email === "" || password === "") {
+      if (email === "" || password === "" || email.trim().length === 0 || password.trim().length === 0) {
         toast.error("Email and Password cannot be empty");
         return;
+      }
+      if(!emailRegex.test(email)){
+         toast.error("Enter a valid Email");
+         return;
       }
       const res = await axiosNoAuth.post(APIAuthRoutes.LOGIN, { email, password });
       const { accessToken, user } = res.data;

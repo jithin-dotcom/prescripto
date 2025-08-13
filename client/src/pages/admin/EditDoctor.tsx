@@ -6,9 +6,10 @@ import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-import { useAuthStore } from "../../store/authStore";
+// import { useAuthStore } from "../../store/authStore";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { APIRoutes } from "../../constants/routes.constants";
 
 
 interface TimeBlock { from: string; to: string }
@@ -48,7 +49,7 @@ const formatTo12Hour = (t24: string): string => {
 
 const EditDoctor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const { accessToken } = useAuthStore();
+  // const { accessToken } = useAuthStore();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -62,11 +63,11 @@ const EditDoctor: React.FC = () => {
   
   useEffect(() => {
     if (!id) return;
-    axiosInstance.get(`/admin/get-user/${id}`)
+    axiosInstance.get(`${APIRoutes.ADMIN_GET_SINGLE_USER}/${id}`)
       .then(res => {
         const user = res.data.data;
         const p = user.profile?.[0] || {};
-        console.log("user.data.data : ", user);
+        // console.log("user.data.data : ", user);
         const availability: AvailabilitySlot[] = (p.availability || []).map((slot: AvailabilitySlot) => ({
           day: slot.day,
           slots: (slot.slots || []).map((b: TimeBlock) => ({
@@ -99,20 +100,19 @@ const EditDoctor: React.FC = () => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  
-
-  // Submit logic
+ 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // Basic validation
-      if (!/^[A-Za-z\s]+$/.test(form.name)) throw new Error("Name invalid");
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) throw new Error("Email invalid");
-      if (!/^[A-Z\s]+$/.test(form.educationDetails)) throw new Error("Education uppercase only");
-      if (!/^[a-zA-Z0-9]+$/.test(form.registrationNumber)) throw new Error("Registration invalid");
-      if (!/^\d{4}$/.test(form.registrationYear)) throw new Error("Reg year invalid");
-      if (isNaN(+form.yearOfExperience)) throw new Error("Experience must be numeric");
-      if (isNaN(+form.fee)) throw new Error("Fee must be numeric");
+     
+      if (!/^[A-Za-z\s]+$/.test(form.name) || form.name.trim().length === 0 ) throw new Error("Name invalid");
+      if(form.name.length > 20) throw new Error("Name must be maximum size 20");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) || form.email.trim().length === 0) throw new Error("Email invalid");
+      if (!/^[A-Z\s]+$/.test(form.educationDetails) || form.educationDetails.trim().length === 0) throw new Error("Education uppercase only");
+      if (!/^[a-zA-Z0-9]+$/.test(form.registrationNumber) || form.registrationNumber.trim().length === 0) throw new Error("Registration invalid");
+      if (!/^\d{4}$/.test(form.registrationYear) || !form.registrationYear) throw new Error("Reg year invalid");
+      if (isNaN(+form.yearOfExperience) || !form.yearOfExperience) throw new Error("Experience must be numeric");
+      if (isNaN(+form.fee) || !form.fee) throw new Error("Fee must be numeric");
 
       
       const seenDays = new Set<string>();
@@ -161,9 +161,9 @@ const EditDoctor: React.FC = () => {
       await axiosInstance.put(`/admin/update-user/${id}`, fd, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${accessToken}`
+          // Authorization: `Bearer ${accessToken}`
         },
-        withCredentials: true
+        // withCredentials: true
       });
 
       toast.success("Doctor profile updated");
@@ -171,7 +171,9 @@ const EditDoctor: React.FC = () => {
     } catch (ex) {
       if (axios.isAxiosError(ex)) {
         toast.error(ex.response?.data?.message || "Update failed");
-      } else {
+      }else if(ex instanceof Error){
+         toast.error(ex.message);
+      }else {
         toast.error("Failed to update");
       }
     }

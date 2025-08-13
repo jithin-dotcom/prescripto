@@ -6,7 +6,7 @@ import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-import { useAuthStore } from "../../store/authStore";
+// import { useAuthStore } from "../../store/authStore";
 import axios, { AxiosError } from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { APIRoutes } from "../../constants/routes.constants";
@@ -35,7 +35,7 @@ const EditUser = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [countries, setCountries] = useState<string[]>([]);
 
-  const { accessToken } = useAuthStore();
+  // const { accessToken } = useAuthStore();
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -67,7 +67,7 @@ const EditUser = () => {
       try {
         const response = await axiosInstance.get(`${APIRoutes.ADMIN_GET_USER_EDIT}/${id}`);
         const user = response.data.data;
-        console.log("user : ",user);
+        // console.log("user : ",user);
         const profile = user.profile?.[0];
 
         setForm({
@@ -103,15 +103,23 @@ const EditUser = () => {
     const dobDate = new Date(form.dob);
     const today = new Date();
 
-    if (!nameRegex.test(form.name)) return toast.error("Name can only contain letters.");
-    if (!emailRegex.test(form.email)) return toast.error("Enter a valid email.");
-    if (!form.dob || isNaN(dobDate.getTime()) || dobDate >= today)
-      return toast.error("Invalid or future Date of Birth.");
-    if (!nameRegex.test(form.city) || !nameRegex.test(form.state) || !nameRegex.test(form.country))
-      return toast.error("City, state, and country must only contain letters.");
-    if (!numberRegex.test(form.pinCode) || form.pinCode.length !== 6)
-      return toast.error("Pin code must be a 6-digit number.");
-
+    if (!nameRegex.test(form.name) || form.name.trim().length === 0) return toast.error("Name can only contain letters.");
+    if(form.name.trim().length > 20) return toast.error("Name can have maximum 20 character");
+    if (!emailRegex.test(form.email) || form.email.trim().length === 0) return toast.error("Enter a valid email.");
+    if (!form.dob || isNaN(dobDate.getTime()) || dobDate >= today){
+       return toast.error("Invalid or future Date of Birth.");
+    }
+    if (!nameRegex.test(form.city) || !nameRegex.test(form.state) || !nameRegex.test(form.country)){
+       return toast.error("City, state, and country must only contain letters");
+    }
+    if(form.city.trim().length === 0 || form.country.trim().length === 0 || form.state.trim().length === 0){
+       return toast.error("City, state, and country cannot be empty");
+    }
+      
+    if (!numberRegex.test(form.pinCode) || form.pinCode.trim().length !== 6 ){
+       return toast.error("Pin code must be a 6-digit number.");
+    }
+      
     const userData = {
       name: form.name,
       email: form.email,
@@ -142,9 +150,9 @@ const EditUser = () => {
       await axiosInstance[method](endpoint, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${accessToken}`,
+          // Authorization: `Bearer ${accessToken}`,
         },
-        withCredentials: true,
+        // withCredentials: true,
       });
 
       toast.success(`User ${id ? "updated" : "created"} successfully!`);

@@ -73,7 +73,7 @@ const Navbar = () => {
       const response = await axiosInstance.post(APIRoutes.UPLOAD_PATIENT_PHOTO, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${accessToken}`,
+          // Authorization: `Bearer ${accessToken}`,
         },
       });
       const updatedUser = response.data.user;
@@ -99,7 +99,7 @@ const Navbar = () => {
     <>
       <header className="w-full bg-white border-b shadow-sm px-4 sm:px-6 lg:px-8 py-3  ">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
-          {/* Left Section: Logo and Role */}
+         
           <div className="flex items-center gap-3">
             <img
               src={assets.admin_logo}
@@ -114,7 +114,7 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Hamburger Menu for Mobile */}
+         
           <button
             className="sm:hidden text-gray-600 hover:text-gray-800 focus:outline-none"
             onClick={() => setMenuOpen((prev) => !prev)}
@@ -122,7 +122,7 @@ const Navbar = () => {
             {menuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
-          {/* Right Section: Navigation Links */}
+        
           <div
             className={`${
               menuOpen ? "flex" : "hidden"
@@ -203,6 +203,16 @@ const Navbar = () => {
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
                     >
                       Change Email
+                    </button>
+                     <button
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        setMenuOpen(false);
+                        navigate("/doctor-appointments");
+                      }}
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
+                    >
+                      Appointments
                     </button>
                      <button
                       onClick={() => {

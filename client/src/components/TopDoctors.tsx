@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axiosInstance from "../utils/axios";
+import { useNavigate } from "react-router-dom";
 
 import { APIRoutes } from "../constants/routes.constants";
 import type { ITopDoctor } from "../interfaces/ITopDoctors";
@@ -9,6 +10,7 @@ import type { ITopDoctor } from "../interfaces/ITopDoctors";
 const TopDoctors = () => {
   const [doctors, setDoctors] = useState<ITopDoctor[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchTopDoctors() {
@@ -43,8 +45,10 @@ const TopDoctors = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {doctors.map((doctor) => (
             <div
-              key={doctor._id}
+              key={doctor.doctorId._id}
               className="border border-[#C9D8FF] rounded-xl bg-white shadow-sm overflow-hidden transition hover:shadow-lg hover:scale-[1.02]"
+              onClick={() => navigate(`/appointment/${doctor.doctorId._id}`)}
+              // {console.log(doctor._id)}
             >
               <img
                 src={

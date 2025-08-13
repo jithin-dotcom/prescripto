@@ -22,7 +22,7 @@ const UsersList: React.FC = () => {
   const navigate = useNavigate();
   const [pageSize, setPageSize] = useState<number>(4);
 
-  // const limit = 2;
+  
 
   const getUsers = async (page = 1, query = "", limit = pageSize) => {
     setLoading(true);
@@ -70,7 +70,7 @@ useEffect(() => {
       toast.success("Successfully toggled verify status");
     } catch (error) {
       const message = error instanceof AxiosError ? error.message : "Error toggling verify status";
-      toast.error(message);
+      console.error(message);
     }
   };
 

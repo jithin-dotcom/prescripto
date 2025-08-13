@@ -5,7 +5,7 @@ import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-import { useAuthStore } from "../../store/authStore";
+// import { useAuthStore } from "../../store/authStore";
 import axios, { AxiosError } from "axios";
 import { APIRoutes } from "../../constants/routes.constants";
 
@@ -34,7 +34,7 @@ const AddUser = () => {
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [countries, setCountries] = useState<string[]>([]);
 
-  const { accessToken } = useAuthStore();
+  // const { accessToken } = useAuthStore();
   const nameRegex = /^[A-Za-z\s]*$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).+$/;
@@ -79,17 +79,23 @@ const AddUser = () => {
       return;
     }
 
-    if(!nameRegex.test(form.name)){
+    if(!nameRegex.test(form.name) || form.name.trim().length === 0){
       toast.error("Name can only be alphabet");
       return;
     }
+
+    if(form.name.length > 20){
+       toast.error("Name should be less than 20 words");
+       return;
+    }
     
-    if(!emailRegex.test(form.email)){
+    
+    if(!emailRegex.test(form.email) || form.email.trim().length === 0 ){
       toast.error("enter a valid email");
       return;
     }
 
-    if(!passwordRegex.test(form.password)){
+    if(!passwordRegex.test(form.password) || form.password.trim().length === 0 ){
       toast.error("password must have at least one number and one alphabet");
       return;
     }
@@ -107,19 +113,19 @@ const AddUser = () => {
       return;
     }
 
-    if(!nameRegex.test(form.city)){
+    if(!nameRegex.test(form.city) || form.city.trim().length === 0){
        toast.error("city should only have alphabets");
        return;
     }
-    if(!nameRegex.test(form.state)){
+    if(!nameRegex.test(form.state) || form.state.trim().length === 0){
        toast.error("state should only have alphabets");
        return;
     }
-    if(!nameRegex.test(form.country)){
+    if(!nameRegex.test(form.country) || form.country.trim().length === 0){
        toast.error("country should only have alphabets");
        return;
     }
-    if(!numberRegex.test(form.pinCode) || form.pinCode.length !== 6){
+    if(!numberRegex.test(form.pinCode) || form.pinCode.trim().length !== 6 ){
       toast.error("Pin code should be 6 digit number");
       return;
     }
@@ -153,9 +159,9 @@ const AddUser = () => {
       await axiosInstance.post(APIRoutes.ADMIN_CREATE_USERS, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${accessToken}`,
+          // Authorization: `Bearer ${accessToken}`,
         },
-        withCredentials: true,
+        // withCredentials: true,
       });
 
       toast.success("User added successfully!");

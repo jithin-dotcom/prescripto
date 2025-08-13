@@ -54,6 +54,10 @@ const ChangePassword = () => {
       toast.error("All fields are required.");
       return;
     }
+     if (form.currentPassword.trim().length === 0 || form.newPassword.trim().length === 0 || form.rePassword.trim().length === 0) {
+      toast.error("All fields are required.");
+      return;
+    }
 
     if (!passwordRegex.test(form.newPassword)) {
       toast.error("New password must contain at least one letter and one number.");

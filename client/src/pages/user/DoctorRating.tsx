@@ -44,10 +44,10 @@ export const RateDoctor = () => {
   };
 
   const handleSubmit = async () => {
-             console.log("rating : ", rating);
-        console.log("appointmentId : ",appointmentId );
-        console.log("userId : ", userId);
-        console.log("doctorId : ",doctorId);
+        //  console.log("rating : ", rating);
+        // console.log("appointmentId : ",appointmentId );
+        // console.log("userId : ", userId);
+        // console.log("doctorId : ",doctorId);
     if (!rating || !appointmentId || !userId || !doctorId) {
       toast.error('Missing required data for rating.');
       return;

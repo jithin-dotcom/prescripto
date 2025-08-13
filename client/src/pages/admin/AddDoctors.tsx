@@ -5,8 +5,8 @@ import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-import { useAuthStore } from "../../store/authStore";
-import { AxiosError } from "axios";
+// import { useAuthStore } from "../../store/authStore";
+// import { AxiosError } from "axios";
 import { APIRoutes } from "../../constants/routes.constants";
 
 const AddDoctor = () => {
@@ -34,7 +34,7 @@ const AddDoctor = () => {
   const registrationNumberRegex = /^[a-zA-Z0-9]+$/;
   const registrationYearRegex = /^\d{4}$/;
   
-  const {  accessToken} = useAuthStore();
+  // const {  accessToken} = useAuthStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -49,32 +49,37 @@ const AddDoctor = () => {
     return;
   }
 
-  if (form.password !== form.rePassword) {
+  if (form.password !== form.rePassword ) {
     toast.error("Passwords do not match.");
       return;
   }
   
-  if(!nameRegex.test(form.name)){
+  if(!nameRegex.test(form.name) || form.name.trim() .length=== 0){
     toast.error("Name can only be alphabet");
     return;
   }
+
+  if(form.name.trim().length > 20){
+     toast.error("Name should be smaller than 20 words");
+     return;
+  }
       
-  if(!emailRegex.test(form.email)){
+  if(!emailRegex.test(form.email) || form.email.trim().length === 0){
     toast.error("enter a valid email");
     return;
   }
   
-  if(!passwordRegex.test(form.password)){
+  if(!passwordRegex.test(form.password) || form.password.trim().length === 0){
     toast.error("password must have at least one number and one alphabet");
     return;
   }
   
-  if(!eduRegex.test(form.educationDetails)){
+  if(!eduRegex.test(form.educationDetails) || form.educationDetails.trim() .length === 0){
      toast.error("Education qualification should only have capital alphabet");
      return;
   }
 
-  if(!numberRegex.test(form.yearOfExperience)){
+  if(!numberRegex.test(form.yearOfExperience) || !form.yearOfExperience){
      toast.error("Year of experience should be number");
      return;
   }
@@ -84,17 +89,17 @@ const AddDoctor = () => {
     return;
   }
 
-  if (!registrationNumberRegex.test(form.registrationNumber)) {
+  if (!registrationNumberRegex.test(form.registrationNumber) || form.registrationNumber.trim().length === 0) {
     toast.error("Registration number must contain only letters and numbers.");
     return;
   }
 
-  if (!registrationYearRegex.test(form.registrationYear)) {
+  if (!registrationYearRegex.test(form.registrationYear) || !form.registrationYear) {
     toast.error("Registration year must be a 4-digit number.");
     return;
   }
 
-  if(form.about.length <= 0){
+  if(form.about.trim().length <= 0){
      toast.error("about cannot be empty");
      return;
   }
@@ -132,9 +137,9 @@ const AddDoctor = () => {
      await axiosInstance.post(APIRoutes.ADMIN_CREATE_USERS, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${accessToken}`,
+        // Authorization: `Bearer ${accessToken}`,
       },
-      withCredentials: true,
+      // withCredentials: true,
     });
 
     toast.success("Doctor added successfully!");
@@ -156,11 +161,12 @@ const AddDoctor = () => {
     setProfilePhoto(null);
     setProofDocuments(null);
   } catch (error) {
-    if(error instanceof AxiosError){
-       toast.error(error.response?.data?.message || "Something went wrong");
-    }else{
-       toast.error("something went wrong");
-    }
+    console.log("error : ",error);
+    // if(error instanceof AxiosError){
+    //    toast.error(error.response?.data?.message || "Something went wrong");
+    // }else{
+    //    toast.error("something went wrong");
+    // }
     
   }
 };

@@ -115,7 +115,7 @@ const DoctorAppointments = () => {
         console.log("Appointments:", res.data.data);
       } catch (err) {
         console.error("Error fetching appointments:", err);
-        toast.error("Failed to fetch appointments");
+        // toast.error("Failed to fetch appointments");
       }
     };
     fetchAppointments();
@@ -141,9 +141,9 @@ const DoctorAppointments = () => {
       toast.success(`Appointment ${newStatus} successfully`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Failed to update");
+          console.error(error.response?.data?.message || "Failed to update");
       } else {
-        toast.error("Something went wrong");
+        console.error("Something went wrong");
       }
     } finally {
       setModalOpen(false);

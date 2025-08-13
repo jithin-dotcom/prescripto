@@ -23,18 +23,18 @@
 
 
 
-import axiosInstance from "../utils/axios";
+import  { axiosNoAuth } from "../utils/axios";
 import { toast } from "react-toastify";
 import { APIAuthRoutes } from "../constants/routes.constants";
 
 export const logoutService = async () => {
   try {
-    const res = await axiosInstance.post(APIAuthRoutes.LOGOUT);
+    const res = await axiosNoAuth.post(APIAuthRoutes.LOGOUT);
     
     if (res.status !== 200) throw new Error("Logout failed");
     toast.success("Successfully logged out");
   } catch (error) {
     console.error("Logout service error:", error);
-    toast.error("Failed to log out");
+    // toast.error("Failed to log out");
   }
 };

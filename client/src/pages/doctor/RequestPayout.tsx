@@ -8,6 +8,7 @@ import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
 import { DollarSign, FileText, CheckCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { APIDoctorRoutes } from "../../constants/routes.constants";
 
 const RequestPayout: React.FC = () => {
 
@@ -50,7 +51,7 @@ const RequestPayout: React.FC = () => {
       
       
       
-      await axiosInstance.post("/payments/create-payout", {
+      await axiosInstance.post(APIDoctorRoutes.PAYOUT_REQUEST, {
         doctorId: userId,
         amount: amount , 
         reason,

@@ -6,7 +6,7 @@ import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-import { useAuthStore } from "../../store/authStore";
+// import { useAuthStore } from "../../store/authStore";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { APIRoutes } from "../../constants/routes.constants";
@@ -75,7 +75,7 @@ const EditDoctorProfile: React.FC = () => {
   const [profilePhoto, setProfilePhoto] = useState<File | string | null>(null);
   const [proofDocuments, setProofDocuments] = useState<FileList | null>(null);
   const { id } = useParams<{ id: string }>();
-  const { accessToken } = useAuthStore();
+  // const { accessToken } = useAuthStore();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -114,16 +114,17 @@ const EditDoctorProfile: React.FC = () => {
     e.preventDefault();
     try {
       
-      if (!form.name.match(/^[A-Za-z\s]+$/)) throw new Error("Name must be letters/spaces");
-      if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) throw new Error("Invalid email");
-      if (!form.educationDetails.match(/^[A-Z\s]+$/)) throw new Error("Education uppercase only");
-      if (!form.registrationNumber.match(/^[a-zA-Z0-9]+$/)) throw new Error("Invalid Reg Number");
-      if (!form.registrationYear.match(/^\d{4}$/)) throw new Error("Invalid Reg Year");
+      if (!form.name.match(/^[A-Za-z\s]+$/) || !form.name?.trim()) throw new Error("Name must be letters/spaces");
+      if (!form.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/) || !form.email?.trim()) throw new Error("Invalid email");
+      if (!form.educationDetails.match(/^[A-Z\s]+$/) || !form.educationDetails?.trim()) throw new Error("Education uppercase only");
+      if (!form.registrationNumber.match(/^[a-zA-Z0-9]+$/) || !form.registrationNumber?.trim()) throw new Error("Invalid Reg Number");
+      if (!form.registrationYear.match(/^\d{4}$/) || !form.registrationYear) throw new Error("Invalid Reg Year");
       // if (!form.yearOfExperience.match(/^\d+$/)) throw new Error("Invalid Experience");
       const experience = Number(form.yearOfExperience);
       if (isNaN(experience)) throw new Error("Invalid Experience");
       form.yearOfExperience = experience.toString();
-      if (!form.specialization || !form.about) throw new Error("Fill all profile fields");
+      
+      if (!form.specialization?.trim() || !form.about?.trim()) throw new Error("Fill all profile fields");
 
       const convertedAvail: AvailabilitySlot[] = [];
       const seenDays = new Set<string>();
@@ -189,8 +190,8 @@ const EditDoctorProfile: React.FC = () => {
         Array.from(proofDocuments).forEach(f => fd.append("proofDocument", f));
 
       await axiosInstance.put(`${APIRoutes.ADMIN_UPDATE_USERS}/${id}`, fd, {
-        headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${accessToken}` },
-        withCredentials: true,
+        headers: { "Content-Type": "multipart/form-data" },
+        // withCredentials: true,
       });
       toast.success("Doctor profile updated");
       navigate("/doctor-profile");

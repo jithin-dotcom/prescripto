@@ -90,7 +90,7 @@ const DoctorRatingsPage: React.FC = () => {
               <div className="flex items-center gap-2">
                 <Award className="w-6 h-6 text-yellow-500" />
                 <span className="text-xl font-bold text-gray-900">{averageRating}</span>
-                <StarRating rating={Math.round(parseFloat(averageRating))} size="md" />
+                <StarRating rating={Math.round(parseFloat(averageRating))}  />
               </div>
             </div>
 

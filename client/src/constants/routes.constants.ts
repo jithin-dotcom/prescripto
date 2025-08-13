@@ -12,6 +12,8 @@ export const APIRoutes = {
    ADMIN_GET_USER_EDIT: "/admin/get-user", 
    ADMIN_UPDATE_USERS: "/admin/update-user",
    ALL_CONCERNS: "/get-allConcerns",
+   FETCH_APPOINTMENTS: "/all-appointments",
+   ADMIN_GET_SINGLE_USER: "/admin/get-user"
    
 } as const
 
@@ -29,6 +31,7 @@ export const APIUserRoutes = {
    PAYMENT_CREATE_ORDER: "/payments/create-order",
    PAYMENT_VERIFY_ORDER: "/payments/verify",
    GET_WALLET: "/get-wallet",
+
 } as const
 
 
@@ -57,4 +60,5 @@ export const APIChatRoutes = {
 
 export const APIDoctorRoutes = {
    DOCTOR_APPOINTMENTS: "/doctor-appointments",
+   PAYOUT_REQUEST: "/payments/create-payout"
 } as const

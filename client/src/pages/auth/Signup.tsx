@@ -49,6 +49,9 @@ const Signup = () => {
       toast.error("Fields cannot be empty");
       return;
     }
+    if(form.name.trim().length === 0 || form.email.trim().length === 0 || form.confirmPassword.trim().length === 0 || form.password.trim().length === 0){
+       toast.error("Fields cannot be empty");
+    }
 
     if (!nameRegex.test(form.name)) {
       toast.error("Name must only have Alphabets");

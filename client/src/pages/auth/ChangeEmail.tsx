@@ -40,7 +40,7 @@ const ChangeEmail = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.password || !form.newEmail || !form.confirmEmail) {
+    if (form.password.trim().length === 0 || form.newEmail.trim().length === 0 || form.confirmEmail.trim().length === 0) {
       toast.error("All fields are required.");
       return;
     }

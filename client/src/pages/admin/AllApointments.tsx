@@ -8,7 +8,7 @@ import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
 import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
-import axios from "axios";
+// import axios from "axios";
 import { X, Check, Filter, ChevronDown, Calendar as CalendarIcon, User, Clock } from "lucide-react";
 import ConfirmModal from "../../components/ConfirmModal";
 import type { Event } from "react-big-calendar";
@@ -107,9 +107,9 @@ const AllAppointments = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axiosInstance.get(`/all-appointments?status=${statusFilter}`);
+        const res = await axiosInstance.get(`${APIRoutes.FETCH_APPOINTMENTS}?status=${statusFilter}`);
         setAppointments(res.data.data || []);
-        console.log("Appointments:", res.data.data);
+        // console.log("Appointments:", res.data.data);
       } catch (err) {
         console.error("Failed to fetch appointments", err);
         toast.error("Failed to fetch appointments");
@@ -138,11 +138,12 @@ const AllAppointments = () => {
       setAppointments(updated);
       toast.success(`Appointment ${modalData.status} successfully`);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || `Failed to ${modalData.status} appointment`);
-      } else {
-        toast.error("Something went wrong");
-      }
+      console.error("error : ",error);
+      // if (axios.isAxiosError(error)) {
+      //   toast.error(error.response?.data?.message || `Failed to ${modalData.status} appointment`);
+      // } else {
+      //   toast.error("Something went wrong");
+      // }
     } finally {
       setModalData(null);
     }

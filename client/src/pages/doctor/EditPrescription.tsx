@@ -44,7 +44,7 @@ const EditPrescription: React.FC = () => {
 
   const appointment = state?.appointment;
 
-  console.log("appointments : ",appointment);
+  // console.log("appointments : ",appointment);
 
   const [diagnosis, setDiagnosis] = useState("");
   const [currentData, setCurrentData] = useState<ICurrentData>({
@@ -110,9 +110,9 @@ const EditPrescription: React.FC = () => {
 
       
 
-     console.log("payload : ", payload);
+    
      const res = await axiosInstance.post(`/update-prescription/${appointment._id}`, payload);
-     console.log("res : ",res);
+
       setCurrentData(res.data);
       toast.success("Prescription Updated  successfully!");
       navigate("/doctor-appointments");
@@ -137,7 +137,7 @@ useEffect(() => {
   async function fetchPrescription() {
     try {
       const res = await axiosInstance.get(`/get-editPrescription/${appointment._id}`);
-      // console.log("res:", res);
+     
 
       const data = res.data;
       setCurrentData(data);

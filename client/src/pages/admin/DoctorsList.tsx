@@ -74,7 +74,7 @@ const DoctorsList: React.FC = () => {
     } catch (error) {
       const message =
         error instanceof AxiosError ? error.message : "Error toggling block status";
-      toast.error(message);
+       console.error(message);
     }
   };
 
@@ -88,9 +88,9 @@ const DoctorsList: React.FC = () => {
       );
       toast.success("Successfully toggled verification status");
     } catch (error) {
-      const message =
-        error instanceof AxiosError ? error.message : "Error toggling verification";
-      toast.error(message);
+      const message = 
+      error instanceof AxiosError ? error.message : "Error toggling verification";
+      console.error(message);
     }
   };
 

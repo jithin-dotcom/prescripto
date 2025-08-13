@@ -7,7 +7,7 @@ import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
 import axiosInstance from "../../utils/axios";
 import moment from "moment";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { useAuthStore } from "../../store/authStore";
 
 interface Appointment {
@@ -72,10 +72,10 @@ const AdminDashboard: React.FC = () => {
       try {
         const res = await axiosInstance.get("/all-appointments");
         setAppointments(res.data.data || []);
-        console.log("Appointments:", res.data.data);
+        // console.log("Appointments:", res.data.data);
       } catch (error) {
         console.error("Error fetching appointments:", error);
-        toast.error("Failed to fetch appointments");
+        // toast.error("Failed to fetch appointments");
       }
     };
     fetchAppointments();
@@ -170,7 +170,7 @@ const AdminDashboard: React.FC = () => {
     }, []).sort((a, b) => moment(a.date, "MMM DD").diff(moment(b.date, "MMM DD"))) : data;
   };
 
-  // Revenue growth
+ 
   const getRevenueGrowth = (filteredAppointments: Appointment[]) => {
     const days = filter.value === "monthly" ? 30 : filter.value === "weekly" || filter.value === "next7days" ? 7 : 1;
     const startDate = filter.value === "monthly" || filter.value === "weekly"
@@ -250,7 +250,7 @@ const AdminDashboard: React.FC = () => {
       .slice(0, 5);
   };
 
-  // Revenue breakdown
+ 
   const getRevenueBreakdown = (filteredAppointments: Appointment[]) => {
     const byDate: { [key: string]: number } = {};
     const byDoctor: { [key: string]: { name: string; revenue: number } } = {};
@@ -349,7 +349,7 @@ const AdminDashboard: React.FC = () => {
       <div className="flex flex-1">
         <SidebarAdmin />
         <main className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 space-y-8 mt-16">
-          {/* Header and Filter */}
+         
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
             <div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
@@ -380,7 +380,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Summary Cards */}
+       
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 animate-fade-in">
             <div className="bg-gradient-to-br from-blue-100 to-blue-200 p-5 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="flex items-center gap-4">
@@ -447,7 +447,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Upcoming Appointments */}
+       
           <div className="bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden animate-fade-in">
             <div className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-gray-200">
               <List className="w-6 h-6 text-blue-600" />
@@ -484,9 +484,9 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Graphs */}
+        
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 animate-fade-in">
-            {/* Appointment Trends */}
+           
             <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">Appointment Trends ({filter.label})</h2>
               <ResponsiveContainer width="100%" height={300}>
@@ -510,7 +510,7 @@ const AdminDashboard: React.FC = () => {
               </ResponsiveContainer>
             </div>
 
-            {/* Revenue Growth */}
+           
             <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">Revenue Growth ({filter.label})</h2>
               <ResponsiveContainer width="100%" height={300}>
@@ -528,9 +528,9 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
 
-          {/* Pie/Donut Charts */}
+       
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-fade-in">
-            {/* Appointment Status */}
+        
             <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">Appointment Status ({filter.label})</h2>
               <ResponsiveContainer width="100%" height={300}>

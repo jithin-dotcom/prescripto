@@ -59,8 +59,7 @@ const RaiseConcernPage: React.FC = () => {
       setDescription("");
     } catch (err) {
       console.log(err);
-      // navigate("/my-appointments");
-      // setError("Failed to raise concern. Please try again.");
+     
     }
   };
 
