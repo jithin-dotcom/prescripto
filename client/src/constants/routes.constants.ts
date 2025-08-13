@@ -34,17 +34,17 @@ export const APIUserRoutes = {
 
 
 export const APIAuthRoutes = {
-   FORGOT_PASSWORD: "/api/auth/forgot-password",
+   FORGOT_PASSWORD: "/auth/forgot-password",
    LOGIN: "/auth/login",
-   GOOGLE_LOGIN: "/api/auth/google-login",
-   UPDATE_PASSWORD: "/api/auth/update-password",
-   SIGNUP: "/api/auth/signup",
-   FORGOT_PASSWORD_OTP: "/api/auth/forgotPassword-otp",
-   RESEND_OTP: "/api/auth/resend-otp",
-   VERIFY_OTP: "/api/auth/verify-otp",
+   GOOGLE_LOGIN: "/auth/google-login",
+   UPDATE_PASSWORD: "/auth/update-password",
+   SIGNUP: "/auth/signup",
+   FORGOT_PASSWORD_OTP: "/auth/forgotPassword-otp",
+   RESEND_OTP: "/auth/resend-otp",
+   VERIFY_OTP: "/auth/verify-otp",
    AUTH_ME: "/auth/me",
-   LOGOUT: "/api/auth/logout",
-   REFRESH_TOKEN: "/api/auth/refresh-token",
+   LOGOUT: "/auth/logout",
+   REFRESH_TOKEN: "/auth/refresh-token",
 } as const
 
 

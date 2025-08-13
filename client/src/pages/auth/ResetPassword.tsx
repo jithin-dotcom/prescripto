@@ -1,12 +1,13 @@
 
 
 import React, { useState, useEffect } from "react";
-import axios, { isAxiosError } from "axios";
+import  { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import logo from '../../assets/Screenshot 2025-07-08 170708.png';
 import { APIAuthRoutes } from "../../constants/routes.constants";
+import { axiosNoAuth } from "../../utils/axios";
 
 const calculatePasswordStrength = (password: string) => {
   let score = 0;
@@ -39,7 +40,7 @@ const ResetPassword: React.FC = () => {
     if (passwordScore < 3) return toast.error("Password is too weak.");
 
     try {
-      await axios.post(APIAuthRoutes.UPDATE_PASSWORD, {
+      await axiosNoAuth.post(APIAuthRoutes.UPDATE_PASSWORD, {
         email,
         newPassword,
         reenterNewPassword: reenterPassword,

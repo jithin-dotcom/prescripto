@@ -1,12 +1,13 @@
 
 
 import React, { useState, useEffect, useRef } from "react";
-import axios, { isAxiosError } from "axios";
+import  { isAxiosError } from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import logo from "../../assets/Screenshot 2025-07-08 170708.png";
 import { APIAuthRoutes } from "../../constants/routes.constants";
+import { axiosNoAuth } from "../../utils/axios";
 
 const VERIFY_DURATION = 60;
 const OTP_FORGOT_KEY = "otp-forgot-timestamp";
@@ -72,7 +73,7 @@ const VerifyForgotPassword: React.FC = () => {
     if (!isVerifyEnabled) return toast.error("Time expired. Please resend OTP.");
 
     try {
-      await axios.post(APIAuthRoutes.FORGOT_PASSWORD_OTP, { email, otp });
+      await axiosNoAuth.post(APIAuthRoutes.FORGOT_PASSWORD_OTP, { email, otp });
       toast.success("OTP verified successfully. Please reset your password.");
       localStorage.removeItem(OTP_FORGOT_KEY);
       navigate("/reset-password");
@@ -89,7 +90,7 @@ const VerifyForgotPassword: React.FC = () => {
     if (!email) return toast.error("Session expired. Start again.");
     setIsResending(true);
     try {
-      await axios.post(APIAuthRoutes.RESEND_OTP, { email });
+      await axiosNoAuth.post(APIAuthRoutes.RESEND_OTP, { email });
       localStorage.setItem(OTP_FORGOT_KEY, Date.now().toString());
       toast.success("OTP resent successfully.");
       setOtp("");

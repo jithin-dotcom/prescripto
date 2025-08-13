@@ -82,7 +82,7 @@ const Login: React.FC = () => {
 
   const handleGoogleLogin = async (credential: string) => {
     try {
-      const res = await axios.post(APIAuthRoutes.GOOGLE_LOGIN, { credential });
+      const res = await axiosNoAuth.post(APIAuthRoutes.GOOGLE_LOGIN, { credential });
       const { tokens, user } = res.data;
       const accessToken = tokens.accessToken;
       setAuth({ accessToken, user });

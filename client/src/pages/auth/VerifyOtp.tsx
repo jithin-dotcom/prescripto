@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios, { isAxiosError } from "axios";
+import  { isAxiosError } from "axios";
 import { useAuthStore } from "../../store/authStore";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import logo from '../../assets/Screenshot 2025-07-08 170708.png';
 import { APIAuthRoutes } from "../../constants/routes.constants";
+import { axiosNoAuth } from "../../utils/axios";
 
 const VERIFY_DURATION = 60;
 const OTP_SENT_KEY = "otp-sent-timestamp";
@@ -79,7 +80,7 @@ const VerifyOtp = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post(APIAuthRoutes.VERIFY_OTP, { email, otp });
+      const res = await axiosNoAuth.post(APIAuthRoutes.VERIFY_OTP, { email, otp });
       setAuth(res.data);
       localStorage.removeItem(OTP_SENT_KEY);
       navigate("/dashboard");
@@ -97,7 +98,7 @@ const VerifyOtp = () => {
   const handleResendOtp = async () => {
     setIsResending(true);
     try {
-      await axios.post(APIAuthRoutes.RESEND_OTP, { email });
+      await axiosNoAuth.post(APIAuthRoutes.RESEND_OTP, { email });
       localStorage.setItem(OTP_SENT_KEY, Date.now().toString());
       toast.success("OTP sent successfully");
       setOtp("");

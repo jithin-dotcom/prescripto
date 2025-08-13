@@ -41,7 +41,7 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       if (!refreshPromise) {
-        refreshPromise = axios
+        refreshPromise = axiosInstance
           .post(
             APIAuthRoutes.REFRESH_TOKEN,
             {},

@@ -197,9 +197,12 @@ const EditDoctorProfile: React.FC = () => {
     }catch (err) {
       if(axios.isAxiosError(err)){
          toast.error(err.response?.data?.message || "Update failed");
+      }else if(err instanceof Error){
+         toast.error(err.message);
       }else{
          toast.error("Failed to Update");
       }
+      console.log("error : ", err);
     }
   };
 
