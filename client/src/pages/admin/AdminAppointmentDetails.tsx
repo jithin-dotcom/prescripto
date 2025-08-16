@@ -315,23 +315,23 @@ const AdminAppointmentDetails: React.FC = () => {
               </div>
               <nav className="space-y-4">
                 <button
-                  onClick={() => navigate("/admin/appointments")}
+                  onClick={() => navigate("/all-appointments")}
                   className="block w-full text-left hover:text-blue-300"
                 >
                   Appointments
                 </button>
                 <button
-                  onClick={() => navigate("/admin/users")}
+                  onClick={() => navigate("/admin-dashboard")}
                   className="block w-full text-left hover:text-blue-300"
                 >
-                  Users
+                  Dashboard
                 </button>
-                <button
+                {/* <button
                   onClick={() => navigate("/admin/settings")}
                   className="block w-full text-left hover:text-blue-300"
                 >
                   Settings
-                </button>
+                </button> */}
               </nav>
             </motion.aside>
           )}

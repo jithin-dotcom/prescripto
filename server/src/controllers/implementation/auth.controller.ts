@@ -21,7 +21,7 @@ export class AuthController implements IAuthController {
 
   async googleAuth(req: Request, res: Response, next: NextFunction) {
   try {
-    const userObj = req.user as any;
+    const userObj = req.user ;
     const { user, accessToken, refreshToken } = await this._authService.googleAuth(userObj);
 
     const redirectUrl = new URL(`${process.env.CLIENT_URL}/auth/google/callback`);
@@ -102,6 +102,8 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
     }
  
     const result = await this._authService.loginWithGoogle(credential);
+    
+    
     const tokens = (result as any)?.tokens;
     const user = (result as any)?.user;
 

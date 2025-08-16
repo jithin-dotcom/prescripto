@@ -19,6 +19,7 @@ export class ConcernRepository extends BaseRepository<IConcern> {
     .populate("appointmentId userId doctorId")
     .skip(skip)
     .limit(limit)
+    .sort({createdAt: -1})
     .exec();
    return result as unknown as IConcernDocPopulated[];
 }
@@ -27,10 +28,10 @@ async countConcerns(query: FilterQuery<IConcern>): Promise<number> {
   return this.model.countDocuments(query).exec();
 }
 
-  async updateStatusIfPending(id: string | mongoose.Types.ObjectId, status: "resolved" | "rejected"): Promise<IConcern | null> {
+  async updateStatusIfPending(id: string | mongoose.Types.ObjectId, status: "resolved" | "rejected", reason: string): Promise<IConcern | null> {
      return await this.model.findOneAndUpdate(
        {_id:id,status:"pending"},
-       {status},
+       {status, reason},
        {new:true}
      )
   }

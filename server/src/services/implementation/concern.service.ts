@@ -59,6 +59,7 @@ export class ConcernService implements IConcernService {
     if (search) {
       query.$or = [
         { "title": { $regex: search, $options: "i" } },
+        { "reason": { $regex: search, $options: "i" } },
         { "description": { $regex: search, $options: "i" } },
         { "doctorName": { $regex: search, $options: "i" } }
       ];
@@ -85,11 +86,11 @@ export class ConcernService implements IConcernService {
 
 
 
-  async changeConcernStatus(id: string, status: "resolved" | "rejected"): Promise<{message: string}> {
+  async changeConcernStatus(id: string, status: "resolved" | "rejected", reason: string): Promise<{message: string}> {
      try {
         const concernId = new mongoose.Types.ObjectId(id);
-        const updatedConcern = await this._concernRepo.updateStatusIfPending(concernId,status);
-        // console.log("updatedConcern : ",updatedConcern);
+        const updatedConcern = await this._concernRepo.updateStatusIfPending(concernId, status, reason);
+       
         if(!updatedConcern){
           throw new Error("Failed to update Status");
         }
@@ -134,6 +135,7 @@ export class ConcernService implements IConcernService {
     if (search ) {
       query.$or = [
         { "title": { $regex: search, $options: "i" } },
+        { "reason": { $regex: search, $options: "i" } },
         { "description": { $regex: search, $options: "i" } },
         { "doctorName": { $regex: search, $options: "i" } }
       ];

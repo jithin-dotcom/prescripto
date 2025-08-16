@@ -344,7 +344,7 @@ const AppointmentDetails: React.FC = () => {
               </motion.div>
             </div>
 
-            {/* Prescription */}
+           
             {prescription && (
               <motion.div className="bg-white rounded-xl shadow-2xl p-6 mt-8 hover:scale-102 transition duration-300">
                 <h2 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">

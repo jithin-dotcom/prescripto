@@ -164,7 +164,7 @@ const ChangeEmail = () => {
 
   if (role === "doctor") {
     return (
-      <div className="min-h-screen bg-gradient-to-tr from-blue-50 to-white flex flex-col">
+      <div className="min-h-screen  from-blue-50 to-white flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100">
         <NavbarAdmin />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar />
@@ -179,7 +179,7 @@ const ChangeEmail = () => {
   return (
     <div className="min-h-screen bg-gradient-to-tr from-blue-50 to-white">
       <Navbar />
-      <div className="flex items-center justify-center px-4 py-10">
+      <div className="flex items-center justify-center px-4 py-10 bg-gradient-to-br from-blue-100 to-indigo-100">
         {FormContent}
       </div>
     </div>

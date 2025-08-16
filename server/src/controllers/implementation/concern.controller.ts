@@ -130,16 +130,16 @@ export class ConcernController {
 
   async updateStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      console.log("entered into controller");
+     
        const { id } = req.params;
-       const { status } = req.body;
+       const { status, reason } = req.body;
       
-       if(!id || (status !== "resolved" && status !== "rejected")){
+       if(!id || (status !== "resolved" && status !== "rejected") || !reason){
         
           res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
           return;
        }
-       const response = await this._concernService.changeConcernStatus(id,status);
+       const response = await this._concernService.changeConcernStatus(id, status, reason);
        if(response){
           res.status(StatusCode.OK).json(response);
           return;

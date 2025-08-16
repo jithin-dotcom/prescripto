@@ -16,7 +16,7 @@ export class UserRepository
   }
 
   async findByEmail(email: string): Promise<(IUser & Document) | null> {
-    return await this.model.findOne({ email });
+    return await this.model.findOne({ email })
   }
 
   async createUser(userData: IUser): Promise<IUser & Document> {

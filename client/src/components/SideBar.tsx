@@ -23,7 +23,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="min-h-screen bg-white border-r w-16 md:w-60 transition-all duration-300 ease-in-out">
+    <aside className="min-h-screen bg-white  w-16 md:w-60 transition-all duration-300 ease-in-out">
       <ul className="flex flex-col gap-2 py-6">
         {navItems.map((item, index) => (
           <NavLink

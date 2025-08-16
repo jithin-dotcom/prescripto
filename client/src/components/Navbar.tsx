@@ -241,7 +241,7 @@ const Navbar = () => {
      
       {mobileMenuOpen && (
         <ul className="md:hidden flex flex-col gap-2 p-4 text-sm font-medium text-[#262626] bg-white shadow-sm border-t border-gray-200">
-          {["/", "/all-doctors", "/contact"].map((path, idx) => (
+          {["/", "/all-doctors"].map((path, idx) => (
             <NavLink
               key={path}
               to={path}
@@ -252,7 +252,7 @@ const Navbar = () => {
                 }`
               }
             >
-              {["Home", "All Doctors", "Contact"][idx]}
+              {["Home", "All Doctors"][idx]}
             </NavLink>
           ))}
           {!accessToken ? (
@@ -303,6 +303,15 @@ const Navbar = () => {
                 className="py-2 px-4 text-left hover:bg-[#5F6FFF] hover:text-white"
               >
                 Appointments
+              </button>
+               <button
+                onClick={() => {
+                  navigate("/all-concerns");
+                  setMobileMenuOpen(false);
+                }}
+                className="py-2 px-4 text-left hover:bg-[#5F6FFF] hover:text-white"
+              >
+                Concern
               </button>
                <button
                 onClick={() => {

@@ -79,14 +79,13 @@ async findDoctorProfileWithRatings(): Promise<IDoctorProfileDashboardClean[]> {
   try {
     const doctorProfiles = await this._DoctorRepo.findTopDoctorsWithRating();
 
-    
-    console.log("doctorProfile : ", doctorProfiles);
-
     const nonNullProfiles = doctorProfiles.filter(
       (profile): profile is NonNullable<typeof profile> => profile !== null && profile.doctorId.isVerified === true
     );
 
-    return mapDoctorProfiles(nonNullProfiles);
+    const topFourProfile = nonNullProfiles.slice(0,4);
+
+    return mapDoctorProfiles(topFourProfile);
   } catch (error) {
     console.error("Error in findDoctorProfileWithRatings:", error);
     throw error; 

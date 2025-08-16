@@ -86,21 +86,21 @@ const WalletPage = () => {
     }).format(amount);
   };
 
-  const calculateTotalIncome = () => {
-    return (
-      walletData?.history
-        .filter((t) => t.type === "credit")
-        .reduce((sum, t) => sum + t.amount, 0) || 0
-    );
-  };
+  // const calculateTotalIncome = () => {
+  //   return (
+  //     walletData?.history
+  //       .filter((t) => t.type === "credit")
+  //       .reduce((sum, t) => sum + t.amount, 0) || 0
+  //   );
+  // };
 
-  const calculateTotalExpense = () => {
-    return (
-      walletData?.history
-        .filter((t) => t.type === "debit")
-        .reduce((sum, t) => sum + t.amount, 0) || 0
-    );
-  };
+  // const calculateTotalExpense = () => {
+  //   return (
+  //     walletData?.history
+  //       .filter((t) => t.type === "debit")
+  //       .reduce((sum, t) => sum + t.amount, 0) || 0
+  //   );
+  // };
 
   if (loading) {
     return (
@@ -118,7 +118,7 @@ const WalletPage = () => {
 
       <main className="flex-1 p-4 md:p-6 lg:p-8 max-w-6xl mx-auto w-full">
         
-     {/* Header */}
+     
          <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -138,20 +138,22 @@ const WalletPage = () => {
           </div>
           
           <div className="flex gap-3 mt-4 sm:mt-0">
-           
+            { role === "doctor" &&
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handlePayout}
               className="bg-[#5F6FFF] text-white px-4 py-2 rounded-lg hover:bg-[#4a54e1] transition shadow-lg flex items-center gap-2"
             >
+             
               <Send className="w-4 h-4" />
               Send Money
             </motion.button>
+            }
           </div>
         </motion.div>
 
-     {/* Wallet Balance Cards */}
+   
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
            <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -187,7 +189,8 @@ const WalletPage = () => {
               <ArrowUpRight className="w-5 h-5 text-green-500" />
             </div>
             <p className="text-[#5C5C5C] text-sm mb-1">Total Income</p>
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(calculateTotalIncome())}</p>
+            {/* <p className="text-2xl font-bold text-green-600">{formatCurrency(calculateTotalIncome())}</p> */}
+             <p className="text-2xl font-bold text-green-600">{walletData.balance + (walletData.expense || 0)}</p>
           </motion.div>
 
           <motion.div
@@ -201,7 +204,8 @@ const WalletPage = () => {
               <ArrowDownLeft className="w-5 h-5 text-red-500" />
             </div>
             <p className="text-[#5C5C5C] text-sm mb-1">Total Expense</p>
-            <p className="text-2xl font-bold text-red-600">{formatCurrency(calculateTotalExpense())}</p>
+            {/* <p className="text-2xl font-bold text-red-600">{formatCurrency(calculateTotalExpense())}</p> */}
+            <p className="text-2xl font-bold text-red-600">{(walletData.expense || 0)}</p>
           </motion.div>
         </div>
 

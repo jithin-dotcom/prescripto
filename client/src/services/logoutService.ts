@@ -35,6 +35,6 @@ export const logoutService = async () => {
     toast.success("Successfully logged out");
   } catch (error) {
     console.error("Logout service error:", error);
-    // toast.error("Failed to log out");
+    
   }
 };

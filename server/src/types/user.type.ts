@@ -17,6 +17,18 @@ export interface IUser {
 
 
 
+export interface ISafeUser {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  photo: string;
+  authProvider?: string;
+  isBlocked: boolean;
+  isVerified: boolean;
+  createdAt: Date;
+}
+
 
 
 

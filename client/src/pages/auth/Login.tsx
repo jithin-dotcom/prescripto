@@ -56,6 +56,7 @@ const Login: React.FC = () => {
          return;
       }
       const res = await axiosNoAuth.post(APIAuthRoutes.LOGIN, { email, password });
+      console.log("response : ",res.data);
       const { accessToken, user } = res.data;
       setAuth({ accessToken, user });
 
@@ -87,6 +88,7 @@ const Login: React.FC = () => {
   const handleGoogleLogin = async (credential: string) => {
     try {
       const res = await axiosNoAuth.post(APIAuthRoutes.GOOGLE_LOGIN, { credential });
+      console.log("response : ",res.data);
       const { tokens, user } = res.data;
       const accessToken = tokens.accessToken;
       setAuth({ accessToken, user });
@@ -107,11 +109,18 @@ const Login: React.FC = () => {
           navigate("/", { replace: true });
       }
     } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message || "Google login failed");
-      } else {
-        toast.error("Google login failed");
-      }
+        if (axios.isAxiosError(err)) {
+           const status = err.response?.status;
+           const msg = err.response?.data?.message || "Google login failed";
+
+           if (status === 403) {
+              toast.error( "You are blocked by Admin");
+           } else {
+              toast.error(msg);
+           }
+        } else {
+              toast.error("Google login failed");
+        }
     }
   };
 

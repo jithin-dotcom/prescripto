@@ -111,7 +111,7 @@ const Sidebar = () => {
       </div>
 
       <aside
-        className={`hidden md:flex flex-col min-h-screen bg-white border-r transition-all duration-300 ease-in-out 
+        className={`hidden md:flex flex-col min-h-screen bg-white  transition-all duration-300 ease-in-out 
         ${isCollapsed ? 'w-16' : 'w-60'}`}
       >
         <div className="flex justify-end p-2">

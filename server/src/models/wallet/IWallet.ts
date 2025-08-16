@@ -6,6 +6,7 @@ export interface IWallet extends Document {
      userId: mongoose.Types.ObjectId;
      role: "user" | "doctor";
      balance: number;
+     expense?: number;
      createdAt: Date;
      updatedAt: Date;
 } 

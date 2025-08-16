@@ -16,6 +16,7 @@ export interface WalletData {
   userId: string;
   role: string;
   balance: number;
+  expense?: number; 
   history: Transaction[];
   totalTransactions: number;
 }

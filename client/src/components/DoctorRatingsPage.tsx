@@ -69,7 +69,7 @@ const DoctorRatingsPage: React.FC = () => {
   const satisfaction = data?.satisfactionPercent ?? 0;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100">
       {role !== "user" ? <NavbarAdmin /> : <Navbar />}
 
       <div className="flex flex-1">
@@ -94,8 +94,9 @@ const DoctorRatingsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 ">
               <StatsCard
+                
                 title="Total Reviews"
                 value={totalReviews.toString()}
                 icon={<MessageCircle className="w-6 h-6 text-blue-600" />}
@@ -123,7 +124,7 @@ const DoctorRatingsPage: React.FC = () => {
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                    className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"
+                    className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4 "
                   />
                   <p className="text-gray-600">Loading your ratings...</p>
                 </div>

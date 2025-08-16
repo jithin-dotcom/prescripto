@@ -53,6 +53,7 @@ export class WalletService implements IWalletService {
          userId: wallet.userId,
          role,
          balance: wallet.balance,
+         expense: wallet.expense || 0,
          history: walletHistory,
          page,
          totalPages: Math.ceil(totalCount / limit),
@@ -159,7 +160,7 @@ export class WalletService implements IWalletService {
 
           let updatedWallet = null;
           if( walletUser._id && appointment?.fee){
-               updatedWallet = await this._walletRepo.updateById(walletUser?._id as mongoose.Types.ObjectId,{$inc:{balance: -appointment.fee}})
+               updatedWallet = await this._walletRepo.updateById(walletUser?._id as mongoose.Types.ObjectId,{$inc:{balance: -appointment.fee, expense: appointment.fee}});
           }
 
           const existing = await this._chatRepo.findByAppointmentId(appointmentId);

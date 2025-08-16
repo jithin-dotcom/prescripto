@@ -19,7 +19,7 @@ export interface IAuthService{
      verifyOtpAndRegister(email: string, otp: string): Promise<AuthResult>;
      resendOtp(email: string): Promise<object>;
      forgotPassword(email: string): Promise<object>;
-     verifyForgotPasswordOtp(email: string, otp: string): Promise<object>;
+     verifyForgotPasswordOtp(email: string, otp: string): Promise<{message: string}>;
      updateNewPassword(email: string, newPassword: string, reenterNewPassword: string): Promise<object>;
      googleAuth(userObj: any): Promise<{ user: any; accessToken: string; refreshToken: string}>
      loginWithGoogle(token: string): Promise<object>;

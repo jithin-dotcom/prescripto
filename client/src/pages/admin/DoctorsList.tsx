@@ -95,19 +95,19 @@ const DoctorsList: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100">
       <Navbar />
       <div className="flex flex-1">
         <SidebarAdmin />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto mt-12">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto mt-12 bg-gradient-to-br from-blue-100 to-indigo-100">
          
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
             <h1 className="text-2xl font-semibold text-gray-700">All Doctors</h1>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
              
-              <div className="relative w-full sm:w-72">
-                <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
+              <div className="relative w-full sm:w-72 bg-white rounded-lg">
+                <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400 " />
                 <input
                   type="text"
                   placeholder="Search doctors..."
@@ -127,7 +127,7 @@ const DoctorsList: React.FC = () => {
                   setSpecialty(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full sm:w-60 px-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base"
+                className="w-full sm:w-60 px-4 py-2 rounded-lg border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base bg-white"
               >
                 <option value="">All Specialities</option>
                 {specialities.map((spec) => (

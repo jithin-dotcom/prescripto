@@ -192,17 +192,17 @@ const AddUser = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100">
       <Navbar />
 
       <div className="flex flex-1 flex-row">
         <SidebarAdmin />
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto mt-12">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto mt-12 bg-gradient-to-br from-blue-100 to-indigo-100">
           <form className="w-full max-w-5xl mx-auto" onSubmit={handleSubmit}>
             <p className="mb-6 text-2xl font-semibold text-gray-700">Add User</p>
 
-            <div className="bg-white px-6 py-8 border rounded-xl shadow-sm w-full">
+            <div className="bg-white px-6 py-8  rounded-xl shadow-2xl w-full hover:scale-101 transition duration-300">
               
               <div className="flex items-center gap-4 mb-8 text-gray-500">
                 <label htmlFor="photo">

@@ -56,18 +56,17 @@ export const verifyAccessToken = async (
         return;
       }
       isBlocked = user.isBlocked;
-      await redisClient.setEx(cacheKey, 3600, isBlocked.toString()); // Cache for 1 hour
+      await redisClient.setEx(cacheKey, 3600, isBlocked.toString()); 
     }
 
     if (isBlocked) {
      
-      await redisClient.setEx(`blacklist:accessToken:${decoded.id}`,3600, "true"); // Match access token expiry
+      await redisClient.setEx(`blacklist:accessToken:${decoded.id}`,3600, "true"); 
       res.status(StatusCode.FORBIDDEN).json({ message: "Access denied, user blocked by admin" });
       return;
     }
 
-
-    (req as any).user = {
+    req.user = {
       id: decoded.id,
       email: decoded.email,
       role: decoded.role,

@@ -46,6 +46,7 @@ export function mapConcernsClean(data: IConcernDocPopulated[]): IConcernPopulate
     title: concern.title,
     description: concern.description,
     status: concern.status,
+    reason: concern.reason,
     createdAt: concern.createdAt.toISOString(),
     updatedAt: concern.updatedAt.toISOString()
   }));

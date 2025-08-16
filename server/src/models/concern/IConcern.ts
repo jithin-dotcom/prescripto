@@ -10,6 +10,7 @@ export interface IConcern extends Document{
   title: string;
   description: string;
   status: "pending" | "resolved" | "rejected";
+  reason?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -64,6 +65,7 @@ export interface IConcernDocPopulated extends Document {
   title: string;
   description: string;
   status: "pending" | "resolved" | "rejected";
+  reason?: string;
   createdAt: Date;
   updatedAt: Date;
 }

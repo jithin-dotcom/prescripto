@@ -185,7 +185,6 @@ export class PaymentService implements IPaymentService {
             const skip = (page - 1) * limit;
             const { payouts, total } = await this._payoutRepo.getAllPayout(skip, limit);
             const totalPages = Math.ceil(total / limit);
-            // console.log({payouts, total, totalPages});
             const cleanedPayouts = mapPayouts(payouts);
             return { payouts: cleanedPayouts, total, totalPages };
         } catch (error) {
@@ -231,15 +230,15 @@ export class PaymentService implements IPaymentService {
                  throw new Error("Wallet don't have sufficient balance for Payout");
               }
 
-              const approve = await this._payoutRepo.updateById(payoutId,{
+              await this._payoutRepo.updateById(payoutId,{
                  status: "approved",
                  approvedAt: new Date(),
               })
 
-              this._walletRepo.updateById(wallet._id as mongoose.Types.ObjectId,{
-                 $inc: {balance: -amount},
+              const approve = await this._walletRepo.updateById(wallet._id as mongoose.Types.ObjectId,{
+                 $inc: {balance: -amount, expense: amount},
               })
-
+             
               await this._walletHistoryRepo.create({
                  walletId: wallet._id as mongoose.Types.ObjectId,
                  amount: amount,

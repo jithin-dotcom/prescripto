@@ -4,7 +4,7 @@ import { IConcern, IConcernDocPopulated } from "../../models/concern/IConcern";
 
 export interface IConcernService {
     createConcern(data: Partial<IConcern>): Promise<{success: true}>;
-    changeConcernStatus(id: string, status: "resolved" | "rejected"): Promise<{message: string}>;
+    changeConcernStatus(id: string, status: "resolved" | "rejected", reason: string): Promise<{message: string}>;
     getAllConcerns(page: number, limit: number, search: string, status: string): Promise<{ data: IConcernPopulated[]; total: number; page: number; pages: number }>;
     getConcernByUser(id: string, role: string, page: number, limit: number,  search: string, status: string): Promise<{
       data: IConcernPopulated[];
@@ -34,7 +34,7 @@ export interface IConcernPopulated {
     status: string;
     fee: number;
     payment: string;
-    createdAt: string; // ISO date string
+    createdAt: string; 
     updatedAt: string;
   };
   userId: {
@@ -65,6 +65,7 @@ export interface IConcernPopulated {
   title: string;
   description: string;
   status: "pending" | "resolved" | "rejected";
+  reason?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -19,6 +19,10 @@ const WalletSchema = new Schema<IWallet>(
         type: Number,
         required: true,
         default: 0,
+    },
+    expense: {
+        type: Number,
+        default: 0,
     }
  },
  {timestamps: true},

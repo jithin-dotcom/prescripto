@@ -11,6 +11,7 @@ export interface IWalletServiceResponse {
   userId: mongoose.Types.ObjectId;
   role: "user" | "doctor";
   balance: number;
+  expense: number;
   history: IWalletHistory[];
   page: number;
   totalPages: number;

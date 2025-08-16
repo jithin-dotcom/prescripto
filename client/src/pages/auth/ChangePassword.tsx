@@ -190,11 +190,11 @@ const ChangePassword = () => {
 
   if (role === "doctor") {
     return (
-      <div className="min-h-screen bg-gradient-to-tr from-blue-50 to-white flex flex-col">
+      <div className="min-h-screen  from-blue-50 to-white flex flex-col ">
         <NavbarAdmin />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar />
-          <main className="flex-1 flex items-center justify-center px-4 py-6 overflow-auto">
+          <main className="flex-1 flex items-center justify-center px-4 py-6 overflow-auto bg-gradient-to-br from-blue-100 to-indigo-100">
             {FormContent}
           </main>
         </div>
@@ -203,9 +203,9 @@ const ChangePassword = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-tr from-blue-50 to-white ">
       <Navbar />
-      <div className="flex items-center justify-center px-4 py-10">
+      <div className="flex items-center justify-center px-4 py-10 bg-gradient-to-br from-blue-100 to-indigo-100">
         {FormContent}
       </div>
     </div>

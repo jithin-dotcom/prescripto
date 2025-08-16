@@ -41,6 +41,7 @@ export interface Concern {
   title: string;
   description: string;
   status: "pending" | "resolved" | "rejected";
+  reason: string;
   createdAt: string;
   updatedAt: string;
   __v: number;

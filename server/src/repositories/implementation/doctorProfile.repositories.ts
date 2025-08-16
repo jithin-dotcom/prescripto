@@ -29,7 +29,7 @@ export class DoctorProfileRepository extends BaseRepository<IDoctorProfile & Doc
     .find()
     .populate<{ doctorId: IUser }>("doctorId") 
     .sort({ averageRating: -1 })
-    .limit(4);
+   
 }
 
 }

@@ -490,7 +490,7 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
          throw new Error("Appointment not found");
       }
       console.log("appointment : ",appointment);
-      if(appointment?.payment === "paid"){
+      if(appointment?.payment === "paid" ){
         console.log("entered into appointnt if");
           const userId = appointment.userId;
           const doctorId = appointment.doctorId;

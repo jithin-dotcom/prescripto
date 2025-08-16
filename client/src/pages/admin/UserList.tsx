@@ -75,16 +75,16 @@ useEffect(() => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100">
       <Navbar />
       <div className="flex flex-1">
         <SidebarAdmin />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto mt-12">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto mt-12 bg-gradient-to-br from-blue-100 to-indigo-100">
          
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
             <h1 className="text-2xl font-semibold text-gray-700">All Users</h1>
 
-            <div className="relative w-full sm:w-80">
+            <div className="relative w-full sm:w-80 bg-white rounded-lg">
               <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
               <input
                 type="text"

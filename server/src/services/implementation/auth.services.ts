@@ -4,19 +4,21 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { generateTokens } from "../../utils/jwt";
 import { IAuthService } from "../interface/IAuthService";
-import { IUser } from "../../types/user.type";
+import { ISafeUser, IUser } from "../../types/user.type";
 import { sendOtpMail } from "../../utils/mailer";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { IOtpRepository } from "../../repositories/interface/IOtpRepository";
 import { verifyGoogleToken } from "../../utils/googleAuth";
 import  jwt  from "jsonwebtoken";
-import { Document } from "mongoose";
+
 import { IRefreshTokenRepository } from "../../repositories/interface/IRefreshTokenRepository";
 import mongoose from "mongoose";
 import { AuthResult } from "../interface/IAuthService";
 import { AppError } from "../../utils/AppError";
 import { LoginResponse } from "../../types/loginResponse";
 import redisClient from "../../config/redisClient";
+import { mapUser } from "../../utils/mapper/authService.mapper";
+
 
 
 export class AuthService implements IAuthService {
@@ -28,7 +30,7 @@ export class AuthService implements IAuthService {
 
 
 
-  async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string; user: Document }> {
+  async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string; user: ISafeUser }> {
     try {
       const user = await this._userRepo.findByEmail(email);
       if (!user) throw new AppError("Invalid credentials");
@@ -58,14 +60,19 @@ export class AuthService implements IAuthService {
         EX: 7 * 24 * 60 * 60,
       });
 
-      // Cache block status
+      
       const cacheKey = `user:${userId}:blocked`;
-      await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
+      await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); 
 
-      return { user, accessToken, refreshToken };
+      return { user: mapUser(user), accessToken, refreshToken };
     } catch (error) {
       console.log("Login error:", error);
-      throw error;
+      if(error instanceof Error){
+         throw error;
+      }else{
+         throw new Error("Something went wrong");
+      }
+      
     }
   }
 
@@ -75,7 +82,8 @@ export class AuthService implements IAuthService {
 
       let user = await this._userRepo.findByEmail(email);
       if (user?.isBlocked === true) {
-        throw new Error("You are Blocked by Admin");
+       
+        throw new AppError("You are Blocked by Admin",403);
       }
 
       if (!user) {
@@ -113,7 +121,7 @@ export class AuthService implements IAuthService {
 
      
       const cacheKey = `user:${userId}:blocked`;
-      await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
+      await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); 
 
       return {
         message: "Google login successful",
@@ -126,9 +134,13 @@ export class AuthService implements IAuthService {
           avatar: user.avatar,
         },
       };
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error in loginWithGoogle:", error);
-      throw new Error(error.message || "Something went wrong during Google login.");
+      if(error instanceof Error){
+         throw error;
+      }else{
+         throw new Error("Something went wrong");
+      }
     }
   }
 
@@ -160,18 +172,22 @@ export class AuthService implements IAuthService {
         EX: 7 * 24 * 60 * 60,
       });
 
-      // Cache block status
+      
       const cacheKey = `user:${userId}:blocked`;
-      await redisClient.setEx(cacheKey, 3600, newUser.isBlocked.toString()); // Cache for 1 hour
+      await redisClient.setEx(cacheKey, 3600, newUser.isBlocked.toString()); 
 
       return { user: newUser, ...tokens };
     } catch (error) {
       console.error("Verify OTP error:", error);
-      throw error;
+      if(error instanceof Error){
+         throw error;
+      }else{
+         throw new Error("something went wrong");
+      }
     }
   }
 
-  async refreshToken(token: string): Promise<{ accessToken: string; refreshToken: string; user: any }> {
+  async refreshToken(token: string): Promise<{ accessToken: string; refreshToken: string; user: ISafeUser }> {
     try {
       if (!token) throw new Error("Refresh token is required");
 
@@ -220,17 +236,22 @@ export class AuthService implements IAuthService {
         EX: 7 * 24 * 60 * 60,
       });
 
-      // Cache block status
+    
       const cacheKey = `user:${userId}:blocked`;
-      await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
+      await redisClient.setEx(cacheKey, 3600, user.isBlocked.toString()); 
 
       return {
         accessToken: newAccessToken,
         refreshToken: newRefreshToken,
-        user,
+        user: mapUser(user),
       };
-    } catch (error: any) {
-      throw new Error(error.message || "Failed to refresh token");
+    } catch (error) {
+      if(error instanceof Error){
+        throw error;
+      }else{
+        throw new Error("Failed to refresh token");
+      }
+      
     }
   }
 
@@ -279,7 +300,11 @@ async signup(user: IUser): Promise<{ message: string }> {
       return { message: "OTP sent to your email" };
     } catch (error) {
       console.error("Signup error:", error);
-      throw error;
+      if(error instanceof Error){
+         throw error;
+      }else{
+         throw new Error("Failed to sign up");
+      }
     }
   }
 
@@ -298,7 +323,12 @@ async signup(user: IUser): Promise<{ message: string }> {
       return { message: "OTP resent successfully" };
     } catch (error) {
       console.error("Resend OTP error:", error);
-      throw error;
+      if(error instanceof Error){
+         throw error;
+      }else{
+         throw new Error("Failed to resend OTP");
+      }
+      
     }
   }
 
@@ -327,12 +357,16 @@ async signup(user: IUser): Promise<{ message: string }> {
       return { message: "OTP sent to email" };
     } catch (error) {
       console.error("Forgot password error:", error);
-      throw error;
+      if(error instanceof Error){
+         throw error;
+      }else{
+         throw new Error("Something went wrong");
+      }
     }
   }
 
 
-  async verifyForgotPasswordOtp(email: string, otp: string): Promise<object> {
+  async verifyForgotPasswordOtp(email: string, otp: string): Promise<{message: string}> {
     try {
       const otpRecord = await this._otpRepo.findOtp(email);
       if (!otpRecord || otpRecord.otp !== otp)
@@ -341,7 +375,12 @@ async signup(user: IUser): Promise<{ message: string }> {
       return { message: "Enter new password" };
     } catch (error) {
       console.error("OTP verification failed:", error);
-      throw error;
+      if(error instanceof Error){
+        throw error;
+      }else{
+         throw new Error("Something went wrong");
+      }
+
     }
   }
 
@@ -368,7 +407,11 @@ async signup(user: IUser): Promise<{ message: string }> {
       return { message: "Password updated successfully" };
     } catch (error) {
       console.error("Update password error:", error);
-      throw error;
+      if(error instanceof Error){
+         throw error;
+      }else{
+         throw new Error("Something went wrong");
+      }
     }
   }
 
@@ -393,7 +436,11 @@ async logout(refreshToken: string): Promise<void> {
     }
   }catch (error) {
     console.error(' Redis logout error:', error);
-    throw error;
+    if(error instanceof Error){
+       throw error;
+    }else{
+       throw new Error("Failed to log out");
+    }
   }
 }
 

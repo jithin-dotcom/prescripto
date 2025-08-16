@@ -16,7 +16,12 @@ interface TimeBlock { from: string; to: string }
 interface AvailabilitySlot { day: string; slots: TimeBlock[] }
 
 
-const daysOfWeek = [ "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday" ];
+const specialtyArray = [ "General physician",
+                      "Gynecologist",
+                      "Dermatologist",
+                      "Pediatricians",
+                      "Neurologist",
+                      "Gastroenterologist" ];
 const generateTimeOptions = (): string[] => {
   const opts: string[] = [];
   for (let h = 0; h < 24; h++) {
@@ -180,16 +185,16 @@ const EditDoctor: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100">
       <Navbar />
       <div className="flex flex-1">
         <SidebarAdmin />
-        <main className="flex-1 p-6 overflow-y-auto mt-12">
-          <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-6 shadow rounded">
+        <main className="flex-1 p-6 overflow-y-auto mt-12 bg-gradient-to-br from-blue-100 to-indigo-100">
+          <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-6 shadow-2xl rounded hover:scale-101 transition duration-300">
             <h2 className="text-2xl mb-4">Edit Doctor </h2>
 
            
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-4 mb-4 ">
               <label htmlFor="photo">
                 <img
                   src={typeof profilePhoto === "string"
@@ -271,7 +276,7 @@ const EditDoctor: React.FC = () => {
       className="border px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
     >
       <option value="">Select specialization</option>
-      {daysOfWeek.map((v) => (
+      {specialtyArray.map((v) => (
         <option key={v} value={v}>
           {v}
         </option>

@@ -13,6 +13,7 @@ const concernSchema = new Schema<IConcern>(
     title: { type: String, required: true },
     description: { type: String, required: true },
     status: { type: String, enum: ["pending", "resolved", "rejected"], default: "pending" },
+    reason: {type: String},
   },
   { timestamps: true }
 );

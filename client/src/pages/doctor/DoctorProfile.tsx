@@ -59,18 +59,18 @@ const DoctorProfile = () => {
   if (!profile) return <div className="p-8 text-gray-600">Loading profile...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col overflow-x-hidden">
+    <div className="min-h-screen  flex flex-col overflow-x-hidden bg-gradient-to-br from-blue-100 to-indigo-100">
       <Navbar />
 
       <div className="flex flex-1 w-full">
        
-        <aside className="hidden md:block w-full md:w-64 bg-white border-r border-gray-200">
+        <aside className="hidden md:block w-full md:w-64 bg-white border-r border-gray-200 ">
           <Sidebar />
         </aside>
 
-        <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 mt-12">
+        <main className="flex-1 w-full p-4 sm:p-6 lg:p-8 mt-12 bg-gradient-to-br from-blue-100 to-indigo-100 ">
          
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 hover:scale-102 transition duration-300">
             <h1 className="text-2xl font-semibold text-gray-700">My Profile</h1>
             <button
               onClick={() => navigate(`/edit-profile-doctor/${doctorId}`)}
