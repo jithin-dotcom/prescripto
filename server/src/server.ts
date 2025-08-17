@@ -61,7 +61,7 @@ videoNamespace.on("connection", (socket) => {
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // Allow non-browser requests like Postman, curl
+    if (!origin) return callback(null, true); 
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {

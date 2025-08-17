@@ -33,7 +33,7 @@ export class ChatService implements IChatService {
         userId: new mongoose.Types.ObjectId(participants[1]),
       });
 
-      // return chat;
+      
       return mapToChatDTO(chat);
     } catch (error) {
       console.error("Error creating chat:", error);
@@ -69,7 +69,7 @@ export class ChatService implements IChatService {
 
   async getChatById(chatId: string): Promise<ChatDTO | null> {
     try {
-      // return await this._chatRepo.findByAppointmentId(appointmentId);
+     
       const result =  await this._chatRepo.findById(chatId);
       
       return result ? mapToChatDTO(result) : null;

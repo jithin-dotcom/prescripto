@@ -141,15 +141,7 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
           callStatus: "completed",
         });
 
-        // const wallet = await callLogService.paymentDoctor({
-        //    userId: new mongoose.Types.ObjectId(session.doctorId),
-        //    role: "doctor",
-        // })
-
-        // await callLogService.doctorPaymentHistory({
-        //   appointmentId: new mongoose.Types.ObjectId(session.appointmentId),
-        //   walletId: wallet._id as mongoose.Types.ObjectId,
-        // })
+       
         
       } catch (err) {
         console.error("Error logging call:", err);

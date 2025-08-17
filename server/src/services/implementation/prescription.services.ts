@@ -88,7 +88,7 @@ export class PrescriptionService implements IPrescriptionService{
             const appId = new mongoose.Types.ObjectId(appointmentId);
 
             const prescription = await this._prescriptionRepo.findOne({appointmentId:appId});
-            // console.log("prescription : ",prescription );
+            
             if(!prescription){
                throw new Error("No Prescription Found");
             

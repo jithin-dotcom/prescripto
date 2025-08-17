@@ -33,11 +33,7 @@ async getUserById(userId: string): Promise<IUserWithProfileResponse> {
       }else if(user.role === "doctor"){
          profile = await this._doctorProfileRepo.findAll({doctorId: userId});
       }
-      // console.log({...user.toObject(),profile});
-      // return {
-      //   ...user.toObject(),
-      //   profile
-      // }
+      
        return mapUserToDTO(user, profile);
   } catch (error) {
      throw new Error("Failed in fetching user");
@@ -90,10 +86,7 @@ async getAllByRole(
               ? await this._doctorProfileRepo.findAll({ doctorId: user._id })
               : await this._patientProfileRepo.findAll({ patientId: user._id });
 
-          // return {
-          //   ...user.toObject(),
-          //   profile,
-          // };
+          
           return mapUserToDTO(user , profile);
         })
       );
@@ -121,10 +114,7 @@ async getAllByRole(
 
           if (!nameMatches) return null;
 
-          // return {
-          //   ...user.toObject(),
-          //   profile: [profile],
-          // };
+         
           return mapUserToDTO(user, [profile]);
         })
       );
@@ -150,10 +140,7 @@ async getAllByRole(
         items.map(async (user) => {
           const profile = await this._patientProfileRepo.findAll({ patientId: user._id });
 
-          // return {
-          //   ...user.toObject(),
-          //   profile,
-          // };
+          
           return mapUserToDTO(user, profile);
         })
       );

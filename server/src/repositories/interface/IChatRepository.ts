@@ -29,13 +29,13 @@ export interface Appointment {
   userId: mongoose.Types.ObjectId;
   doctorId: mongoose.Types.ObjectId;
   appointmentNo: number;
-  day: string; // e.g., "10/08/2025"
-  time: string; // e.g., "9:30 PM"
-  status: "confirmed" | "pending" | "cancelled"; // adjust based on your app
+  day: string; 
+  time: string; 
+  status: "confirmed" | "pending" | "cancelled"; 
   fee: number;
-  payment: "paid" | "unpaid"; // adjust as needed
-  createdAt: string; // ISO date string
-  updatedAt: string; // ISO date string
+  payment: "paid" | "unpaid"; 
+  createdAt: string; 
+  updatedAt: string; 
   __v: number;
 }
 
@@ -53,7 +53,7 @@ export interface User {
 
 export interface LastMessage {
   content: string;
-  timestamp: string; // ISO date string
+  timestamp: string; 
 }
 
 export interface Chat {
@@ -61,12 +61,12 @@ export interface Chat {
   appointmentId: Appointment;
   doctorId: Doctor;
   userId: User;
-  participants: string[]; // array of ObjectId strings
+  participants: string[]; 
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
   __v: number;
-  lastMessage?: LastMessage; // optional in case there's no message yet
+  lastMessage?: LastMessage; 
 }
 
 export type GetUserChatResponse = Chat[];
@@ -81,29 +81,3 @@ export type GetUserChatResponse = Chat[];
 
 
 
-
-
-// export type IChatPopulated = Omit<IChat, 'appointmentId' | 'doctorId' | 'userId'> & {
-//   appointmentId: {
-//     _id: ObjectId;
-//     userId: ObjectId;
-//     doctorId: ObjectId;
-//     appointmentNo: number;
-//     day: string;
-//     time: string;
-//     status: string;
-//     fee: number;
-//     payment: string;
-//     createdAt: Date;
-//   };
-//   doctorId: {
-//     _id: ObjectId;
-//     name: string;
-//     photo: string;
-//   };
-//   userId: {
-//     _id: ObjectId;
-//     name: string;
-//     photo: string;
-//   };
-// };
