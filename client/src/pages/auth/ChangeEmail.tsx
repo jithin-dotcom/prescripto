@@ -87,7 +87,7 @@ const ChangeEmail = () => {
       animate="visible"
       variants={fadeIn}
       transition={{ duration: 0.6 }}
-      className="w-full max-w-md p-6 bg-white shadow-xl rounded-xl"
+      className="w-full max-w-md p-6 bg-white shadow-2xl rounded-xl hover:scale-102 transition duration-300"
     >
       <div className="flex flex-col items-center mb-6">
         <img src={logo} alt="logo" className="h-7 w-auto mb-1" />
@@ -168,7 +168,7 @@ const ChangeEmail = () => {
         <NavbarAdmin />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar />
-          <main className="flex-1 flex items-center justify-center px-4 py-6 overflow-auto">
+          <main className="flex-1 flex items-center justify-center px-4 py-6 overflow-auto ">
             {FormContent}
           </main>
         </div>

@@ -99,7 +99,7 @@ const ChangePassword = () => {
       animate="visible"
       variants={fadeIn}
       transition={{ duration: 0.6 }}
-      className="w-full max-w-md p-6 bg-white shadow-2xl rounded-xl hover:scale-105 transition duration-300"
+      className="w-full max-w-md p-6 bg-white shadow-2xl rounded-xl hover:scale-102 transition duration-300"
     >
       <div className="flex flex-col items-center mb-4">
         <img src={logo} alt="logo" className="h-6 w-auto sm:h-7 mb-1" />

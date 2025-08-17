@@ -10,20 +10,7 @@ import logo from '../../assets/Screenshot 2025-07-08 170708.png';
 import { toast } from "react-toastify";
 import type { IPrescription, IMed } from "../../interfaces/IAppointmentDetails";
 
-// interface IMed {
-//   name: string;
-//   dosage: string;
-//   frequency: string;
-//   duration: string;
-//   instructions: string;
-// }
 
-// interface IPrescription {
-//   diagnosis: string;
-//   notes: string;
-//   followUpDate?: string;
-//   medicines: IMed[];
-// }
 
 const AppointmentDetails: React.FC = () => {
   const location = useLocation();
@@ -58,7 +45,7 @@ const AppointmentDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Header */}
+      
       <header className="w-full bg-white shadow px-4 sm:px-6 py-4 flex justify-between items-center sticky top-0 z-10">
         <img src={logo} alt="Logo" className="w-32 sm:w-40 h-10 sm:h-12" />
         <div className="flex items-center gap-3">
@@ -78,7 +65,7 @@ const AppointmentDetails: React.FC = () => {
       </header>
 
       <div className="flex flex-1">
-        {/* Sidebar (mobile + desktop) */}
+        
         <AnimatePresence>
           {(sidebarOpen || window.innerWidth >= 640) && (
             <motion.aside
@@ -120,7 +107,7 @@ const AppointmentDetails: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* Main Content */}
+       
         <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
           <motion.div
             className="max-w-5xl mx-auto"
@@ -128,9 +115,9 @@ const AppointmentDetails: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            {/* Info cards */}
+           
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Patient Info */}
+            
               <motion.div className="bg-white rounded-xl shadow-2xl p-6 hover:scale-102 transition duration-300">
                 <h2 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
                   Patient Information
@@ -149,7 +136,7 @@ const AppointmentDetails: React.FC = () => {
                 </div>
               </motion.div>
 
-              {/* Appointment Info */}
+
               <motion.div className="bg-white rounded-xl shadow-2xl p-6 hover:scale-102 transition duration-300">
                 <h2 className="text-lg font-semibold text-gray-700 mb-4 border-b pb-2">
                   Appointment Information

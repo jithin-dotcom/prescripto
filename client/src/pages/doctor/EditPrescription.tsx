@@ -229,16 +229,16 @@ const medicineVariants: Variants = {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 sm:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 p-4 sm:p-8">
       <motion.div 
         className="max-w-6xl mx-auto"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        {/* Enhanced Header */}
+       
         <motion.div 
-          className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 mb-8"
+          className="bg-white rounded-2xl shadow-2xl p-6 sm:p-8 mb-8 hover:scale-101 transition duration-300"
           variants={itemVariants}
         >
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -265,9 +265,9 @@ const medicineVariants: Variants = {
           </div>
         </motion.div>
 
-        {/* Patient Information Card */}
+       
         <motion.div 
-          className="bg-white rounded-2xl shadow-xl p-6 mb-8"
+          className="bg-white rounded-2xl shadow-2xl p-6 mb-8 hover:scale-101 transition duration-300"
           variants={itemVariants}
         >
           <div className="flex items-center gap-3 mb-4">
@@ -293,7 +293,7 @@ const medicineVariants: Variants = {
 
        
         <motion.div 
-          className="bg-white rounded-2xl shadow-xl p-6 sm:p-10"
+          className="bg-white rounded-2xl shadow-2xl p-6 sm:p-10 hover:scale-101 transition duration-300"
           variants={itemVariants}
         >
           <div className="space-y-8">

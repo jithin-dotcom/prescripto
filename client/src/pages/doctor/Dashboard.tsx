@@ -256,7 +256,7 @@ const DoctorDashboard: React.FC = () => {
   const COLORS = ["#2563eb", "#059669", "#d97706", "#dc2626"];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-200 flex flex-col font-['Inter']">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex flex-col font-['Inter']">
       <style>
         {`
           @keyframes fadeIn {
@@ -298,7 +298,7 @@ const DoctorDashboard: React.FC = () => {
       <div className="flex flex-1">
         <Sidebar />
         <main className="flex-1 p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12 space-y-8 mt-16">
-          {/* Header and Filter */}
+          
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 animate-fade-in">
             <div>
               <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">
@@ -389,8 +389,8 @@ const DoctorDashboard: React.FC = () => {
           </div>
 
         
-          <div className="bg-white border border-gray-200 shadow-xl rounded-2xl overflow-hidden animate-fade-in">
-            <div className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-gray-200">
+          <div className="bg-white border border-gray-200 shadow-2xl rounded-2xl overflow-hidden animate-fade-in hover:scale-102 transition duration-300">
+            <div className="flex items-center gap-3 px-6 py-4 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-gray-200 ">
               <List className="w-6 h-6 text-blue-600" />
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Appointments ({filter.label})</h2>
             </div>
@@ -425,9 +425,9 @@ const DoctorDashboard: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in ">
           
-            <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+            <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 hover:scale-102 transition duration-300 ">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">Appointments per Day ({filter.label})</h2>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={appointmentData}>
@@ -451,7 +451,7 @@ const DoctorDashboard: React.FC = () => {
             </div>
 
             
-            <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+            <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 hover:scale-102 transition duration-300">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">Earnings over Time ({filter.label})</h2>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={earningsData}>
@@ -468,7 +468,7 @@ const DoctorDashboard: React.FC = () => {
             </div>
 
          
-            <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+            <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 hover:scale-102 transition duration-300">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">Patient Ratings ({filter.label})</h2>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={ratingsData}>
@@ -489,7 +489,7 @@ const DoctorDashboard: React.FC = () => {
          
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 animate-fade-in">
            
-            <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+            <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 hover:scale-102 transition duration-300">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">Patient Age Groups ({filter.label})</h2>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
@@ -516,7 +516,7 @@ const DoctorDashboard: React.FC = () => {
             </div>
 
           
-            <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
+            <div className="bg-white p-6 rounded-2xl shadow-2xl border border-gray-100 hover:scale-102 transition duration-300">
               <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">Patient Gender ({filter.label})</h2>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>

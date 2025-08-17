@@ -17,6 +17,10 @@ export class PrescriptionService implements IPrescriptionService{
 
     async createPrescription(data: IPrescription): Promise<{message: string}> {
         try {
+            const existingPrescription = await this._prescriptionRepo.findOne({appointmentId: data.appointmentId});
+            if(existingPrescription){
+                throw new Error("Prescription already Exists Please Edit Prescription");
+            }
             const prescription = await this._prescriptionRepo.create(data);
             if(!prescription){
                 throw new Error("Failed to create Prescription");

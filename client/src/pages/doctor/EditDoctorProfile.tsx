@@ -63,7 +63,7 @@ const timeStringToMinutes = (time: string): number => {
   return hours * 60 + minutes;
 };
 
-// const daysOfWeek = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+
 
 const EditDoctorProfile: React.FC = () => {
   const [form, setForm] = useState({
@@ -75,7 +75,7 @@ const EditDoctorProfile: React.FC = () => {
   const [profilePhoto, setProfilePhoto] = useState<File | string | null>(null);
   const [proofDocuments, setProofDocuments] = useState<FileList | null>(null);
   const { id } = useParams<{ id: string }>();
-  // const { accessToken } = useAuthStore();
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -119,7 +119,7 @@ const EditDoctorProfile: React.FC = () => {
       if (!form.educationDetails.match(/^[A-Z\s]+$/) || !form.educationDetails?.trim()) throw new Error("Education uppercase only");
       if (!form.registrationNumber.match(/^[a-zA-Z0-9]+$/) || !form.registrationNumber?.trim()) throw new Error("Invalid Reg Number");
       if (!form.registrationYear.match(/^\d{4}$/) || !form.registrationYear) throw new Error("Invalid Reg Year");
-      // if (!form.yearOfExperience.match(/^\d+$/)) throw new Error("Invalid Experience");
+   
       const experience = Number(form.yearOfExperience);
       if (isNaN(experience)) throw new Error("Invalid Experience");
       form.yearOfExperience = experience.toString();
@@ -191,7 +191,7 @@ const EditDoctorProfile: React.FC = () => {
 
       await axiosInstance.put(`${APIRoutes.ADMIN_UPDATE_USERS}/${id}`, fd, {
         headers: { "Content-Type": "multipart/form-data" },
-        // withCredentials: true,
+       
       });
       toast.success("Doctor profile updated");
       navigate("/doctor-profile");
@@ -208,12 +208,12 @@ const EditDoctorProfile: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100">
       <Navbar />
       <div className="flex flex-1">
         <SidebarAdmin />
-        <main className="flex-1 p-6 overflow-y-auto mt-12">
-          <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-6 shadow rounded">
+        <main className="flex-1 p-6 overflow-y-auto mt-12 bg-gradient-to-br from-blue-100 to-indigo-100">
+          <form onSubmit={handleSubmit} className="max-w-4xl mx-auto bg-white p-6 shadow-2xl rounded hover:scale-101 transition duration-300">
             <h2 className="text-2xl mb-4">Edit Doctor Profile</h2>
 
            
