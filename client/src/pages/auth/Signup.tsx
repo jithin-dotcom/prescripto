@@ -53,6 +53,10 @@ const Signup = () => {
        toast.error("Fields cannot be empty");
     }
 
+    if(form.name.trim().length > 20){
+       toast.error("Name can have maximum 20 letters");
+    }
+
     if (!nameRegex.test(form.name)) {
       toast.error("Name must only have Alphabets");
       return;
