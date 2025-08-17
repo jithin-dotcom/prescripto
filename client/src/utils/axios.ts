@@ -14,7 +14,7 @@ const axiosNoAuth = axios.create({
 });
 
 const axiosInstance = axios.create({
-  // baseURL: "/api",
+ 
   baseURL: import.meta.env.VITE_API_BASE_URL,
   withCredentials: true,
 });
@@ -107,7 +107,7 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // 🧭 Handle other errors
+    
     switch (status) {
       case 400:
         toast.error(message || "Bad Request");

@@ -5,8 +5,7 @@ import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-// import { useAuthStore } from "../../store/authStore";
-// import { AxiosError } from "axios";
+
 import { APIRoutes } from "../../constants/routes.constants";
 
 const AddDoctor = () => {
@@ -34,7 +33,7 @@ const AddDoctor = () => {
   const registrationNumberRegex = /^[a-zA-Z0-9]+$/;
   const registrationYearRegex = /^\d{4}$/;
   
-  // const {  accessToken} = useAuthStore();
+ 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -137,14 +136,14 @@ const AddDoctor = () => {
      await axiosInstance.post(APIRoutes.ADMIN_CREATE_USERS, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-        // Authorization: `Bearer ${accessToken}`,
+      
       },
-      // withCredentials: true,
+     
     });
 
     toast.success("Doctor added successfully!");
 
-    // Reset form
+    
     setForm({
       name: "",
       email: "",
@@ -162,11 +161,6 @@ const AddDoctor = () => {
     setProofDocuments(null);
   } catch (error) {
     console.log("error : ",error);
-    // if(error instanceof AxiosError){
-    //    toast.error(error.response?.data?.message || "Something went wrong");
-    // }else{
-    //    toast.error("something went wrong");
-    // }
     
   }
 };

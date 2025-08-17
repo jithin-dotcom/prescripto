@@ -27,20 +27,6 @@ export const RatingCard: React.FC<{
   };
 
 
-//   const formatDatePart = (dateString: string) => {
-//   return new Date(dateString).toLocaleDateString("en-US", {
-//     year: "numeric",
-//     month: "short",
-//     day: "numeric",
-//   });
-// };
-
-// const formatTimePart = (dateString: string) => {
-//   return new Date(dateString).toLocaleTimeString("en-US", {
-//     hour: "2-digit",
-//     minute: "2-digit",
-//   });
-// };
 
 
   const getRatingColor = (rating: number) => {

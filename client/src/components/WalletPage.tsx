@@ -86,21 +86,7 @@ const WalletPage = () => {
     }).format(amount);
   };
 
-  // const calculateTotalIncome = () => {
-  //   return (
-  //     walletData?.history
-  //       .filter((t) => t.type === "credit")
-  //       .reduce((sum, t) => sum + t.amount, 0) || 0
-  //   );
-  // };
-
-  // const calculateTotalExpense = () => {
-  //   return (
-  //     walletData?.history
-  //       .filter((t) => t.type === "debit")
-  //       .reduce((sum, t) => sum + t.amount, 0) || 0
-  //   );
-  // };
+ 
 
   if (loading) {
     return (

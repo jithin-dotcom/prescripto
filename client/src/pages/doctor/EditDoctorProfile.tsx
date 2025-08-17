@@ -6,7 +6,7 @@ import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-// import { useAuthStore } from "../../store/authStore";
+
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { APIRoutes } from "../../constants/routes.constants";
@@ -409,7 +409,7 @@ const EditDoctorProfile: React.FC = () => {
           </button>
         </div>
 
-        {/* Time Slots */}
+        
         <div className="flex flex-wrap gap-3">
           {slot.slots.map((blk, j) => (
             <div
@@ -493,13 +493,6 @@ const EditDoctorProfile: React.FC = () => {
 </div>
 
 
-
-
-
-
-
-
-            {/* Slot Duration */}
             <div className="mt-4">
               <label>Slot Duration (minutes)</label>
               <input type="number" name="slotDuration" value={form.slotDuration} min={10} max={120} onChange={handleChange} className="border px-3 py-2 w-32" />

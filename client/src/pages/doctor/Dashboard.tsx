@@ -9,44 +9,8 @@ import axiosInstance from "../../utils/axios";
 import moment from "moment";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../../store/authStore";
+import type { Appointment, Rating, Stats, FilterOption } from "../../interfaces/IDoctorDashboard";
 
-interface Appointment {
-  _id: string;
-  appointmentNo: string;
-  date: string;
-  time: string;
-  status: "pending" | "confirmed" | "cancelled" | "completed";
-  payment: "paid" | "refund" | "not paid";
-  fee: number;
-  doctorId: string;
-  user: {
-    name: string;
-    photo?: string;
-    dateOfBirth: string;
-    gender: "male" | "female" | "other";
-  };
-}
-
-interface Rating {
-  rating: number;
-  review: string;
-  time: string;
-  userName: string;
-}
-
-interface Stats {
-  totalAppointments: number;
-  completedConsultations: number;
-  pendingAppointments: number;
-  totalEarnings: number;
-  averageRating: number;
-  totalReviews: number;
-}
-
-interface FilterOption {
-  value: "all" | "last7days" | "last30days" | "today" | "tomorrow" | "next7days";
-  label: string;
-}
 
 const DoctorDashboard: React.FC = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -66,7 +30,7 @@ const DoctorDashboard: React.FC = () => {
         console.log("Appointments:", res.data.data);
       } catch (error) {
         console.error("Error fetching appointments:", error);
-        toast.error("Failed to fetch appointments");
+       
       }
     };
 

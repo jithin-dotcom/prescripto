@@ -6,6 +6,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
 import type { Variants } from "framer-motion";
 import { toast } from "react-toastify";
+import type { ICurrentData, Medicine } from "../../interfaces/IEditPrescription";
 import { 
   ArrowLeft, 
   PlusCircle, 
@@ -21,20 +22,6 @@ import {
 
 
 
-interface Medicine {
-  name: string;
-  dosage: string;
-  frequency: string;
-  duration: string;
-  instructions: string;
-}
-
-interface ICurrentData {
-    diagnosis:string;
-    notes: string;
-    followUpDate: string;
-    medicine: Medicine[];
-}
 
 const EditPrescription: React.FC = () => {
   
@@ -43,8 +30,6 @@ const EditPrescription: React.FC = () => {
 
 
   const appointment = state?.appointment;
-
-  // console.log("appointments : ",appointment);
 
   const [diagnosis, setDiagnosis] = useState("");
   const [currentData, setCurrentData] = useState<ICurrentData>({
@@ -138,12 +123,11 @@ useEffect(() => {
     try {
       const res = await axiosInstance.get(`/get-editPrescription/${appointment._id}`);
      
-
       const data = res.data;
       setCurrentData(data);
       setDiagnosis(data.diagnosis || "");
       setNotes(data.notes || "");
-    //   setFollowUpDate(data.followUpDate || "");
+   
     setFollowUpDate(formatDateForInput(data.followUpDate || ""));
       setMedicines(data.medicines?.length ? data.medicines : [{
         name: "", dosage: "", frequency: "", duration: "", instructions: ""
@@ -307,13 +291,13 @@ const medicineVariants: Variants = {
           </div>
         </motion.div>
 
-        {/* Main Form */}
+       
         <motion.div 
           className="bg-white rounded-2xl shadow-xl p-6 sm:p-10"
           variants={itemVariants}
         >
           <div className="space-y-8">
-            {/* Diagnosis and Notes Section */}
+           
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <motion.div variants={itemVariants}>
                 <label className="flex items-center gap-2 text-lg font-semibold text-gray-700 mb-3">

@@ -5,8 +5,8 @@ import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-// import { useAuthStore } from "../../store/authStore";
-import axios, { AxiosError } from "axios";
+
+import axios from "axios";
 import { APIRoutes } from "../../constants/routes.constants";
 
 type country = {
@@ -34,7 +34,7 @@ const AddUser = () => {
   const [profilePhoto, setProfilePhoto] = useState<File | null>(null);
   const [countries, setCountries] = useState<string[]>([]);
 
-  // const { accessToken } = useAuthStore();
+ 
   const nameRegex = /^[A-Za-z\s]*$/;
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).+$/;
@@ -48,7 +48,7 @@ const AddUser = () => {
       const response = await axios.get("https://restcountries.com/v3.1/all?fields=name");
       const countryNames = response.data
         .map((country: country) => country.name.common)
-        .sort(); // optional: alphabetical sort
+        .sort();
 
       setCountries(countryNames);
     } catch (error) {
@@ -159,9 +159,9 @@ const AddUser = () => {
       await axiosInstance.post(APIRoutes.ADMIN_CREATE_USERS, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${accessToken}`,
+         
         },
-        // withCredentials: true,
+       
       });
 
       toast.success("User added successfully!");
@@ -183,11 +183,8 @@ const AddUser = () => {
       });
       setProfilePhoto(null);
     } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data?.message || "Something went wrong");
-      } else {
-        toast.error("Something went wrong");
-      }
+      console.log("error : ",error);
+     
     }
   };
 

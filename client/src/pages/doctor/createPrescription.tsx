@@ -96,9 +96,6 @@ const CreatePrescription: React.FC = () => {
         followUpDate: followUpDate || null,
       };
 
-      
-
-
      const res = await axiosInstance.post("/create-prescription", payload);
      console.log("res : ",res);
       
@@ -128,7 +125,7 @@ const CreatePrescription: React.FC = () => {
 
 const age = getAge(appointment.user.dateOfBirth);
 
-  // Animation variants
+  
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -201,7 +198,7 @@ const medicineVariants: Variants = {
         initial="hidden"
         animate="visible"
       >
-        {/* Enhanced Header */}
+        
         <motion.div 
           className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 mb-8"
           variants={itemVariants}
@@ -230,7 +227,7 @@ const medicineVariants: Variants = {
           </div>
         </motion.div>
 
-        {/* Patient Information Card */}
+        
         <motion.div 
           className="bg-white rounded-2xl shadow-xl p-6 mb-8"
           variants={itemVariants}
@@ -256,13 +253,13 @@ const medicineVariants: Variants = {
           </div>
         </motion.div>
 
-        {/* Main Form */}
+       
         <motion.div 
           className="bg-white rounded-2xl shadow-xl p-6 sm:p-10"
           variants={itemVariants}
         >
           <div className="space-y-8">
-            {/* Diagnosis and Notes Section */}
+            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <motion.div variants={itemVariants}>
                 <label className="flex items-center gap-2 text-lg font-semibold text-gray-700 mb-3">
@@ -294,7 +291,7 @@ const medicineVariants: Variants = {
               </motion.div>
             </div>
 
-            {/* Follow-up Date */}
+           
             <motion.div variants={itemVariants}>
               <label className="flex items-center gap-2 text-lg font-semibold text-gray-700 mb-3">
                 <Calendar className="w-5 h-5 text-indigo-600" />
@@ -309,7 +306,7 @@ const medicineVariants: Variants = {
               />
             </motion.div>
 
-            {/* Medicines Section */}
+           
             <motion.div variants={itemVariants}>
               <div className="flex items-center justify-between mb-6">
                 <h3 className="flex items-center gap-2 text-xl font-semibold text-gray-700">
@@ -382,7 +379,7 @@ const medicineVariants: Variants = {
               </AnimatePresence>
             </motion.div>
 
-            {/* Submit Button */}
+           
             <motion.div 
               className="pt-8"
               variants={itemVariants}

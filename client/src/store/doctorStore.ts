@@ -1,6 +1,6 @@
 
 
-// store/doctorStore.ts
+
 import { create } from "zustand";
 
 interface DoctorData {

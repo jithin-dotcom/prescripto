@@ -6,7 +6,7 @@ import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-// import { useAuthStore } from "../../store/authStore";
+
 import axios, { AxiosError } from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { APIRoutes } from "../../constants/routes.constants";
@@ -35,7 +35,7 @@ const EditUser = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [countries, setCountries] = useState<string[]>([]);
 
-  // const { accessToken } = useAuthStore();
+ 
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -150,9 +150,9 @@ const EditUser = () => {
       await axiosInstance[method](endpoint, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${accessToken}`,
+         
         },
-        // withCredentials: true,
+        
       });
 
       toast.success(`User ${id ? "updated" : "created"} successfully!`);

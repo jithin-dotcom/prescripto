@@ -6,11 +6,9 @@ import SidebarAdmin from "../../components/SideBarAdmin";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-// import { useAuthStore } from "../../store/authStore";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { APIRoutes } from "../../constants/routes.constants";
 
+import { useParams, useNavigate } from "react-router-dom";
+import { APIRoutes } from "../../constants/routes.constants";
 
 interface TimeBlock { from: string; to: string }
 interface AvailabilitySlot { day: string; slots: TimeBlock[] }
@@ -54,7 +52,7 @@ const formatTo12Hour = (t24: string): string => {
 
 const EditDoctor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  // const { accessToken } = useAuthStore();
+ 
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -72,7 +70,7 @@ const EditDoctor: React.FC = () => {
       .then(res => {
         const user = res.data.data;
         const p = user.profile?.[0] || {};
-        // console.log("user.data.data : ", user);
+        
         const availability: AvailabilitySlot[] = (p.availability || []).map((slot: AvailabilitySlot) => ({
           day: slot.day,
           slots: (slot.slots || []).map((b: TimeBlock) => ({
@@ -166,21 +164,16 @@ const EditDoctor: React.FC = () => {
       await axiosInstance.put(`/admin/update-user/${id}`, fd, {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${accessToken}`
+         
         },
-        // withCredentials: true
+       
       });
 
       toast.success("Doctor profile updated");
       navigate("/doctor-list");
     } catch (ex) {
-      if (axios.isAxiosError(ex)) {
-        toast.error(ex.response?.data?.message || "Update failed");
-      }else if(ex instanceof Error){
-         toast.error(ex.message);
-      }else {
-        toast.error("Failed to update");
-      }
+      console.log("error : ",ex);
+      
     }
   };
 
@@ -394,7 +387,7 @@ const EditDoctor: React.FC = () => {
           </button>
         </div>
 
-        {/* Time Slots */}
+        
         <div className="flex flex-wrap gap-3">
           {slot.slots.map((blk, j) => (
             <div

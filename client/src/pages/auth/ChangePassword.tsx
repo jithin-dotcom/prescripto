@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import logo from "../../assets/logo.svg";
 import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
-// import axios from "axios";
+
 import { useAuthStore } from "../../store/authStore";
 import Navbar from "../../components/Navbar";
 import NavbarAdmin from "../../components/NavbarAdmin";

@@ -5,7 +5,7 @@ import Navbar from "../../components/Navbar";
 import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
-// import { useAuthStore } from "../../store/authStore";
+
 import axios, { AxiosError } from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { APIRoutes, APIUserRoutes } from "../../constants/routes.constants";

@@ -73,7 +73,7 @@ const Navbar = () => {
       const response = await axiosInstance.post(APIRoutes.UPLOAD_PATIENT_PHOTO, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${accessToken}`,
+          
         },
       });
       const updatedUser = response.data.user;

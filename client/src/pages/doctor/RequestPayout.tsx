@@ -85,7 +85,7 @@ const RequestPayout: React.FC = () => {
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
               <input
-                // type="number"
+                
                 id="amount"
                 value={amount}
                 onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}

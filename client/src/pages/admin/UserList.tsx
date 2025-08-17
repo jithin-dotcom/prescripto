@@ -53,7 +53,7 @@ useEffect(() => {
   const toggleBlockStatus = async (userId: string) => {
     try {
       await axiosInstance.patch(`${APIRoutes.ADMIN_BLOCK_TOGGLE}/${userId}`);
-      // setUsers(prev => prev.map(user => user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user));
+      
       setUsers(prev => prev.map(user => user.id === userId ? { ...user, isBlocked: !user.isBlocked } : user));
       toast.success("Successfully toggled block status");
     } catch (error) {
@@ -65,7 +65,7 @@ useEffect(() => {
   const toggleVerifiedStatus = async (userId: string) => {
     try {
       await axiosInstance.patch(`${APIRoutes.ADMIN_VERIFY_TOGGLE}/${userId}`);
-      // setUsers(prev => prev.map(user => user._id === userId ? { ...user, isVerified: !user.isVerified } : user));
+     
      setUsers(prev => prev.map(user => user.id === userId ? { ...user, isVerified: !user.isVerified } : user));
       toast.success("Successfully toggled verify status");
     } catch (error) {
@@ -143,7 +143,7 @@ useEffect(() => {
                             <input
                               type="checkbox"
                               checked={user.isBlocked}
-                              // onChange={() => toggleBlockStatus(user._id)}
+          
                               onChange={() => toggleBlockStatus(user.id)}
                               onClick={(e) => e.stopPropagation()}
                               readOnly
