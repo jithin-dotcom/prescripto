@@ -429,10 +429,11 @@ async getAllAppointments(
         time: appointment.time,
         status: appointment.status,
         payment: appointment.payment,
+        method: appointment?.method,
         appointmentNo: appointment.appointmentNo || 0,
         transactionId: appointment.transactionId?.toString(),
         timeArray,
-
+        
         doctor: {
           _id: doctorUser._id.toString(),
           name: doctorUser.name,

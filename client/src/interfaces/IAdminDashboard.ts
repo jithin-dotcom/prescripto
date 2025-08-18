@@ -8,6 +8,7 @@ export interface Appointment {
   time: string;
   status: "confirmed" | "cancelled" | "pending" | "completed";
   payment: "paid" | "refund" | "not paid";
+  method?: string;
   fee: number;
   doctor: {
     _id: string;

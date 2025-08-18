@@ -22,6 +22,7 @@ const AdminDashboard: React.FC = () => {
     const fetchAppointments = async () => {
       try {
         const res = await axiosInstance.get("/all-appointments");
+        console.log("res : ",res);
         setAppointments(res.data.data || []);
       } catch (error) {
         console.error("Error fetching appointments:", error);
@@ -158,10 +159,26 @@ const AdminDashboard: React.FC = () => {
     return Object.entries(status).map(([name, value]) => ({ name, value }));
   };
 
-  const getPaymentMethods = (filteredAppointments: Appointment[]) => [
-    { name: "Wallet", value: filteredAppointments.length * 0.7 },
-    { name: "Razorpay", value: filteredAppointments.length * 0.3 },
-  ];
+  
+
+  const getPaymentMethods = (filteredAppointments: Appointment[]) => {
+    let wallet = 0;
+    let razorpay = 0;
+
+    filteredAppointments.forEach((app) => {
+      const method = app.method?.toLowerCase();
+      if (method === "wallet") {
+        wallet++;
+      } else if (method === "razorpay") {
+        razorpay++;
+      }
+    });
+
+    return [
+      { name: "Wallet", value: wallet },
+      { name: "Razorpay", value: razorpay },
+    ];
+  };
 
   const getSpecializationDemand = (filteredAppointments: Appointment[]) => {
     const specs: { [key: string]: number } = {};

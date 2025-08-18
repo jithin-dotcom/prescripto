@@ -117,6 +117,7 @@ export interface IAppointmentFullResponse {
   time: string;
   status: "pending" | "confirmed" | "cancelled" | "completed";
   payment: "paid" | "not paid" | "refund";
+  method?: string;
   appointmentNo: number;
   transactionId?: string;
   timeArray: string[];

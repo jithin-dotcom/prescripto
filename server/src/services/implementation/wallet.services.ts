@@ -100,7 +100,7 @@ export class WalletService implements IWalletService {
           }
          
           
-          const updateAppointment = await this._appointmentRepo.updateById(appointmentId,{status:"confirmed", payment: "paid"});
+          const updateAppointment = await this._appointmentRepo.updateById(appointmentId,{status:"confirmed", payment: "paid", method: "wallet"});
           if(!updateAppointment){
             throw new Error("Failed to update appointment");
           }

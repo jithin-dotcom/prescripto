@@ -92,7 +92,7 @@ export class PaymentService implements IPaymentService {
 
      
       if (payment.appointmentId && payment._id) {
-        await this._appointmentRepo.updateById(payment.appointmentId,{status:"confirmed",payment:"paid"});
+        await this._appointmentRepo.updateById(payment.appointmentId,{status:"confirmed",payment:"paid", method: "razorpay"});
       }
 
      
@@ -121,7 +121,7 @@ export class PaymentService implements IPaymentService {
          }
           
          const updateDoctor = await this._walletRepo.updateById(doctorWallet._id as mongoose.Types.ObjectId,{$inc:{balance: amount}});
-         console.log("updateDoctor : ",updateDoctor);
+        
          if(!updateDoctor){
               throw new Error("Failed to update wallet balance");
          } 
