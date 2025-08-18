@@ -213,7 +213,7 @@ const AllConcerns: React.FC = () => {
                         </p>
                       )}
                       <div className="space-y-3">
-                        <div className="flex items-center gap-3">
+                        { role !== "user" && <div className="flex items-center gap-3">
                           <img
                             src={concern.userId.photo}
                             alt={concern.userId.name}
@@ -228,7 +228,8 @@ const AllConcerns: React.FC = () => {
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
+                        }
+                        { role !== "doctor" && <div className="flex items-center gap-3">
                           <img
                             src={concern.doctorId.photo}
                             alt={concern.doctorId.name}
@@ -244,6 +245,7 @@ const AllConcerns: React.FC = () => {
                             </p>
                           </div>
                         </div>
+                        }
                         <div className="text-xs sm:text-sm text-gray-600 space-y-1">
                           <p>
                             Appointment No: {concern.appointmentId.appointmentNo}
