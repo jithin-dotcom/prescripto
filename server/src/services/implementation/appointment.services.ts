@@ -491,6 +491,17 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
          throw new Error("Appointment not found");
       }
       console.log("appointment : ",appointment);
+      
+      // const [d,m,y] = appointment.day.split("/");
+      // const appointmentTime = new Date(`${y}-${m}-${d} ${appointment.time}`);
+      // const now = new Date();
+      // const timeDiff = appointmentTime.getTime() - now.getTime();
+      // const timeInHrs = timeDiff/(1000*60*60);
+      // console.log("timeInHrs : ",timeInHrs);
+      // if(timeInHrs < 24){
+      //    throw new Error("Cancel Appointment at least 24 hrs before");
+      // }
+    
       if(appointment?.payment === "paid" ){
         console.log("entered into appointnt if");
           const userId = appointment.userId;

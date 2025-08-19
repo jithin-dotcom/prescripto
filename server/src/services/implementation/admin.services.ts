@@ -307,8 +307,9 @@ async deleteUserOrDoctor(userId: string): Promise<{ message: string }> {
   async toggleBlockUser(userId: string): Promise<{ message: string; isBlocked: boolean }> {
     try {
       const user = await this._adminRepo.findById(userId);
+     
       if (!user) throw new Error("User not found");
-
+     
       const isBlocked = !user.isBlocked;
       const updatedUser = await this._adminRepo.updateById(userId, { isBlocked });
 

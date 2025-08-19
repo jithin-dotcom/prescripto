@@ -46,7 +46,7 @@ const MyAppointments: React.FC = () => {
   const userId = useAuthStore((state) => state.user?._id);
   const name = useAuthStore((state) => state.user?.name);
   const [pageSize, setPageSize] = useState<number>(5)
-  // const limit = 4;
+  
 
   useEffect(() => {
     if (!userId) return;
@@ -119,11 +119,8 @@ const MyAppointments: React.FC = () => {
       setAppointments(updated);
       toast.success("Appointment cancelled successfully");
     }catch (error) {
-      if(axios.isAxiosError(error)){
-         toast.error(error.response?.data?.message || "Failed to update status");
-      }else{
-         toast.error("Something went wrong");
-      }
+      console.log("error : ",error);
+     
     } finally {
       setIsModalOpen(false);
       setAppointmentToCancel(null);

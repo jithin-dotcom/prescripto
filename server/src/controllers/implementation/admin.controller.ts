@@ -186,6 +186,7 @@ async deleteUserOrDoctor(req: Request, res: Response, next: NextFunction) {
 async toggleBlockUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
        const userId = req.params.id;
+       
        const result = await this._adminService.toggleBlockUser(userId);
 
        res.status(StatusCode.OK).json({

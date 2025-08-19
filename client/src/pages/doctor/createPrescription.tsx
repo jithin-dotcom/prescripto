@@ -65,47 +65,179 @@ const CreatePrescription: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
 
-  if (!diagnosis.trim() || !notes.trim()) {
-    toast.error("Diagnosis and notes  are required.");
-    return;
+
+  const validateForm = () => {
+  if (!appointment) return "No appointment data available.";
+
+  
+  if (!diagnosis.trim()) return "Diagnosis is required.";
+  if (diagnosis.trim().length < 3)
+    return "Diagnosis must be at least 3 characters long.";
+
+ 
+  if (!notes.trim()) return "Notes are required.";
+  if (notes.trim().length > 500)
+    return "Notes cannot exceed 500 characters.";
+
+  
+  if (followUpDate) {
+    const now = new Date();
+    const selected = new Date(followUpDate);
+
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const selectedDay = new Date(
+      selected.getFullYear(),
+      selected.getMonth(),
+      selected.getDate()
+    );
+
+    if (selectedDay <= today)
+      return "Follow-up date must be at least tomorrow.";
+
+    const maxDate = new Date();
+    maxDate.setMonth(maxDate.getMonth() + 6);
+    if (selected > maxDate)
+      return "Follow-up date cannot be more than 6 months from today.";
   }
 
+ 
+  if (medicines.length === 0) return "At least one medicine is required.";
+
+  const dosagePattern = /^\d+\s?(mg|ml|g|tablet|capsule)?$/i;
+  const durationPattern = /^\d+\s?(day|days|week|weeks|month|months)$/i;
+  
 
   for (let i = 0; i < medicines.length; i++) {
     const med = medicines[i];
-    const fields = ["name", "dosage", "frequency", "duration", "instructions"] as (keyof Medicine)[];
-    for (const field of fields) {
-      if (!med[field].trim()) {
-        toast.error(`Medicine #${i + 1} is missing a value for "${field}".`);
-        return;
-      }
-    }
+
+    if (!med.name.trim()) return `Medicine ${i + 1}: Name is required.`;
+
+    if (!med.dosage.trim())
+      return `Medicine ${i + 1}: Dosage is required.`;
+    if (!dosagePattern.test(med.dosage))
+      return `Medicine ${i + 1}: Invalid dosage format (e.g., 500mg, 10ml).`;
+
+    if (!med.frequency.trim())
+      return `Medicine ${i + 1}: Frequency is required.`;
+    
+
+    if (!med.duration.trim())
+      return `Medicine ${i + 1}: Duration is required.`;
+    if (!durationPattern.test(med.duration))
+      return `Medicine ${i + 1}: Invalid duration format (e.g., "7 days").`;
+
+    if (!med.instructions.trim())
+      return `Medicine ${i + 1}: Instructions are required.`;
   }
 
-    try {
-      const payload = {
-        appointmentId: appointment._id,
-        doctorId: appointment.doctorId,
-        patientId: appointment.user._id,
-        diagnosis,
-        notes,
-        medicines,
-        followUpDate: followUpDate || null,
-      };
+  return null; 
+};
 
-     const res = await axiosInstance.post("/create-prescription", payload);
-     console.log("res : ",res);
+
+
+
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   console.log("follow up date : ", followUpDate);
+
+  //   // const now = new Date();
+  //   // const nextDate = new Date(followUpDate);
+  //   // const timeDiff = nextDate.getTime() - now.getTime();
+  //   // console.log("now : ", now);
+  //   // console.log("nextDate : ",nextDate);
+  //   // console.log("timeDiff : ", timeDiff);
+  //   // if(timeDiff <= 0){
+  //   //    toast.error("followup date must be more than todays date");
+  //   //    return;
+  //   // }
+
+  //   const now = new Date();
+  //   const selected = new Date(followUpDate);
+  //   const today = new Date(now.getFullYear(), now.getMonth(), now.getDay());
+  //   const selectedDay = new Date(selected.getFullYear(), selected.getMonth(), selected.getDay());
+  //   if(selectedDay <= today){
+  //      toast.error("followup date must be at least tomorrow");
+  //      return
+  //   }
+
+  // if (!diagnosis.trim() || !notes.trim()) {
+  //   toast.error("Diagnosis and notes  are required.");
+  //   return;
+  // }
+
+
+  // for (let i = 0; i < medicines.length; i++) {
+  //   const med = medicines[i];
+  //   const fields = ["name", "dosage", "frequency", "duration", "instructions"] as (keyof Medicine)[];
+  //   for (const field of fields) {
+  //     if (!med[field].trim()) {
+  //       toast.error(`Medicine #${i + 1} is missing a value for "${field}".`);
+  //       return;
+  //     }
+  //   }
+  // }
+
+  //   try {
+  //     const payload = {
+  //       appointmentId: appointment._id,
+  //       doctorId: appointment.doctorId,
+  //       patientId: appointment.user._id,
+  //       diagnosis,
+  //       notes,
+  //       medicines,
+  //       followUpDate: followUpDate || null,
+  //     };
+
+  //    const res = await axiosInstance.post("/create-prescription", payload);
+  //    console.log("res : ",res);
       
-      toast.success("Prescription created successfully!");
-      navigate("/doctor-appointments");
-    } catch (error) {
-      console.error("Error submitting prescription:", error);
+  //     toast.success("Prescription created successfully!");
+  //     navigate("/doctor-appointments");
+  //   } catch (error) {
+  //     console.error("Error submitting prescription:", error);
       
-    }
-  };
+  //   }
+  // };
+
+
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  const errorMsg = validateForm();
+  if (errorMsg) {
+    toast.error(errorMsg);
+    return;
+  }
+
+  try {
+    const payload = {
+      appointmentId: appointment._id,
+      doctorId: appointment.doctorId,
+      patientId: appointment.user._id,
+      diagnosis,
+      notes,
+      medicines,
+      followUpDate: followUpDate || null,
+    };
+
+    await axiosInstance.post("/create-prescription", payload);
+  
+
+    toast.success("Prescription created successfully!");
+    navigate("/doctor-appointments");
+  } catch (error) {
+    console.error("Error submitting prescription:", error);
+    
+  }
+};
+
+
+
+
 
 
   const getAge = (dob: string): number => {
