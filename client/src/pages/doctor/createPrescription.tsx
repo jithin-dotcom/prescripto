@@ -73,13 +73,50 @@ const CreatePrescription: React.FC = () => {
     return;
   }
 
+  if(diagnosis.trim().length > 30 || diagnosis.trim().length < 3){
+     toast.error("Diagnosis must be below 30 letter and above 3 letter");
+  }
+
+   if(notes.trim().length > 200 || notes.trim().length < 5){
+     toast.error("Notes must be below 200 letter and above 5 letter");
+  }
+
+    if (followUpDate) {
+    const now = new Date();
+    const selected = new Date(followUpDate);
+
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const selectedDay = new Date(
+      selected.getFullYear(),
+      selected.getMonth(),
+      selected.getDate()
+    );
+
+    if (selectedDay <= today){
+       toast.error("Follow-up date must be at least tomorrow");
+       return;
+    }
+      
+
+    const maxDate = new Date();
+    maxDate.setMonth(maxDate.getMonth() + 6);
+    if (selected > maxDate){
+        toast.error("Follow-up date cannot be more than 6 months from today");
+        return;
+    }
+      
+  }
 
   for (let i = 0; i < medicines.length; i++) {
     const med = medicines[i];
     const fields = ["name", "dosage", "frequency", "duration", "instructions"] as (keyof Medicine)[];
     for (const field of fields) {
       if (!med[field].trim()) {
-        toast.error(`Medicine #${i + 1} is missing a value for "${field}".`);
+        toast.error(`Medicine ${i + 1} is missing a value for "${field}".`);
+        return;
+      }
+       if (med[field].trim().length > 30 || med[field].trim().length < 3) {
+        toast.error(`Medicine ${i + 1} field "${field}" minimum length should be 3 and maximum length should be 30 `);
         return;
       }
     }
@@ -340,7 +377,7 @@ const medicineVariants: Variants = {
                         <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
                           <span className="text-indigo-600 font-bold text-sm">{index + 1}</span>
                         </div>
-                        Medicine #{index + 1}
+                        Medicine {index + 1}
                       </h4>
                       {medicines.length > 1 && (
                         <motion.button
