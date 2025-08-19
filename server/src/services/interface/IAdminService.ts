@@ -52,6 +52,7 @@ export interface IUserWithProfileResponse {
   isBlocked: boolean;
   authProvider?: string;
   photo?: string;
+  signature?: string;
   profile: IDoctorProfile[] | IPatientProfile[] | null; 
 }
 

@@ -144,7 +144,7 @@ async getAppointmentsByUser(
 }> {
   try {
     const skip = (page - 1) * limit;
-    const filter: {userId: mongoose.Types.ObjectId, status?: string} = { userId: new mongoose.Types.ObjectId(userId) };
+    const filter: {userId: mongoose.Types.ObjectId, status?: string} = { userId: new mongoose.Types.ObjectId(userId)};
 
     if (status) {
       filter.status = status;

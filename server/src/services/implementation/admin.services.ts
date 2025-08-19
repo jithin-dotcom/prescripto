@@ -33,6 +33,8 @@ async getUserById(userId: string): Promise<IUserWithProfileResponse> {
       }else if(user.role === "doctor"){
          profile = await this._doctorProfileRepo.findAll({doctorId: userId});
       }
+
+      console.log("user: ", user);
       
        return mapUserToDTO(user, profile);
   } catch (error) {
@@ -114,7 +116,6 @@ async getAllByRole(
 
           if (!nameMatches) return null;
 
-         
           return mapUserToDTO(user, [profile]);
         })
       );

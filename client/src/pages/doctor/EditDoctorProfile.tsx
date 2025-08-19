@@ -77,6 +77,7 @@ const EditDoctorProfile: React.FC = () => {
     axiosInstance.get(`${APIRoutes.ADMIN_GET_USER_EDIT}/${id}`)
       .then(res => {
         const user = res.data.data;
+        console.log("user : ", res.data.data);
         const prof = user.profile?.[0] || {};
         const formattedAvail: AvailabilitySlot[] = (prof.availability || []).map((s: IAvailabilitySlot) => ({
           day: s.day,
@@ -98,6 +99,7 @@ const EditDoctorProfile: React.FC = () => {
         });
         if (user.photo) setProfilePhoto(user.photo);
         if (user.signature) setSignature(user.signature);
+        
       })
       .catch(() => toast.error("Failed to load doctor info"));
   }, [id]);
