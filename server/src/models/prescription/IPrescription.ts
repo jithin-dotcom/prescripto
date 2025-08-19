@@ -35,6 +35,7 @@ export interface IUserBasic {
   isBlocked: boolean;
   authProvider: string;
   photo?: string;
+  signature?: string;
   createdAt: string;
 }
 
@@ -101,6 +102,7 @@ export interface IPrescriptionDocPopulated {
     createdAt: Date;
     updatedAt: Date;
     photo?: string;
+    signature?: string;
     __v: number;
     password?: string;
   };

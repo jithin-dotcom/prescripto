@@ -111,48 +111,59 @@ async createUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
 }
 
 
+
+
 async updateUserOrDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
-  try {
-    const userId = req.params.id;
-    const { userData, profileData } = req.body;
+    try {
+      const userId = req.params.id;
+      const { userData, profileData } = req.body;
 
-    if (!userData || !profileData) {
-      res.status(StatusCode.BAD_REQUEST).json({ success: false, message: StatusMessage.MISSING_DATA });
-      return;
+      if (!userData || !profileData) {
+        res.status(StatusCode.BAD_REQUEST).json({ success: false, message: StatusMessage.MISSING_DATA });
+        return;
+      }
+
+      const parsedUserData = JSON.parse(userData);
+      const parsedProfileData = JSON.parse(profileData);
+
+      const photoFile = (req.files as any)?.photo?.[0];
+      if (photoFile) {
+        const photoUrl = await uploadToCloudinary(photoFile.buffer, "profile_photos");
+        parsedProfileData.photo = photoUrl;
+      }
+
+      const signatureFile = (req.files as any)?.signature?.[0];
+      if (signatureFile) {
+        const signatureUrl = await uploadToCloudinary(signatureFile.buffer, "signatures");
+        parsedProfileData.signature = signatureUrl;
+      }
+
+      const proofFiles = (req.files as any)?.proofDocument || [];
+      const proofUrls = [];
+
+      for (const file of proofFiles) {
+        const url = await uploadToCloudinary(file.buffer, "proof_documents");
+        proofUrls.push(url);
+      }
+
+      if (proofUrls.length > 0) {
+        parsedProfileData.proofDocuments = proofUrls;
+      }
+
+      const message = await this._adminService.updateUserOrDoctor(userId, parsedUserData, parsedProfileData);
+
+      res.status(StatusCode.OK).json({
+        success: true,
+        message,
+      });
+    } catch (error) {
+      next(error);
     }
-
-    const parsedUserData = JSON.parse(userData);
-    const parsedProfileData = JSON.parse(profileData);
-
-    
-    const photoFile = (req.files as any)?.photo?.[0];
-    if (photoFile) {
-      const photoUrl = await uploadToCloudinary(photoFile.buffer, "profile_photos");
-      parsedProfileData.photo = photoUrl;
-    }
-
-    const proofFiles = (req.files as any)?.proofDocument || [];
-    const proofUrls = [];
-
-    for (const file of proofFiles) {
-      const url = await uploadToCloudinary(file.buffer, "proof_documents");
-      proofUrls.push(url);
-    }
-
-    if (proofUrls.length > 0) {
-      parsedProfileData.proofDocuments = proofUrls;
-    }
-
-    const message = await this._adminService.updateUserOrDoctor(userId, parsedUserData, parsedProfileData);
-
-    res.status(StatusCode.OK).json({
-      success: true,
-      message,
-    });
-  }catch (error) {
-    next(error);
   }
-}
+
+
+
+
 
 
 async deleteUserOrDoctor(req: Request, res: Response, next: NextFunction) {

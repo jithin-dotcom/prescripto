@@ -20,6 +20,7 @@ export interface IDoctorProfile extends Document {
   registrationNumber: string;
   registrationYear: string;
   yearOfExperience: number;
+  signature?: string;
   proofDocuments: string[];
   fee: number;
   about: string;

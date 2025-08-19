@@ -22,6 +22,7 @@ const UserSchema = new Schema<IUserDocument>(
     refreshToken: { type: String, required: false},
     photo: {type: String , required: false},
     isBlocked: { type: Boolean, default: false },
+    signature: { type: String},
   },
   { timestamps: true }
 );

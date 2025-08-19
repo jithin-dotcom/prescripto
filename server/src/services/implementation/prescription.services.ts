@@ -3,12 +3,18 @@
 import { IPrescription, IPrescriptionClean } from "../../models/prescription/IPrescription";
 import { IPrescriptionRepository } from "../../repositories/interface/IPrescriptionRepository";
 import mongoose from "mongoose";
-import { IPrescriptionService } from "../interface/IPrescriptionService";
+import { IPrescriptionService, IPrescriptionDownload } from "../interface/IPrescriptionService";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
 import { mapPrescription } from "../../utils/mapper/prescriptionService.mapper";
+import axios from "axios";
 
+
+async function fetchImageBuffer(url: string): Promise<Buffer> {
+  const response = await axios.get(url, { responseType: "arraybuffer" });
+  return Buffer.from(response.data, "binary");
+}
 
 export class PrescriptionService implements IPrescriptionService{
     constructor(
@@ -44,6 +50,7 @@ export class PrescriptionService implements IPrescriptionService{
             }
             const appId = new mongoose.Types.ObjectId(appointmentId);
             const prescription = await this._prescriptionRepo.getPrescription(appId);
+            
             if (!prescription) {
               return null; 
             }
@@ -116,82 +123,88 @@ export class PrescriptionService implements IPrescriptionService{
 
 
 
-  async generatePrescriptionPDF(prescription: any): Promise<Buffer> {
-    return new Promise((resolve, reject) => {
-      const doc = new PDFDocument({ margin: 50 });
-      const buffers: any[] = [];
+async generatePrescriptionPDF(prescription: IPrescriptionDownload): Promise<Buffer> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const doc = new PDFDocument({ margin: 50 });
+        const buffers: Uint8Array[] = [];
 
-    
-      doc.on("data", buffers.push.bind(buffers));
-      doc.on("end", () => {
-        const pdfBuffer = Buffer.concat(buffers);
-        resolve(pdfBuffer);
-      });
-
-      
-       
-    const logoPath = path.join(__dirname, "../../../public/images/logo2.png"); 
-  
-      if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, 130, 25, { width: 70 });
-      }
-
-      console.log("Resolved Logo Path:", logoPath);
-      console.log("File exists?", fs.existsSync(logoPath));
-      doc.fontSize(20).text("Prescripto Hospital", 130, 50);
-      doc.fontSize(10).text("123 Health Lane, Wellness City, India", 130, 75);
-      doc.moveDown(2);
-
-   
-      const today = new Date().toLocaleDateString();
-      doc.fontSize(10).text(`Date: ${today}`, { align: "right" });
-
-      doc.moveDown();
-      doc.fontSize(12).text(`Doctor: Dr. ${prescription.doctorId.name}`);
-      doc.text(`Patient: ${prescription.patientId.name}`);
-      doc.text(`Appointment Date: ${new Date(prescription.appointmentId.date).toLocaleDateString()}`);
-      doc.moveDown();
-
-     
-      doc.fontSize(12).text(`Diagnosis: ${prescription.diagnosis}`);
-      if (prescription.notes) doc.text(`Notes: ${prescription.notes}`);
-      if (prescription.followUpDate) {
-        doc.text(`Follow-Up Date: ${new Date(prescription.followUpDate).toLocaleDateString()}`);
-      }
-
-      doc.moveDown();
-
- 
-      doc.fontSize(12).text("Medicines", { underline: true });
-      prescription.medicines.forEach((med: any, index: number) => {
-        doc.text(
-          `${index + 1}. ${med.name} - ${med.dosage}, ${med.frequency}, ${med.duration}. Instructions: ${med.instructions}`
-        );
-      });
-
-      doc.moveDown(3);
-
-     
-      const signPath = path.join(__dirname, "../../../public/images/signature.png");
-      if (fs.existsSync(signPath)) {
-        doc.image(signPath, doc.page.width - 150, doc.y, { width: 100 });
-      }
-      doc.text("Dr. " + prescription.doctorId.name, doc.page.width - 150, doc.y + 50);
-
-    
-      doc.moveDown(4);
-      doc
-        .fontSize(10)
-        .fillColor("gray")
-        .text("Prescripto Hospital • +91-9876543210 • support@prescripto.com", {
-          align: "center",
+        doc.on("data", (chunk) => buffers.push(chunk));
+        doc.on("end", () => {
+          const pdfBuffer = Buffer.concat(buffers);
+          resolve(pdfBuffer);
         });
 
-      doc.end();
+       
+        const logoPath = path.join(__dirname, "../../../public/images/logo2.png");
+        if (fs.existsSync(logoPath)) {
+          doc.image(logoPath, 130, 25, { width: 70 });
+        }
+
+        doc.fontSize(20).text("Prescripto Hospital", 130, 50);
+        doc.fontSize(10).text("123 Health Lane, Wellness City, India", 130, 75);
+        doc.moveDown(2);
+
+        const today = new Date().toLocaleDateString();
+        doc.fontSize(10).text(`Date: ${today}`, { align: "right" });
+
+        doc.moveDown();
+        doc.fontSize(12).text(`Doctor: Dr. ${prescription.doctorId.name}`);
+        doc.text(`Patient: ${prescription.patientId.name}`);
+        doc.text(
+          `Appointment Date: ${new Date(prescription.appointmentId.date).toLocaleDateString()}`
+        );
+        doc.moveDown();
+
+        doc.fontSize(12).text(`Diagnosis: ${prescription.diagnosis}`);
+        if (prescription.notes) doc.text(`Notes: ${prescription.notes}`);
+        if (prescription.followUpDate) {
+          doc.text(
+            `Follow-Up Date: ${new Date(prescription.followUpDate).toLocaleDateString()}`
+          );
+        }
+
+        doc.moveDown();
+        doc.fontSize(12).text("Medicines", { underline: true });
+        prescription.medicines.forEach((med, index: number) => {
+          doc.text(
+            `${index + 1}. ${med.name} - ${med.dosage}, ${med.frequency}, ${med.duration}. Instructions: ${med.instructions}`
+          );
+        });
+
+        doc.moveDown(3);
+
+        
+        try {
+          if (prescription.doctorId.signature) {
+            const signatureBuffer = await fetchImageBuffer(prescription.doctorId.signature);
+            doc.image(signatureBuffer, doc.page.width - 150, doc.y, { width: 100 });
+          } else {
+            const signPath = path.join(__dirname, "../../../public/images/signature.png");
+            if (fs.existsSync(signPath)) {
+              doc.image(signPath, doc.page.width - 150, doc.y, { width: 100 });
+            }
+          }
+        } catch (err) {
+          console.warn("Signature load failed, using fallback.");
+        }
+
+        doc.text("Dr. " + prescription.doctorId.name, doc.page.width - 150, doc.y + 50);
+
+        doc.moveDown(4);
+        doc
+          .fontSize(10)
+          .fillColor("gray")
+          .text("Prescripto Hospital • +91-9876543210 • support@prescripto.com", {
+            align: "center",
+          });
+
+        doc.end();
+      } catch (error) {
+        reject(error);
+      }
     });
   }
-
-
 
 
 

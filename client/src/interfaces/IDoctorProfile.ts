@@ -3,6 +3,7 @@ export interface DoctorProfileData {
   name?: string;
   email?: string;
   profilePhoto?: string;
+  signature?: string;
   specialization?: string;
   educationDetails?: string;
   registrationNumber?: string;

@@ -31,6 +31,7 @@ export function mapPrescription(
       authProvider: prescription.doctorId.authProvider,
       createdAt: prescription.doctorId.createdAt.toISOString(),
       photo: prescription.doctorId.photo,
+      signature: prescription.doctorId.signature,
     },
     patientId: {
       _id: prescription.patientId._id.toString(),

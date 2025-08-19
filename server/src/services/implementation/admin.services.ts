@@ -212,61 +212,66 @@ async createUserOrDoctor({ userData, profileData }: CreateUserOrDoctorInput): Pr
 
 
 
+  async updateUserOrDoctor(
+    userId: string,
+    userData: Partial<IUser>,
+    profileData?: Partial<IPatientProfile> | Partial<IDoctorProfile>
+  ): Promise<string> {
+    const user = await this._adminRepo.findById(userId);
+    if (!user) throw new Error("User not found");
 
-async updateUserOrDoctor(
-  userId: string,
-  userData: Partial<IUser>,
-  profileData?: Partial<IPatientProfile> | Partial<IDoctorProfile>
-): Promise<string> {
-  const user = await this._adminRepo.findById(userId);
-  if (!user) throw new Error("User not found");
-
-  if (userData.password) {
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
-    userData.password = hashedPassword;
-  }
-
-  if (profileData && 'photo' in profileData && profileData.photo) {
-    await this._adminRepo.updateById(userId, { photo: profileData.photo });
-    delete (profileData as any).photo;
-  }
-
-  await this._adminRepo.updateById(userId, userData);
-
-  const objectId = new mongoose.Types.ObjectId(userId);
-
-  if (user.role === "user" && profileData) {
-    const existingProfile = await this._patientProfileRepo.findByPatientId(objectId);
-
-    const patientProfileData: Partial<IPatientProfile> = { ...(profileData as Partial<IPatientProfile>) };
-
-    if (existingProfile) {
-      await this._patientProfileRepo.updateByPatientId(objectId, patientProfileData);
-    } else {
-      await this._patientProfileRepo.create({
-        patientId: objectId,
-        ...patientProfileData,
-      });
+    if (userData.password) {
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
+      userData.password = hashedPassword;
     }
 
-  } else if (user.role === "doctor" && profileData) {
-    const existingProfile = await this._doctorProfileRepo.findByDoctorId(objectId);
-
-    const doctorProfileData: Partial<IDoctorProfile> = { ...(profileData as Partial<IDoctorProfile>) };
-
-    if (existingProfile) {
-      await this._doctorProfileRepo.updateByDoctorId(objectId, doctorProfileData);
-    } else {
-      await this._doctorProfileRepo.create({
-        doctorId: objectId,
-        ...doctorProfileData,
-      });
+    if (profileData && 'photo' in profileData && profileData.photo) {
+      await this._adminRepo.updateById(userId, { photo: profileData.photo });
+      delete (profileData as any).photo;
     }
+
+    if (profileData && 'signature' in profileData && profileData.signature) {
+      await this._adminRepo.updateById(userId, { signature: profileData.signature });
+      delete (profileData as any).signature;
+    }
+
+    await this._adminRepo.updateById(userId, userData);
+
+    const objectId = new mongoose.Types.ObjectId(userId);
+
+    if (user.role === "user" && profileData) {
+      const existingProfile = await this._patientProfileRepo.findByPatientId(objectId);
+
+      const patientProfileData: Partial<IPatientProfile> = { ...(profileData as Partial<IPatientProfile>) };
+
+      if (existingProfile) {
+        await this._patientProfileRepo.updateByPatientId(objectId, patientProfileData);
+      } else {
+        await this._patientProfileRepo.create({
+          patientId: objectId,
+          ...patientProfileData,
+        });
+      }
+    } else if (user.role === "doctor" && profileData) {
+      const existingProfile = await this._doctorProfileRepo.findByDoctorId(objectId);
+
+      const doctorProfileData: Partial<IDoctorProfile> = { ...(profileData as Partial<IDoctorProfile>) };
+
+      if (existingProfile) {
+        await this._doctorProfileRepo.updateByDoctorId(objectId, doctorProfileData);
+      } else {
+        await this._doctorProfileRepo.create({
+          doctorId: objectId,
+          ...doctorProfileData,
+        });
+      }
+    }
+
+    return `${user.role} updated successfully`;
   }
 
-  return `${user.role} updated successfully`;
-}
+
 
 
 async deleteUserOrDoctor(userId: string): Promise<{ message: string }> {

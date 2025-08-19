@@ -31,10 +31,13 @@ router.post(
   adminController.createUserOrDoctor.bind(adminController)
 );
 
+
+
 router.put(
   '/update-user/:id',
   upload.fields([
     { name: "photo", maxCount: 1 },
+    { name: "signature", maxCount: 1 },
     { name: "proofDocument", maxCount: 5 }
   ]),
   adminController.updateUserOrDoctor.bind(adminController)

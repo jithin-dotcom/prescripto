@@ -12,6 +12,7 @@ export interface IUser {
   authProvider?: "local" | "google"; 
   refreshToken?: string;
   photo?: string; 
+  signature?:string;
   isBlocked: boolean;
 }
 

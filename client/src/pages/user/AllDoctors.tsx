@@ -47,7 +47,7 @@ const AllDoctors = () => {
   const [specialty, setSpecialty] = useState("");
   const [debouncedSearchInput, setDebouncedSearchInput] = useState(searchInput);
   const [pageSize, setPageSize] = useState<number>(4);
-  const [sortBy, setSortBy] = useState(""); // NEW STATE
+  const [sortBy, setSortBy] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {

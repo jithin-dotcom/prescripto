@@ -24,3 +24,38 @@ export interface IPrescriptionUpdateDTO {
   }[];
   followUpDate?: Date;
 };
+
+
+
+
+
+interface IDoctor {
+  name: string;
+  signature?: string;
+}
+
+interface IPatient {
+  name: string;
+}
+
+interface IAppointment {
+  date: string | Date;
+}
+
+interface IMedicine {
+  name: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  instructions?: string;
+}
+
+export interface IPrescriptionDownload {
+  doctorId: IDoctor;
+  patientId: IPatient;
+  appointmentId: IAppointment;
+  diagnosis: string;
+  notes?: string;
+  followUpDate?: string | Date;
+  medicines: IMedicine[];
+}

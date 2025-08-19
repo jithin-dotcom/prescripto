@@ -36,7 +36,7 @@ const Contact = () => {
 
           <div>
             <p className="text-gray-500">
-              Tel: (415) 555-0132 <br /> Email: greatstackdev@gmail.com
+              Tel: (415) 555-0132 <br /> Email: jp@gmail.com
             </p>
           </div>
 
