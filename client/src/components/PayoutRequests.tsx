@@ -50,16 +50,16 @@ const PayoutRequests: React.FC = () => {
       }
 
       
-      await axiosInstance.post("/payments/initiate-payout", {
+      const data: IPayoutRequest = await axiosInstance.post("/payments/initiate-payout", {
         payoutId: requestId,
         doctorId: payout.doctorId._id,
         amount: payout.amount,
       });
-
+      console.log("data : ", data);
      
       setPayoutRequests((prev) =>
         prev.map((req) =>
-          req._id.toString() === requestId ? { ...req, status: "approved" as const } : req
+          req._id.toString() === requestId ? { ...req, status: "approved" as const, decentroTxnId: data.decentroTxnId } : req
         )
       );
       toast.success(`Payout request ${requestId.slice(-6)} approved and processed`);
@@ -112,8 +112,9 @@ const PayoutRequests: React.FC = () => {
                     <div>
                       <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
-                          Request #{request._id.toString().slice(-6)}
+                          Request {request._id.toString().slice(-6)}
                         </h3>
+                        
                         <span
                           className={`px-2 py-1 rounded-full text-sm font-medium ${
                             request.status === "pending"
@@ -129,7 +130,16 @@ const PayoutRequests: React.FC = () => {
                           )}
                         </span>
                       </div>
+                      <h5 className="text-lg sm:text-xl font-semibold text-gray-900">
+                           
+                      </h5>
                       <div className="space-y-3 text-sm sm:text-base">
+                         {/* <p className="text-gray-600 break-words line-clamp-3"> decentroTxnId: {request?.decentroTxnId}</p> */}
+                         {request?.decentroTxnId && (
+                            <p className="text-gray-600 break-words line-clamp-3">
+                               decentroTxnId: {request.decentroTxnId}
+                            </p>
+                         )}
                         <div className="flex items-center gap-2">
                           <User className="w-5 h-5 text-gray-500" />
                           <span className="text-gray-700">Doctor: {request.doctorId.name}</span>

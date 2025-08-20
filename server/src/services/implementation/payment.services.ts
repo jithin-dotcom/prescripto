@@ -9,6 +9,7 @@ import path from "path";
 import { Buffer } from "buffer";
 
 
+
 import { IPaymentService, RazorpayOrderInput, IRazorpayOrderResponse, IPayoutClean } from "../interface/IPaymentService";
 import { IPaymentRepository } from "../../repositories/interface/IPaymentRepository";
 import { IAppointmentRepository } from "../../repositories/interface/IAppointmentRepository";
@@ -18,7 +19,14 @@ import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IPayoutRepository } from "../../repositories/interface/IPayoutRepository";
 import { IPayout } from "../../models/payout/IPayout";
 import { mapPayouts } from "../../utils/mapper/paymentService.mapper";
+import axios from "axios";
 
+
+ const DECENTRO_CLIENT_ID = process.env.DECENTRO_CLIENT_ID;
+ const DECENTRO_CLIENT_SECRET = process.env.DECENTRO_CLIENT_SECRET;
+ const DECENTRO_MODULE_SECRET= process.env.DECENTRO_MODULE_SECRET;
+ const DECENTRO_PROVIDER_SECRET = process.env.DECENTRO_PROVIDER_SECRET;
+ const DECENTRO_API_URL = process.env.DECENTRO_BASE_URL;
 
 
 export class PaymentService implements IPaymentService {
@@ -215,51 +223,93 @@ export class PaymentService implements IPaymentService {
     }
 
 
-       async initiatePayout(payoutId: string, amount: number, doctorId: string): Promise<void> {
-           try {
-              const payment = new mongoose.Types.ObjectId(payoutId);
-              const payout = await this._payoutRepo.findById( payoutId );
-              if(!payout){
-                 throw new Error("Payout request not found");
-              }
-              if(payout.status !== "pending"){
-                 throw new Error("Payment request already processed");
-              }
-              const wallet = await this._walletRepo.findOne({userId: doctorId});
-              if(!wallet || wallet.balance < amount){
-                 throw new Error("Wallet don't have sufficient balance for Payout");
-              }
+  async initiatePayout(payoutId: string, amount: number, doctorId: string): Promise<void> {
+    try {
+      const payment = new mongoose.Types.ObjectId(payoutId);
+      const payout = await this._payoutRepo.findById(payoutId);
+    
+      if (!payout) {
+        throw new Error('Payout request not found');
+      }
+      if (payout.status !== 'pending') {
+        throw new Error('Payment request already processed');
+      }
+      const wallet = await this._walletRepo.findOne({ userId: doctorId });
+      if (!wallet || wallet.balance < amount) {
+        throw new Error("Wallet don't have sufficient balance for Payout");
+      }
 
-              await this._payoutRepo.updateById(payoutId,{
-                 status: "approved",
-                 approvedAt: new Date(),
-              })
+      const decentroPayload = {
+        reference_id: `payout_${payoutId}_${Date.now()}`,
+        purpose_message: 'Payout for doctor services',
+        from_account: '462515267984680740', 
+        to_account: '111111111111111', 
+        transfer_type: 'NEFT',
+        transfer_amount: amount.toString(),
+        beneficiary_details: {
+          email_address: 'test1@company.com',
+          mobile_number: '8888888888',
+          ifsc_code: 'YESB0CMSNOC',
+          payee_name: 'Test Name',
+        },
+      };
 
-              const approve = await this._walletRepo.updateById(wallet._id as mongoose.Types.ObjectId,{
-                 $inc: {balance: -amount, expense: amount},
-              })
-             
-              await this._walletHistoryRepo.create({
-                 walletId: wallet._id as mongoose.Types.ObjectId,
-                 amount: amount,
-                 type: "debit",
-                 source: "payout",
-                 status: "success",
-                 transactionId: new mongoose.Types.ObjectId(payoutId),
-              });
+      
+      const decentroResponse = await axios.post(
+        `${DECENTRO_API_URL}/core_banking/money_transfer/initiate`,
+        decentroPayload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            client_id: DECENTRO_CLIENT_ID,
+            client_secret: DECENTRO_CLIENT_SECRET,
+            module_secret: DECENTRO_MODULE_SECRET,
+            provider_secret: DECENTRO_PROVIDER_SECRET,
+          },
+        }
+      );
 
-           }catch (error) {
-              if (error instanceof Error) {
-                throw error;
-              }else{
-                throw new Error("Failed to initiate payout");
-              }
-               
-           }
-       }
+      
+      if (
+        decentroResponse.data.status !== 'pending' ||
+        decentroResponse.data.responseCode !== 'S00000'
+      ) {
+        throw new Error(`Decentro payout failed: ${decentroResponse.data.message}`);
+      }
+
+     
+      await this._payoutRepo.updateById(payoutId, {
+        status: 'approved',
+        approvedAt: new Date(),
+        decentroTxnId: decentroResponse.data.decentroTxnId, 
+      });
+
+     
+      await this._walletRepo.updateById(wallet._id as mongoose.Types.ObjectId, {
+        $inc: { balance: -amount, expense: amount },
+      });
+
+      
+      await this._walletHistoryRepo.create({
+        walletId: wallet._id as mongoose.Types.ObjectId,
+        amount: amount,
+        type: 'debit',
+        source: 'payout',
+        status: 'success',
+        transactionId: new mongoose.Types.ObjectId(payoutId),
+      });
 
 
- 
+    } catch (error) {
+      if(error instanceof Error){
+         throw error;
+      }else{
+         throw new Error("Payout Failed");
+      }
+  
+    }
+  }
+
 
   async downloadRecept(appointmentId: string): Promise<Buffer> {
        try {

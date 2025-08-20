@@ -32,6 +32,9 @@ const PayoutSchema = new Schema<IPayout>(
        },
        reason: {
           type: String,
+       },
+       decentroTxnId: {
+          type: String,
        }
 
     },

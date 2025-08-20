@@ -66,6 +66,7 @@ export interface IPayoutClean {
   amount: number;
   status: string;
   reason: string;
+  decentroTxnId?: string;
   requestedAt: string;
   createdAt: string;
 }
@@ -89,6 +90,7 @@ export interface IPayoutDocPopulated {
   amount: number;
   status: string;
   reason: string;
+  decentroTxnId?: string;
   requestedAt: Date;
   createdAt: Date;
   updatedAt: Date;

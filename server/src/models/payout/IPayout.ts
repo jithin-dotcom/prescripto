@@ -10,4 +10,5 @@ export interface IPayout extends Document {
     approvedAt?: Date;
     payoutId?: Date;
     reason?: string;
+    decentroTxnId?: string;
 }

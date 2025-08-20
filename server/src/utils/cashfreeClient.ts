@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const clientId = process.env.CASHFREE_CLIENT_ID!;
 const clientSecret = process.env.CASHFREE_CLIENT_SECRET!;
-const baseUrl = 'https://payout-gamma.cashfree.com'; // Sandbox
+const baseUrl = 'https://payout-gamma.cashfree.com'; 
 
 let token: string | null = null;
 
@@ -38,3 +38,13 @@ export const getAuthToken = async () => {
     throw new Error("Failed to get Cashfree token");
   }
 };
+
+
+
+
+
+
+
+
+
+

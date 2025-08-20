@@ -19,6 +19,7 @@ export function mapPayouts(data: IPayoutDocPopulated[]): IPayoutClean[] {
     amount: payout.amount,
     status: payout.status,
     reason: payout.reason,
+    decentroTxnId: payout.decentroTxnId,
     requestedAt: payout.requestedAt.toISOString(),
     createdAt: payout.createdAt.toISOString()
   }));
