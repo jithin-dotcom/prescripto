@@ -12,6 +12,7 @@ import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IWalletRepository } from "../../repositories/interface/IWalletRepository";
 import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
 import { mapAppointmentToDTO } from "../../utils/mapper/appointmentService.mapper";
+import { IPatientUser } from "../../models/appointment/IAppointment";
 
 
 export class AppointmentService implements IAppointmentService {
@@ -108,7 +109,7 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
     
     const appointmentData: IAppointment = {
       ...data,
-      userId: new mongoose.Types.ObjectId(data.userId),
+      userId: new mongoose.Types.ObjectId(data.userId as mongoose.Types.ObjectId),
       doctorId,
       status: "pending",
       payment: "not paid",
@@ -312,7 +313,7 @@ async getAppointmentsByDoctor(
   try {
     const skip = (page - 1) * limit;
 
-    const filter: any = { doctorId: new mongoose.Types.ObjectId(doctorId) };
+    const filter: {status?: string, doctorId: mongoose.Types.ObjectId} = { doctorId: new mongoose.Types.ObjectId(doctorId) };
     if (status) {
       filter.status = status;
     }
@@ -327,7 +328,7 @@ async getAppointmentsByDoctor(
     const responses: IAppointmentWithUserResponse[] = [];
 
     for (const appointment of appointments) {
-      const user = appointment.userId as any;
+      const user = appointment.userId as IPatientUser;
 
       if (!user || !user._id) continue;
 
@@ -394,7 +395,7 @@ async getAllAppointments(
   try {
     const skip = (page - 1) * limit;
 
-    const filter: any = {};
+    const filter: {status?: string} = {};
     if (status) {
       filter.status = status;
     }
@@ -412,8 +413,8 @@ async getAllAppointments(
     const timeArray: string[] = [];
 
     for (const appointment of appointments) {
-      const doctorUser = appointment.doctorId as any;
-      const patientUser = appointment.userId as any;
+      const doctorUser = appointment.doctorId as IDoctorUser;
+      const patientUser = appointment.userId as IPatientUser;
 
       timeArray.push(appointment.time);
       if (!doctorUser?._id || !patientUser?._id) continue;
@@ -545,7 +546,7 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
           if(!wallet){
             
             wallet = await this._walletRepo.create({
-              userId: new mongoose.Types.ObjectId(appointment.userId),
+              userId: new mongoose.Types.ObjectId(appointment.userId as mongoose.Types.ObjectId),
               role: "user",
             })
            

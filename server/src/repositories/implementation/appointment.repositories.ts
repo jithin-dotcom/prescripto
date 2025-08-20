@@ -24,14 +24,14 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
        .sort({ createdAt: -1 }); 
    }
 
-   async countAllFiltered(filter: any): Promise<number> {
+   async countAllFiltered(filter: {userId: mongoose.Types.ObjectId, status?: string} | {doctorId: mongoose.Types.ObjectId, status?: string} | {status?: string}): Promise<number> {
      return this.model.countDocuments(filter);
    }
 
    async findAllPopulatedPaginatedFiltered(
      skip: number,
      limit: number,
-     filter: any
+     filter: {status?:string}
    ): Promise<IAppointment[]> {
      return this.model
        .find(filter)
@@ -45,7 +45,7 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
    async findDoctorFilteredPaginated(
      skip: number,
      limit: number,
-     filter: any
+     filter: {status?: string, doctorId: mongoose.Types.ObjectId}
    ): Promise<IAppointment[]> {
      return AppointmentModel.find(filter)
        .populate("userId")
@@ -58,7 +58,7 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
    async findUserFilteredPaginated(
      skip: number,
      limit: number,
-     filter: any
+     filter: {userId: mongoose.Types.ObjectId, status?: string}
    ): Promise<IAppointment[]> {
      return this.model
        .find(filter)

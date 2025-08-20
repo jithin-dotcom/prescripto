@@ -7,7 +7,7 @@ import { IDoctorUser } from "../../services/interface/IAppointmentService";
 
 export interface IAppointment extends Document {
     
-    userId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId | IPatientUser;
     doctorId: mongoose.Types.ObjectId | IDoctorUser;
     transactionId?: mongoose.Types.ObjectId;
     day: string;
@@ -19,4 +19,14 @@ export interface IAppointment extends Document {
     method: string;
     createdAt: Date;
     updatedAt: Date; 
+}
+
+
+export interface IPatientUser {
+  _id: mongoose.Types.ObjectId;
+   name: string;
+   email: string;
+   photo: string;
+   isVerified: boolean;
+   isBlocked: boolean;
 }
