@@ -18,6 +18,7 @@ import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IPayoutRepository } from "../../repositories/interface/IPayoutRepository";
 import { IPayout } from "../../models/payout/IPayout";
 import { mapPayouts } from "../../utils/mapper/paymentService.mapper";
+import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 
 
 
@@ -30,6 +31,7 @@ export class PaymentService implements IPaymentService {
     private _walletHistoryRepo: IWalletHistoryRepository,
     private _chatRepo: IChatRepository,
     private _payoutRepo: IPayoutRepository,
+    private _doctorProfileRepo: IDoctorProfileRepository, 
   ) {}
 
   async createRazorpayOrder(data: RazorpayOrderInput): Promise<IRazorpayOrderResponse> {
@@ -158,6 +160,10 @@ export class PaymentService implements IPaymentService {
        
        if(wallet?.balance && amount > wallet?.balance){
           throw new Error("Request amount is greater than wallet balance");
+       }
+       const doctorProfile = await this._doctorProfileRepo.findOne({doctorId});
+       if(doctorProfile?.yearOfExperience && doctorProfile?.yearOfExperience < 6 && amount >= 500){
+          throw new Error("Only doctors with 5 or more years of experiance can be made payment more than 500");
        }
        const data: Partial<IPayout> = {
          doctorId: newDoctorId,

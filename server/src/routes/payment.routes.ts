@@ -12,6 +12,7 @@ import { WalletRepository } from "../repositories/implementation/wallet.reposito
 import { WalletHistoryRepository } from "../repositories/implementation/walletHistory.repository";
 import { ChatRepository } from "../repositories/implementation/chat.repositories";
 import { PayoutRepository } from "../repositories/implementation/payout.repositories";
+import { DoctorProfileRepository } from "../repositories/implementation/doctorProfile.repositories";
 
 
 const router = Router();
@@ -29,7 +30,8 @@ const walletRepository = new WalletRepository();
 const walletHistoryRepository = new WalletHistoryRepository();
 const chatRepository = new ChatRepository()
 const payoutRepository = new PayoutRepository()
-const paymentService = new PaymentService(paymentRepository, razorpayInstance, appointmentRepository, walletRepository, walletHistoryRepository, chatRepository, payoutRepository);
+const doctorProfileRepository = new DoctorProfileRepository()
+const paymentService = new PaymentService(paymentRepository, razorpayInstance, appointmentRepository, walletRepository, walletHistoryRepository, chatRepository, payoutRepository, doctorProfileRepository);
 const paymentController = new PaymentController(paymentService);
 
 

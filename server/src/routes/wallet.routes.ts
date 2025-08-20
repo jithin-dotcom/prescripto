@@ -9,6 +9,7 @@ import { AppointmentRepository } from "../repositories/implementation/appointmen
 import { verifyAccessToken } from "../middlewares/auth.middleware";
 import { ChatRepository } from "../repositories/implementation/chat.repositories";
 import { PaymentRepository } from "../repositories/implementation/payment.repositories";
+import { DoctorProfileRepository } from "../repositories/implementation/doctorProfile.repositories";
 
 
 const router = Router();
@@ -17,7 +18,8 @@ const walletHistoryRepository = new WalletHistoryRepository();
 const appointmentRepository = new AppointmentRepository();
 const chatRepository = new ChatRepository()
 const paymentRepository = new PaymentRepository()
-const walletService = new WalletService(walletRepository, walletHistoryRepository, appointmentRepository, chatRepository, paymentRepository);
+const doctorProfileRepository = new DoctorProfileRepository()
+const walletService = new WalletService(walletRepository, walletHistoryRepository, appointmentRepository, chatRepository, paymentRepository, doctorProfileRepository);
 const walletController = new WalletController(walletService);
 
 router.use(verifyAccessToken);

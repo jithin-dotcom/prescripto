@@ -131,6 +131,17 @@ const Appointment: React.FC = () => {
     toast.error("Please book at least 1 hour in advance.");
     return;
   }
+  
+  console.log("date : ",selectedSlot.date);
+  console.log("time : ",activeTime);
+  const currentTime = activeTime.split(" ")[0];
+  console.log("currentTime : ",currentTime);
+  const [hrs,min] = currentTime.split(":");
+  console.log("hrs min ",hrs,min);
+  if(doctor?.yearOfExperience && doctor?.yearOfExperience < 5 && activeTime.split(" ")[1] === "PM"){
+      toast.error("Doctor with less than 5 year of experiance need to be booked before 12 pm");
+      return;
+  }
 
   try {
      await axiosInstance.post(APIUserRoutes.CREATE_APPOINTMENTS, {
