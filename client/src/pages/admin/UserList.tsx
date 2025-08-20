@@ -28,7 +28,10 @@ const UsersList: React.FC = () => {
     setLoading(true);
     try {
       const res = await axiosInstance.get(`${APIRoutes.ADMIN_GET_USERS}?role=user&page=${page}&limit=${limit}&search=${query}`);
+      // console.log("res.data.data.items", res.data.data.items);
+      // const filtered = res.data.data.items.filter((val) => val !== null);
       setUsers(res.data.data.items);
+      // setUsers(filtered);
       setTotalPages(res.data.data.totalPages);
     } catch (error) {
       console.error("Failed to fetch users", error);

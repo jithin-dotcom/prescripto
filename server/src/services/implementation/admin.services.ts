@@ -70,7 +70,7 @@ async getAllByRole(
   specialty = ""
 ) {
   try {
-   
+   console.log("enterinto service getAllUser");
     const safePage = Math.max(1, page);
     const safeLimit = Math.max(1, limit);
     const skip = (safePage - 1) * safeLimit;
@@ -88,7 +88,6 @@ async getAllByRole(
               ? await this._doctorProfileRepo.findAll({ doctorId: user._id })
               : await this._patientProfileRepo.findAll({ patientId: user._id });
 
-          
           return mapUserToDTO(user , profile);
         })
       );
@@ -132,6 +131,7 @@ async getAllByRole(
     }
 
     if (role === "user") {
+      console.log("entered into role");
       const [items, totalItems] = await Promise.all([
         this._adminRepo.getAllByRole(role, safeLimit, skip, search),
         this._adminRepo.countByRole(role),
@@ -141,6 +141,7 @@ async getAllByRole(
         items.map(async (user) => {
           const profile = await this._patientProfileRepo.findAll({ patientId: user._id });
 
+         
           
           return mapUserToDTO(user, profile);
         })

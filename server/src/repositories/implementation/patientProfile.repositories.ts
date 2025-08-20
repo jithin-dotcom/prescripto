@@ -22,4 +22,6 @@ export class PatientProfileRepository extends BaseRepository<IPatientProfile & D
     return await this.model.findOneAndUpdate({ patientId: id }, data, { new: true });
   }
 
+  
+
 }
