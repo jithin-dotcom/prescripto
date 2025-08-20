@@ -31,8 +31,12 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
    async findAllPopulatedPaginatedFiltered(
      skip: number,
      limit: number,
-     filter: any
+     filter: {status?: string }
    ): Promise<IAppointment[]> {
+    //  const mergedFilter = {
+    //    ...filter,
+    //    fee:{$gt:500},
+    //  }
      return this.model
        .find(filter)
        .populate("doctorId")

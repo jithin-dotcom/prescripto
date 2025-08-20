@@ -11,7 +11,7 @@ export interface IAppointmentRepository extends IBaseRepository<IAppointment>{
     findAllPopulatedPaginatedFiltered(
       skip: number,
       limit: number,
-      filter: any
+      filter: {status?: string} 
      ): Promise<IAppointment[]>;
     findDoctorFilteredPaginated(
       skip: number,
