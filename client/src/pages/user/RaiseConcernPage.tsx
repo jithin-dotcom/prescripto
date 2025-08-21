@@ -43,7 +43,7 @@ const RaiseConcernPage: React.FC = () => {
       return;
     }
     try {
-      const response = await axiosInstance.post("/raise-concern", {
+       await axiosInstance.post("/raise-concern", {
         appointmentId: state.appointmentId,
         userId: state.userId,
         doctorId: state.doctorId,
@@ -51,7 +51,7 @@ const RaiseConcernPage: React.FC = () => {
         title,
         description,
       });
-      console.log("response : ", response);
+      
       setSuccess("Concern raised successfully!");
       toast.success("Concern raised successfully");
       navigate("/my-appointments");

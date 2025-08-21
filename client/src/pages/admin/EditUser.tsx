@@ -7,7 +7,7 @@ import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
 
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { APIRoutes } from "../../constants/routes.constants";
 
@@ -67,7 +67,6 @@ const EditUser = () => {
       try {
         const response = await axiosInstance.get(`${APIRoutes.ADMIN_GET_USER_EDIT}/${id}`);
         const user = response.data.data;
-        // console.log("user : ",user);
         const profile = user.profile?.[0];
 
         setForm({
@@ -158,11 +157,7 @@ const EditUser = () => {
       toast.success(`User ${id ? "updated" : "created"} successfully!`);
       navigate("/user-list");
     } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data?.message || "Error occurred");
-      } else {
-        toast.error("Unknown error");
-      }
+      console.error(error);
     }
   };
 

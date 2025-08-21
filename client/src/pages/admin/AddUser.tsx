@@ -52,7 +52,6 @@ const AddUser = () => {
 
       setCountries(countryNames);
     } catch (error) {
-      toast.error("Failed to load countries");
       console.error(error);
     }
   };
@@ -158,8 +157,7 @@ const AddUser = () => {
     try {
       await axiosInstance.post(APIRoutes.ADMIN_CREATE_USERS, formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-         
+          "Content-Type": "multipart/form-data", 
         },
        
       });

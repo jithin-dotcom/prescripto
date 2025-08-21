@@ -10,14 +10,14 @@ const About = () => {
     <div>
       <Navbar />
 
-      {/* Heading */}
+
       <div className="text-center text-xl sm:text-2xl pt-10 text-[#707070] px-4">
         <p>
           ABOUT <span className="text-gray-700 font-semibold">US</span>
         </p>
       </div>
 
-      {/* About Section */}
+     
       <div className="my-10 flex flex-col md:flex-row gap-8 md:gap-12 px-4 md:px-8 lg:px-16">
         <img
           className="w-full max-h-[300px] md:max-h-none md:max-w-[360px] object-cover rounded-lg"
@@ -50,7 +50,6 @@ const About = () => {
         </div>
       </div>
 
-      {/* Why Choose Us */}
       <div className="text-lg sm:text-xl my-6 px-4 text-center">
         <p>
           WHY <span className="text-gray-700 font-semibold">CHOOSE US</span>

@@ -75,10 +75,12 @@ const CreatePrescription: React.FC = () => {
 
   if(diagnosis.trim().length > 30 || diagnosis.trim().length < 3){
      toast.error("Diagnosis must be below 30 letter and above 3 letter");
+     return;
   }
 
    if(notes.trim().length > 200 || notes.trim().length < 5){
      toast.error("Notes must be below 200 letter and above 5 letter");
+     return;
   }
 
     if (followUpDate) {
@@ -133,8 +135,7 @@ const CreatePrescription: React.FC = () => {
         followUpDate: followUpDate || null,
       };
 
-     const res = await axiosInstance.post("/create-prescription", payload);
-     console.log("res : ",res);
+     await axiosInstance.post("/create-prescription", payload);
       
       toast.success("Prescription created successfully!");
       navigate("/doctor-appointments");

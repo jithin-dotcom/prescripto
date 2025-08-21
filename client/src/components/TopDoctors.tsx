@@ -16,7 +16,6 @@ const TopDoctors = () => {
     async function fetchTopDoctors() {
       try {
         const res = await axiosInstance.get(APIRoutes.TOP_DOCTORS);
-        console.log("res.data.data : ", res.data);
         setDoctors(res.data);
       } catch (error) {
         console.error("Error fetching top doctors:", error);
@@ -48,7 +47,7 @@ const TopDoctors = () => {
               key={doctor.doctorId._id}
               className="border border-[#C9D8FF] rounded-xl bg-white shadow-sm overflow-hidden transition hover:shadow-lg hover:scale-[1.02]"
               onClick={() => navigate(`/appointment/${doctor.doctorId._id}`)}
-              // {console.log(doctor._id)}
+         
             >
               <img
                 src={

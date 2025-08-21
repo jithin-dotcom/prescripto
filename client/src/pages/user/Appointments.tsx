@@ -171,7 +171,6 @@ const Appointment: React.FC = () => {
       try {
         const res = await axiosInstance.get(`${APIUserRoutes.GET_ALL_APPOINTMENTS}/${doctorId}`);
      
-
         const firstDoctor = res.data.responses?.[0]?.doctor;
 
         if (!firstDoctor) {

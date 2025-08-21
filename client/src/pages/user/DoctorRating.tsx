@@ -51,7 +51,7 @@ export const RateDoctor = () => {
     }
 
     try {
-      const res = await axiosInstance.post('/rate-doctor', {
+      await axiosInstance.post('/rate-doctor', {
         appointmentId,
         userId,
         doctorId,
@@ -59,7 +59,6 @@ export const RateDoctor = () => {
         review,
       });
 
-      console.log('res : ', res);
       toast.success('Thank you for your feedback!');
     
       handleClose();

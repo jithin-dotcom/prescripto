@@ -50,8 +50,6 @@ const ChatDashboard = () => {
         const res = await axiosInstance.get(APIChatRoutes.MY_CHATS);
         const chats: ChatListItem[] = res.data.chats || [];
 
-        console.log("res : ", res);
-
         const getDateTime = (appointment: Appointment): dayjs.Dayjs => {
           return dayjs(`${appointment.day} ${appointment.time}`, "DD/MM/YYYY h:mm A");
         };
@@ -93,7 +91,6 @@ const ChatDashboard = () => {
           filteredChats = Object.values(latestByDoctor);
         }
 
-        console.log("filteredChats : ", filteredChats);
         setChatList(filteredChats);
       } catch (error) {
         console.error("Error fetching chat list:", error);
@@ -150,7 +147,6 @@ useEffect(() => {
         hour12: true,
       })
     );
-    // socket.emit("saveToDb",userId);
     
   });
 
@@ -170,7 +166,7 @@ useEffect(() => {
   socket.emit("joinRoom", { appointmentId: selectedChat.appointmentId._id });
 
   socket.on("receiveMessage", (message: Message) => {
-    console.log("Received message:", message);
+   
     setMessages((prev) => (prev.find((m) => m._id === message._id) ? prev : [...prev, message]));
     scrollToBottom();
     socket.emit("markAsRead", { chatId: selectedChat._id });
@@ -183,7 +179,6 @@ useEffect(() => {
             ? {
                 ...chat,
                 lastMessage: {
-                  // content: message.type === "image" ? "[Image]" : message.content,
                   content: message.type === "image" ? "[Image]" : message.content,
                   timestamp: message.timestamp,
                 },
@@ -260,7 +255,7 @@ useEffect(() => {
  
 
 const handleSend = async () => {
-  console.log("handleSend called, input:", input, "selectedImage:", selectedImage);
+
   const socket = socketRef.current;
   if (!socket || !selectedChat) return;
 
@@ -302,7 +297,6 @@ const handleSend = async () => {
     userId: selectedChat.userId._id,
   };
 
-  console.log(" Sending new message:", newMessage);
   socket.emit("sendMessage", newMessage);
 
   

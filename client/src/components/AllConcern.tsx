@@ -55,7 +55,7 @@ const AllConcerns: React.FC = () => {
      
     } catch (error) {
       console.error("Failed to fetch concerns", error);
-      toast.error("Failed to fetch concerns");
+     
     } finally {
       setLoading(false);
     }
@@ -108,7 +108,7 @@ const AllConcerns: React.FC = () => {
       closeModal();
     } catch (error) {
       const message = error instanceof AxiosError ? error.message : "Error updating concern status";
-      toast.error(message);
+      console.error(message);
     }
   };
 
@@ -301,7 +301,7 @@ const AllConcerns: React.FC = () => {
             </>
           )}
 
-          {/* Modal for Reason Input */}
+         
           <Modal
             isOpen={isModalOpen}
             onRequestClose={closeModal}

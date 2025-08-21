@@ -72,10 +72,12 @@ const EditPrescription: React.FC = () => {
 
       if(diagnosis.trim().length > 30 || diagnosis.trim().length < 3){
           toast.error("Diagnosis must be below 30 letter and above 3 letter");
+          return;
       }
       
       if(notes.trim().length > 200 || notes.trim().length < 5){
           toast.error("Notes must be below 200 letter and above 5 letter");
+          return;
       }
     
 
@@ -141,8 +143,7 @@ const EditPrescription: React.FC = () => {
       toast.success("Prescription Updated  successfully!");
       navigate("/doctor-appointments");
     } catch (error) {
-      console.error("Error submitting prescription:", error);
-      
+      console.error("Error submitting prescription:", error);  
     }
   };
 

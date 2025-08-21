@@ -6,7 +6,7 @@ import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
 
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { APIRoutes, APIUserRoutes } from "../../constants/routes.constants";
 
@@ -34,7 +34,7 @@ const EditUserProfile = () => {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [countries, setCountries] = useState<string[]>([]);
   const navigate = useNavigate();
-  // const { accessToken } = useAuthStore();
+ 
   const { id } = useParams();
 
   const nameRegex = /^[A-Za-z\s]*$/;
@@ -81,7 +81,7 @@ const EditUserProfile = () => {
         setPhotoPreview(user.photo || null);
       } catch (error) {
         console.error(error);
-        toast.error("Failed to load user details");
+       
       }
     };
 
@@ -92,8 +92,6 @@ const EditUserProfile = () => {
       const file = e.target.files?.[0];
 
       const validImageType = ["image/jpeg","image/png","image/webp","image/jpg"];
-
-      console.log("file.type : ",file?.type);
 
       if(file && !validImageType.includes(file?.type)){
           toast.error("Image can only have JPG, PNG, WEBP Files");
@@ -174,19 +172,13 @@ const EditUserProfile = () => {
        await axiosInstance[method](endpoint, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          // Authorization: `Bearer ${accessToken}`,
         },
-        // withCredentials: true,
       });
 
       toast.success(`User ${id ? "updated" : "created"} successfully!`);
       navigate("/profile");
     } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data?.message || "Error occurred");
-      } else {
-        toast.error("Unknown error");
-      }
+      console.error(error);
     }
   };
 

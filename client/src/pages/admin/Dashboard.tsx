@@ -22,7 +22,6 @@ const AdminDashboard: React.FC = () => {
     const fetchAppointments = async () => {
       try {
         const res = await axiosInstance.get("/all-appointments");
-        console.log("res : ",res);
         setAppointments(res.data.data || []);
       } catch (error) {
         console.error("Error fetching appointments:", error);

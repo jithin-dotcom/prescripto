@@ -27,7 +27,6 @@ const DoctorDashboard: React.FC = () => {
       try {
         const res = await axiosInstance.get("/doctor-appointments");
         setAppointments(res.data.data || []);
-        console.log("Appointments:", res.data.data);
       } catch (error) {
         console.error("Error fetching appointments:", error);
        
@@ -47,7 +46,7 @@ const DoctorDashboard: React.FC = () => {
         setRatings(res.data.data || []);
         setAverageRating(res.data.averageRating || 0);
         setTotalReviews(res.data.totalReviews || 0);
-        console.log("Ratings:", res.data);
+       
       } catch (error) {
         console.error("Error fetching ratings:", error);
         toast.error("Failed to fetch ratings");

@@ -28,11 +28,10 @@ const PayoutRequests: React.FC = () => {
         const response = await axiosInstance.get(route, {
           params: { page: currentPage, limit: pageSize },
         });
-        console.log("response.data.data : ",response.data.data);
+     
         setPayoutRequests(response.data.data);
         setTotalPages(response.data.pagination.totalPages);
       } catch (error) {
-        toast.error("Failed to fetch payout requests");
         console.error("Error fetching payout requests:", error);
       } finally {
         setLoading(false);
@@ -55,8 +54,7 @@ const PayoutRequests: React.FC = () => {
         doctorId: payout.doctorId._id,
         amount: payout.amount,
       });
-      console.log("data : ", data);
-     
+          
       setPayoutRequests((prev) =>
         prev.map((req) =>
           req._id.toString() === requestId ? { ...req, status: "approved" as const, decentroTxnId: data.decentroTxnId } : req
@@ -64,7 +62,6 @@ const PayoutRequests: React.FC = () => {
       );
       toast.success(`Payout request ${requestId.slice(-6)} approved and processed`);
     } catch (error) {
-      toast.error("Failed to process payout");
       console.error("Error initiating payout:", error);
     } finally {
       setApprovingPayoutId(null); 
@@ -134,7 +131,7 @@ const PayoutRequests: React.FC = () => {
                            
                       </h5>
                       <div className="space-y-3 text-sm sm:text-base">
-                         {/* <p className="text-gray-600 break-words line-clamp-3"> decentroTxnId: {request?.decentroTxnId}</p> */}
+                        
                          {request?.decentroTxnId && (
                             <p className="text-gray-600 break-words line-clamp-3">
                                decentroTxnId: {request.decentroTxnId}

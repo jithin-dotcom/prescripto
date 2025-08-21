@@ -138,7 +138,6 @@ export default function MyVideoCall() {
       });
 
     socket.on("connect", () => {
-      console.log("Socket connected:", socket.id);
       setConnectionStatus("connected");
     });
     
@@ -167,11 +166,10 @@ export default function MyVideoCall() {
     socket.on("end-call", () => {
       handleRemoteEnd();
       toast.success("Call completed successfully");
-      // navigate(isDoctor ? "/doctor-appointments" : "/my-appointments,", { replace: true });
        if (isDoctor) {
     navigate("/doctor-appointments", { replace: true });
   } else {
-   console.log("before saving session storage");
+ 
     sessionStorage.setItem(
   'ratingData',
   JSON.stringify({
@@ -324,8 +322,8 @@ navigate("/rate-doctor?rate=true", { replace: true });
       appointmentId,
     });
     toast.success("Call completed successfully");
-    // navigate(isDoctor ? "/doctor-appointments" : "/my-appointments");
-       if (isDoctor) {
+   
+   if (isDoctor) {
     navigate("/doctor-appointments", { replace: true });
   } else {
     
@@ -350,9 +348,16 @@ navigate("/rate-doctor?rate=true", { replace: true });
     peerConnection.current?.close();
   };
 
+
+
+
+
+
+
+
   return (
     <div className="h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-      {/* Background Pattern */}
+     
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
           backgroundImage: `radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
@@ -360,7 +365,7 @@ navigate("/rate-doctor?rate=true", { replace: true });
         }} />
       </div>
 
-      {/* Header */}
+    
       <motion.div 
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -368,18 +373,7 @@ navigate("/rate-doctor?rate=true", { replace: true });
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            {/* <div className="flex items-center space-x-2">
-              <div className={`w-3 h-3 rounded-full ${
-                connectionStatus === "connected" ? "bg-green-400" : 
-                connectionStatus === "calling" || connectionStatus === "connecting" ? "bg-yellow-400" : 
-                connectionStatus === "error" ? "bg-red-400" : "bg-gray-400"
-              }`} />
-              <span className="text-white text-sm font-medium capitalize">
-                {connectionStatus === "calling" ? "Calling..." : 
-                 connectionStatus === "connecting" ? "Connecting..." : 
-                 connectionStatus}
-              </span>
-            </div> */}
+           
             {callAccepted && (
               <div className="text-white text-sm bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm">
                 {formatDuration(callDuration)}
@@ -463,7 +457,7 @@ navigate("/rate-doctor?rate=true", { replace: true });
             className="w-full h-full object-cover"
           />
           
-          {/* Local Video Status Indicators */}
+        
           <div className="absolute bottom-2 left-2 flex gap-1">
             {!isAudioEnabled && (
               <motion.div 
@@ -528,7 +522,7 @@ navigate("/rate-doctor?rate=true", { replace: true });
                   {isVideoEnabled ? <Video className="w-5 h-5" /> : <VideoOff className="w-5 h-5" />}
                 </motion.button>
 
-                {/* End Call */}
+               
                 <motion.button
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   whileTap={{ scale: 0.9 }}
@@ -586,7 +580,7 @@ navigate("/rate-doctor?rate=true", { replace: true });
               exit={{ scale: 0.8, opacity: 0, y: 50 }}
               className="bg-white rounded-3xl p-8 shadow-2xl max-w-md w-full mx-4 relative overflow-hidden"
             >
-              {/* Background decoration */}
+            
               <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 to-purple-600" />
               
               <div className="text-center">

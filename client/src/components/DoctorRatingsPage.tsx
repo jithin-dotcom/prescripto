@@ -51,7 +51,6 @@ const DoctorRatingsPage: React.FC = () => {
         `/get-rating/${doctorId}?page=${currentPage}&limit=${pageSize}`
       );
 
-      console.log("res.data : ", res.data);
       setData(res.data);
     } catch (error) {
       console.error("Error fetching ratings:", error);

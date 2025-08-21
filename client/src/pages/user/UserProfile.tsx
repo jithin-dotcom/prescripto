@@ -81,7 +81,6 @@ const UserProfile = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          // transition={{ duration: 0.5, delay: 0.1 }}
           whileHover={{ scale: 1.02 }}
           className="bg-white border border-[#C9D8FF] rounded-xl shadow-2xl p-6 flex flex-col sm:flex-row gap-6 transition-transform duration-300 ease-in-out hover:scale-105"
         >

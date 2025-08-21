@@ -7,7 +7,6 @@ import { assets } from "../../assets/assets2";
 import { toast } from "react-toastify";
 import axiosInstance from "../../utils/axios";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { APIRoutes } from "../../constants/routes.constants";
 
 interface ITimeBlock {
@@ -187,13 +186,6 @@ const EditDoctorProfile: React.FC = () => {
       toast.success("Doctor profile updated");
       navigate("/doctor-profile");
     } catch (err) {
-      if (axios.isAxiosError(err)) {
-        toast.error(err.response?.data?.message || "Update failed");
-      } else if (err instanceof Error) {
-        toast.error(err.message);
-      } else {
-        toast.error("Failed to Update");
-      }
       console.log("error : ", err);
     }
   };

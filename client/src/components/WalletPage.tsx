@@ -57,7 +57,6 @@ const WalletPage = () => {
         const res = await axiosInstance.get(
           `${APIUserRoutes.GET_WALLET}?page=${currentPage}&limit=${pageSize}`
         );
-        console.log("res.data : ",res.data);
         setWalletData(res.data);
       } catch (error) {
         console.error("Error fetching wallet data:", error);
@@ -175,7 +174,7 @@ const WalletPage = () => {
               <ArrowUpRight className="w-5 h-5 text-green-500" />
             </div>
             <p className="text-[#5C5C5C] text-sm mb-1">Total Income</p>
-            {/* <p className="text-2xl font-bold text-green-600">{formatCurrency(calculateTotalIncome())}</p> */}
+           
              <p className="text-2xl font-bold text-green-600">{walletData.balance + (walletData.expense || 0)}</p>
           </motion.div>
 
@@ -190,7 +189,6 @@ const WalletPage = () => {
               <ArrowDownLeft className="w-5 h-5 text-red-500" />
             </div>
             <p className="text-[#5C5C5C] text-sm mb-1">Total Expense</p>
-            {/* <p className="text-2xl font-bold text-red-600">{formatCurrency(calculateTotalExpense())}</p> */}
             <p className="text-2xl font-bold text-red-600">{(walletData.expense || 0)}</p>
           </motion.div>
         </div>

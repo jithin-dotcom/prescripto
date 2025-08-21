@@ -33,7 +33,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={onClose}>
-        {/* BACKDROP */}
+      
         <TransitionChild
           as={Fragment}
           enter="ease-out duration-300"
@@ -46,7 +46,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           <div className="fixed inset-0 bg-black/30" />
         </TransitionChild>
 
-        {/* MODAL PANEL */}
+       
         <div className="fixed inset-0 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <TransitionChild

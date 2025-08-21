@@ -72,8 +72,7 @@ const Navbar = () => {
     try {
       const response = await axiosInstance.post(APIRoutes.UPLOAD_PATIENT_PHOTO, formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
-          
+          "Content-Type": "multipart/form-data",  
         },
       });
       const updatedUser = response.data.user;
@@ -81,7 +80,6 @@ const Navbar = () => {
       toast.success("Profile photo updated!");
     } catch (error) {
       console.error("Upload failed:", error);
-      toast.error("Failed to upload photo");
     }
   };
 
@@ -91,7 +89,7 @@ const Navbar = () => {
       logout();
       navigate("/login", { replace: true });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Logout failed");
+      console.error(error);
     }
   };
 

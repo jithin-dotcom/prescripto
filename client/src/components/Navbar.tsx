@@ -43,11 +43,7 @@ const Navbar = () => {
       logout();
       navigate("/login", { replace: true });
     } catch (error) {
-      if(error instanceof Error){
-          toast.error(error.message || "Logout failed");
-        }else{
-          toast.error("Logout failed");
-        }
+      console.log(error);
     }
   };
 
@@ -79,7 +75,7 @@ const Navbar = () => {
       const response = await axiosInstance.post(APIRoutes.UPLOAD_PATIENT_PHOTO, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${accessToken}`,
+         
         },
       });
       setUser(response.data.user);

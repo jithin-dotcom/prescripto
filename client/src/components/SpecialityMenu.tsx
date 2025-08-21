@@ -1,6 +1,5 @@
 
 import { specialityData } from '../assets/assets1'
-// import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 
 const SpecialityMenu = () => {

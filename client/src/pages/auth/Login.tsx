@@ -56,7 +56,6 @@ const Login: React.FC = () => {
          return;
       }
       const res = await axiosNoAuth.post(APIAuthRoutes.LOGIN, { email, password });
-      console.log("response : ",res.data);
       const { accessToken, user } = res.data;
       setAuth({ accessToken, user });
 

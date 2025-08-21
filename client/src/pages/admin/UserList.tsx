@@ -58,7 +58,7 @@ useEffect(() => {
       toast.success("Successfully toggled block status");
     } catch (error) {
       const message = error instanceof AxiosError ? error.message : "Error toggling block status";
-      toast.error(message);
+      console.error(message);
     }
   };
 
@@ -111,9 +111,7 @@ useEffect(() => {
                   console.log("users : ", user);
                   return (
                     <div
-                      // key={user._id}
                       key={user.id}
-                      // onClick={() => navigate(`/edit-user/${user._id}`)}
                        onClick={() => navigate(`/edit-user/${user.id}`)}
                       className="border border-[#C9D8FF] rounded-xl bg-white shadow-sm overflow-hidden cursor-pointer group transition hover:shadow-lg hover:scale-105"
                     >
@@ -132,7 +130,7 @@ useEffect(() => {
                             <input
                               type="checkbox"
                               checked={user.isVerified}
-                              // onChange={() => toggleVerifiedStatus(user._id)}
+                             
                               onChange={() => toggleVerifiedStatus(user.id)}
                               onClick={(e) => e.stopPropagation()}
                               readOnly

@@ -10,7 +10,6 @@ import type { HTMLMotionProps } from "framer-motion";
 import Pagination from "../../components/Pagination";
 import { toast } from "react-toastify";
 import ConfirmationModal from "../../components/ConfirmModal";
-import axios from "axios";
 import type { Appointment } from "../../interfaces/IMyAppointments";
 import { Video, MessageCircleWarning } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -46,7 +45,7 @@ const MyAppointments: React.FC = () => {
   const userId = useAuthStore((state) => state.user?._id);
   const name = useAuthStore((state) => state.user?.name);
   const [pageSize, setPageSize] = useState<number>(5)
-  // const limit = 4;
+ 
 
   useEffect(() => {
     if (!userId) return;
@@ -59,7 +58,6 @@ const MyAppointments: React.FC = () => {
         }`;
 
         const res = await axiosInstance.get(query);
-        console.log("appointments : ",res.data?.data);
         setAppointments(res.data?.data || []);
         setTotalPages(res.data?.totalPages || 1);
       } catch (error) {
@@ -119,11 +117,7 @@ const MyAppointments: React.FC = () => {
       setAppointments(updated);
       toast.success("Appointment cancelled successfully");
     }catch (error) {
-      if(axios.isAxiosError(error)){
-         toast.error(error.response?.data?.message || "Failed to update status");
-      }else{
-         toast.error("Something went wrong");
-      }
+      console.log(error);
     } finally {
       setIsModalOpen(false);
       setAppointmentToCancel(null);
@@ -166,7 +160,6 @@ const MyAppointments: React.FC = () => {
       amount: appointment.doctor.fee,
     });
 
-    console.log("res : ",res);
     const { id: orderId, amount, currency } = res.data.order;
     if (!res.data?.order?.id) {
       toast.error("Failed to retrieve Razorpay order");
@@ -181,30 +174,23 @@ const MyAppointments: React.FC = () => {
       description: "Appointment Payment",
       order_id: orderId,
       handler: async function (response: RazorpayResponse) {
-        console.log("response rezor : ",response);
+       
         try {
-          const verifyRes = await axiosInstance.post(APIUserRoutes.PAYMENT_VERIFY_ORDER, {
+          await axiosInstance.post(APIUserRoutes.PAYMENT_VERIFY_ORDER, {
             razorpayOrderId: response.razorpay_order_id,
             razorpayPaymentId: response.razorpay_payment_id,
             razorpaySignature: response.razorpay_signature,
           });
 
-          console.log(verifyRes.data?.message || "Payment successful");
-
           toast.success("Payment verified successfully and Appointment is Confirmed");
 
-          
           setAppointments((prev) =>
             prev.map((a) =>
               a._id === appointment._id ? { ...a, payment: "paid", status: "confirmed" } : a
             )
           );
         } catch (err) {
-          if(axios.isAxiosError(err)){
-             toast.error(err.response?.data?.message || "Payment verification failed");
-          }else{
-             toast.error("Payment verification failed");
-          }  
+          console.error(err); 
         }
       },
       prefill: {
@@ -219,7 +205,6 @@ const MyAppointments: React.FC = () => {
     const paymentObject = new window.Razorpay(options);
     paymentObject.open();
   } catch (error) {
-    toast.error("Failed to initiate payment");
     console.error("Payment error:", error);
   }
 };

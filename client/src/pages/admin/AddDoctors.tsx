@@ -136,7 +136,6 @@ const AddDoctor = () => {
      await axiosInstance.post(APIRoutes.ADMIN_CREATE_USERS, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
-      
       },
      
     });

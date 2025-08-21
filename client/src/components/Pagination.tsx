@@ -78,7 +78,7 @@ const Pagination: React.FC<PaginationProps> = ({
             <span className="hidden sm:inline"> results</span>
           </div>
 
-          {/* Page size selector */}
+        
           <div className="flex items-center space-x-2">
             <label htmlFor="pageSize" className="text-sm font-medium text-gray-700 whitespace-nowrap">
               Show:
@@ -101,11 +101,11 @@ const Pagination: React.FC<PaginationProps> = ({
           </div>
         </div>
 
-        {/* Pagination controls */}
+      
         <div className="flex items-center justify-center lg:justify-end">
           <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
             
-            {/* Previous button */}
+       
             <button
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage === 1}
@@ -120,7 +120,7 @@ const Pagination: React.FC<PaginationProps> = ({
               <span className="sr-only">Previous</span>
             </button>
 
-            {/* Page numbers */}
+          
             {getPageNumbers().map((pageNumber, idx) => {
               if (typeof pageNumber === "string") {
                 return (
@@ -152,7 +152,6 @@ const Pagination: React.FC<PaginationProps> = ({
               );
             })}
 
-            {/* Next button */}
             <button
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
@@ -170,7 +169,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </div>
       </div>
 
-      {/* Mobile-only simplified navigation */}
+    
       <div className="flex items-center justify-between mt-4 sm:hidden">
         <button
           onClick={() => onPageChange(currentPage - 1)}

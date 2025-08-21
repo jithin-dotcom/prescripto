@@ -9,7 +9,6 @@ import Navbar from "../../components/NavbarAdmin";
 import axiosInstance from "../../utils/axios";
 import { useDoctorStore } from "../../store/doctorStore";
 import { toast } from "react-toastify";
-import axios from "axios";
 import { Ban, Check, Filter, ChevronDown, Video, Calendar as CalendarIcon, Clock, Menu, XCircle } from "lucide-react";
 import ConfirmModal from "../../components/ConfirmModal";
 import type { Event } from "react-big-calendar";
@@ -135,10 +134,10 @@ const DoctorAppointments = () => {
           `${APIDoctorRoutes.DOCTOR_APPOINTMENTS}?status=${statusFilter}`
         );
         setAppointments(res.data.data || []);
-        console.log("Appointments:", res.data.data);
+        
       } catch (err) {
         console.error("Error fetching appointments:", err);
-        // toast.error("Failed to fetch appointments");
+       
       }
     };
     fetchAppointments();
@@ -163,11 +162,7 @@ const DoctorAppointments = () => {
       setAppointments(updated);
       toast.success(`Appointment ${newStatus} successfully`);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error(error.response?.data?.message || "Failed to update");
-      } else {
-        console.error("Something went wrong");
-      }
+       console.error(error);
     } finally {
       setModalOpen(false);
       setSelectedAction({ appointmentId: "", newStatus: null });

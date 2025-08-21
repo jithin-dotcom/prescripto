@@ -51,10 +51,12 @@ const Signup = () => {
     }
     if(form.name.trim().length === 0 || form.email.trim().length === 0 || form.confirmPassword.trim().length === 0 || form.password.trim().length === 0){
        toast.error("Fields cannot be empty");
+       return;
     }
 
     if(form.name.trim().length > 20){
        toast.error("Name can have maximum 20 letters");
+       return;
     }
 
     if (!nameRegex.test(form.name)) {

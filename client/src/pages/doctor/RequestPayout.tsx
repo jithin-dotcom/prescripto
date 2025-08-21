@@ -35,7 +35,6 @@ const RequestPayout: React.FC = () => {
     }
 
     if(reason.trim().length <= 0){
-       
         toast.error("Reason cannot be Empty")
         setLoading(false);
         return;

@@ -134,7 +134,7 @@ const AllAppointments = () => {
         setAppointments(res.data.data || []);
       } catch (err) {
         console.error("Failed to fetch appointments", err);
-        toast.error("Failed to fetch appointments");
+        
       }
     };
     fetchAppointments();
