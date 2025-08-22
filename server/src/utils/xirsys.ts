@@ -37,6 +37,7 @@ router.get("/ice-servers", (req, res) => {
       try {
         const parsed = JSON.parse(str);
         res.json(parsed.v?.iceServers || []); 
+        // res.json({ iceServers: parsed.v?.iceServers || [] });
       } catch (err) {
         res.status(500).json({ error: "Failed to parse ICE response" });
       }
