@@ -51,6 +51,10 @@ export default function MyVideoCall() {
   const durationInterval = useRef<NodeJS.Timeout  | undefined>(undefined);
   const controlsTimeout = useRef<NodeJS.Timeout  | undefined>(undefined);
 
+  const pendingCandidates = useRef<RTCIceCandidateInit[]>([]);
+  const remoteDescSet = useRef(false);
+
+
   
   useEffect(() => {
     if (showControls && callAccepted) {
@@ -158,9 +162,28 @@ export default function MyVideoCall() {
       setIsCalling(true);
       setShowIncomingPopup(false);
       setConnectionStatus("connected");
+      // if (peerConnection.current) {
+      //   await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
+      // }
+
+
       if (peerConnection.current) {
-        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-      }
+  await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
+  remoteDescSet.current = true;
+
+  // flush queued candidates
+  for (const c of pendingCandidates.current) {
+    try {
+      await peerConnection.current.addIceCandidate(new RTCIceCandidate(c));
+    } catch (err) {
+      console.error("flush addIceCandidate failed", err);
+    }
+  }
+  pendingCandidates.current = [];
+}
+
+
+
     });
     
     socket.on("end-call", () => {
@@ -192,11 +215,35 @@ navigate("/rate-doctor?rate=true", { replace: true });
       handleRemoteEnd();
     });
     
+    // socket.on("ice-candidate", async ({ candidate }) => {
+    //   if (peerConnection.current && candidate) {
+    //     await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+    //   }
+    // });
+
+
+
+
     socket.on("ice-candidate", async ({ candidate }) => {
-      if (peerConnection.current && candidate) {
-        await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
-      }
-    });
+  if (!candidate || !peerConnection.current) return;
+
+  if (!remoteDescSet.current) {
+    pendingCandidates.current.push(candidate);
+    console.log("[ICE] queued candidate", candidate);
+    return;
+  }
+
+  try {
+    await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+    console.log("[ICE] added candidate", candidate);
+  } catch (err) {
+    console.error("[ICE] addIceCandidate failed", err);
+  }
+});
+
+
+
+
 
     socket.on("error", (err) => {
       console.error("Socket error:", err);
@@ -243,6 +290,18 @@ navigate("/rate-doctor?rate=true", { replace: true });
       ] 
     });
     peerConnection.current = pc;
+
+
+
+//new added debugger
+    pc.oniceconnectionstatechange = () => {
+  console.log("ICE state:", pc.iceConnectionState);
+  if (pc.iceConnectionState === "failed") {
+    console.warn("ICE failed, restarting…");
+    pc.restartIce?.();
+  }
+};
+
 
     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
 
@@ -308,6 +367,21 @@ navigate("/rate-doctor?rate=true", { replace: true });
     });
     peerConnection.current = pc;
 
+
+    
+
+    //new added debugger
+         pc.oniceconnectionstatechange = () => {
+  console.log("ICE state:", pc.iceConnectionState);
+  if (pc.iceConnectionState === "failed") {
+    console.warn("ICE failed, restarting…");
+    pc.restartIce?.();
+  }
+};
+
+
+
+
     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
 
     pc.ontrack = (event) => {
@@ -323,9 +397,29 @@ navigate("/rate-doctor?rate=true", { replace: true });
       }
     };
 
+    // if (incomingCall?.signal) {
+    //   await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
+    // }
+
+
+
+
     if (incomingCall?.signal) {
-      await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
+  await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
+  remoteDescSet.current = true;
+
+  for (const c of pendingCandidates.current) {
+    try {
+      await pc.addIceCandidate(new RTCIceCandidate(c));
+    } catch (err) {
+      console.error("flush addIceCandidate failed", err);
     }
+  }
+  pendingCandidates.current = [];
+}
+
+
+
 
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
