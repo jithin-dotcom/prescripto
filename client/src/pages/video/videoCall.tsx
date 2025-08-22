@@ -222,7 +222,16 @@ navigate("/rate-doctor?rate=true", { replace: true });
     setIsCalling(true);
     setConnectionStatus("calling");
 
-    const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+    const pc = new RTCPeerConnection({ iceServers: 
+      [
+        { urls: "stun:stun.l.google.com:19302" },
+        {
+          urls: "turn:relay1.expressturn.com:3480",
+          username: "000000002071204979",
+          credential: "RW5l5wMzeS0tZjon8lGrERPo0Jc=",
+        },
+      ] 
+    });
     peerConnection.current = pc;
 
     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
@@ -267,7 +276,16 @@ navigate("/rate-doctor?rate=true", { replace: true });
     setShowIncomingPopup(false);
     setConnectionStatus("connecting");
 
-    const pc = new RTCPeerConnection({ iceServers: [{ urls: "stun:stun.l.google.com:19302" }] });
+    const pc = new RTCPeerConnection({ iceServers: 
+      [
+        { urls: "stun:stun.l.google.com:19302" },
+        {
+          urls: "turn:relay1.expressturn.com:3480",
+          username: "000000002071204979",
+          credential: "RW5l5wMzeS0tZjon8lGrERPo0Jc=",
+        },
+      ] 
+    });
     peerConnection.current = pc;
 
     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
