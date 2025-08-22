@@ -280,7 +280,7 @@ navigate("/rate-doctor?rate=true", { replace: true });
       [
         { urls: "stun:stun.l.google.com:19302" },
         {
-          urls: "turn:relay1.expressturn.com:3480?transport=udp",
+          urls: "turn:relay1.expressturn.com:3480",
           username: "000000002071209180",
           credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
         },
