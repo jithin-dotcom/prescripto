@@ -117,7 +117,7 @@ const CreatePrescription: React.FC = () => {
         toast.error(`Medicine ${i + 1} is missing a value for "${field}".`);
         return;
       }
-       if (med[field].trim().length > 30 || med[field].trim().length < 3) {
+       if (med[field].trim().length > 50 || med[field].trim().length < 3) {
         toast.error(`Medicine ${i + 1} field "${field}" minimum length should be 3 and maximum length should be 30 `);
         return;
       }

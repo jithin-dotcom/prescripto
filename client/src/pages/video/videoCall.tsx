@@ -269,28 +269,53 @@ navigate("/rate-doctor?rate=true", { replace: true });
     setIsCalling(true);
     setConnectionStatus("calling");
 
-    const pc = new RTCPeerConnection({ iceServers: 
-      [
-        { urls: "stun:stun.l.google.com:19302" },
-        {
-          // urls: "turn:relay1.expressturn.com:3480",
-          urls: [
+    // const pc = new RTCPeerConnection({ iceServers: 
+    //   [
+    //     { urls: "stun:stun.l.google.com:19302" },
+    //     {
+    //       // urls: "turn:relay1.expressturn.com:3480",
+    //       urls: [
 
-            "turn:relay1.expressturn.com:80?transport=udp",
-            "turn:relay1.expressturn.com:3480?transport=udp",
-            "turn:relay1.expressturn.com:80?transport=tcp",
-            "turn:relay1.expressturn.com:3480?transport=tcp",
-            "turns:relay1.expressturn.com:443?transport=tcp",
-            "turns:relay1.expressturn.com:5349?transport=tcp",
+    //         "turn:relay1.expressturn.com:80?transport=udp",
+    //         "turn:relay1.expressturn.com:3480?transport=udp",
+    //         "turn:relay1.expressturn.com:80?transport=tcp",
+    //         "turn:relay1.expressturn.com:3480?transport=tcp",
+    //         "turns:relay1.expressturn.com:443?transport=tcp",
+    //         "turns:relay1.expressturn.com:5349?transport=tcp",
 
-          ],
-          username: "000000002071209180",
-          credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
-        },
-      ],
+    //       ],
+    //       username: "000000002071209180",
+    //       credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
+    //     },
+    //   ],
       
-    });
-    peerConnection.current = pc;
+    // });
+    // peerConnection.current = pc;
+
+
+
+    const pc = new RTCPeerConnection({
+  iceServers: [
+    
+    { urls: "stun:bn-turn1.xirsys.com" },
+
+    {
+      username: "bB3uz67g3u6rI6fv9syY33jvvdoS4PXBJwkIwml2pEg3hgst4kzjMTogXx9owVQSAAAAAGiofqJKaXRoaW4=",
+      credential: "52b2118c-7f64-11f0-83c6-0242ac140004",
+      urls: [
+        "turn:bn-turn1.xirsys.com:80?transport=udp",
+        "turn:bn-turn1.xirsys.com:3478?transport=udp",
+        "turn:bn-turn1.xirsys.com:80?transport=tcp",
+        "turn:bn-turn1.xirsys.com:3478?transport=tcp",
+        "turns:bn-turn1.xirsys.com:443?transport=tcp",
+        "turns:bn-turn1.xirsys.com:5349?transport=tcp"
+      ]
+    }
+  ]
+});
+
+peerConnection.current = pc;
+
 
 
 
@@ -351,28 +376,52 @@ navigate("/rate-doctor?rate=true", { replace: true });
     setShowIncomingPopup(false);
     setConnectionStatus("connecting");
 
-    const pc = new RTCPeerConnection({ iceServers: 
-      [
-        { urls: "stun:stun.l.google.com:19302" },
-        {
-          // urls: "turn:relay1.expressturn.com:3480",
-          urls: [
+    // const pc = new RTCPeerConnection({ iceServers: 
+    //   [
+    //     { urls: "stun:stun.l.google.com:19302" },
+    //     {
+    //       // urls: "turn:relay1.expressturn.com:3480",
+    //       urls: [
 
-            "turn:relay1.expressturn.com:80?transport=udp",
-            "turn:relay1.expressturn.com:3480?transport=udp",
-            "turn:relay1.expressturn.com:80?transport=tcp",
-            "turn:relay1.expressturn.com:3480?transport=tcp",
-            "turns:relay1.expressturn.com:443?transport=tcp",
-            "turns:relay1.expressturn.com:5349?transport=tcp",
+    //         "turn:relay1.expressturn.com:80?transport=udp",
+    //         "turn:relay1.expressturn.com:3480?transport=udp",
+    //         "turn:relay1.expressturn.com:80?transport=tcp",
+    //         "turn:relay1.expressturn.com:3480?transport=tcp",
+    //         "turns:relay1.expressturn.com:443?transport=tcp",
+    //         "turns:relay1.expressturn.com:5349?transport=tcp",
 
-          ],
-          username: "000000002071209180",
-          credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
-        },
-      ]
+    //       ],
+    //       username: "000000002071209180",
+    //       credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
+    //     },
+    //   ]
         
-    });
-    peerConnection.current = pc;
+    // });
+    // peerConnection.current = pc;
+
+
+
+    const pc = new RTCPeerConnection({
+  iceServers: [
+   
+    { urls: "stun:bn-turn1.xirsys.com" },
+
+    {
+      username: "bB3uz67g3u6rI6fv9syY33jvvdoS4PXBJwkIwml2pEg3hgst4kzjMTogXx9owVQSAAAAAGiofqJKaXRoaW4=",
+      credential: "52b2118c-7f64-11f0-83c6-0242ac140004",
+      urls: [
+        "turn:bn-turn1.xirsys.com:80?transport=udp",
+        "turn:bn-turn1.xirsys.com:3478?transport=udp",
+        "turn:bn-turn1.xirsys.com:80?transport=tcp",
+        "turn:bn-turn1.xirsys.com:3478?transport=tcp",
+        "turns:bn-turn1.xirsys.com:443?transport=tcp",
+        "turns:bn-turn1.xirsys.com:5349?transport=tcp"
+      ]
+    }
+  ]
+});
+
+peerConnection.current = pc;
 
 
     
