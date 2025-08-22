@@ -36,6 +36,7 @@ router.get("/ice-servers", (req, res) => {
     httpres.on("end", () => {
       try {
         const parsed = JSON.parse(str);
+        console.log("Xirsys response:", JSON.stringify(parsed, null, 2));
         res.json(parsed.v?.iceServers || []); 
         // res.json({ iceServers: parsed.v?.iceServers || [] });
       } catch (err) {
