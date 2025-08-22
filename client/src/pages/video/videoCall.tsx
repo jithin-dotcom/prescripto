@@ -226,7 +226,17 @@ navigate("/rate-doctor?rate=true", { replace: true });
       [
         { urls: "stun:stun.l.google.com:19302" },
         {
-          urls: "turn:relay1.expressturn.com:3480",
+          // urls: "turn:relay1.expressturn.com:3480",
+          urls: [
+
+            "turn:relay1.expressturn.com:80?transport=udp",
+            "turn:relay1.expressturn.com:3480?transport=udp",
+            "turn:relay1.expressturn.com:80?transport=tcp",
+            "turn:relay1.expressturn.com:3480?transport=tcp",
+            "turns:relay1.expressturn.com:443?transport=tcp",
+            "turns:relay1.expressturn.com:5349?transport=tcp",
+
+          ],
           username: "000000002071209180",
           credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
         },
@@ -280,7 +290,17 @@ navigate("/rate-doctor?rate=true", { replace: true });
       [
         { urls: "stun:stun.l.google.com:19302" },
         {
-          urls: "turn:relay1.expressturn.com:3480",
+          // urls: "turn:relay1.expressturn.com:3480",
+          urls: [
+
+            "turn:relay1.expressturn.com:80?transport=udp",
+            "turn:relay1.expressturn.com:3480?transport=udp",
+            "turn:relay1.expressturn.com:80?transport=tcp",
+            "turn:relay1.expressturn.com:3480?transport=tcp",
+            "turns:relay1.expressturn.com:443?transport=tcp",
+            "turns:relay1.expressturn.com:5349?transport=tcp",
+
+          ],
           username: "000000002071209180",
           credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
         },
