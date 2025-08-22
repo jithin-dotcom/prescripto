@@ -324,7 +324,7 @@ navigate("/rate-doctor?rate=true", { replace: true });
 
 
 const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
-const pc = new RTCPeerConnection(iceServers);
+const pc = new RTCPeerConnection({iceServers, iceTransportPolicy: "relay", });
 
 peerConnection.current = pc;
 
@@ -439,7 +439,7 @@ peerConnection.current = pc;
 
 const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
 console.log("iceservers: ",iceServers);
-const pc = new RTCPeerConnection( iceServers );
+const pc = new RTCPeerConnection( {iceServers, iceTransportPolicy: "relay", });
 
 peerConnection.current = pc;
 
