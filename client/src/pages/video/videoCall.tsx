@@ -226,9 +226,9 @@ navigate("/rate-doctor?rate=true", { replace: true });
       [
         { urls: "stun:stun.l.google.com:19302" },
         {
-          urls: "turn:relay1.expressturn.com:3480",
-          username: "000000002071204979",
-          credential: "RW5l5wMzeS0tZjon8lGrERPo0Jc=",
+          urls: "turn:relay1.expressturn.com:3480?transport=udp",
+          username: "000000002071209180",
+          credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
         },
       ] 
     });
@@ -280,9 +280,9 @@ navigate("/rate-doctor?rate=true", { replace: true });
       [
         { urls: "stun:stun.l.google.com:19302" },
         {
-          urls: "turn:relay1.expressturn.com:3480",
-          username: "000000002071204979",
-          credential: "RW5l5wMzeS0tZjon8lGrERPo0Jc=",
+          urls: "turn:relay1.expressturn.com:3480?transport=udp",
+          username: "000000002071209180",
+          credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
         },
       ] 
     });
