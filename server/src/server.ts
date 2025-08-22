@@ -22,6 +22,7 @@ import walletRoutes from "./routes/wallet.routes";
 import doctorRatingRoutes from "./routes/doctorRating.routes";
 import prescriptionRoutes from "./routes/prescription.routes";
 import concernRoutes from "./routes/concern.routes";
+import xirsysRoutes from "./utils/xirsys";
 
 import { requestLogger } from './middlewares/requestLogger.middleware';
 import { errorHandler } from './middlewares/errorHandler.middleware';
@@ -93,6 +94,7 @@ app.use("/api", walletRoutes);
 app.use("/api", doctorRatingRoutes);
 app.use("/api", prescriptionRoutes);
 app.use("/api", concernRoutes);
+app.use("/api", xirsysRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -27,8 +27,8 @@ const authController = new AuthController(authService);
 
 router.use(passport.initialize());
 
-router.post("/signup",authController.signup.bind(authController));
-router.post("/login",authController.login.bind(authController));
+router.post("/signup", authRateLimiter, authController.signup.bind(authController));
+router.post("/login", authRateLimiter, authController.login.bind(authController));
 router.post("/verify-otp", authController.verifyOtpAndRegister.bind(authController));
 router.post("/resend-otp", authController.resendOtp.bind(authController));
 router.post("/forgot-password", authController.forgotPassword.bind(authController));
