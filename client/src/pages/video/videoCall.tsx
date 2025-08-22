@@ -51,8 +51,8 @@ export default function MyVideoCall() {
   const durationInterval = useRef<NodeJS.Timeout  | undefined>(undefined);
   const controlsTimeout = useRef<NodeJS.Timeout  | undefined>(undefined);
 
-  const pendingCandidates = useRef<RTCIceCandidateInit[]>([]);
-  const remoteDescSet = useRef(false);
+  // const pendingCandidates = useRef<RTCIceCandidateInit[]>([]);
+  // const remoteDescSet = useRef(false);
 
 
   
@@ -162,25 +162,25 @@ export default function MyVideoCall() {
       setIsCalling(true);
       setShowIncomingPopup(false);
       setConnectionStatus("connected");
-      // if (peerConnection.current) {
-      //   await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-      // }
-
-
       if (peerConnection.current) {
-  await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-  remoteDescSet.current = true;
+        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
+      }
 
-  // flush queued candidates
-  for (const c of pendingCandidates.current) {
-    try {
-      await peerConnection.current.addIceCandidate(new RTCIceCandidate(c));
-    } catch (err) {
-      console.error("flush addIceCandidate failed", err);
-    }
-  }
-  pendingCandidates.current = [];
-}
+
+//       if (peerConnection.current) {
+//   await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
+//   remoteDescSet.current = true;
+
+//   // flush queued candidates
+//   for (const c of pendingCandidates.current) {
+//     try {
+//       await peerConnection.current.addIceCandidate(new RTCIceCandidate(c));
+//     } catch (err) {
+//       console.error("flush addIceCandidate failed", err);
+//     }
+//   }
+//   pendingCandidates.current = [];
+// }
 
 
 
@@ -215,31 +215,31 @@ navigate("/rate-doctor?rate=true", { replace: true });
       handleRemoteEnd();
     });
     
-    // socket.on("ice-candidate", async ({ candidate }) => {
-    //   if (peerConnection.current && candidate) {
-    //     await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
-    //   }
-    // });
-
-
-
-
     socket.on("ice-candidate", async ({ candidate }) => {
-  if (!candidate || !peerConnection.current) return;
+      if (peerConnection.current && candidate) {
+        await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+      }
+    });
 
-  if (!remoteDescSet.current) {
-    pendingCandidates.current.push(candidate);
-    console.log("[ICE] queued candidate", candidate);
-    return;
-  }
 
-  try {
-    await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
-    console.log("[ICE] added candidate", candidate);
-  } catch (err) {
-    console.error("[ICE] addIceCandidate failed", err);
-  }
-});
+
+
+//     socket.on("ice-candidate", async ({ candidate }) => {
+//   if (!candidate || !peerConnection.current) return;
+
+//   if (!remoteDescSet.current) {
+//     pendingCandidates.current.push(candidate);
+//     console.log("[ICE] queued candidate", candidate);
+//     return;
+//   }
+
+//   try {
+//     await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+//     console.log("[ICE] added candidate", candidate);
+//   } catch (err) {
+//     console.error("[ICE] addIceCandidate failed", err);
+//   }
+// });
 
 
 
@@ -409,26 +409,26 @@ navigate("/rate-doctor?rate=true", { replace: true });
       }
     };
 
-    // if (incomingCall?.signal) {
-    //   await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-    // }
-
-
-
-
     if (incomingCall?.signal) {
-  await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-  remoteDescSet.current = true;
-
-  for (const c of pendingCandidates.current) {
-    try {
-      await pc.addIceCandidate(new RTCIceCandidate(c));
-    } catch (err) {
-      console.error("flush addIceCandidate failed", err);
+      await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
     }
-  }
-  pendingCandidates.current = [];
-}
+
+
+
+
+//     if (incomingCall?.signal) {
+//   await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
+//   remoteDescSet.current = true;
+
+//   for (const c of pendingCandidates.current) {
+//     try {
+//       await pc.addIceCandidate(new RTCIceCandidate(c));
+//     } catch (err) {
+//       console.error("flush addIceCandidate failed", err);
+//     }
+//   }
+//   pendingCandidates.current = [];
+// }
 
 
 
