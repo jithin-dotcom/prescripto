@@ -37,8 +37,18 @@ router.get("/ice-servers", (req, res) => {
       try {
         const parsed = JSON.parse(str);
         console.log("Xirsys response:", JSON.stringify(parsed, null, 2));
-        res.json(parsed.v?.iceServers || []); 
+        // res.json(parsed.v?.iceServers || []); 
         // res.json({ iceServers: parsed.v?.iceServers || [] });
+
+           const xirsysIceServers = parsed.v?.iceServers || [];
+
+        // ✅ Add Google STUN as first ICE server
+        const iceServers = [
+          { urls: "stun:stun.l.google.com:19302" },
+          ...xirsysIceServers,
+        ];
+
+        res.json({ iceServers });
       } catch (err) {
         res.status(500).json({ error: "Failed to parse ICE response" });
       }
