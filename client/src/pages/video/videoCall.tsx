@@ -305,8 +305,8 @@ navigate("/rate-doctor?rate=true", { replace: true });
 
 
 // Reset per-call ICE bookkeeping
-remoteDescSet.current = false;
-pendingCandidates.current = [];
+// remoteDescSet.current = false;
+// pendingCandidates.current = [];
 
 
     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
@@ -388,9 +388,9 @@ pendingCandidates.current = [];
 
 
 
-// Reset per-call ICE bookkeeping
-remoteDescSet.current = false;
-pendingCandidates.current = [];
+// // Reset per-call ICE bookkeeping
+// remoteDescSet.current = false;
+// pendingCandidates.current = [];
 //
 
 
