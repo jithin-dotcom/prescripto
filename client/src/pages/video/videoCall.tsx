@@ -288,8 +288,7 @@ navigate("/rate-doctor?rate=true", { replace: true });
           credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
         },
       ],
-       iceTransportPolicy: "relay", // <-- REMOVE once stable
-       bundlePolicy: "max-bundle", 
+      
     });
     peerConnection.current = pc;
 
@@ -370,9 +369,8 @@ pendingCandidates.current = [];
           username: "000000002071209180",
           credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
         },
-      ],
-       iceTransportPolicy: "relay", // <-- REMOVE once stable
-       bundlePolicy: "max-bundle", 
+      ]
+        
     });
     peerConnection.current = pc;
 
