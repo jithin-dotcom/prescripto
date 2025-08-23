@@ -40,11 +40,11 @@ router.get("/ice-servers", async (req, res) => {
 
     response.on("data", (chunk) => (data += chunk));
     response.on("end", () => {
-      console.log("Raw Xirsys response:", data);
+     
 
       try {
         const parsed = JSON.parse(data);
-        console.log("Parsed Xirsys response:", parsed);
+        
 
         const xirsysServers = parsed.v?.iceServers
           ? (Array.isArray(parsed.v.iceServers) ? parsed.v.iceServers : [parsed.v.iceServers])
@@ -62,7 +62,7 @@ router.get("/ice-servers", async (req, res) => {
           }
         });
 
-        console.log("Returning ICE servers:", iceServers);
+        // console.log("Returning ICE servers:", iceServers);
         res.json(iceServers);
       } catch (err) {
         console.error("Failed to parse Xirsys response, returning fallback STUNs:", err);

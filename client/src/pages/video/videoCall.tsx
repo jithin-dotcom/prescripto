@@ -218,7 +218,7 @@ navigate("/rate-doctor?rate=true", { replace: true });
     };
   }, [appointmentId, myId, doctorId, patientId, navigate, isDoctor]);
 
-  const startCall = async () => {
+const startCall = async () => {
     if (!peerId || !myId || !appointmentId) return toast.error("Missing required information.");
     setCallAccepted(false);
     setCallEnded(false);
@@ -227,14 +227,14 @@ navigate("/rate-doctor?rate=true", { replace: true });
 
 
 const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
-console.log("iceServers : ",iceServers);
+// console.log("iceServers : ",iceServers);
 const pc = new RTCPeerConnection({iceServers});
 
 peerConnection.current = pc;
 
 
 pc.oniceconnectionstatechange = () => {
-  console.log("ICE state:", pc.iceConnectionState);
+  // console.log("ICE state:", pc.iceConnectionState);
   if (pc.iceConnectionState === "failed") {
     console.warn("ICE failed, restarting…");
     pc.restartIce?.();
@@ -286,7 +286,7 @@ pc.oniceconnectionstatechange = () => {
 
    
 const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
-console.log("iceservers: ",iceServers);
+// console.log("iceservers: ",iceServers);
 const pc = new RTCPeerConnection({iceServers});
 
 peerConnection.current = pc;
@@ -294,7 +294,7 @@ peerConnection.current = pc;
 
     
 pc.oniceconnectionstatechange = () => {
-  console.log("ICE state:", pc.iceConnectionState);
+  // console.log("ICE state:", pc.iceConnectionState);
   if (pc.iceConnectionState === "failed") {
     console.warn("ICE failed, restarting…");
     pc.restartIce?.();
