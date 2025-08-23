@@ -52,10 +52,7 @@ export default function MyVideoCall() {
   const durationInterval = useRef<NodeJS.Timeout  | undefined>(undefined);
   const controlsTimeout = useRef<NodeJS.Timeout  | undefined>(undefined);
 
-  // const pendingCandidates = useRef<RTCIceCandidateInit[]>([]);
-  // const remoteDescSet = useRef(false);
-
-
+  
   
   useEffect(() => {
     if (showControls && callAccepted) {
@@ -166,25 +163,6 @@ export default function MyVideoCall() {
       if (peerConnection.current) {
         await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
       }
-
-
-//       if (peerConnection.current) {
-//   await peerConnection.current.setRemoteDescription(new RTCSessionDescription(signal));
-//   remoteDescSet.current = true;
-
-//   // flush queued candidates
-//   for (const c of pendingCandidates.current) {
-//     try {
-//       await peerConnection.current.addIceCandidate(new RTCIceCandidate(c));
-//     } catch (err) {
-//       console.error("flush addIceCandidate failed", err);
-//     }
-//   }
-//   pendingCandidates.current = [];
-// }
-
-
-
     });
     
     socket.on("end-call", () => {
@@ -223,29 +201,6 @@ navigate("/rate-doctor?rate=true", { replace: true });
     });
 
 
-
-
-//     socket.on("ice-candidate", async ({ candidate }) => {
-//   if (!candidate || !peerConnection.current) return;
-
-//   if (!remoteDescSet.current) {
-//     pendingCandidates.current.push(candidate);
-//     console.log("[ICE] queued candidate", candidate);
-//     return;
-//   }
-
-//   try {
-//     await peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
-//     console.log("[ICE] added candidate", candidate);
-//   } catch (err) {
-//     console.error("[ICE] addIceCandidate failed", err);
-//   }
-// });
-
-
-
-
-
     socket.on("error", (err) => {
       console.error("Socket error:", err);
       const errorMessage = typeof err === "string" ? err : err?.message || "An unknown error occurred";
@@ -270,103 +225,21 @@ navigate("/rate-doctor?rate=true", { replace: true });
     setIsCalling(true);
     setConnectionStatus("calling");
 
-    // const pc = new RTCPeerConnection({ iceServers: 
-    //   [
-    //     { urls: "stun:stun.l.google.com:19302" },
-    //     {
-    //       // urls: "turn:relay1.expressturn.com:3480",
-    //       urls: [
-
-    //         "turn:relay1.expressturn.com:80?transport=udp",
-    //         "turn:relay1.expressturn.com:3480?transport=udp",
-    //         "turn:relay1.expressturn.com:80?transport=tcp",
-    //         "turn:relay1.expressturn.com:3480?transport=tcp",
-    //         "turns:relay1.expressturn.com:443?transport=tcp",
-    //         "turns:relay1.expressturn.com:5349?transport=tcp",
-
-    //       ],
-    //       username: "000000002071209180",
-    //       credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
-    //     },
-    //   ],
-      
-    // });
-    // peerConnection.current = pc;
-
-
-
-
-
-
-//     const pc = new RTCPeerConnection({
-//   iceServers: [
-    
-//     // { urls: "stun:bn-turn1.xirsys.com" },
-//     { urls: "stun:stun.l.google.com:19302" },
-
-//     {
-//       username: "bB3uz67g3u6rI6fv9syY33jvvdoS4PXBJwkIwml2pEg3hgst4kzjMTogXx9owVQSAAAAAGiofqJKaXRoaW4=",
-//       credential: "52b2118c-7f64-11f0-83c6-0242ac140004",
-//       urls: [
-//         "turn:bn-turn1.xirsys.com:80?transport=udp",
-//         "turn:bn-turn1.xirsys.com:3478?transport=udp",
-//         "turn:bn-turn1.xirsys.com:80?transport=tcp",
-//         "turn:bn-turn1.xirsys.com:3478?transport=tcp",
-//         "turns:bn-turn1.xirsys.com:443?transport=tcp",
-//         "turns:bn-turn1.xirsys.com:5349?transport=tcp"
-//       ]
-//     }
-//   ]
-// });
-
-// peerConnection.current = pc;
-
-
-
 
 const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
 console.log("iceServers : ",iceServers);
 const pc = new RTCPeerConnection({iceServers});
 
-
-setInterval(async () => {
-  if (!pc) return;
-
-  const stats = await pc.getStats();
-
-  stats.forEach(report => {
-    if (report.type === "candidate-pair" && report.state === "succeeded") {
-      const localCandidateId = report.localCandidateId;
-      const remoteCandidateId = report.remoteCandidateId;
-
-      const localCandidate = stats.get(localCandidateId);
-      const remoteCandidate = stats.get(remoteCandidateId);
-
-      if (localCandidate && remoteCandidate) {
-        console.log("Local candidate type:", localCandidate.candidateType);
-        console.log("Remote candidate type:", remoteCandidate.candidateType);
-      }
-    }
-  });
-}, 3000)
-
 peerConnection.current = pc;
 
 
-
-//new added debugger
-    pc.oniceconnectionstatechange = () => {
+pc.oniceconnectionstatechange = () => {
   console.log("ICE state:", pc.iceConnectionState);
   if (pc.iceConnectionState === "failed") {
     console.warn("ICE failed, restarting…");
     pc.restartIce?.();
   }
 };
-
-
-// Reset per-call ICE bookkeeping
-// remoteDescSet.current = false;
-// pendingCandidates.current = [];
 
 
     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
@@ -411,88 +284,16 @@ peerConnection.current = pc;
     setShowIncomingPopup(false);
     setConnectionStatus("connecting");
 
-    // const pc = new RTCPeerConnection({ iceServers: 
-    //   [
-    //     { urls: "stun:stun.l.google.com:19302" },
-    //     {
-    //       // urls: "turn:relay1.expressturn.com:3480",
-    //       urls: [
-
-    //         "turn:relay1.expressturn.com:80?transport=udp",
-    //         "turn:relay1.expressturn.com:3480?transport=udp",
-    //         "turn:relay1.expressturn.com:80?transport=tcp",
-    //         "turn:relay1.expressturn.com:3480?transport=tcp",
-    //         "turns:relay1.expressturn.com:443?transport=tcp",
-    //         "turns:relay1.expressturn.com:5349?transport=tcp",
-
-    //       ],
-    //       username: "000000002071209180",
-    //       credential: "FyaAN50wngzJA/89B3S7uOdBwX8=",
-    //     },
-    //   ]
-        
-    // });
-    // peerConnection.current = pc;
-
-
-
-//     const pc = new RTCPeerConnection({
-//   iceServers: [
    
-
-//     { urls: "stun:stun.l.google.com:19302" },
-
-//     {
-//       username: "bB3uz67g3u6rI6fv9syY33jvvdoS4PXBJwkIwml2pEg3hgst4kzjMTogXx9owVQSAAAAAGiofqJKaXRoaW4=",
-//       credential: "52b2118c-7f64-11f0-83c6-0242ac140004",
-//       urls: [
-//         "turn:bn-turn1.xirsys.com:80?transport=udp",
-//         "turn:bn-turn1.xirsys.com:3478?transport=udp",
-//         "turn:bn-turn1.xirsys.com:80?transport=tcp",
-//         "turn:bn-turn1.xirsys.com:3478?transport=tcp",
-//         "turns:bn-turn1.xirsys.com:443?transport=tcp",
-//         "turns:bn-turn1.xirsys.com:5349?transport=tcp"
-//       ]
-//     }
-//   ]
-// });
-
-// peerConnection.current = pc;
-
-
-
-
 const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
 console.log("iceservers: ",iceServers);
 const pc = new RTCPeerConnection({iceServers});
 
-
-setInterval(async () => {
-  if (!pc) return;
-
-  const stats = await pc.getStats();
-
-  stats.forEach(report => {
-    if (report.type === "candidate-pair" && report.state === "succeeded") {
-      const localCandidateId = report.localCandidateId;
-      const remoteCandidateId = report.remoteCandidateId;
-
-      const localCandidate = stats.get(localCandidateId);
-      const remoteCandidate = stats.get(remoteCandidateId);
-
-      if (localCandidate && remoteCandidate) {
-        console.log("Local candidate type:", localCandidate.candidateType);
-        console.log("Remote candidate type:", remoteCandidate.candidateType);
-      }
-    }
-  });
-}, 3000)
-
 peerConnection.current = pc;
 
 
-    //new added debugger
-         pc.oniceconnectionstatechange = () => {
+    
+pc.oniceconnectionstatechange = () => {
   console.log("ICE state:", pc.iceConnectionState);
   if (pc.iceConnectionState === "failed") {
     console.warn("ICE failed, restarting…");
@@ -500,12 +301,6 @@ peerConnection.current = pc;
   }
 };
 
-
-
-// // Reset per-call ICE bookkeeping
-// remoteDescSet.current = false;
-// pendingCandidates.current = [];
-//
 
 
     stream?.getTracks().forEach((track) => pc.addTrack(track, stream!));
@@ -526,25 +321,6 @@ peerConnection.current = pc;
     if (incomingCall?.signal) {
       await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
     }
-
-
-
-
-//     if (incomingCall?.signal) {
-//   await pc.setRemoteDescription(new RTCSessionDescription(incomingCall.signal));
-//   remoteDescSet.current = true;
-
-//   for (const c of pendingCandidates.current) {
-//     try {
-//       await pc.addIceCandidate(new RTCIceCandidate(c));
-//     } catch (err) {
-//       console.error("flush addIceCandidate failed", err);
-//     }
-//   }
-//   pendingCandidates.current = [];
-// }
-
-
 
 
     const answer = await pc.createAnswer();
@@ -605,12 +381,6 @@ navigate("/rate-doctor?rate=true", { replace: true });
     setConnectionStatus("ended");
     peerConnection.current?.close();
   };
-
-
-
-
-
-
 
 
   return (

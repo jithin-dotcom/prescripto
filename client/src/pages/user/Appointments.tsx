@@ -335,14 +335,14 @@ const Appointment: React.FC = () => {
         )}
 
         <ConfirmModal
-  isOpen={showConfirmModal}
-  onClose={() => setShowConfirmModal(false)}
-  onConfirm={handleBooking}
-  title="Confirm Appointment Booking"
-  description={`Do you want to book an appointment with Dr. ${doctor?.name} at ${activeTime} on ${slots[activeSlotIndex]?.date}?`}
-  confirmText="Book"
-  cancelText="Cancel"
-/>
+         isOpen={showConfirmModal}
+         onClose={() => setShowConfirmModal(false)}
+         onConfirm={handleBooking}
+         title="Confirm Appointment Booking"
+         description={`Do you want to book an appointment with Dr. ${doctor?.name} at ${activeTime} on ${slots[activeSlotIndex]?.date}?`}
+         confirmText="Book"
+         cancelText="Cancel"
+        />
 
       </main>
     </div>
