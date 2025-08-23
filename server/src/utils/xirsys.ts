@@ -551,8 +551,7 @@ router.get("/ice-servers", async (req, res) => {
 
   const options = {
     host: "global.xirsys.net",
-    path: "/_turn/prescripto", // your Xirsys channel name
-    method: "PUT",
+    path: "/_turn/prescripto", 
     headers: {
       "Authorization": "Basic " + Buffer.from(xirsysCred).toString("base64"),
       "Content-Type": "application/json",

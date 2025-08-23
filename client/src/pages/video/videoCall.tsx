@@ -328,6 +328,28 @@ const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
 console.log("iceServers : ",iceServers);
 const pc = new RTCPeerConnection({iceServers});
 
+
+setInterval(async () => {
+  if (!pc) return;
+
+  const stats = await pc.getStats();
+
+  stats.forEach(report => {
+    if (report.type === "candidate-pair" && report.state === "succeeded") {
+      const localCandidateId = report.localCandidateId;
+      const remoteCandidateId = report.remoteCandidateId;
+
+      const localCandidate = stats.get(localCandidateId);
+      const remoteCandidate = stats.get(remoteCandidateId);
+
+      if (localCandidate && remoteCandidate) {
+        console.log("Local candidate type:", localCandidate.candidateType);
+        console.log("Remote candidate type:", remoteCandidate.candidateType);
+      }
+    }
+  });
+}, 3000)
+
 peerConnection.current = pc;
 
 
@@ -443,6 +465,28 @@ peerConnection.current = pc;
 const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
 console.log("iceservers: ",iceServers);
 const pc = new RTCPeerConnection({iceServers});
+
+
+setInterval(async () => {
+  if (!pc) return;
+
+  const stats = await pc.getStats();
+
+  stats.forEach(report => {
+    if (report.type === "candidate-pair" && report.state === "succeeded") {
+      const localCandidateId = report.localCandidateId;
+      const remoteCandidateId = report.remoteCandidateId;
+
+      const localCandidate = stats.get(localCandidateId);
+      const remoteCandidate = stats.get(remoteCandidateId);
+
+      if (localCandidate && remoteCandidate) {
+        console.log("Local candidate type:", localCandidate.candidateType);
+        console.log("Remote candidate type:", remoteCandidate.candidateType);
+      }
+    }
+  });
+}, 3000)
 
 peerConnection.current = pc;
 
