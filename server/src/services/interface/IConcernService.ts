@@ -1,6 +1,6 @@
 
 
-import { IConcern, IConcernDocPopulated } from "../../models/concern/IConcern";
+import { IConcern } from "../../models/concern/IConcern";
 
 export interface IConcernService {
     createConcern(data: Partial<IConcern>): Promise<{success: true}>;

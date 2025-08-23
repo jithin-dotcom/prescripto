@@ -1,7 +1,7 @@
 
 
 
-import { IDoctorRating } from "../../models/DoctorRating/IDoctorRating";
+
 import { IDoctorRatingRepository } from "../../repositories/interface/IDoctorRatingRepository";
 import mongoose from "mongoose";
 import { IData, IDoctorRatingService, IRatingByDoctorPaginated } from "../interface/IDoctorRatingService";

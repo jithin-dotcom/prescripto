@@ -2,7 +2,7 @@ import { IAppointment } from "../../models/appointment/IAppointment";
 import { IAppointmentRepository } from "../../repositories/interface/IAppointmentRepository";
 import { IAppointmentService, IAppointmentResponse, IDoctorUser, IAppointmentFullResponse, ICreateAppointment, ICreateAppointmentResponse} from "../interface/IAppointmentService";
 import mongoose from "mongoose";
-import { IAvailabilitySlot, ITimeBlock } from "../../models/doctor/IDoctorProfile";
+import { IAvailabilitySlot } from "../../models/doctor/IDoctorProfile";
 
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 import { IAppointmentWithUserResponse, IDoctorInfo } from "../interface/IAppointmentService";

@@ -6,7 +6,7 @@ import { IAppointmentRepository } from "../../repositories/interface/IAppointmen
 import { IWallet } from "../../models/wallet/IWallet";
 import { IWalletRepository } from "../../repositories/interface/IWalletRepository";
 import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
-import mongoose from "mongoose";
+
 import { ICallLogService, IWalletHistoryDTO } from "../interface/ICallLogService";
 import { IWalletHistory } from "../../models/walletHistory/IWalletHistory";
 import { mapWalletHistoryToDTO } from "../../utils/mapper/callLogService.mapper";

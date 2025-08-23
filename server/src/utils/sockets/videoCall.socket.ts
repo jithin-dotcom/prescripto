@@ -1,7 +1,7 @@
 
 
 
-import { Server, Socket } from "socket.io";
+import { Socket } from "socket.io";
 import { CallLogService } from "../../services/implementation/callLog.service";
 import { CallLogRepository } from "../../repositories/implementation/callLog.repository";
 import { AppointmentRepository } from "../../repositories/implementation/appointment.repositories";

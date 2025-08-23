@@ -1,5 +1,5 @@
 
-import { IDoctorProfile, IDoctorProfileDashboard } from "../../models/doctor/IDoctorProfile";
+import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 import { IDoctorProfileService } from "../interface/IDoctorService";
 import { mapDoctorProfiles } from "../../utils/mapper/doctorProfileServices";
