@@ -10,7 +10,7 @@ import {
 import { io, Socket } from "socket.io-client";
 import { useAuthStore } from "../../store/authStore";
 import { toast } from "react-toastify";
-// import axiosInstance from "../../utils/axios";
+import axiosInstance from "../../utils/axios";
 
 type SignalData = RTCSessionDescriptionInit;
 
@@ -298,37 +298,37 @@ navigate("/rate-doctor?rate=true", { replace: true });
 
 
 
-    const pc = new RTCPeerConnection({
-  iceServers: [
+//     const pc = new RTCPeerConnection({
+//   iceServers: [
     
-    // { urls: "stun:bn-turn1.xirsys.com" },
-    { urls: "stun:stun.l.google.com:19302" },
+//     // { urls: "stun:bn-turn1.xirsys.com" },
+//     { urls: "stun:stun.l.google.com:19302" },
 
-    {
-      username: "bB3uz67g3u6rI6fv9syY33jvvdoS4PXBJwkIwml2pEg3hgst4kzjMTogXx9owVQSAAAAAGiofqJKaXRoaW4=",
-      credential: "52b2118c-7f64-11f0-83c6-0242ac140004",
-      urls: [
-        "turn:bn-turn1.xirsys.com:80?transport=udp",
-        "turn:bn-turn1.xirsys.com:3478?transport=udp",
-        "turn:bn-turn1.xirsys.com:80?transport=tcp",
-        "turn:bn-turn1.xirsys.com:3478?transport=tcp",
-        "turns:bn-turn1.xirsys.com:443?transport=tcp",
-        "turns:bn-turn1.xirsys.com:5349?transport=tcp"
-      ]
-    }
-  ]
-});
-
-peerConnection.current = pc;
-
-
-
-
-// const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
-// console.log("iceServers : ",iceServers);
-// const pc = new RTCPeerConnection({iceServers});
+//     {
+//       username: "bB3uz67g3u6rI6fv9syY33jvvdoS4PXBJwkIwml2pEg3hgst4kzjMTogXx9owVQSAAAAAGiofqJKaXRoaW4=",
+//       credential: "52b2118c-7f64-11f0-83c6-0242ac140004",
+//       urls: [
+//         "turn:bn-turn1.xirsys.com:80?transport=udp",
+//         "turn:bn-turn1.xirsys.com:3478?transport=udp",
+//         "turn:bn-turn1.xirsys.com:80?transport=tcp",
+//         "turn:bn-turn1.xirsys.com:3478?transport=tcp",
+//         "turns:bn-turn1.xirsys.com:443?transport=tcp",
+//         "turns:bn-turn1.xirsys.com:5349?transport=tcp"
+//       ]
+//     }
+//   ]
+// });
 
 // peerConnection.current = pc;
+
+
+
+
+const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
+console.log("iceServers : ",iceServers);
+const pc = new RTCPeerConnection({iceServers});
+
+peerConnection.current = pc;
 
 
 
@@ -414,37 +414,37 @@ peerConnection.current = pc;
 
 
 
-    const pc = new RTCPeerConnection({
-  iceServers: [
+//     const pc = new RTCPeerConnection({
+//   iceServers: [
    
-    // { urls: "stun:bn-turn1.xirsys.com" },
-    { urls: "stun:stun.l.google.com:19302" },
+//     // { urls: "stun:bn-turn1.xirsys.com" },
+//     { urls: "stun:stun.l.google.com:19302" },
 
-    {
-      username: "bB3uz67g3u6rI6fv9syY33jvvdoS4PXBJwkIwml2pEg3hgst4kzjMTogXx9owVQSAAAAAGiofqJKaXRoaW4=",
-      credential: "52b2118c-7f64-11f0-83c6-0242ac140004",
-      urls: [
-        "turn:bn-turn1.xirsys.com:80?transport=udp",
-        "turn:bn-turn1.xirsys.com:3478?transport=udp",
-        "turn:bn-turn1.xirsys.com:80?transport=tcp",
-        "turn:bn-turn1.xirsys.com:3478?transport=tcp",
-        "turns:bn-turn1.xirsys.com:443?transport=tcp",
-        "turns:bn-turn1.xirsys.com:5349?transport=tcp"
-      ]
-    }
-  ]
-});
-
-peerConnection.current = pc;
-
-
-
-
-// const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
-// console.log("iceservers: ",iceServers);
-// const pc = new RTCPeerConnection({iceServers});
+//     {
+//       username: "bB3uz67g3u6rI6fv9syY33jvvdoS4PXBJwkIwml2pEg3hgst4kzjMTogXx9owVQSAAAAAGiofqJKaXRoaW4=",
+//       credential: "52b2118c-7f64-11f0-83c6-0242ac140004",
+//       urls: [
+//         "turn:bn-turn1.xirsys.com:80?transport=udp",
+//         "turn:bn-turn1.xirsys.com:3478?transport=udp",
+//         "turn:bn-turn1.xirsys.com:80?transport=tcp",
+//         "turn:bn-turn1.xirsys.com:3478?transport=tcp",
+//         "turns:bn-turn1.xirsys.com:443?transport=tcp",
+//         "turns:bn-turn1.xirsys.com:5349?transport=tcp"
+//       ]
+//     }
+//   ]
+// });
 
 // peerConnection.current = pc;
+
+
+
+
+const  iceServers  = (await axiosInstance.get("/ice-servers")).data;
+console.log("iceservers: ",iceServers);
+const pc = new RTCPeerConnection({iceServers});
+
+peerConnection.current = pc;
 
 
     //new added debugger
