@@ -348,6 +348,183 @@
 
 
 
+// import express from "express";
+// import https from "https";
+
+// const router = express.Router();
+
+// router.get("/ice-servers", async (req, res) => {
+//   const bodyString = JSON.stringify({ format: "urls" });
+//   const xirsysCred = process.env.XIRSYS_CRED;
+
+//   // Multiple Google STUN servers as fallback
+//   const fallbackIceServers = [
+//     { urls: "stun:stun.l.google.com:19302" },
+//     { urls: "stun:stun1.l.google.com:19302" },
+//     { urls: "stun:stun2.l.google.com:19302" },
+//     { urls: "stun:stun3.l.google.com:19302" },
+//     { urls: "stun:stun4.l.google.com:19302" },
+//   ];
+
+//   if (!xirsysCred) {
+//     console.warn("XIRSYS_CRED not set, returning fallback STUNs only");
+//     res.json(fallbackIceServers);
+//     return;
+//   }
+
+//   const options = {
+//     host: "global.xirsys.net",
+//     path: "/_turn/prescripto", // replace with your channel name
+//     method: "PUT",
+//     headers: {
+//       "Authorization": "Basic " + Buffer.from(xirsysCred).toString("base64"),
+//       "Content-Type": "application/json",
+//       "Content-Length": Buffer.byteLength(bodyString),
+//     },
+//   };
+
+//   const request = https.request(options, (response) => {
+//     let data = "";
+
+//     response.on("data", (chunk) => (data += chunk));
+//     response.on("end", () => {
+//       console.log("Raw Xirsys response:", data);
+
+//       try {
+//         const parsed = JSON.parse(data);
+//         console.log("Parsed Xirsys response:", parsed);
+
+//         // Handle single or multiple ICE servers
+//         const xirsysIce = parsed.v?.iceServers
+//           ? (Array.isArray(parsed.v.iceServers) ? parsed.v.iceServers : [parsed.v.iceServers])
+//               .map((server: any) => ({
+//                 urls: server.urls,
+//                 username: server.username || undefined,
+//                 credential: server.credential || undefined,
+//               }))
+//           : [];
+
+//         const iceServers = [...fallbackIceServers, ...xirsysIce];
+//         console.log("Returning ICE servers:", iceServers);
+//         res.json(iceServers);
+//       } catch (err) {
+//         console.error("Failed to parse Xirsys response, returning fallback STUNs:", err);
+//         res.json(fallbackIceServers);
+//       }
+//     });
+//   });
+
+//   request.on("error", (err) => {
+//     console.error("Xirsys request error, returning fallback STUNs:", err);
+//     res.json(fallbackIceServers);
+//   });
+
+//   request.write(bodyString);
+//   request.end();
+// });
+
+// export default router;
+
+
+
+
+
+
+
+
+
+
+// import express from "express";
+// import https from "https";
+
+// const router = express.Router();
+
+// router.get("/ice-servers", async (req, res) => {
+//   const bodyString = JSON.stringify({ format: "urls" });
+//   const xirsysCred = process.env.XIRSYS_CRED;
+
+//   // Google STUN fallback
+//   const iceServers: any[] = [
+//     { urls: "stun:stun.l.google.com:19302" },
+//     { urls: "stun:stun1.l.google.com:19302" },
+//     { urls: "stun:stun2.l.google.com:19302" },
+//     { urls: "stun:stun3.l.google.com:19302" },
+//     { urls: "stun:stun4.l.google.com:19302" }
+//   ];
+
+//   if (!xirsysCred) {
+//     console.warn("XIRSYS_CRED not set, returning fallback STUNs only");
+//     res.json(iceServers);
+//     return;
+//   }
+
+//   const options = {
+//     host: "global.xirsys.net",
+//     path: "/_turn/prescripto", // your Xirsys channel name
+//     method: "PUT",
+//     headers: {
+//       "Authorization": "Basic " + Buffer.from(xirsysCred).toString("base64"),
+//       "Content-Type": "application/json",
+//       "Content-Length": Buffer.byteLength(bodyString),
+//     },
+//   };
+
+//   const request = https.request(options, (response) => {
+//     let data = "";
+
+//     response.on("data", (chunk) => (data += chunk));
+//     response.on("end", () => {
+//       console.log("Raw Xirsys response:", data);
+
+//       try {
+//         const parsed = JSON.parse(data);
+//         console.log("Parsed Xirsys response:", parsed);
+
+//         const xirsysServers = parsed.v?.iceServers
+//           ? (Array.isArray(parsed.v.iceServers) ? parsed.v.iceServers : [parsed.v.iceServers])
+//           : [];
+
+//         xirsysServers.forEach((server: any) => {
+//           // Filter only TURN URLs for TURN object
+//           const turnUrls = server.urls.filter((url: string) => url.startsWith("turn:") || url.startsWith("turns:"));
+//           if (turnUrls.length > 0) {
+//             iceServers.push({
+//               username: server.username,
+//               credential: server.credential,
+//               urls: turnUrls
+//             });
+//           }
+//         });
+
+//         console.log("Returning ICE servers:", iceServers);
+//         res.json(iceServers);
+//       } catch (err) {
+//         console.error("Failed to parse Xirsys response, returning fallback STUNs:", err);
+//         res.json(iceServers);
+//       }
+//     });
+//   });
+
+//   request.on("error", (err) => {
+//     console.error("Xirsys request error, returning fallback STUNs:", err);
+//     res.json(iceServers);
+//   });
+
+//   request.write(bodyString);
+//   request.end();
+// });
+
+// export default router;
+
+
+
+
+
+
+
+
+
+
 import express from "express";
 import https from "https";
 
@@ -357,24 +534,24 @@ router.get("/ice-servers", async (req, res) => {
   const bodyString = JSON.stringify({ format: "urls" });
   const xirsysCred = process.env.XIRSYS_CRED;
 
-  // Multiple Google STUN servers as fallback
-  const fallbackIceServers = [
+  // Google STUN fallback
+  const iceServers: any[] = [
     { urls: "stun:stun.l.google.com:19302" },
     { urls: "stun:stun1.l.google.com:19302" },
     { urls: "stun:stun2.l.google.com:19302" },
     { urls: "stun:stun3.l.google.com:19302" },
-    { urls: "stun:stun4.l.google.com:19302" },
+    { urls: "stun:stun4.l.google.com:19302" }
   ];
 
   if (!xirsysCred) {
     console.warn("XIRSYS_CRED not set, returning fallback STUNs only");
-    res.json(fallbackIceServers);
+    res.json(iceServers);
     return;
   }
 
   const options = {
     host: "global.xirsys.net",
-    path: "/_turn/prescripto", // replace with your channel name
+    path: "/_turn/prescripto", // your Xirsys channel name
     method: "PUT",
     headers: {
       "Authorization": "Basic " + Buffer.from(xirsysCred).toString("base64"),
@@ -394,29 +571,34 @@ router.get("/ice-servers", async (req, res) => {
         const parsed = JSON.parse(data);
         console.log("Parsed Xirsys response:", parsed);
 
-        // Handle single or multiple ICE servers
-        const xirsysIce = parsed.v?.iceServers
+        const xirsysServers = parsed.v?.iceServers
           ? (Array.isArray(parsed.v.iceServers) ? parsed.v.iceServers : [parsed.v.iceServers])
-              .map((server: any) => ({
-                urls: server.urls,
-                username: server.username || undefined,
-                credential: server.credential || undefined,
-              }))
           : [];
 
-        const iceServers = [...fallbackIceServers, ...xirsysIce];
+        xirsysServers.forEach((server: any) => {
+          // Filter only TURN URLs for TURN object
+          const turnUrls = server.urls.filter((url: string) => url.startsWith("turn:") || url.startsWith("turns:"));
+          if (turnUrls.length > 0) {
+            iceServers.push({
+              username: server.username,
+              credential: server.credential,
+              urls: turnUrls
+            });
+          }
+        });
+
         console.log("Returning ICE servers:", iceServers);
         res.json(iceServers);
       } catch (err) {
         console.error("Failed to parse Xirsys response, returning fallback STUNs:", err);
-        res.json(fallbackIceServers);
+        res.json(iceServers);
       }
     });
   });
 
   request.on("error", (err) => {
     console.error("Xirsys request error, returning fallback STUNs:", err);
-    res.json(fallbackIceServers);
+    res.json(iceServers);
   });
 
   request.write(bodyString);

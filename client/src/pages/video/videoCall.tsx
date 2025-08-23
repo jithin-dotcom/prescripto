@@ -417,7 +417,7 @@ peerConnection.current = pc;
 //     const pc = new RTCPeerConnection({
 //   iceServers: [
    
-//     // { urls: "stun:bn-turn1.xirsys.com" },
+
 //     { urls: "stun:stun.l.google.com:19302" },
 
 //     {
