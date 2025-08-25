@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../utils/axios';
+import Navbar from '../../components/Navbar';
 
 export const RateDoctor = () => {
   const location = useLocation();
@@ -71,6 +72,8 @@ export const RateDoctor = () => {
   const isOpen = new URLSearchParams(location.search).get('rate') === 'true';
 
   return (
+   <div className="min-h-screen flex flex-col bg-gray-50">
+    <Navbar />
     <AnimatePresence>
       {isOpen && (
         <motion.div
@@ -151,6 +154,7 @@ export const RateDoctor = () => {
         </motion.div>
       )}
     </AnimatePresence>
+   </div> 
   );
 };
 

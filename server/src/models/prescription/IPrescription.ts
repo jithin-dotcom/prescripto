@@ -134,3 +134,102 @@ export interface IPrescriptionDocPopulated {
   createdAt: Date;
   updatedAt: Date;
 }
+
+
+
+
+
+
+
+
+export interface IPatientHistoryPopulated {
+  _id: mongoose.Types.ObjectId ;
+  appointmentId: {
+    _id: mongoose.Types.ObjectId;
+    appointmentNo: number;
+    doctorId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
+    day: string;
+    time: string;
+    status: string;
+    payment: string;
+    fee: number;
+    createdAt: Date;
+    updatedAt: Date;
+    __v: number;
+  };
+  doctorId:  mongoose.Types.ObjectId;
+    
+  patientId: {
+    _id: mongoose.Types.ObjectId;
+    name: string;
+    email: string;
+    role: string;
+    isVerified: boolean;
+    isBlocked: boolean;
+    authProvider: string;
+    createdAt: Date;
+    updatedAt: Date;
+    photo?: string;
+    __v: number;
+    password?: string;
+  };
+  diagnosis: string;
+  followUpDate?: Date;
+  notes?: string;
+  medicines: {
+    _id: mongoose.Types.ObjectId;
+    name: string;
+    dosage: string;
+    frequency: string;
+    duration: string;
+    instructions: string;
+  }[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+
+
+
+export interface IPatientHistoryClean {
+
+    _id: string ;
+  appointmentId: {
+    _id: string;
+    appointmentNo: number;
+    doctorId: string;
+    userId: string;
+    day: string;
+    time: string;
+    status: string;
+    payment: string;
+    fee: number;
+    createdAt: string;
+   
+  };
+  doctorId: string;
+    
+  patientId: {
+    _id: string;
+    name: string;
+    email: string;
+    isVerified: boolean;
+    isBlocked: boolean;
+    authProvider: string;
+    createdAt: string;
+    photo?: string; 
+  };
+  diagnosis: string;
+  followUpDate?: string;
+  notes?: string;
+  medicines: {
+    _id: string;
+    name: string;
+    dosage: string;
+    frequency: string;
+    duration: string;
+    instructions: string;
+  }[];
+  createdAt: string;
+}

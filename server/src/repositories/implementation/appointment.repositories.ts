@@ -90,4 +90,14 @@ export class AppointmentRepository extends BaseRepository<IAppointment> implemen
   return res.modifiedCount > 0;
 }
 
+
+async findAppointmentById(appointmentId: string): Promise<IAppointment | null> {
+  return await this.model.findById(appointmentId).populate("userId");
+}
+
+// async findAppointmentByUserId(appointmentId: string) : Promise<IAppointment | null> {
+//   return await this.model.findById(appointmentId).populate("doctorId");
+// }
+
+
 }

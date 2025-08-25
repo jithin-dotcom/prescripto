@@ -27,4 +27,6 @@ export interface IAppointmentRepository extends IBaseRepository<IAppointment>{
 
      updatePaymentStatus(appointmentId: string, status: "paid" | "not paid", transactionId: mongoose.Types.ObjectId): Promise<void>;
      cancelWithRefundIfPaid(id: string): Promise<boolean>;
+     findAppointmentById(appointmentId: string): Promise<IAppointment | null>;
+    //  findAppointmentByUserId(appointmentId: string) : Promise<IAppointment | null>;
 }

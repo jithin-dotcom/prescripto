@@ -357,8 +357,31 @@ pc.oniceconnectionstatechange = () => {
     });
     toast.success("Call completed successfully");
    
-   if (isDoctor) {
-    navigate("/doctor-appointments", { replace: true });
+//    if (isDoctor) {
+//     navigate("/doctor-appointments", { replace: true });
+//   } else {
+    
+//     sessionStorage.setItem(
+//   'ratingData',
+//   JSON.stringify({
+//     appointmentId,
+//     userId: patientId,
+//     doctorId,
+//   })
+// );
+
+// navigate("/rate-doctor?rate=true", { replace: true });
+// }
+
+
+// appointment.status === "completed"
+//                       ? navigate("/create-prescription", { state: { appointment } })
+//                       : toast.error("Consultation not Completed")
+
+
+ if (isDoctor) {
+    // navigate("/doctor-appointments", { replace: true });
+    navigate("/create-prescription", { state: { appointmentId } })
   } else {
     
     sessionStorage.setItem(
@@ -371,8 +394,9 @@ pc.oniceconnectionstatechange = () => {
 );
 
 navigate("/rate-doctor?rate=true", { replace: true });
-  }
-  };
+}
+
+};
 
   const handleRemoteEnd = () => {
     setCallAccepted(false);

@@ -606,5 +606,118 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
   }
 }
 
+async getAppointmentById(appointmentId: string, doctorId : string): Promise< IAppointmentWithUserResponse | null>{
+  
+   try {
+       
+    if(!appointmentId){
+       throw new Error("AppointmentId missing");
+     }
+     const appointment = await this._appointmentRepo.findAppointmentById(appointmentId);
+     if(!appointment){
+       throw new Error("Appointment not found");
+     }
+
+      let responses: IAppointmentWithUserResponse | null = null;
+
+      const user = appointment.userId as IPatientUser;
+
+      if (!user || !user._id){
+         throw new Error("User not found");
+      }
+
+      const patientProfile = await this._patientRepo.findOne({ patientId: user._id });
+      const doctorProfile = await this._doctorRepo.findOne({ doctorId });
+
+      if (!doctorProfile) throw new Error("Doctor profile missing");
+
+      responses = {
+        _id: (appointment._id as mongoose.Types.ObjectId).toString(),
+        doctorId: appointment.doctorId.toString(),
+        user: {
+          _id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          photo: user.photo,
+          isVerified: user.isVerified,
+          isBlocked: user.isBlocked,
+          dateOfBirth: patientProfile?.dateOfBirth,
+          gender: patientProfile?.gender,
+          houseName: patientProfile?.houseName,
+          city: patientProfile?.city,
+          state: patientProfile?.state,
+          country: patientProfile?.country,
+          pin: patientProfile?.pin,
+        },
+        fee: appointment.fee || doctorProfile.fee,
+        date: appointment.day,
+        time: appointment.time,
+        appointmentNo: appointment.appointmentNo || 0,
+        status: appointment.status,
+        payment: appointment.payment,
+        transactionId: appointment.transactionId?.toString(),
+      };
+     
+      return responses;
+
+    
+  } catch (error) {
+    console.error("Error in getAppointmentsByDoctor:", error);
+    throw new Error("Failed to fetch appointments for doctor");
+  }
+}
+
+
+
+
+
+
+// async getSingleAppointmentByUser(appointmentId : string): Promise<IAppointmentResponse | null> {
+//   try {
+   
+//     const appointment = await this._appointmentRepo.findAppointmentByUserId(appointmentId);
+
+//     let response: IAppointmentResponse | null = null;
+
+//     const doctorUser = appointment?.doctorId as IDoctorInfo;
+
+//     if (!doctorUser || !doctorUser._id){
+//        throw new Error("Doctor not found");
+//     }
+
+//     const profile = await this._doctorRepo.findOne({
+//       doctorId: doctorUser._id,
+//     });
+
+//     if (!profile){
+//        throw new Error("Doctor profile not found");
+//     }
+
+//     if(appointment){
+//        response = mapAppointmentToDTO(appointment, doctorUser, profile);
+//     }
+    
+//     return response;
+//     // responses.push(mapped)
+    
+
+ 
+
+//     // return {
+//     //   data: responses,
+//     //   totalDocs,
+//     //   totalPages: Math.ceil(totalDocs / limit),
+//     //   page,
+//     //   limit,
+//     // };
+//   } catch (error) {
+//     console.error("Error fetching user appointments:", error);
+//     throw new Error("Failed to fetch user appointments");
+//   }
+// }
+
+
+
+
 
 }

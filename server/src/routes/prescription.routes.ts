@@ -20,4 +20,5 @@ router.get("/get-prescription/:appointmentId", prescriptionController.getPrescri
 router.get("/get-editPrescription/:appointmentId", prescriptionController.getEditPrescription.bind(prescriptionController));
 router.post("/update-prescription/:appointmentId", prescriptionController.editPrescription.bind(prescriptionController));
 router.get("/download-prescription/:appointmentId", prescriptionController.downloadPrescription.bind(prescriptionController));
+router.get("/patient-history/:patientId", prescriptionController.getPatientHistory.bind(prescriptionController));
 export default router;

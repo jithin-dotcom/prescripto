@@ -160,4 +160,41 @@ async editPrescription(req: Request, res: Response, next: NextFunction): Promise
   }
 
 
+
+  // async getPatientHistory(req: Request, res: Response, next: NextFunction): Promise<void> {
+  //    try {
+  //       const { patientId } = req.params;
+  //       if(!patientId){
+  //          res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+  //          return;
+  //       }
+  //       const result = await this._prescriptionService.getPatientHistory(patientId);
+  //       console.log("result : ", result);
+  //       res.status(StatusCode.OK).json(result);
+  //    } catch (error) {
+  //       next(error);
+  //    }
+  // }
+
+
+   async getPatientHistory(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { patientId } = req.params;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+
+    if (!patientId) {
+      res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+      return;
+    }
+
+    const result = await this._prescriptionService.getPatientHistory(patientId, page, limit);
+    
+    res.status(StatusCode.OK).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+
 }

@@ -112,6 +112,7 @@ const EditDoctorProfile: React.FC = () => {
       if (!form.educationDetails.match(/^[A-Z\s]+$/) || !form.educationDetails?.trim()) throw new Error("Education uppercase only");
       if (!form.registrationNumber.match(/^[a-zA-Z0-9]+$/) || !form.registrationNumber?.trim()) throw new Error("Invalid Reg Number");
       if (!form.registrationYear.match(/^\d{4}$/) || !form.registrationYear) throw new Error("Invalid Reg Year");
+      if(form.slotDuration > 60) throw new Error("Slot duration cannot be greater than 1 Hrs");
 
       const experience = Number(form.yearOfExperience);
       if (isNaN(experience)) throw new Error("Invalid Experience");
@@ -121,6 +122,7 @@ const EditDoctorProfile: React.FC = () => {
 
       const convertedAvail: AvailabilitySlot[] = [];
       const seenDays = new Set<string>();
+      
 
       for (const slot of form.availability) {
         const { day, slots } = slot;
@@ -140,6 +142,12 @@ const EditDoctorProfile: React.FC = () => {
           const f24 = convertTo24Hour(block.from);
           const t24 = convertTo24Hour(block.to);
 
+          
+          if((timeStringToMinutes(t24) - timeStringToMinutes(f24) ) < form.slotDuration){
+             toast.error(`Time duration set on ${day} is less than slot duration`);
+             return;
+          }
+
           if (timeStringToMinutes(f24) >= timeStringToMinutes(t24)) {
             toast.error(`"From" time must be before "To" time on ${day}`);
             return;
@@ -147,6 +155,18 @@ const EditDoctorProfile: React.FC = () => {
 
           const key = `${f24}-${t24}`;
           if (seenBlocks.has(key)) throw new Error(`Duplicate block on ${day}`);
+
+          for (const existing of convertedBlocks) {
+            const existingFrom = timeStringToMinutes(existing.from);
+            const existingTo = timeStringToMinutes(existing.to);
+            const newFrom = timeStringToMinutes(f24);
+            const newTo = timeStringToMinutes(t24);
+
+            if (newFrom < existingTo && newTo > existingFrom) {
+              throw new Error(`Overlapping slot detected on ${day}: ${block.from} - ${block.to}`);
+            }
+          }
+
           seenBlocks.add(key);
           convertedBlocks.push({ from: f24, to: t24 });
         }
@@ -186,7 +206,9 @@ const EditDoctorProfile: React.FC = () => {
       toast.success("Doctor profile updated");
       navigate("/doctor-profile");
     } catch (err) {
-      console.log("error : ", err);
+      if(err instanceof Error){
+        toast.error(err.message || "Failed to update profile");
+      }
     }
   };
 

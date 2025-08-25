@@ -1,13 +1,13 @@
 
 
-import { IPrescription, IPrescriptionClean } from "../../models/prescription/IPrescription";
+import { IPatientHistoryClean, IPatientHistoryPopulated, IPrescription, IPrescriptionClean } from "../../models/prescription/IPrescription";
 import { IPrescriptionRepository } from "../../repositories/interface/IPrescriptionRepository";
 import mongoose from "mongoose";
 import { IPrescriptionService, IPrescriptionDownload } from "../interface/IPrescriptionService";
 import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
-import { mapPrescription } from "../../utils/mapper/prescriptionService.mapper";
+import { mapPatientHistoryDTO, mapPrescription } from "../../utils/mapper/prescriptionService.mapper";
 import axios from "axios";
 
 
@@ -206,6 +206,72 @@ async generatePrescriptionPDF(prescription: IPrescriptionDownload): Promise<Buff
     });
   }
 
+
+  // async getPatientHistory(patientId: string): Promise<(IPatientHistoryClean)[]> {
+  //   try {
+  //     console.log("patientId : ",patientId);
+  //      if(!patientId){
+  //         throw new Error("PatientId is missing");
+  //      }
+  //      const pId = new mongoose.Types.ObjectId(patientId);
+  //      const patientHistory = await this._prescriptionRepo.getPatientHistory(pId);
+  //      console.log("patientHistory : ",patientHistory);
+  //      let result = []
+  //      for(let history of patientHistory){
+  //        if(history){
+  //          result.push(mapPatientHistoryDTO(history));
+  //        }  
+  //      }
+  //      console.log("result services : ",result);
+  //      return result;
+  //   } catch (error) {
+  //      if(error instanceof Error){
+  //        throw error;
+  //      }else{
+  //        throw new Error("Failed to fetch Patient History");
+  //      }
+  //   }
+  // }
+
+
+
+
+  async getPatientHistory(
+  patientId: string,
+  page: number,
+  limit: number
+): Promise<{ data: IPatientHistoryClean[]; total: number; page: number; limit: number }> {
+  try {
+    
+    if (!patientId) {
+      throw new Error("PatientId is missing");
+    }
+
+    const pId = new mongoose.Types.ObjectId(patientId);
+
+    const { histories, total } = await this._prescriptionRepo.getPatientHistory(
+      pId,
+      page,
+      limit
+    );
+
+    const result: IPatientHistoryClean[] = [];
+
+    for (let history of histories) {
+      if (history) {
+        result.push(mapPatientHistoryDTO(history));
+      }
+    }
+
+    return { data: result, total, page, limit };
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    } else {
+      throw new Error("Failed to fetch Patient History");
+    }
+  }
+}
 
 
 }

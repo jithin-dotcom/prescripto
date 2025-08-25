@@ -43,6 +43,8 @@ router.get("/user-appointments/:userId", appointmentController.getUserAppointmen
 router.get("/doctor-appointments", appointmentController.getDoctorAppointments.bind(appointmentController));
 router.get("/all-appointments",appointmentController.getAllAppointments.bind(appointmentController));
 router.patch("/cancel-appointment/:appointmentId",appointmentController.updateStatus.bind(appointmentController));
+router.get("/appointment/:appointmentId",appointmentController.getAppointmentById.bind(appointmentController));
+// router.get("/user-appointment/:appointmentId",appointmentController.getSingleAppointmentByUser.bind(appointmentController));
 
 
 export default router;

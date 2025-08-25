@@ -9,4 +9,6 @@ export interface IAppointmentController {
   getAllAppointments(req: Request, res: Response, next: NextFunction): Promise<void>;
   getCreateAppointment(req: Request, res: Response, next: NextFunction): Promise<void>; 
   updateStatus(req: Request, res: Response, next: NextFunction): Promise<void>;
+  getAppointmentById(req: Request, res: Response, next: NextFunction): Promise<void>;
+  // getSingleAppointmentByUser(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

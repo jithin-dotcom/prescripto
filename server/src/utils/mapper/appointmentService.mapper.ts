@@ -11,7 +11,7 @@ export function mapAppointmentToDTO(
   profile: IDoctorProfile
 ): IAppointmentResponse {
   return {
-    _id: (appointment._id as mongoose.Types.ObjectId).toString(),
+    _id: (appointment?._id as mongoose.Types.ObjectId).toString(),
     doctor: {
       _id: doctorUser._id.toString(),
       name: doctorUser.name,

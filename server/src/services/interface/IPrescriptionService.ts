@@ -1,5 +1,5 @@
 
-import { IPrescription, IPrescriptionClean } from "../../models/prescription/IPrescription"
+import { IPrescription, IPrescriptionClean, IPatientHistoryClean } from "../../models/prescription/IPrescription"
 
 export interface IPrescriptionService {
     createPrescription(data: Partial<IPrescription>): Promise<{message: string}>;
@@ -7,6 +7,13 @@ export interface IPrescriptionService {
     generatePrescriptionPDF(prescription: any): Promise<Buffer>;
     getEditPrescription(appointmentId: string): Promise<IPrescriptionClean | null>; 
     getPrescription(appointmentId: string): Promise<IPrescriptionClean | null>;
+    // getPatientHistory(patientId: string, page: number, limit: number): Promise<(IPatientHistoryClean)[]>;
+    
+  getPatientHistory(
+  patientId: string,
+  page: number,
+  limit: number
+): Promise<{ data: IPatientHistoryClean[]; total: number; page: number; limit: number }>
 }
 
 
