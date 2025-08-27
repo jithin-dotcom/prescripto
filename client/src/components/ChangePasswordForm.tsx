@@ -1,32 +1,26 @@
 
 
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Eye, EyeOff } from 'lucide-react';
+import logo from '../assets/logo.svg'
+import { toast } from 'react-toastify';
+import type { ChangePasswordFormData } from '../interfaces/IChangePassword';
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import logo from "../../assets/logo.svg";
-import axiosInstance from "../../utils/axios";
-import { toast } from "react-toastify";
-
-import { useAuthStore } from "../../store/authStore";
-import Navbar from "../../components/Navbar";
-import NavbarAdmin from "../../components/NavbarAdmin";
-import Sidebar from "../../components/SideBarAdmin";
-import { useNavigate } from "react-router-dom";
-import { APIUserRoutes } from "../../constants/routes.constants";
-import { Eye, EyeOff } from "lucide-react";
+interface ChangePasswordFormProps {
+  onSubmit: (formData: ChangePasswordFormData) => Promise<void>;
+}
 
 const fadeIn = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
 };
 
-const ChangePassword = () => {
-  const { role } = useAuthStore();
-  const navigate = useNavigate();
-  const [form, setForm] = useState({
-    currentPassword: "",
-    newPassword: "",
-    rePassword: "",
+const ChangePasswordForm: React.FC<ChangePasswordFormProps> = ({ onSubmit }) => {
+  const [form, setForm] = useState<ChangePasswordFormData>({
+    currentPassword: '',
+    newPassword: '',
+    rePassword: '',
   });
   const [showPasswords, setShowPasswords] = useState({
     currentPassword: false,
@@ -51,49 +45,33 @@ const ChangePassword = () => {
     e.preventDefault();
 
     if (!form.currentPassword || !form.newPassword || !form.rePassword) {
-      toast.error("All fields are required.");
+      toast.error('All fields are required.');
       return;
     }
-     if (form.currentPassword.trim().length === 0 || form.newPassword.trim().length === 0 || form.rePassword.trim().length === 0) {
-      toast.error("All fields are required.");
+    if (form.currentPassword.trim().length === 0 || form.newPassword.trim().length === 0 || form.rePassword.trim().length === 0) {
+      toast.error('All fields are required.');
       return;
     }
 
     if (!passwordRegex.test(form.newPassword)) {
-      toast.error("New password must contain at least one letter and one number.");
+      toast.error('New password must contain at least one letter and one number.');
       return;
     }
 
     if (form.newPassword !== form.rePassword) {
-      toast.error("New passwords do not match.");
+      toast.error('New passwords do not match.');
       return;
     }
 
     try {
-      const res = await axiosInstance.post(
-        APIUserRoutes.CHANGE_PASSWORD,
-        {
-          password: form.currentPassword,
-          newPassword: form.newPassword,
-        },
-        { withCredentials: true }
-      );
-
-      toast.success(res.data.message || "Password changed successfully");
-
-      if (role === "doctor") {
-        navigate("/doctor-dashboard");
-      } else if (role === "user") {
-        navigate("/user-dashboard");
-      }
-      setForm({ currentPassword: "", newPassword: "", rePassword: "" });
+      await onSubmit(form);
+      setForm({ currentPassword: '', newPassword: '', rePassword: '' });
     } catch (error) {
-      
-      console.log("error: ",error);
+       console.log(error);
     }
   };
 
-  const FormContent = (
+  return (
     <motion.div
       initial="hidden"
       animate="visible"
@@ -108,11 +86,11 @@ const ChangePassword = () => {
         </h2>
       </div>
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit} noValidate>
         <div className="relative">
           <label className="block text-sm text-gray-600 mb-1">Current Password</label>
           <input
-            type={showPasswords.currentPassword ? "text" : "password"}
+            type={showPasswords.currentPassword ? 'text' : 'password'}
             name="currentPassword"
             value={form.currentPassword}
             placeholder="Enter current password"
@@ -121,7 +99,7 @@ const ChangePassword = () => {
           />
           <button
             type="button"
-            onClick={() => togglePasswordVisibility("currentPassword")}
+            onClick={() => togglePasswordVisibility('currentPassword')}
             className="absolute inset-y-0 right-0 flex items-center pr-3 mt-6"
           >
             {showPasswords.currentPassword ? (
@@ -135,7 +113,7 @@ const ChangePassword = () => {
         <div className="relative">
           <label className="block text-sm text-gray-600 mb-1">New Password</label>
           <input
-            type={showPasswords.newPassword ? "text" : "password"}
+            type={showPasswords.newPassword ? 'text' : 'password'}
             name="newPassword"
             value={form.newPassword}
             placeholder="Enter new password"
@@ -144,7 +122,7 @@ const ChangePassword = () => {
           />
           <button
             type="button"
-            onClick={() => togglePasswordVisibility("newPassword")}
+            onClick={() => togglePasswordVisibility('newPassword')}
             className="absolute inset-y-0 right-0 flex items-center pr-3 mt-6"
           >
             {showPasswords.newPassword ? (
@@ -158,7 +136,7 @@ const ChangePassword = () => {
         <div className="relative">
           <label className="block text-sm text-gray-600 mb-1">Re-enter New Password</label>
           <input
-            type={showPasswords.rePassword ? "text" : "password"}
+            type={showPasswords.rePassword ? 'text' : 'password'}
             name="rePassword"
             value={form.rePassword}
             placeholder="Re-enter new password"
@@ -167,7 +145,7 @@ const ChangePassword = () => {
           />
           <button
             type="button"
-            onClick={() => togglePasswordVisibility("rePassword")}
+            onClick={() => togglePasswordVisibility('rePassword')}
             className="absolute inset-y-0 right-0 flex items-center pr-3 mt-6"
           >
             {showPasswords.rePassword ? (
@@ -187,29 +165,6 @@ const ChangePassword = () => {
       </form>
     </motion.div>
   );
-
-  if (role === "doctor") {
-    return (
-      <div className="min-h-screen  from-blue-50 to-white flex flex-col ">
-        <NavbarAdmin />
-        <div className="flex flex-1 overflow-hidden">
-          <Sidebar />
-          <main className="flex-1 flex items-center justify-center px-4 py-6 overflow-auto bg-gradient-to-br from-blue-100 to-indigo-100">
-            {FormContent}
-          </main>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-tr from-blue-50 to-white ">
-      <Navbar />
-      <div className="flex items-center justify-center px-4 py-10 bg-gradient-to-br from-blue-100 to-indigo-100">
-        {FormContent}
-      </div>
-    </div>
-  );
 };
 
-export default ChangePassword;
+export default ChangePasswordForm;

@@ -31,9 +31,8 @@ export class ChatController implements IChatController {
 
    async getUserChats(req: Request, res: Response, next: NextFunction): Promise<void>{
     try {
-      console.log("entered into getUserChat controller");
       const userId = req.user?.id;
-      console.log("user Id : ",userId);
+      
       if (!userId){
          res.status(StatusCode.UNAUTHORIZED).json({ message: StatusMessage.UNAUTHORIZED });
          return;

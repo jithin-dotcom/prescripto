@@ -156,42 +156,43 @@ const Navbar = () => {
                      <button
                       onClick={() => {
                         setDropdownOpen(false);
-                        navigate("/change-email");
+                        navigate("/user-change-email");
                       }}
                       className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
                     >
                       Change Email
                     </button>
+
+                
                     <button
                       onClick={() => {
                         setDropdownOpen(false);
-                        navigate("/all-concerns");
+                        navigate("/user-concerns");
                       }}
                       className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
                     >
                       Concerns
                     </button>
 
-                     <button
+                    <button
                       onClick={() => {
                         setDropdownOpen(false);
-                        navigate("/wallet");
+                        navigate("/user-wallet");
                       }}
                       className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
                     >
                       Wallet
-                    </button>
-                      
+                    </button>                   
 
-                     <button
+                    <button
                       onClick={() => {
-                        setDropdownOpen(false);
-                        navigate("/change-password");
+                      navigate("/user-change-password");
+                      setMobileMenuOpen(false);
                       }}
-                      className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
+                     className="py-2 px-4 text-left hover:bg-[#5F6FFF] hover:text-white"
                     >
-                      Change Password
-                    </button>
+                    Change Password
+                   </button>
 
                       <button
                       onClick={() => {
@@ -282,15 +283,18 @@ const Navbar = () => {
                 My Chat
               </button>
 
-               <button
+             
+                <button
                   onClick={() => {
                     setDropdownOpen(false);
-                    navigate("/wallet");
+                    navigate("/user-wallet");
                   }}
                   className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
                >
                   Wallet
                </button>
+
+               
                <button
                 onClick={() => {
                   navigate("/my-appointments");
@@ -300,33 +304,37 @@ const Navbar = () => {
               >
                 Appointments
               </button>
-               <button
+
+              <button
                 onClick={() => {
-                  navigate("/all-concerns");
+                  navigate("/user-concerns");
                   setMobileMenuOpen(false);
                 }}
                 className="py-2 px-4 text-left hover:bg-[#5F6FFF] hover:text-white"
               >
                 Concern
               </button>
-               <button
+
+              <button
                 onClick={() => {
-                  navigate("/change-password");
+                  navigate("/user-change-password");
                   setMobileMenuOpen(false);
                 }}
                 className="py-2 px-4 text-left hover:bg-[#5F6FFF] hover:text-white"
               >
                 Change Password
               </button>
+  
                <button
-                onClick={() => {
-                  navigate("/change-email");
-                  setMobileMenuOpen(false);
-                }}
-                className="py-2 px-4 text-left hover:bg-[#5F6FFF] hover:text-white"
-              >
-                Change Email
-              </button>
+                  onClick={() => {
+                    setDropdownOpen(false);
+                    navigate("/user-change-email");
+                  }}
+                  className="block w-full px-4 py-2 text-left hover:bg-[#5F6FFF] hover:text-white"
+                >
+                  Change Email
+                </button>
+
               <button
                 onClick={() => {
                   handleLogout();

@@ -257,7 +257,7 @@ const Appointment: React.FC = () => {
                           <span className="text-gray-500">({doctor.ratingCount})</span>
                           <span className="py-0.5 px-2 border text-xs rounded-full ml-2 cursor-pointer" onClick={() => {
                               sessionStorage.setItem("doctorId",doctor._id);
-                              navigate("/rating");
+                              navigate("/user-rating");
                           }}>
                               view Rating
                           </span>

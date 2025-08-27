@@ -172,6 +172,7 @@ const Login: React.FC = () => {
             visible: { transition: { staggerChildren: 0.1 } },
             hidden: {}
           }}
+          noValidate
         >
           <motion.div
             variants={{

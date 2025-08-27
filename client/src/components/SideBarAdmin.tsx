@@ -37,8 +37,8 @@ const Sidebar = () => {
         </svg>
       ),
     },
-    { to: '/all-concerns', label: 'Concerns', icon: <AlertTriangle className="w-5 h-5" /> },
-     { to: '/all-payouts', label: 'Payouts', icon: <IndianRupee className="w-4 h-4" /> },
+    { to: '/admin-concerns', label: 'Concerns', icon: <AlertTriangle className="w-5 h-5" /> },
+     { to: '/admin-payouts', label: 'Payouts', icon: <IndianRupee className="w-4 h-4" /> },
   ];
 
   const doctorNavItems = [

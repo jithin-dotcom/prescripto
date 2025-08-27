@@ -136,6 +136,7 @@ const Signup = () => {
             visible: { transition: { staggerChildren: 0.1 } },
             hidden: {},
           }}
+          noValidate
         >
           {[
             {

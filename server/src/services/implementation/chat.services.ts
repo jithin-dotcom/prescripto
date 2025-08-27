@@ -126,10 +126,7 @@ export class ChatService implements IChatService {
     try {
       
       const result =  await this._chatRepo.getChatsByUser(userId);
-  
-      console.log("result getUserChat : ",result);
-      return result;
-      
+      return result;   
       
     } catch (error) {
       console.error("Error fetching user chats:", error);

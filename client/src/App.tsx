@@ -31,25 +31,37 @@ import EditDoctorProfile from "./pages/doctor/EditDoctorProfile";
 import Appointment from "./pages/user/Appointments";
 import MyAppointments from "./pages/user/MyAppointments";
 import DoctorAppointments from "./pages/doctor/DoctorAppointments";
-import ChangeEmail from "./pages/auth/ChangeEmail";
-import ChangePassword from "./pages/auth/ChangePassword";
+
 import ChatUI from "./pages/chat/Chat";
 import ChatDashboard from "./pages/chat/ChatDashboard";
 import VideoCall from "./pages/video/videoCall";
 import AppointmentDetails from "./pages/doctor/AppointmentDetails";
 import AdminAppointmentDetails from "./pages/admin/AdminAppointmentDetails";
 import UserAppointmentDetails from "./pages/user/UserAppointmentDetails";
-import WalletPage from "./components/WalletPage";
+
 import { RateDoctor } from "./pages/user/DoctorRating";
-import DoctorRatingsPage from "./components/DoctorRatingsPage";
 import CreatePrescription from "./pages/doctor/createPrescription";
 import EditPrescription from "./pages/doctor/EditPrescription";
 import RaiseConcernPage from "./pages/user/RaiseConcernPage";
-import AllConcerns from "./components/AllConcern";
-import PayoutRequests from "./components/PayoutRequests";
+
 import RequestPayout from "./pages/doctor/RequestPayout";
 import About from "./components/About";
 import Contact from "./components/Contact";
+import PatientHistory from "./pages/doctor/PatientHistory";
+import DoctorWalletPage from "./pages/doctor/DoctorWalletPage";
+import UserWalletPage from "./pages/user/UserWalletPage";
+import AdminPayoutRequestsPage from "./pages/admin/AdminPayoutRequestsPage";
+import DoctorPayoutRequestsPage from "./pages/doctor/DoctorPayoutRequestsPage";
+import AdminConcernsPage from "./pages/admin/AdminConcernsPage";
+import DoctorConcernsPage from "./pages/doctor/DoctorConcernsPage";
+import UserConcernsPage from "./pages/user/UserConcernsPage";
+import AdminRatingsPage from "./pages/admin/AdminRatingsPage";
+import UserRatingsPage from "./pages/user/UserRatingsPage";
+import DoctorChangeEmailPage from "./pages/doctor/DoctorChangeEmailPage";
+import UserChangeEmailPage from "./pages/user/UserChangeEmailPage";
+import UserChangePasswordPage from "./pages/user/UserChangePasswordPage";
+import DoctorChangePasswordPage from "./pages/doctor/DoctorChangePasswordPage";
+import DoctorRatingsPage from "./pages/doctor/DoctorRatingsPage";
 
 const App: React.FC = () => {
   const accessToken = useAuthStore((state) => state.accessToken);
@@ -203,10 +215,18 @@ const App: React.FC = () => {
           element={isAuthenticated && role === "doctor" ? <AppointmentDetails /> : <Navigate to="/login" replace />}
         />
 
+       
         <Route
-          path="/change-email"
-          element={isAuthenticated && (role === "doctor" || role === "user")? <ChangeEmail /> : <Navigate to="/login" replace />}
+          path="/doctor-change-email"
+          element={isAuthenticated && (role === "doctor")? <DoctorChangeEmailPage /> : <Navigate to="/login" replace />}
         />
+
+         <Route
+          path="/user-change-email"
+          element={isAuthenticated && (role === "user")? <UserChangeEmailPage /> : <Navigate to="/login" replace />}
+        />
+
+        
         <Route
           path="/chat"
           element={isAuthenticated && (role === "doctor" || role === "user")? <ChatUI /> : <Navigate to="/login" replace />}
@@ -217,14 +237,26 @@ const App: React.FC = () => {
           element={isAuthenticated && (role === "doctor" || role === "user")? <ChatDashboard /> : <Navigate to="/login" replace />}
         />
 
+       
         <Route
-          path="/change-password"
-          element={isAuthenticated && (role === "doctor" || role === "user")? <ChangePassword /> : <Navigate to="/login" replace />}
+          path="/user-change-password"
+          element={isAuthenticated && (role === "user")? <UserChangePasswordPage /> : <Navigate to="/login" replace />}
         />
 
         <Route
-          path="/wallet"
-          element={isAuthenticated && (role === "doctor" || role === "user")? <WalletPage /> : <Navigate to="/login" replace />}
+          path="/doctor-change-password"
+          element={isAuthenticated && (role === "doctor")? <DoctorChangePasswordPage /> : <Navigate to="/login" replace />}
+        />
+
+
+        <Route
+          path="/doctor-wallet"
+          element={isAuthenticated && (role === "doctor")? <DoctorWalletPage /> : <Navigate to="/login" replace />}
+        />
+
+         <Route
+          path="/user-wallet"
+          element={isAuthenticated && (role === "user")? <UserWalletPage /> : <Navigate to="/login" replace />}
         />
 
         <Route
@@ -238,9 +270,20 @@ const App: React.FC = () => {
         />
 
         <Route
-          path="/rating"
-          element={isAuthenticated && (role === "doctor" || role === "admin" || role === "user")? <DoctorRatingsPage /> : <Navigate to="/login" replace />}
+          path="/admin-rating"
+          element={isAuthenticated && ( role === "admin")? <AdminRatingsPage /> : <Navigate to="/login" replace />}
         />
+
+        <Route
+          path="/user-rating"
+          element={isAuthenticated && ( role === "user")? <UserRatingsPage /> : <Navigate to="/login" replace />}
+        />
+
+         <Route
+          path="/doctor-rating"
+          element={isAuthenticated && ( role === "doctor")? <DoctorRatingsPage /> : <Navigate to="/login" replace />}
+        />
+
 
         <Route
           path="/create-prescription"
@@ -257,14 +300,32 @@ const App: React.FC = () => {
           element={isAuthenticated && (role === "user")? <RaiseConcernPage /> : <Navigate to="/login" replace />}
         />
 
+      
         <Route
-          path="/all-concerns"
-          element={isAuthenticated && (role === "admin" || role === "doctor" || role === "user")? <AllConcerns /> : <Navigate to="/login" replace />}
+          path="/admin-concerns"
+          element={isAuthenticated && (role === "admin" )? <AdminConcernsPage /> : <Navigate to="/login" replace />}
         />
 
         <Route
-          path="/all-payouts"
-          element={isAuthenticated && (role === "admin" || role === "doctor" )? <PayoutRequests /> : <Navigate to="/login" replace />}
+          path="/doctor-concerns"
+          element={isAuthenticated && (role === "doctor" )? <DoctorConcernsPage /> : <Navigate to="/login" replace />}
+        />
+
+        
+        <Route
+          path="/user-concerns"
+          element={isAuthenticated && (role === "user" )? <UserConcernsPage /> : <Navigate to="/login" replace />}
+        />
+
+
+        <Route
+          path="/admin-payouts"
+          element={isAuthenticated && (role === "admin")? <AdminPayoutRequestsPage /> : <Navigate to="/login" replace />}
+        />
+
+         <Route
+          path="/doctor-payouts"
+          element={isAuthenticated && (role === "doctor")? <DoctorPayoutRequestsPage /> : <Navigate to="/login" replace />}
         />
 
          <Route
@@ -280,6 +341,11 @@ const App: React.FC = () => {
         <Route
           path="/contact"
           element={isAuthenticated && (role === "user" )? <Contact /> : <Navigate to="/login" replace />}
+        />
+
+        <Route
+          path="/patient-history"
+          element={isAuthenticated && (role === "doctor" )? <PatientHistory /> : <Navigate to="/login" replace />}
         />
         
         <Route path="*" element={<Navigate to={isAuthenticated ? getDashboardRoute() : "/login"} replace />} />

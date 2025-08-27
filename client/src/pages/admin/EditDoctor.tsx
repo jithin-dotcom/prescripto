@@ -330,7 +330,7 @@ const EditDoctor: React.FC = () => {
   </div>
 </div>
 
-{/* About Textarea */}
+
 <div className="mt-6 flex flex-col">
   <label htmlFor="about" className="mb-1 text-sm font-medium text-gray-700">About Doctor</label>
   <textarea

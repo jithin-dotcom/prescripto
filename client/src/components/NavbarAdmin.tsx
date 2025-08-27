@@ -194,26 +194,29 @@ const Navbar = () => {
                     >
                       Profile
                     </button>
+                   
                     <button
                       onClick={() => {
                         setDropdownOpen(false);
                         setMenuOpen(false);
-                        navigate("/change-password");
+                        navigate("/doctor-change-password");
                       }}
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
                     >
                       Change Password
                     </button>
+                  
                     <button
                       onClick={() => {
                         setDropdownOpen(false);
                         setMenuOpen(false);
-                        navigate("/change-email");
+                        navigate("/doctor-change-email");
                       }}
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
                     >
                       Change Email
                     </button>
+
                      <button
                       onClick={() => {
                         setDropdownOpen(false);
@@ -224,41 +227,45 @@ const Navbar = () => {
                     >
                       Appointments
                     </button>
-                     <button
+                 
+                    <button
                       onClick={() => {
                         setDropdownOpen(false);
                         setMenuOpen(false);
-                        navigate("/all-concerns");
+                        navigate("/doctor-concerns");
                       }}
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
                     >
                       Concerns
                     </button>
-                     <button
+
+                    <button
                       onClick={() => {
                         setDropdownOpen(false);
                         setMenuOpen(false);
-                        navigate("/wallet");
+                        navigate("/doctor-wallet");
                       }}
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
                     >
                       Wallet
                     </button>
-                     <button
+
+                    <button
                       onClick={() => {
                         setDropdownOpen(false);
                         setMenuOpen(false);
-                        navigate("/all-payouts");
+                        navigate("/doctor-payouts");
                       }}
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
                     >
                       Payout
                     </button>
-                     <button
+
+                    <button
                       onClick={() => {
                         setDropdownOpen(false);
                         setMenuOpen(false);
-                        navigate("/rating");
+                        navigate("/doctor-rating");
                       }}
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-[#5F6FFF] hover:text-white transition-colors"
                     >

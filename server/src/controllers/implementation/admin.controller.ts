@@ -28,7 +28,11 @@ export class AdminController implements IAdminController {
 
     async getAllUser(req: Request, res: Response, next: NextFunction): Promise<void>{
       try {
-        const result = await this._adminService.getAllUsers();
+        const result = await this._adminService.getAllUsers(); 
+        if(!result){
+           res.status(StatusCode.NOT_FOUND).json(StatusMessage.NOT_FOUND);
+           return;
+        }
         res.status(StatusCode.OK).json(result);
       }catch (error) {
         next(error);

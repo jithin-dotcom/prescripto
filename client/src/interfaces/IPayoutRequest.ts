@@ -26,7 +26,7 @@ export interface IPayoutRequest  {
   status: "pending" | "approved" | "rejected" | "processed" | "failed";
   reason: string;
   decentroTxnId?: string;
-  requestedAt: Date;
+  requestedAt: string;
   createdAt?: Date;
   updatedAt?: Date;
   __v?: number;

@@ -187,7 +187,7 @@ const DoctorsList: React.FC = () => {
       onClick={(e) => {
         e.stopPropagation();
         sessionStorage.setItem("doctorId", doctor.id);
-        navigate("/rating");
+        navigate("/admin-rating");
       }}
       className="py-0.5 px-2 border border-yellow-500 text-xs rounded-full text-yellow-700 hover:bg-yellow-100 transition duration-200 whitespace-nowrap flex-shrink-0"
     >
