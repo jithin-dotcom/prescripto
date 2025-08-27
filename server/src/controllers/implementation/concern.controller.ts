@@ -100,7 +100,7 @@ export class ConcernController {
     }
    
 
-    console.log("search : ",search);
+    
 
     const { data, total, page: currentPage, pages } = await this._concernService.getConcernByUser(id, role ,page, limit, search, status);
     res.status(StatusCode.OK).json({

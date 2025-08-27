@@ -4,6 +4,7 @@ import { DoctorProfileRepository } from "../repositories/implementation/doctorPr
 import { DoctorProfileService } from "../services/implementation/doctorProfile.services";
 import { DoctorProfileController } from "../controllers/implementation/doctorProfile.controller";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
+import { checkRole } from "../middlewares/role.middleware";
 
 const router = Router();
 const doctorProfileRepository = new DoctorProfileRepository();
@@ -12,9 +13,9 @@ const doctorProfileController = new DoctorProfileController(doctorProfileService
 
 router.use(verifyAccessToken);
 
-router.post("/create-doctor-profile/:doctorId",doctorProfileController.createProfile.bind(doctorProfileController));
-router.put("/edit-doctor-profile/:doctorId", doctorProfileController.editProfile.bind(doctorProfileController));
-router.delete("/delete-doctor-profile/:doctorId",doctorProfileController.deleteProfile.bind(doctorProfileController));
-router.get("/top-doctor-rating",doctorProfileController.findDoctorWithRating.bind(doctorProfileController));
+router.post("/create-doctor-profile/:doctorId", checkRole("doctor") ,doctorProfileController.createProfile.bind(doctorProfileController));
+router.put("/edit-doctor-profile/:doctorId",checkRole("doctor"), doctorProfileController.editProfile.bind(doctorProfileController));
+// router.delete("/delete-doctor-profile/:doctorId",doctorProfileController.deleteProfile.bind(doctorProfileController));
+router.get("/top-doctor-rating",checkRole("user"), doctorProfileController.findDoctorWithRating.bind(doctorProfileController));
 
 export default router;

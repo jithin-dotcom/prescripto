@@ -53,7 +53,7 @@ const MyAppointments: React.FC = () => {
     const fetchAppointments = async () => {
       try {
         setLoading(true);
-        const query = `${APIUserRoutes.APPOINTMENTS}/${userId}?page=${currentPage}&limit=${pageSize}${
+        const query = `${APIUserRoutes.APPOINTMENTS}?page=${currentPage}&limit=${pageSize}${
           selectedStatus !== "all" ? `&status=${selectedStatus}` : ""
         }`;
 

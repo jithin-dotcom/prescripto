@@ -8,6 +8,7 @@ import { PatientProfileRepository } from "../repositories/implementation/patient
 import { DoctorProfileRepository } from "../repositories/implementation/doctorProfile.repositories";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
 import { upload } from "../middlewares/multer.middleware"
+import { checkRole } from "../middlewares/role.middleware";
 
 
 const router = Router()
@@ -22,10 +23,10 @@ const userController = new UserController(userService);
 router.use(verifyAccessToken);
 
 
-router.get("/all-doctors",userController.getAllDoctors.bind(userController));
-router.get("/user-profile/:id",userController.getProfile.bind(userController));
-router.post("/change-password",userController.changePassword.bind(userController));
-router.post("/change-email",userController.changeEmail.bind(userController));
+router.get("/all-doctors", checkRole("user"), userController.getAllDoctors.bind(userController));
+router.get("/user-profile/:id", checkRole("user","doctor"), userController.getProfile.bind(userController));
+router.post("/change-password", checkRole("user","doctor"), userController.changePassword.bind(userController));
+router.post("/change-email", checkRole("user","doctor"), userController.changeEmail.bind(userController));
 
 
 router.put(
@@ -34,6 +35,7 @@ router.put(
     { name: "photo", maxCount: 1 },
     { name: "proofDocument", maxCount: 5 }
   ]),
+  checkRole("user"),
   userController.updateUserOrDoctor.bind(userController)
 );
 

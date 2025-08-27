@@ -12,6 +12,7 @@ import { WalletRepository } from "../repositories/implementation/wallet.reposito
 import { WalletHistoryRepository } from "../repositories/implementation/walletHistory.repository";
 import { ChatRepository } from "../repositories/implementation/chat.repositories";
 import { PayoutRepository } from "../repositories/implementation/payout.repositories";
+import { checkRole } from "../middlewares/role.middleware";
 
 
 const router = Router();
@@ -36,12 +37,12 @@ const paymentController = new PaymentController(paymentService);
 router.use(verifyAccessToken);
 
 
-router.post("/create-order", paymentController.createRazorpayOrder.bind(paymentController));
-router.post("/verify", paymentController.verifyPaymentSignature.bind(paymentController));
-router.get("/get-payment/:appointmentId", paymentController.getPaymentRecept.bind(paymentController));
-router.post("/create-payout", paymentController.createPayout.bind(paymentController));
-router.get("/get-allPayout", paymentController.getPayouts.bind(paymentController));
-router.get("/get-doctorPayout", paymentController.getDoctorPayouts.bind(paymentController));
-router.post("/initiate-payout", paymentController.initiatePayout.bind(paymentController));
+router.post("/create-order", checkRole("user"), paymentController.createRazorpayOrder.bind(paymentController));
+router.post("/verify", checkRole("user"), paymentController.verifyPaymentSignature.bind(paymentController));
+router.get("/get-payment/:appointmentId", checkRole("user"), paymentController.getPaymentRecept.bind(paymentController));
+router.post("/create-payout", checkRole("doctor"), paymentController.createPayout.bind(paymentController));
+router.get("/get-allPayout", checkRole("admin"), paymentController.getPayouts.bind(paymentController));
+router.get("/get-doctorPayout", checkRole("doctor"), paymentController.getDoctorPayouts.bind(paymentController));
+router.post("/initiate-payout", checkRole("admin"), paymentController.initiatePayout.bind(paymentController));
 
 export default router;

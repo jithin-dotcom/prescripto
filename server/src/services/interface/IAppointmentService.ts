@@ -194,6 +194,6 @@ export interface IAppointmentService {
 
   updateStatus(appointmentId: string, status: string): Promise<{message: string}>;
   getAppointmentById(appointmentId: string, doctorId: string): Promise<IAppointmentWithUserResponse | null>;
-  // getSingleAppointmentByUser(appointmentId : string): Promise<IAppointmentResponse | null>;
+  
 
 }

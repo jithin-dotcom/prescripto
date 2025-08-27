@@ -6,6 +6,7 @@ import { DoctorRatingRepository } from "../repositories/implementation/doctorRat
 import { DoctorRatingController } from "../controllers/implementation/doctorRating.controller";
 import { DoctorRatingService } from "../services/implementation/doctorRating.services";
 import { DoctorProfileRepository } from "../repositories/implementation/doctorProfile.repositories";
+import { checkRole } from "../middlewares/role.middleware";
 
 
 const router = Router();
@@ -15,7 +16,7 @@ const doctorProfileRepository = new DoctorProfileRepository()
 const doctorRatingService = new DoctorRatingService(doctorRatingRepository, doctorProfileRepository);
 const doctorRatingController = new DoctorRatingController(doctorRatingService);
 
-router.post("/rate-doctor",doctorRatingController.rateDoctor.bind(doctorRatingController));
-router.get("/get-rating/:doctorId",doctorRatingController.getRatingByDoctor.bind(doctorRatingController));
+router.post("/rate-doctor", checkRole("user"), doctorRatingController.rateDoctor.bind(doctorRatingController));
+router.get("/get-rating/:doctorId", checkRole("user","doctor","admin"), doctorRatingController.getRatingByDoctor.bind(doctorRatingController));
 
 export default router;

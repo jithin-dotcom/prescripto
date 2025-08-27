@@ -11,6 +11,7 @@ import { UserRepository } from "../repositories/implementation/user.repositories
 import { ChatRepository } from "../repositories/implementation/chat.repositories";
 import { WalletRepository } from "../repositories/implementation/wallet.repository";
 import { WalletHistoryRepository } from "../repositories/implementation/walletHistory.repository";
+import { checkRole } from "../middlewares/role.middleware";
 
 const router = Router();
 
@@ -37,13 +38,13 @@ const appointmentController = new AppointmentController(appointmentService);
 router.use(verifyAccessToken);
 
 
-router.post("/create-appointment",appointmentController.createAppointment.bind(appointmentController));
-router.get("/all-createAppointments/:doctorId",appointmentController.getCreateAppointment.bind(appointmentController));
-router.get("/user-appointments/:userId", appointmentController.getUserAppointments.bind(appointmentController));
-router.get("/doctor-appointments", appointmentController.getDoctorAppointments.bind(appointmentController));
-router.get("/all-appointments",appointmentController.getAllAppointments.bind(appointmentController));
-router.patch("/cancel-appointment/:appointmentId",appointmentController.updateStatus.bind(appointmentController));
-router.get("/appointment/:appointmentId",appointmentController.getAppointmentById.bind(appointmentController));
+router.post("/create-appointment",checkRole("user"), appointmentController.createAppointment.bind(appointmentController));
+router.get("/all-createAppointments/:doctorId",checkRole("user"), appointmentController.getCreateAppointment.bind(appointmentController));
+router.get("/user-appointments",checkRole("user"), appointmentController.getUserAppointments.bind(appointmentController));
+router.get("/doctor-appointments",checkRole("doctor"), appointmentController.getDoctorAppointments.bind(appointmentController));
+router.get("/all-appointments",checkRole("admin"), appointmentController.getAllAppointments.bind(appointmentController));
+router.patch("/cancel-appointment/:appointmentId",checkRole("doctor","user","admin"), appointmentController.updateStatus.bind(appointmentController));
+router.get("/appointment/:appointmentId",checkRole("doctor"), appointmentController.getAppointmentById.bind(appointmentController));
 
 
 

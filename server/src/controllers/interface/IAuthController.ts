@@ -2,6 +2,21 @@
 
 import { Request, Response, NextFunction } from "express";
 
+
+export interface IResult {
+   tokens: {
+     accessToken: string;
+     refreshToken: string;
+   }
+   user: {
+      id: string;
+      name: string;
+      email: string;
+      role: string;
+      avatar: string;
+   }, 
+}
+
 export interface IAuthController {
   signup(req: Request, res: Response, next: NextFunction): Promise<void>;
   login(req: Request, res: Response, next: NextFunction): Promise<void>;
@@ -16,3 +31,5 @@ export interface IAuthController {
   logout(req: Request, res: Response, next: NextFunction): Promise<void>;
   getMe(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
+
+

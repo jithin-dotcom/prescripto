@@ -6,6 +6,7 @@ import { PatientProfileController } from "../controllers/implementation/patientP
 import { verifyAccessToken } from "../middlewares/auth.middleware";
 import { UserRepository } from "../repositories/implementation/user.repositories";
 import { upload } from "../middlewares/multer.middleware";
+import { checkRole } from "../middlewares/role.middleware";
 
 
 const router = Router();
@@ -16,9 +17,9 @@ const patientProfileController = new PatientProfileController(patientProfileServ
 
 router.use(verifyAccessToken);
 
-router.post("/create-patientProfile/:patientId",patientProfileController.createProfile.bind(patientProfileController));
-router.put("/edit-patientProfile/:patientId", patientProfileController.editProfile.bind(patientProfileController));
-router.delete("/delete-patientProfile/:patientId",patientProfileController.deleteProfile.bind(patientProfileController));
-router.post('/upload-photo', upload.single('photo'), patientProfileController.uploadPhoto.bind(patientProfileController));
+router.post("/create-patientProfile/:patientId", checkRole("user"), patientProfileController.createProfile.bind(patientProfileController));
+router.put("/edit-patientProfile/:patientId", checkRole("user"), patientProfileController.editProfile.bind(patientProfileController));
+// router.delete("/delete-patientProfile/:patientId", checkRole("user"), patientProfileController.deleteProfile.bind(patientProfileController));
+router.post('/upload-photo', upload.single('photo'), checkRole("user","doctor"), patientProfileController.uploadPhoto.bind(patientProfileController));
 
 export default router;

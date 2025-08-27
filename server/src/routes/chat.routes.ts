@@ -6,6 +6,7 @@ import { ChatService } from "../services/implementation/chat.services";
 import { ChatController } from "../controllers/implementation/chat.controller";
 import { MessageRepository } from "../repositories/implementation/message.repositories";
 import { verifyAccessToken } from "../middlewares/auth.middleware";
+import { checkRole } from "../middlewares/role.middleware";
 
 const router = Router();
 
@@ -19,9 +20,9 @@ const chatController = new ChatController(chatService);
 router.use(verifyAccessToken);
 
 
-router.get("/messages/:appointmentId", chatController.getChatMessages.bind(chatController));
+router.get("/messages/:appointmentId",checkRole("user","doctor"), chatController.getChatMessages.bind(chatController));
 
-router.get("/my-chats",chatController.getUserChats.bind(chatController));
+router.get("/my-chats",checkRole("user","doctor"), chatController.getUserChats.bind(chatController));
 
 
 export default router;

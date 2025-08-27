@@ -36,10 +36,18 @@ export class UserController implements IUserController {
 
     async getProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const userId = req.params.id;
+          
+            const userId = req.user?.id;
+            if(!userId){
+               res.status(StatusCode.BAD_REQUEST).json(StatusMessage.BAD_REQUEST);
+               return;
+            }
             const result = await this._userService.getProfile(userId);
+            if(!result){
+               res.status(StatusCode.NOT_FOUND).json(StatusMessage.NOT_FOUND);
+               return;
+            }
             res.status(StatusCode.OK).json({message: StatusMessage.OK, data: result});
-            return;
         } catch (error) {
             next(error);
         }

@@ -9,6 +9,7 @@ import { AppointmentRepository } from "../repositories/implementation/appointmen
 import { verifyAccessToken } from "../middlewares/auth.middleware";
 import { ChatRepository } from "../repositories/implementation/chat.repositories";
 import { PaymentRepository } from "../repositories/implementation/payment.repositories";
+import { checkRole } from "../middlewares/role.middleware";
 
 
 const router = Router();
@@ -22,8 +23,8 @@ const walletController = new WalletController(walletService);
 
 router.use(verifyAccessToken);
 
-router.get("/get-wallet",walletController.getWallet.bind(walletController));
-router.get("/wallet-payment/:appointmentId", walletController.makeWalletPayment.bind(walletController));
+router.get("/get-wallet", checkRole("user","doctor"), walletController.getWallet.bind(walletController));
+router.get("/wallet-payment/:appointmentId", checkRole("user"), walletController.makeWalletPayment.bind(walletController));
 
 export default router;
 

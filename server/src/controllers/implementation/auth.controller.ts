@@ -15,6 +15,8 @@ import {
 } from "../../validations/auth.schema";
 import { IAuthController } from "../interface/IAuthController";
 
+import { IResult } from "../interface/IAuthController";
+
 
 export class AuthController implements IAuthController {
   constructor(private _authService: IAuthService) {}
@@ -104,8 +106,8 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
     const result = await this._authService.loginWithGoogle(credential);
     
     
-    const tokens = (result as any)?.tokens;
-    const user = (result as any)?.user;
+    const tokens = (result as IResult)?.tokens;
+    const user = (result as IResult)?.user;
 
     if (!tokens || !user) {
        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: "Failed to retrieve user or tokens" });
@@ -156,7 +158,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
       res.cookie("refreshToken", result.refreshToken, cookieOptions);
     
       res.status(StatusCode.OK).json(result);
-      return;
+      
     }catch (error) {
       next(error);
     }
@@ -178,7 +180,7 @@ async loginWithGoogle(req: Request, res: Response, next: NextFunction) {
       const validated = verifyForgotPasswordSchema.parse(req.body);
       const result = await this._authService.forgotPassword(validated.email);
       res.status(StatusCode.OK).json(result);
-      return;
+      
     }catch (error) {
       next(error);
     }
@@ -252,10 +254,9 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
       accessToken,
       user,
       });
-      return;
+      
   } catch (error) {
-     res.status(StatusCode.FORBIDDEN).json({ message: "Invalid or expired refresh token" });
-     return;
+     next(error);
   }
 }
 
@@ -283,7 +284,7 @@ async refreshToken(req: Request, res: Response, next: NextFunction) {
     res.clearCookie("refreshToken", cookieOptions);
 
      res.json({ message: "Logged out successfully" });
-     return;
+     
   }catch (error) {
     next(error);
   }
@@ -308,8 +309,7 @@ async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
    
     res.status(StatusCode.OK).json(user);
   } catch (err) {
-    
-    res.status(StatusCode.INTERNAL_SERVER_ERROR).json({ message: StatusMessage.INTERNAL_SERVER_ERROR });
+    next(err)
   }
 }
 

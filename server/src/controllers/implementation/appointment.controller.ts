@@ -15,15 +15,13 @@ export class AppointmentController implements IAppointmentController {
 
   async createAppointment(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      console.log("entered into controller");
       const userId = req.user?.id; 
-      console.log("userId : ",userId);
+     
       if (!userId) {
         res.status(StatusCode.UNAUTHORIZED).json({ message: StatusMessage.UNAUTHORIZED });
         return;
       }
 
-      console.log("req.body : ",req.body);
 
       const validatedData = appointmentSchema.parse({
         ...req.body,

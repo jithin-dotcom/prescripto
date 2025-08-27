@@ -131,7 +131,7 @@ export class ConcernService implements IConcernService {
     }else{
        query = {doctorId};
     }
-    console.log("role : ",role);
+    
     if (search ) {
       query.$or = [
         { "title": { $regex: search, $options: "i" } },

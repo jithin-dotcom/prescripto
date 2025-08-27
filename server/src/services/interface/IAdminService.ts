@@ -3,10 +3,19 @@ import { IUser } from "../../types/user.type";
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
 
+// export interface CreateUserOrDoctorInput {
+//   userData: Partial<IUser>;
+//   profileData:  (IDoctorProfile | IPatientProfile ) & IUser; 
+// }
+
+
+
 export interface CreateUserOrDoctorInput {
   userData: Partial<IUser>;
-  profileData:  (IDoctorProfile | IPatientProfile ) & IUser; 
+  profileData: Partial<IPatientProfile> | Partial<IDoctorProfile>;
+  files?: UploadedFiles;
 }
+
 
 export interface IAdminService {
 
@@ -18,15 +27,30 @@ export interface IAdminService {
     totalItems: number;
   }>;
 
-  createUserOrDoctor(input: CreateUserOrDoctorInput): Promise<{
-    message: string;
-    userId: string;
-  }>;
+  // createUserOrDoctor(input: CreateUserOrDoctorInput): Promise<{
+  //   message: string;
+  //   userId: string;
+  // }>;
+
+
+
+  createUserOrDoctor(
+  { userData, profileData, files }: CreateUserOrDoctorInput
+  ): Promise<{ message: string; userId: string }>
+
+
+
+  // updateUserOrDoctor(
+  // userId: string,
+  // userData: Partial<IUser>,
+  // profileData?: Partial<IPatientProfile> | Partial<IDoctorProfile>
+  // ): Promise<string>;
 
   updateUserOrDoctor(
   userId: string,
   userData: Partial<IUser>,
-  profileData?: Partial<IPatientProfile> | Partial<IDoctorProfile>
+  profileData?: Partial<IPatientProfile> | Partial<IDoctorProfile>,
+  files?: UploadedFiles
   ): Promise<string>;
 
 
@@ -56,3 +80,10 @@ export interface IUserWithProfileResponse {
   profile: IDoctorProfile[] | IPatientProfile[] | null; 
 }
 
+
+
+export interface UploadedFiles {
+  photo?: Express.Multer.File[];
+  signature?: Express.Multer.File[];
+  proofDocument?: Express.Multer.File[];
+}

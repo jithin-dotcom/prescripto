@@ -25,11 +25,11 @@ router.use(verifyAccessToken);
 
 router.post(
   '/create-users',
-  checkRole("admin"),
   upload.fields([
     { name: "photo", maxCount: 1 },
     { name: "proofDocument", maxCount: 5 }
   ]),
+  checkRole("admin"),
   adminController.createUserOrDoctor.bind(adminController)
 );
 
@@ -42,14 +42,15 @@ router.put(
     { name: "signature", maxCount: 1 },
     { name: "proofDocument", maxCount: 5 }
   ]),
-  adminController.updateUserOrDoctor.bind(adminController)   //admin, doctor edit profile
+  checkRole("admin","doctor"),
+  adminController.updateUserOrDoctor.bind(adminController)   
 );
 
 router.get('/users',checkRole("admin"), adminController.getUsersByRole.bind(adminController));
 router.delete('/delete-users/:id',checkRole("admin"), adminController.deleteUserOrDoctor.bind(adminController));
 router.patch('/block-toggle/:id',checkRole("admin"), adminController.toggleBlockUser.bind(adminController));
 router.patch('/verify-toggle/:id',checkRole("admin"), adminController.toggleVerifyUser.bind(adminController));
-router.get('/get-user/:id',adminController.getUserById.bind(adminController));   // admin, user, doctor edit user/doctor
+router.get('/get-user/:id', checkRole("admin","user","doctor"), adminController.getUserById.bind(adminController));   
 router.get('/users-count',checkRole("admin"), adminController.getAllUser.bind(adminController));
 
 export default router;
