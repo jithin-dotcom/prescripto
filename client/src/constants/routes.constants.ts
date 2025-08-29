@@ -13,8 +13,16 @@ export const APIRoutes = {
    ADMIN_UPDATE_USERS: "/admin/update-user",
    ALL_CONCERNS: "/get-allConcerns",
    FETCH_APPOINTMENTS: "/all-appointments",
-   ADMIN_GET_SINGLE_USER: "/admin/get-user"
+   ADMIN_GET_SINGLE_USER: "/admin/get-user",
+   GET_PRESCRIPTION: "/get-prescription",
+   UPDATE_CONCERN: "/update-concern",
+   GET_ALL_PAYOUTS: "/payments/get-allPayout",
+   INITIATE_PAYOUTS: "/payments/initiate-payout",
+   GET_RATING: "/get-rating",
+   ADMIN_USER_UPDATE: "/admin/update-user",
+   APPOINTMENT: "/appointment",
    
+
 } as const
 
 
@@ -31,6 +39,13 @@ export const APIUserRoutes = {
    PAYMENT_CREATE_ORDER: "/payments/create-order",
    PAYMENT_VERIFY_ORDER: "/payments/verify",
    GET_WALLET: "/get-wallet",
+   USER_CONCERN: "/user-concerns",
+   RATE_DOCTOR: "/rate-doctor",
+   WALLET_PAYMENT: "/wallet-payment",
+   RAISE_CONCERN: "/raise-concern",
+   GET_PAYMENTS: "payments/get-payment",
+   DOWNLOAD_PRESCRIPTION: "/download-prescription",
+   
 
 } as const
 
@@ -60,5 +75,10 @@ export const APIChatRoutes = {
 
 export const APIDoctorRoutes = {
    DOCTOR_APPOINTMENTS: "/doctor-appointments",
-   PAYOUT_REQUEST: "/payments/create-payout"
+   PAYOUT_REQUEST: "/payments/create-payout",
+   CREATE_PRESCRIPTION: "/create-prescription",
+   GET_DOCTOR_PAYOUT: "/payments/get-doctorPayout",
+   UPDATE_PRESCRIPTION: "/update-prescription",
+   GET_EDIT_PRESCRIPTION: "/get-editPrescription",
+   PATIENT_HISTORY: "/patient-history",
 } as const

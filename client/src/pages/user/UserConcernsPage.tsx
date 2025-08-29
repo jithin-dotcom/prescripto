@@ -8,6 +8,7 @@ import { useAuthStore } from '../../store/authStore';
 import NavbarUser from '../../components/Navbar';
 import ConcernsList from '../../components/ConcernsList';
 import type { Concern, ApiResponse } from '../../interfaces/IAllConcerns';
+import { APIUserRoutes } from '../../constants/routes.constants';
 
 const UserConcernsPage: React.FC = () => {
   const role = useAuthStore((state) => state.user?.role);
@@ -40,7 +41,7 @@ const UserConcernsPage: React.FC = () => {
       try {
         setLoading(true);
         const res = await axiosInstance.get<ApiResponse>(
-          `/user-concerns?page=${currentPage}&limit=${pageSize}&search=${debouncedSearch}&status=${statusFilter === 'all' ? '' : statusFilter}`
+          `${APIUserRoutes.USER_CONCERN}?page=${currentPage}&limit=${pageSize}&search=${debouncedSearch}&status=${statusFilter === 'all' ? '' : statusFilter}`
         );
         setConcerns(res.data.data);
         setTotalPages(res.data.pagination.pages);

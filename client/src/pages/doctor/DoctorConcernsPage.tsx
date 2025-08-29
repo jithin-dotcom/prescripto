@@ -9,6 +9,7 @@ import NavbarAdmin from '../../components/NavbarAdmin';
 import SidebarAdmin from '../../components/SideBarAdmin';
 import ConcernsList from '../../components/ConcernsList';
 import type { Concern, ApiResponse } from '../../interfaces/IAllConcerns';
+import { APIUserRoutes } from '../../constants/routes.constants';
 
 const DoctorConcernsPage: React.FC = () => {
   const role = useAuthStore((state) => state.user?.role);
@@ -41,7 +42,7 @@ const DoctorConcernsPage: React.FC = () => {
       try {
         setLoading(true);
         const res = await axiosInstance.get<ApiResponse>(
-          `/user-concerns?page=${currentPage}&limit=${pageSize}&search=${debouncedSearch}&status=${statusFilter === 'all' ? '' : statusFilter}`
+          `${APIUserRoutes.USER_CONCERN}?page=${currentPage}&limit=${pageSize}&search=${debouncedSearch}&status=${statusFilter === 'all' ? '' : statusFilter}`
         );
         setConcerns(res.data.data);
         setTotalPages(res.data.pagination.pages);

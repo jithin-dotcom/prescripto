@@ -171,57 +171,6 @@ async getAllByRole(
 
 
 
-// async createUserOrDoctor({ userData, profileData }: CreateUserOrDoctorInput): Promise<{ message: string, userId: string }> {
-//   try {
-//     if (!userData.role || !["user", "doctor"].includes(userData.role)) {
-//       throw new Error("Invalid role. Only 'user' or 'doctor' are allowed.");
-//     }
-
-//     if (userData.password) {
-//       const saltRounds = 10;
-//       const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
-//       userData.password = hashedPassword;
-//     }
-
-//     const user = await this._adminRepo.create(userData);
-//     const userId = user._id as unknown as string;
-
-//     if (profileData.photo) {
-//       await this._adminRepo.updateById(userId, { photo: profileData.photo });
-//       delete profileData.photo;  
-//     }
-
-//     if (userData.role === "user") {
-//       await this._patientProfileRepo.create({
-//         patientId: new mongoose.Types.ObjectId(userId),
-//         ...profileData,
-//       });
-//     } else if (userData.role === "doctor") {
-      
-//       await this._doctorProfileRepo.create({
-//         doctorId: new mongoose.Types.ObjectId(userId),
-//         ...profileData,
-//       });
-//     }
-
-//     return {
-//       message: `${userData.role} created successfully`,
-//       userId,
-//     };
-//   } catch (error: any) {
-    
-//     if (error.code === 11000 && error.keyPattern?.email) {
-//       throw new Error(`User with email ${userData.email} already exists`);
-//     }
-
-//     console.error("Error creating user/doctor:", error);
-//     throw new Error("Failed to create user/doctor");
-//   }
-// }
-
-
-
-
 
 async createUserOrDoctor(
   { userData, profileData, files }: CreateUserOrDoctorInput
@@ -287,67 +236,6 @@ async createUserOrDoctor(
     throw new Error("Failed to create user/doctor");
   }
 }
-
-
-
-  // async updateUserOrDoctor(
-  //   userId: string,
-  //   userData: Partial<IUser>,
-  //   profileData?: Partial<IPatientProfile> | Partial<IDoctorProfile>
-  // ): Promise<string> {
-  //   const user = await this._adminRepo.findById(userId);
-  //   if (!user) throw new Error("User not found");
-
-  //   if (userData.password) {
-  //     const saltRounds = 10;
-  //     const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
-  //     userData.password = hashedPassword;
-  //   }
-
-  //   if (profileData && 'photo' in profileData && profileData.photo) {
-  //     await this._adminRepo.updateById(userId, { photo: profileData.photo });
-  //     delete (profileData as any).photo;
-  //   }
-
-  //   if (profileData && 'signature' in profileData && profileData.signature) {
-  //     await this._adminRepo.updateById(userId, { signature: profileData.signature });
-  //     delete (profileData as any).signature;
-  //   }
-
-  //   await this._adminRepo.updateById(userId, userData);
-
-  //   const objectId = new mongoose.Types.ObjectId(userId);
-
-  //   if (user.role === "user" && profileData) {
-  //     const existingProfile = await this._patientProfileRepo.findByPatientId(objectId);
-
-  //     const patientProfileData: Partial<IPatientProfile> = { ...(profileData as Partial<IPatientProfile>) };
-
-  //     if (existingProfile) {
-  //       await this._patientProfileRepo.updateByPatientId(objectId, patientProfileData);
-  //     } else {
-  //       await this._patientProfileRepo.create({
-  //         patientId: objectId,
-  //         ...patientProfileData,
-  //       });
-  //     }
-  //   } else if (user.role === "doctor" && profileData) {
-  //     const existingProfile = await this._doctorProfileRepo.findByDoctorId(objectId);
-
-  //     const doctorProfileData: Partial<IDoctorProfile> = { ...(profileData as Partial<IDoctorProfile>) };
-
-  //     if (existingProfile) {
-  //       await this._doctorProfileRepo.updateByDoctorId(objectId, doctorProfileData);
-  //     } else {
-  //       await this._doctorProfileRepo.create({
-  //         doctorId: objectId,
-  //         ...doctorProfileData,
-  //       });
-  //     }
-  //   }
-
-  //   return `${user.role} updated successfully`;
-  // }
 
 
 

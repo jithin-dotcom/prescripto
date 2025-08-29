@@ -161,7 +161,7 @@ const EditDoctor: React.FC = () => {
       if (profilePhoto && typeof profilePhoto !== "string") fd.append("photo", profilePhoto);
       if (proofDocuments) Array.from(proofDocuments).forEach(f => fd.append("proofDocument", f));
 
-      await axiosInstance.put(`/admin/update-user/${id}`, fd, {
+      await axiosInstance.put(`${APIRoutes.ADMIN_UPDATE_USERS}/${id}`, fd, {
         headers: {
           "Content-Type": "multipart/form-data",
          

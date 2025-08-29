@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../../utils/axios";
 import { toast } from "react-toastify";
+import Navbar from "../../components/Navbar"; // ✅ import navbar
+import { APIUserRoutes } from "../../constants/routes.constants";
 
 interface LocationState {
   appointmentId: string;
@@ -42,8 +44,16 @@ const RaiseConcernPage: React.FC = () => {
       setError("Missing required data. Please go back and try again.");
       return;
     }
+    if(!title){
+       toast.error("Choose a Title for concern");
+       return;
+    }
+    if(!description?.trim()){
+       toast.error("Description cannot be empty");
+       return;
+    }
     try {
-       await axiosInstance.post("/raise-concern", {
+      await axiosInstance.post(`${APIUserRoutes.RAISE_CONCERN}`, {
         appointmentId: state.appointmentId,
         userId: state.userId,
         doctorId: state.doctorId,
@@ -51,7 +61,7 @@ const RaiseConcernPage: React.FC = () => {
         title,
         description,
       });
-      
+
       setSuccess("Concern raised successfully!");
       toast.success("Concern raised successfully");
       navigate("/my-appointments");
@@ -59,85 +69,71 @@ const RaiseConcernPage: React.FC = () => {
       setDescription("");
     } catch (err) {
       console.log(err);
-     
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
-        <h1 className="text-3xl font-bold text-gray-900 text-center mb-6">Raise a Concern</h1>
-        <p className="text-gray-600 text-center mb-8">Share your feedback about your appointment to help us improve.</p>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
-            <select
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 appearance-none"
-              required
-            >
-              <option value="" disabled>Select a concern</option>
-              {concernTitles.map((option) => (
-                <option key={option} value={option}>{option}</option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 h-24 resize-none"
-              placeholder="e.g., The doctor joined the video call 30 minutes late."
-              required
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          {success && <p className="text-green-500 text-sm">{success}</p>}
-          <div className="flex justify-end gap-4">
-            <button
-              type="button"
-              onClick={() => navigate("/my-appointments")}
-              className="text-gray-600 hover:text-gray-900 transition-colors duration-300"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Submit
-            </button>
-          </div>
-        </form>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <Navbar />  
+      <div className="flex items-center justify-center p-4 ">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full hover:scale-102 transition duration-300">
+          <h1 className="text-3xl font-bold text-gray-900 text-center mb-6">
+            Raise a Concern
+          </h1>
+          <p className="text-gray-600 text-center mb-8">
+            Share your feedback about your appointment to help us improve.
+          </p>
+          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                Title
+              </label>
+              <select
+                id="title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 appearance-none"
+                required
+              >
+                <option value="" disabled>Select a concern</option>
+                {concernTitles.map((option) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                Description
+              </label>
+              <textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 p-2 h-24 resize-none"
+                placeholder="e.g., The doctor joined the video call 30 minutes late."
+                required
+              />
+            </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {success && <p className="text-green-500 text-sm">{success}</p>}
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={() => navigate("/my-appointments")}
+                className="text-gray-600 hover:text-gray-900 transition-colors duration-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-
-      <style>
-        {`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          .animate-fadeIn {
-            animation: fadeIn 0.3s ease-out;
-          }
-          @media (max-width: 640px) {
-            .max-w-md {
-              max-width: 100%;
-              margin: 0 1rem;
-            }
-            .p-8 {
-              padding: 1.5rem;
-            }
-            .text-3xl {
-              font-size: 1.875rem;
-            }
-          }
-        `}
-      </style>
     </div>
   );
 };

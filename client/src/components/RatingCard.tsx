@@ -5,6 +5,7 @@ import {  Clock, User, MessageCircle } from "lucide-react";
 import { motion} from "framer-motion";
 import { StarRating } from "./StarRating";
 
+
 export const RatingCard: React.FC<{
   review: {
     userName: string;
@@ -46,7 +47,8 @@ export const RatingCard: React.FC<{
     >
       
 
-       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-2">
+  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-2">
+    
   <div className="flex items-center gap-3">
     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
       <User className="w-6 h-6 text-white" />

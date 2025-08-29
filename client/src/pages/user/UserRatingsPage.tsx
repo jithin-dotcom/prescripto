@@ -7,6 +7,7 @@ import { useAuthStore } from '../../store/authStore';
 import Navbar from '../../components/Navbar';
 import RatingsList from '../../components/RatingsList';
 import type { RatingResponse } from '../../interfaces/IDoctorRatings';
+import { APIRoutes } from '../../constants/routes.constants';
 
 const UserRatingsPage: React.FC = () => {
   const { user } = useAuthStore();
@@ -35,7 +36,7 @@ const UserRatingsPage: React.FC = () => {
       try {
         setIsLoading(true);
         const res = await axiosInstance.get<RatingResponse>(
-          `/get-rating/${doctorId}?page=${currentPage}&limit=${pageSize}`
+          `${APIRoutes.GET_RATING}/${doctorId}?page=${currentPage}&limit=${pageSize}`
         );
         setData(res.data);
         setIsLoading(false);

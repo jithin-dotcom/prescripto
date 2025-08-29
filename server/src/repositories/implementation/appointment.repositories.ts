@@ -95,9 +95,6 @@ async findAppointmentById(appointmentId: string): Promise<IAppointment | null> {
   return await this.model.findById(appointmentId).populate("userId");
 }
 
-// async findAppointmentByUserId(appointmentId: string) : Promise<IAppointment | null> {
-//   return await this.model.findById(appointmentId).populate("doctorId");
-// }
 
 
 }

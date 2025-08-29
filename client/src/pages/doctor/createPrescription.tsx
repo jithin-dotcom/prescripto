@@ -20,6 +20,7 @@ import {
 import Sidebar from "../../components/SideBarAdmin";
 import Navbar from "../../components/NavbarAdmin";
 import type { IAppointmentWithUserResponse, Medicine } from "../../interfaces/ICreatePrescription";
+import { APIDoctorRoutes, APIRoutes } from "../../constants/routes.constants";
 
 
 const CreatePrescription: React.FC = () => {
@@ -34,7 +35,7 @@ const CreatePrescription: React.FC = () => {
     async function fetchAppointments() {
       try {
         if (appointmentId) {
-          const res = await axiosInstance.get(`/appointment/${appointmentId}`);
+          const res = await axiosInstance.get(`${APIRoutes.APPOINTMENT}/${appointmentId}`);
           setAppointment(res.data);
         } else {
           setAppointment(myAppointment);
@@ -138,7 +139,7 @@ const CreatePrescription: React.FC = () => {
         followUpDate: followUpDate || null,
       };
 
-      await axiosInstance.post("/create-prescription", payload);
+      await axiosInstance.post(`${APIDoctorRoutes.CREATE_PRESCRIPTION}`, payload);
       toast.success("Prescription created successfully!");
       navigate("/doctor-appointments");
     } catch (error) {

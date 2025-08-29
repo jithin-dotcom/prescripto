@@ -169,32 +169,29 @@ const DoctorsList: React.FC = () => {
                           {profile.specialization || "Specialization N/A"}
                         </p>
  
-                        
+                    
 
+          {profile.averageRating !== undefined && profile.ratingCount !== undefined && (
+            <div className="flex items-center gap-2 mt-1 text-sm text-yellow-600 flex-wrap sm:flex-nowrap">
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <span className="font-semibold text-base whitespace-nowrap">
+                  {profile.averageRating.toFixed(1)} {"⭐".repeat(Math.round(profile.averageRating))}
+                </span>
+                <span className="text-gray-500 whitespace-nowrap">({profile.ratingCount})</span>
+              </div>
 
-
-
-{profile.averageRating !== undefined && profile.ratingCount !== undefined && (
-  <div className="flex items-center gap-2 mt-1 text-sm text-yellow-600 flex-wrap sm:flex-nowrap">
-    <div className="flex items-center gap-1 flex-shrink-0">
-      <span className="font-semibold text-base whitespace-nowrap">
-        {profile.averageRating.toFixed(1)} {"⭐".repeat(Math.round(profile.averageRating))}
-      </span>
-      <span className="text-gray-500 whitespace-nowrap">({profile.ratingCount})</span>
-    </div>
-
-    <button
-      onClick={(e) => {
-        e.stopPropagation();
-        sessionStorage.setItem("doctorId", doctor.id);
-        navigate("/admin-rating");
-      }}
-      className="py-0.5 px-2 border border-yellow-500 text-xs rounded-full text-yellow-700 hover:bg-yellow-100 transition duration-200 whitespace-nowrap flex-shrink-0"
-    >
-      View Ratings
-    </button>
-  </div>
-)}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  sessionStorage.setItem("doctorId", doctor.id);
+                  navigate("/admin-rating");
+                }}
+                className="py-0.5 px-2 border border-yellow-500 text-xs rounded-full text-yellow-700 hover:bg-yellow-100 transition duration-200 whitespace-nowrap flex-shrink-0"
+              >
+                View Ratings
+              </button>
+            </div>
+          )}
 
 
                         <div className="mt-3 flex items-center gap-2 text-sm">

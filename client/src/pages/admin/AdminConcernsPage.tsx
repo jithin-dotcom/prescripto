@@ -69,7 +69,7 @@ const AdminConcernsPage: React.FC = () => {
     }
 
     try {
-      await axiosInstance.patch(`/update-concern/${selectedConcernId}`, {
+      await axiosInstance.patch(`${APIRoutes.UPDATE_CONCERN}/${selectedConcernId}`, {
         status: newStatus,
         reason,
       });

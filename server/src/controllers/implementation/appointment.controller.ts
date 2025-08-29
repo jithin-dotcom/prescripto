@@ -173,24 +173,6 @@ async updateStatus(req: Request, res: Response, next: NextFunction): Promise<voi
      }
   }
 
-  //   async getSingleAppointmentByUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-  //    try {
-      
-  //      const { appointmentId } = req.params;
-       
-  //      if(!appointmentId){
-  //        res.status(StatusCode.BAD_REQUEST).json({message: "AppointmentId missing"});
-  //        return;
-  //      }
-  //      const result = await this._appointmentService.getSingleAppointmentByUser(appointmentId);
-  //      if(!result){
-  //        res.status(StatusCode.NOT_FOUND).json(StatusMessage.NOT_FOUND);
-  //        return;
-  //      }
-  //      res.status(StatusCode.OK).json(result);
-  //    } catch (error) {
-  //      next(error);
-  //    }
-  // }
+  
 
 }

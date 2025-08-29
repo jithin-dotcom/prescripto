@@ -491,9 +491,9 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
       if(!appointment){
          throw new Error("Appointment not found");
       }
-      console.log("appointment : ",appointment);
+      
       if(appointment?.payment === "paid" ){
-        console.log("entered into appointnt if");
+        
           const userId = appointment.userId;
           const doctorId = appointment.doctorId;
           let walletDoctor = await this._walletRepo.findOne({userId:doctorId});
@@ -535,12 +535,10 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
           }
 
           const updateDoctor = await this._walletRepo.updateById(walletDoctor._id as mongoose.Types.ObjectId,{$inc:{balance: -amount}});
-          console.log("updateDoctor : ",updateDoctor);
+          
           if(!updateDoctor){
              throw new Error("Failed to update wallet balance");
           } 
-
-  
           
           let wallet = await this._walletRepo.findOne({userId});        
           if(!wallet){
@@ -563,7 +561,7 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
           source: "refund",
           transactionId: appointment?.transactionId,
       })
-      console.log("walletHistory : ",walletHistory);
+     
       if(!walletHistory){
           throw new Error("failed to create Wallet History");
       }
@@ -576,13 +574,11 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
 
     }else {
       const update = await this._appointmentRepo.updateById(appointmentId, { status });
-      console.log("update: ", update);
       const appId = update?._id as mongoose.Types.ObjectId;
       const userId = update?.userId as mongoose.Types.ObjectId;
       const doctorId = update?.doctorId as mongoose.Types.ObjectId;
       const participants = [userId, doctorId] as mongoose.Types.ObjectId[];
       const existingChat = await this._chatRepo.findByAppointmentId(appointmentId);
-      console.log("existing chat : ", existingChat);
       if(!existingChat){
          await this._chatRepo.createChat({appointmentId: appId, userId, doctorId, participants})
       }
@@ -606,10 +602,10 @@ async updateStatus(appointmentId: string, status: string): Promise<{ message: st
   }
 }
 
+
+
 async getAppointmentById(appointmentId: string, doctorId : string): Promise< IAppointmentWithUserResponse | null>{
-  
-   try {
-       
+   try {   
     if(!appointmentId){
        throw new Error("AppointmentId missing");
      }
@@ -625,7 +621,6 @@ async getAppointmentById(appointmentId: string, doctorId : string): Promise< IAp
       if (!user || !user._id){
          throw new Error("User not found");
       }
-
       const patientProfile = await this._patientRepo.findOne({ patientId: user._id });
       const doctorProfile = await this._doctorRepo.findOne({ doctorId });
 
@@ -659,63 +654,12 @@ async getAppointmentById(appointmentId: string, doctorId : string): Promise< IAp
       };
      
       return responses;
-
     
   } catch (error) {
     console.error("Error in getAppointmentsByDoctor:", error);
     throw new Error("Failed to fetch appointments for doctor");
   }
 }
-
-
-
-
-
-
-// async getSingleAppointmentByUser(appointmentId : string): Promise<IAppointmentResponse | null> {
-//   try {
-   
-//     const appointment = await this._appointmentRepo.findAppointmentByUserId(appointmentId);
-
-//     let response: IAppointmentResponse | null = null;
-
-//     const doctorUser = appointment?.doctorId as IDoctorInfo;
-
-//     if (!doctorUser || !doctorUser._id){
-//        throw new Error("Doctor not found");
-//     }
-
-//     const profile = await this._doctorRepo.findOne({
-//       doctorId: doctorUser._id,
-//     });
-
-//     if (!profile){
-//        throw new Error("Doctor profile not found");
-//     }
-
-//     if(appointment){
-//        response = mapAppointmentToDTO(appointment, doctorUser, profile);
-//     }
-    
-//     return response;
-//     // responses.push(mapped)
-    
-
- 
-
-//     // return {
-//     //   data: responses,
-//     //   totalDocs,
-//     //   totalPages: Math.ceil(totalDocs / limit),
-//     //   page,
-//     //   limit,
-//     // };
-//   } catch (error) {
-//     console.error("Error fetching user appointments:", error);
-//     throw new Error("Failed to fetch user appointments");
-//   }
-// }
-
 
 
 

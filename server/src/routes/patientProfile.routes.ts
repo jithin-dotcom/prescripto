@@ -19,7 +19,6 @@ router.use(verifyAccessToken);
 
 router.post("/create-patientProfile/:patientId", checkRole("user"), patientProfileController.createProfile.bind(patientProfileController));
 router.put("/edit-patientProfile/:patientId", checkRole("user"), patientProfileController.editProfile.bind(patientProfileController));
-// router.delete("/delete-patientProfile/:patientId", checkRole("user"), patientProfileController.deleteProfile.bind(patientProfileController));
 router.post('/upload-photo', upload.single('photo'), checkRole("user","doctor"), patientProfileController.uploadPhoto.bind(patientProfileController));
 
 export default router;

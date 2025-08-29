@@ -75,7 +75,7 @@ const MyAppointments: React.FC = () => {
   const handleConfirmWalletPayment = async () => {
   if (!appointmentToPay) return;
   try {
-    await axiosInstance.get(`/wallet-payment/${appointmentToPay._id}`);
+    await axiosInstance.get(`${APIUserRoutes.WALLET_PAYMENT}/${appointmentToPay._id}`);
     toast.success("Payment is successful and Appointment is Confirmed");
     
    

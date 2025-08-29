@@ -11,6 +11,7 @@ import SidebarAdmin from '../../components/SideBarAdmin';
 import PayoutRequestList from '../../components/PayoutRequestList';
 import { DollarSign } from 'lucide-react';
 import type { IPayoutRequest } from '../../interfaces/IPayoutRequest';
+import { APIRoutes } from '../../constants/routes.constants';
 
 const AdminPayoutRequestsPage: React.FC = () => {
   const role = useAuthStore((state) => state.user?.role);
@@ -33,7 +34,7 @@ const AdminPayoutRequestsPage: React.FC = () => {
     const fetchPayoutRequests = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get('/payments/get-allPayout', {
+        const response = await axiosInstance.get(`${APIRoutes.GET_ALL_PAYOUTS}`, {
           params: { page: currentPage, limit: pageSize },
         });
         setPayoutRequests(response.data.data);
@@ -56,7 +57,7 @@ const AdminPayoutRequestsPage: React.FC = () => {
         throw new Error('Payout request not found');
       }
 
-      const data: IPayoutRequest = await axiosInstance.post('/payments/initiate-payout', {
+      const data: IPayoutRequest = await axiosInstance.post(`${APIRoutes.INITIATE_PAYOUTS}`, {
         payoutId: requestId,
         doctorId: payout.doctorId._id,
         amount: payout.amount,

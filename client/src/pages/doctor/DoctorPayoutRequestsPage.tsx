@@ -10,6 +10,7 @@ import SidebarAdmin from '../../components/SideBarAdmin';
 import PayoutRequestList from '../../components/PayoutRequestList';
 import { DollarSign } from 'lucide-react';
 import type { IPayoutRequest } from '../../interfaces/IPayoutRequest';
+import { APIDoctorRoutes } from '../../constants/routes.constants';
 
 const DoctorPayoutRequestsPage: React.FC = () => {
   const role = useAuthStore((state) => state.user?.role);
@@ -31,7 +32,7 @@ const DoctorPayoutRequestsPage: React.FC = () => {
     const fetchPayoutRequests = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get('/payments/get-doctorPayout', {
+        const response = await axiosInstance.get(`${APIDoctorRoutes.GET_DOCTOR_PAYOUT}`, {
           params: { page: currentPage, limit: pageSize },
         });
         setPayoutRequests(response.data.data);

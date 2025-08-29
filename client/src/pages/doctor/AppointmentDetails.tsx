@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import type { IPrescription, IMed } from "../../interfaces/IAppointmentDetails";
 import Sidebar from "../../components/SideBarAdmin";
 import Navbar from "../../components/NavbarAdmin";
+import { APIRoutes } from "../../constants/routes.constants";
 
 const AppointmentDetails: React.FC = () => {
   const location = useLocation();
@@ -22,7 +23,7 @@ const AppointmentDetails: React.FC = () => {
     const fetchPrescription = async () => {
       if (!appointment?._id) return;
       try {
-        const { data } = await axiosInstance.get(`/get-prescription/${appointment._id}`);
+        const { data } = await axiosInstance.get(`${APIRoutes.GET_PRESCRIPTION}/${appointment._id}`);
         if (data) setPrescription(data);
       } catch (error) {
         console.error("Prescription fetch failed", error);

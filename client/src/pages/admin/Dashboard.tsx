@@ -9,6 +9,7 @@ import axiosInstance from "../../utils/axios";
 import moment from "moment";
 import { useAuthStore } from "../../store/authStore";
 import type{ Appointment, Stats, FilterOption, RevenueBreakdown } from "../../interfaces/IAdminDashboard";
+import { APIRoutes } from "../../constants/routes.constants";
 
 
 
@@ -21,7 +22,7 @@ const AdminDashboard: React.FC = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axiosInstance.get("/all-appointments");
+        const res = await axiosInstance.get(`${APIRoutes.FETCH_APPOINTMENTS}`);
         setAppointments(res.data.data || []);
       } catch (error) {
         console.error("Error fetching appointments:", error);

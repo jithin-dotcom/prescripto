@@ -62,7 +62,6 @@ router.get("/ice-servers", async (req, res) => {
           }
         });
 
-        // console.log("Returning ICE servers:", iceServers);
         res.json(iceServers);
       } catch (err) {
         console.error("Failed to parse Xirsys response, returning fallback STUNs:", err);

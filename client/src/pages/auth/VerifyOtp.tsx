@@ -145,7 +145,6 @@ const VerifyOtp = () => {
             animate={{ scale: 1 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
           />
-          {/* <h2 className="text-3xl font-bold text-blue-600">Verify your email</h2> */}
           <p className="text-sm text-gray-500 mt-2">
             We sent an OTP to <strong>{email}</strong>
           </p>

@@ -19,6 +19,7 @@ import {
   Trash2,
   AlertCircle,
 } from "lucide-react";
+import { APIDoctorRoutes } from "../../constants/routes.constants";
 
 
 
@@ -135,9 +136,7 @@ const EditPrescription: React.FC = () => {
       };
 
       
-
-    
-     const res = await axiosInstance.post(`/update-prescription/${appointment._id}`, payload);
+    const res = await axiosInstance.post(`${APIDoctorRoutes.UPDATE_PRESCRIPTION}/${appointment._id}`, payload);
 
       setCurrentData(res.data);
       toast.success("Prescription Updated  successfully!");
@@ -161,7 +160,7 @@ const formatDateForInput = (dateString: string) => {
 useEffect(() => {
   async function fetchPrescription() {
     try {
-      const res = await axiosInstance.get(`/get-editPrescription/${appointment._id}`);
+      const res = await axiosInstance.get(`${APIDoctorRoutes.GET_EDIT_PRESCRIPTION}/${appointment._id}`);
      
       const data = res.data;
       setCurrentData(data);

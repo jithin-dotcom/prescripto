@@ -7,6 +7,7 @@ import axiosInstance from "../../utils/axios";
 import type { IPrescription } from "../../interfaces/IAdminAppointmentDetails";
 import Navbar from "../../components/NavbarAdmin";
 import SidebarAdmin from "../../components/SideBarAdmin";
+import { APIRoutes } from "../../constants/routes.constants";
 
 const AdminAppointmentDetails: React.FC = () => {
   const location = useLocation();
@@ -17,7 +18,7 @@ const AdminAppointmentDetails: React.FC = () => {
     const fetchPrescription = async () => {
       if (!appointment?._id) return;
       try {
-        const { data } = await axiosInstance.get(`/get-prescription/${appointment._id}`);
+        const { data } = await axiosInstance.get(`${APIRoutes.GET_PRESCRIPTION}/${appointment._id}`);
         if (data) setPrescription(data);
       } catch (err) {
         console.error("Prescription fetch error:", err);
@@ -44,9 +45,7 @@ const AdminAppointmentDetails: React.FC = () => {
         <SidebarAdmin />
         <main className="flex-1 p-4 sm:p-8 overflow-y-auto">
           <div className="max-w-5xl mx-auto space-y-6">
-            {/* <div className="mb-6">
-              <img src={logo} alt="Logo" className="w-32 sm:w-40 h-10 sm:h-12" />
-            </div> */}
+           
             <motion.div
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
               initial={{ opacity: 0, y: 30 }}

@@ -8,6 +8,7 @@ import Navbar from '../../components/NavbarAdmin';
 import Pagination from '../../components/Pagination';
 import dayjs from 'dayjs';
 import type{ IHistoryData } from '../../interfaces/IPatientHistory';
+import { APIDoctorRoutes } from '../../constants/routes.constants';
 
 
 
@@ -35,7 +36,7 @@ const PatientHistory: React.FC = () => {
       }
 
       try {
-        const { data } = await axiosInstance.get(`/patient-history/${patientId}?page=${page}&limit=${pageSize}`);
+        const { data } = await axiosInstance.get(`${APIDoctorRoutes.PATIENT_HISTORY}/${patientId}?page=${page}&limit=${pageSize}`);
         setHistoryData(data);
         setLoading(false);
       } catch (error) {

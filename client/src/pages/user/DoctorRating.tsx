@@ -8,6 +8,7 @@ import { Star, X } from 'lucide-react';
 import { toast } from 'react-toastify';
 import axiosInstance from '../../utils/axios';
 import Navbar from '../../components/Navbar';
+import { APIUserRoutes } from '../../constants/routes.constants';
 
 export const RateDoctor = () => {
   const location = useLocation();
@@ -52,7 +53,7 @@ export const RateDoctor = () => {
     }
 
     try {
-      await axiosInstance.post('/rate-doctor', {
+      await axiosInstance.post(`${APIUserRoutes.RATE_DOCTOR}`, {  
         appointmentId,
         userId,
         doctorId,
@@ -72,7 +73,7 @@ export const RateDoctor = () => {
   const isOpen = new URLSearchParams(location.search).get('rate') === 'true';
 
   return (
-   <div className="min-h-screen flex flex-col bg-gray-50">
+   <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100">
     <Navbar />
     <AnimatePresence>
       {isOpen && (
@@ -80,14 +81,14 @@ export const RateDoctor = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40 backdrop-blur-sm"
+          className="fixed inset-0 flex items-center justify-center z-50 "
         >
           <motion.div
             initial={{ scale: 0.7, y: 50 }}
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.7, y: 50 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl"
+            className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl hover:scale-102 transition duration-300"
           >
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold text-gray-800">Rate your doctor</h2>

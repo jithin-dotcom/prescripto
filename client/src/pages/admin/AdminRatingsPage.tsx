@@ -8,6 +8,7 @@ import NavbarAdmin from '../../components/NavbarAdmin';
 import SidebarAdmin from '../../components/SideBarAdmin';
 import RatingsList from '../../components/RatingsList';
 import type { RatingResponse } from '../../interfaces/IDoctorRatings';
+import { APIRoutes } from '../../constants/routes.constants';
 
 const AdminRatingsPage: React.FC = () => {
   const { user } = useAuthStore();
@@ -36,7 +37,7 @@ const AdminRatingsPage: React.FC = () => {
       try {
         setIsLoading(true);
         const res = await axiosInstance.get<RatingResponse>(
-          `/get-rating/${doctorId}?page=${currentPage}&limit=${pageSize}`
+           `${APIRoutes.GET_RATING}/${doctorId}?page=${currentPage}&limit=${pageSize}`
         );
         setData(res.data);
         setIsLoading(false);

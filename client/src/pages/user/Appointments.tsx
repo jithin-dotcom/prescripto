@@ -318,7 +318,6 @@ const Appointment: React.FC = () => {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    // onClick={handleBooking}
                     onClick={() => setShowConfirmModal(true)}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-full shadow-md cursor-pointer"
                   >

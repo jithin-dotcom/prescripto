@@ -31,6 +31,7 @@ export default function MyVideoCall() {
   const peerId = isDoctor ? patientId : doctorId;
 
   const socketRef = useRef<Socket | null>(null);
+  const intentionalEndRef = useRef(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [incomingCall, setIncomingCall] = useState<IncomingCallData | null>(null);
   const [callAccepted, setCallAccepted] = useState(false);
@@ -168,28 +169,21 @@ export default function MyVideoCall() {
     socket.on("end-call", () => {
       handleRemoteEnd();
       toast.success("Call completed successfully");
-       if (isDoctor) {
-    navigate("/doctor-appointments", { replace: true });
-  } else {
- 
-    sessionStorage.setItem(
-  'ratingData',
-  JSON.stringify({
-    appointmentId,
-    userId: patientId,
-    doctorId,
-  })
-);
-
-navigate("/rate-doctor?rate=true", { replace: true });
-
-  }
+      if (isDoctor) {
+        navigate("/doctor-appointments", { replace: true });
+        
+      } else {
+        sessionStorage.setItem('ratingData',JSON.stringify({appointmentId,userId: patientId,doctorId,}));
+        navigate("/rate-doctor?rate=true", { replace: true });
+      }
     });
 
     socket.on("user-disconnected", (payload) => {
       peerConnection.current?.close();
       console.log("user-disconnected event received", payload);
-      toast.error("The other user disconnected. Please try to connect again");
+      if(!intentionalEndRef){
+         toast.error("The other user disconnected. Please try to connect again");
+      }
       setConnectionStatus("disconnected");
       handleRemoteEnd();
     });
@@ -343,7 +337,8 @@ pc.oniceconnectionstatechange = () => {
     }
   };
 
-  const endCall = () => {
+const endCall = () => {
+    intentionalEndRef.current = true; 
     setCallEnded(true);
     setCallAccepted(false);
     setIsCalling(false);
@@ -357,44 +352,15 @@ pc.oniceconnectionstatechange = () => {
     });
     toast.success("Call completed successfully");
    
-//    if (isDoctor) {
-//     navigate("/doctor-appointments", { replace: true });
-//   } else {
-    
-//     sessionStorage.setItem(
-//   'ratingData',
-//   JSON.stringify({
-//     appointmentId,
-//     userId: patientId,
-//     doctorId,
-//   })
-// );
 
-// navigate("/rate-doctor?rate=true", { replace: true });
-// }
-
-
-// appointment.status === "completed"
-//                       ? navigate("/create-prescription", { state: { appointment } })
-//                       : toast.error("Consultation not Completed")
-
-
- if (isDoctor) {
-    // navigate("/doctor-appointments", { replace: true });
+  if (isDoctor) {
     navigate("/create-prescription", { state: { appointmentId } })
   } else {
     
-    sessionStorage.setItem(
-  'ratingData',
-  JSON.stringify({
-    appointmentId,
-    userId: patientId,
-    doctorId,
-  })
-);
+    sessionStorage.setItem('ratingData',JSON.stringify({appointmentId,userId: patientId,doctorId,}));
 
-navigate("/rate-doctor?rate=true", { replace: true });
-}
+    navigate("/rate-doctor?rate=true", { replace: true });
+  }
 
 };
 

@@ -41,18 +41,8 @@ async getPrescription(
       return await this.model.findOneAndUpdate({ appointmentId }, data, { new: true });
    }
 
-   // async getPatientHistory(patientId: string | mongoose.Types.ObjectId): Promise<(IPatientHistoryPopulated | null)[]> {
-   //    console.log("patientId repo : ",patientId);
-   //    return await this.model.find({patientId})
-   //                           .populate("patientId")
-   //                           .populate("appointmentId")
-   //                           .lean<IPatientHistoryPopulated[]>()
-   //                           .exec()
-   // }
 
-
-
-   async getPatientHistory(
+async getPatientHistory(
   patientId: string | mongoose.Types.ObjectId,
   page: number,
   limit: number

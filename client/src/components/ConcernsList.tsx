@@ -39,7 +39,6 @@ const ConcernsList: React.FC<ConcernsListProps> = ({
   statusFilter,
   role,
   isModalOpen,
-//   selectedConcernId,
   newStatus,
   reason,
   onSearchChange,

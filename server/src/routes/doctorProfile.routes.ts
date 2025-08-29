@@ -15,7 +15,6 @@ router.use(verifyAccessToken);
 
 router.post("/create-doctor-profile/:doctorId", checkRole("doctor") ,doctorProfileController.createProfile.bind(doctorProfileController));
 router.put("/edit-doctor-profile/:doctorId",checkRole("doctor"), doctorProfileController.editProfile.bind(doctorProfileController));
-// router.delete("/delete-doctor-profile/:doctorId",doctorProfileController.deleteProfile.bind(doctorProfileController));
 router.get("/top-doctor-rating",checkRole("user"), doctorProfileController.findDoctorWithRating.bind(doctorProfileController));
 
 export default router;

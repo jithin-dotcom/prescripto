@@ -102,7 +102,6 @@ export class UserController implements IUserController {
 
     async changePassword(req: Request, res: Response, next: NextFunction): Promise<void>{
       try {
-        console.log("entered into changePassword controller");
         const {password, newPassword} = req.body;
         const userId = req.user?.id;
         if(!userId){
@@ -116,7 +115,6 @@ export class UserController implements IUserController {
           }
 
         await this._userService.changePassword(userId, password, newPassword);
-        console.log("changed password successfully");
         res.status(StatusCode.OK).json({message: "Password changed successfully"});
       }catch (error) {
          next(error);
@@ -126,7 +124,7 @@ export class UserController implements IUserController {
 
     async changeEmail(req: Request, res: Response, next: NextFunction):Promise<void>{
        try {
-        console.log("entered into controller");
+      
           const {password, newEmail} = req.body;
           const userId = req.user?.id;
 

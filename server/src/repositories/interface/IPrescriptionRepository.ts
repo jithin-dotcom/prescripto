@@ -11,7 +11,7 @@ export interface IPrescriptionRepository extends IBaseRepository<IPrescription> 
     getPrescription(
       appointmentId: mongoose.Types.ObjectId
     ): Promise<IPrescriptionDocPopulated | null>;
-    // getPatientHistory(patientId: string | mongoose.Types.ObjectId): Promise<(IPatientHistoryPopulated | null)[]>; 
+   
 
     getPatientHistory(
       patientId: string | mongoose.Types.ObjectId,

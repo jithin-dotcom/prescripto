@@ -10,6 +10,7 @@ import moment from "moment";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../../store/authStore";
 import type { Appointment, Rating, Stats, FilterOption } from "../../interfaces/IDoctorDashboard";
+import { APIDoctorRoutes, APIRoutes } from "../../constants/routes.constants";
 
 
 const DoctorDashboard: React.FC = () => {
@@ -25,7 +26,7 @@ const DoctorDashboard: React.FC = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await axiosInstance.get("/doctor-appointments");
+        const res = await axiosInstance.get(`${APIDoctorRoutes.DOCTOR_APPOINTMENTS}`);
         setAppointments(res.data.data || []);
       } catch (error) {
         console.error("Error fetching appointments:", error);
@@ -42,7 +43,7 @@ const DoctorDashboard: React.FC = () => {
         return;
       }
       try {
-        const res = await axiosInstance.get(`/get-rating/${doctorId}`);
+        const res = await axiosInstance.get(`${APIRoutes.GET_RATING}/${doctorId}`);
         setRatings(res.data.data || []);
         setAverageRating(res.data.averageRating || 0);
         setTotalReviews(res.data.totalReviews || 0);

@@ -7,7 +7,7 @@ export interface IPrescriptionService {
     generatePrescriptionPDF(prescription: any): Promise<Buffer>;
     getEditPrescription(appointmentId: string): Promise<IPrescriptionClean | null>; 
     getPrescription(appointmentId: string): Promise<IPrescriptionClean | null>;
-    // getPatientHistory(patientId: string, page: number, limit: number): Promise<(IPatientHistoryClean)[]>;
+    
     
   getPatientHistory(
   patientId: string,

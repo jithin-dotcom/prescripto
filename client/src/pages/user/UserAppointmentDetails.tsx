@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import axiosInstance from "../../utils/axios";
 import type { IPrescription } from "../../interfaces/IUserAppointmentDetails";
 import Navbar from "../../components/Navbar";
+import { APIRoutes, APIUserRoutes } from "../../constants/routes.constants";
 
 
 const UserAppointmentDetails: React.FC = () => {
@@ -16,7 +17,7 @@ const UserAppointmentDetails: React.FC = () => {
   const downloadInvoice = async (appointmentId: string) => {
     try {
       const response = await axiosInstance.get(
-        `payments/get-payment/${appointmentId}`,
+        `${APIUserRoutes.GET_PAYMENTS}/${appointmentId}`,
         { responseType: "blob" }
       );
       const url = window.URL.createObjectURL(
@@ -35,7 +36,7 @@ const UserAppointmentDetails: React.FC = () => {
   const downloadPrescription = async (appointmentId: string) => {
     try {
       const response = await axiosInstance.get(
-        `/download-prescription/${appointmentId}`,
+        `${APIUserRoutes.DOWNLOAD_PRESCRIPTION}/${appointmentId}`,
         { responseType: "blob" }
       );
       const url = window.URL.createObjectURL(
@@ -58,7 +59,7 @@ const UserAppointmentDetails: React.FC = () => {
       if (!appointment?._id) return;
       try {
         const { data } = await axiosInstance.get(
-          `/get-prescription/${appointment._id}`
+          `${APIRoutes.GET_PRESCRIPTION}/${appointment._id}`
         );
         if (data) setPrescription(data);
       } catch (err) {

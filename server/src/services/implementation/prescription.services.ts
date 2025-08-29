@@ -207,33 +207,6 @@ async generatePrescriptionPDF(prescription: IPrescriptionDownload): Promise<Buff
   }
 
 
-  // async getPatientHistory(patientId: string): Promise<(IPatientHistoryClean)[]> {
-  //   try {
-  //     console.log("patientId : ",patientId);
-  //      if(!patientId){
-  //         throw new Error("PatientId is missing");
-  //      }
-  //      const pId = new mongoose.Types.ObjectId(patientId);
-  //      const patientHistory = await this._prescriptionRepo.getPatientHistory(pId);
-  //      console.log("patientHistory : ",patientHistory);
-  //      let result = []
-  //      for(let history of patientHistory){
-  //        if(history){
-  //          result.push(mapPatientHistoryDTO(history));
-  //        }  
-  //      }
-  //      console.log("result services : ",result);
-  //      return result;
-  //   } catch (error) {
-  //      if(error instanceof Error){
-  //        throw error;
-  //      }else{
-  //        throw new Error("Failed to fetch Patient History");
-  //      }
-  //   }
-  // }
-
-
 
 
   async getPatientHistory(
