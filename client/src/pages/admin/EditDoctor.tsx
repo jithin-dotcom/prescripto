@@ -103,95 +103,105 @@ const EditDoctor: React.FC = () => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
- 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
+
+ const handleSubmit = async (e: React.FormEvent) => {
+   e.preventDefault();
+   try {
+   
+    if (!/^[A-Za-z\s]+$/.test(form.name) || form.name.trim().length === 0) throw new Error("Name invalid");
+    if (form.name.length > 20) throw new Error("Name must be maximum size 20");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) || form.email.trim().length === 0) throw new Error("Email invalid");
+    if (!/^[A-Z\s]+$/.test(form.educationDetails) || form.educationDetails.trim().length === 0) throw new Error("Education uppercase only");
+    if (!/^[a-zA-Z0-9]+$/.test(form.registrationNumber) || form.registrationNumber.trim().length === 0) throw new Error("Registration invalid");
+    if (!/^\d{4}$/.test(form.registrationYear) || !form.registrationYear) throw new Error("Reg year invalid");
+    if (isNaN(+form.yearOfExperience) || !form.yearOfExperience) throw new Error("Experience must be numeric");
+    if (isNaN(+form.fee) || !form.fee) throw new Error("Fee must be numeric");
+    if(form.slotDuration > 60) throw new Error("Slot duration cannot be greater than 1 Hrs");
+
+    
+    const timeToMinutes = (time: string): number => {
+      const time24 = convertTo24Hour(time);
+      const [hours, minutes] = time24.split(":").map(Number);
+      return hours * 60 + minutes;
+    };
+
+    const seenDays = new Set<string>();
+    const convertedAvail: AvailabilitySlot[] = [];
+
+    for (const daySlot of form.availability) {
+      if (!daySlot.day) throw new Error("Day missing");
+      if (seenDays.has(daySlot.day)) throw new Error(`Duplicate ${daySlot.day}`);
+      seenDays.add(daySlot.day);
+
      
-      if (!/^[A-Za-z\s]+$/.test(form.name) || form.name.trim().length === 0 ) throw new Error("Name invalid");
-      if(form.name.length > 20) throw new Error("Name must be maximum size 20");
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) || form.email.trim().length === 0) throw new Error("Email invalid");
-      if (!/^[A-Z\s]+$/.test(form.educationDetails) || form.educationDetails.trim().length === 0) throw new Error("Education uppercase only");
-      if (!/^[a-zA-Z0-9]+$/.test(form.registrationNumber) || form.registrationNumber.trim().length === 0) throw new Error("Registration invalid");
-      if (!/^\d{4}$/.test(form.registrationYear) || !form.registrationYear) throw new Error("Reg year invalid");
-      if (isNaN(+form.yearOfExperience) || !form.yearOfExperience) throw new Error("Experience must be numeric");
-      if (isNaN(+form.fee) || !form.fee) throw new Error("Fee must be numeric");
+      const sortedSlots = [...daySlot.slots].sort((a, b) => timeToMinutes(a.from) - timeToMinutes(b.from));
+      const blocks: TimeBlock[] = [];
 
-      
-      const seenDays = new Set<string>();
-      const convertedAvail: AvailabilitySlot[] = [];
+      for (let i = 0; i < sortedSlots.length; i++) {
+        const { from, to } = sortedSlots[i];
+        if (!from || !to) throw new Error(`Block missing times for ${daySlot.day}`);
+        if (!timeOptions.includes(from) || !timeOptions.includes(to)) throw new Error(`Invalid time format for ${daySlot.day}`);
 
-      for (const daySlot of form.availability) {
-        if (!daySlot.day) throw new Error("Day missing");
-        if (seenDays.has(daySlot.day)) throw new Error(`Duplicate ${daySlot.day}`);
-        seenDays.add(daySlot.day);
+        const from24 = convertTo24Hour(from);
+        const to24 = convertTo24Hour(to);
+        const fromMinutes = timeToMinutes(from);
+        const toMinutes = timeToMinutes(to);
 
-        const seenRanges = new Set<string>();
-        const blocks = daySlot.slots.map(b => {
-          if (!b.from || !b.to) throw new Error(`Block missing times for ${daySlot.day}`);
-          if (!timeOptions.includes(b.from) || !timeOptions.includes(b.to)) throw new Error("Invalid time format");
-          const from = convertTo24Hour(b.from);
-          const to = convertTo24Hour(b.to);
-          if (from >= to) throw new Error(`Start must be before end for ${daySlot.day}`);
-          if((Number(to) - Number(from) ) < form.slotDuration){
-              throw new Error(`Time duration set on ${daySlot.day} is less than slot duration`);    
+        if (fromMinutes >= toMinutes) throw new Error(`Start time must be before end time for ${daySlot.day}: ${from} - ${to}`);
+        if ((toMinutes - fromMinutes) < form.slotDuration) throw new Error(`Time duration on ${daySlot.day} (${from} - ${to}) is less than slot duration`);
+
+       
+        for (let j = 0; j < i; j++) {
+          const prevBlock = sortedSlots[j];
+          const prevFromMinutes = timeToMinutes(prevBlock.from);
+          const prevToMinutes = timeToMinutes(prevBlock.to);
+
+          if (fromMinutes < prevToMinutes && toMinutes > prevFromMinutes) {
+            throw new Error(`Overlapping slot detected on ${daySlot.day}: ${from} - ${to} overlaps with ${prevBlock.from} - ${prevBlock.to}`);
           }
-          // const key = `${from}-${to}`;
-          // if (seenRanges.has(key)) throw new Error(`Duplicate block ${b.from} - ${b.to}`);
-          // seenRanges.add(key);
-          // return { from, to };
+        }
 
-          for (const existing of Array.from(seenRanges)) {
-    const [exFrom, exTo] = existing.split("-").map(Number);
-    if (Number(from) < exTo && Number(to) > exFrom) {
-      throw new Error(`Overlapping slot detected on ${daySlot.day}: ${b.from} - ${b.to}`);
-    }
-  }
-
-  const key = `${from}-${to}`;
-  if (seenRanges.has(key)) throw new Error(`Duplicate block ${b.from} - ${b.to}`);
-  seenRanges.add(key);
-
-  return { from, to };
-        });
-
-        convertedAvail.push({ day: daySlot.day, slots: blocks });
+        blocks.push({ from: from24, to: to24 });
       }
 
-      const fd = new FormData();
-      fd.append("userData", JSON.stringify({
-        name: form.name, email: form.email, role: "doctor"
-      }));
-      fd.append("profileData", JSON.stringify({
-        specialization: form.specialization,
-        educationDetails: form.educationDetails,
-        registrationNumber: form.registrationNumber,
-        registrationYear: form.registrationYear,
-        yearOfExperience: +form.yearOfExperience,
-        fee: +form.fee,
-        about: form.about,
-        slotDuration: form.slotDuration,
-        availability: convertedAvail
-      }));
-
-      if (profilePhoto && typeof profilePhoto !== "string") fd.append("photo", profilePhoto);
-      if (proofDocuments) Array.from(proofDocuments).forEach(f => fd.append("proofDocument", f));
-
-      await axiosInstance.put(`${APIRoutes.ADMIN_UPDATE_USERS}/${id}`, fd, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-         
-        },
-       
-      });
-
-      toast.success("Doctor profile updated");
-      navigate("/doctor-list");
-    } catch (ex) {
-      console.log("error : ",ex);
-      
+      convertedAvail.push({ day: daySlot.day, slots: blocks });
     }
-  };
+
+   
+    const fd = new FormData();
+    fd.append("userData", JSON.stringify({
+      name: form.name,
+      email: form.email,
+      role: "doctor"
+    }));
+    fd.append("profileData", JSON.stringify({
+      specialization: form.specialization,
+      educationDetails: form.educationDetails,
+      registrationNumber: form.registrationNumber,
+      registrationYear: form.registrationYear,
+      yearOfExperience: +form.yearOfExperience,
+      fee: +form.fee,
+      about: form.about,
+      slotDuration: form.slotDuration,
+      availability: convertedAvail
+    }));
+
+    if (profilePhoto && typeof profilePhoto !== "string") fd.append("photo", profilePhoto);
+    if (proofDocuments) Array.from(proofDocuments).forEach(f => fd.append("proofDocument", f));
+
+    await axiosInstance.put(`${APIRoutes.ADMIN_UPDATE_USERS}/${id}`, fd, {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
+
+    toast.success("Doctor profile updated");
+    navigate("/doctor-list");
+  } catch (ex) {
+    if (ex instanceof Error) {
+      toast.error(ex.message || "Failed to update doctor");
+    }
+   }
+ };
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col bg-gradient-to-br from-blue-100 to-indigo-100">
