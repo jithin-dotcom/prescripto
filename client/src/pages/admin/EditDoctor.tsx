@@ -133,10 +133,26 @@ const EditDoctor: React.FC = () => {
           const from = convertTo24Hour(b.from);
           const to = convertTo24Hour(b.to);
           if (from >= to) throw new Error(`Start must be before end for ${daySlot.day}`);
-          const key = `${from}-${to}`;
-          if (seenRanges.has(key)) throw new Error(`Duplicate block ${b.from} - ${b.to}`);
-          seenRanges.add(key);
-          return { from, to };
+          if((Number(to) - Number(from) ) < form.slotDuration){
+              throw new Error(`Time duration set on ${daySlot.day} is less than slot duration`);    
+          }
+          // const key = `${from}-${to}`;
+          // if (seenRanges.has(key)) throw new Error(`Duplicate block ${b.from} - ${b.to}`);
+          // seenRanges.add(key);
+          // return { from, to };
+
+          for (const existing of Array.from(seenRanges)) {
+    const [exFrom, exTo] = existing.split("-").map(Number);
+    if (Number(from) < exTo && Number(to) > exFrom) {
+      throw new Error(`Overlapping slot detected on ${daySlot.day}: ${b.from} - ${b.to}`);
+    }
+  }
+
+  const key = `${from}-${to}`;
+  if (seenRanges.has(key)) throw new Error(`Duplicate block ${b.from} - ${b.to}`);
+  seenRanges.add(key);
+
+  return { from, to };
         });
 
         convertedAvail.push({ day: daySlot.day, slots: blocks });
