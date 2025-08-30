@@ -18,6 +18,8 @@ import { AppError } from "../../utils/AppError";
 import { LoginResponse } from "../../types/loginResponse";
 import redisClient from "../../config/redisClient";
 import { mapUser } from "../../utils/mapper/authService.mapper";
+import { SignupRequestDTO } from "../../utils/reverseMapper/authService/IAuthService";
+import { mapSignupRequestToData } from "../../utils/reverseMapper/authService/authService";
 
 
 
@@ -276,39 +278,71 @@ async googleAuth(userObj: any): Promise<{ user: any; accessToken: string; refres
 
 
 
-async signup(user: IUser): Promise<{ message: string }> {
-   try {
-      const existingUser = await this._userRepo.findByEmail(user.email);
-      if (existingUser) {
-        const error = new Error("User already exists");
-        (error as any).statusCode = 409;
-        throw error;
-      }
-      if (!user.password) {
-         throw new Error("Password is required for signup");
-      }
+// async signup(user: IUser): Promise<{ message: string }> {
+//    try {
+//       const existingUser = await this._userRepo.findByEmail(user.email);
+//       if (existingUser) {
+//         const error = new Error("User already exists");
+//         (error as any).statusCode = 409;
+//         throw error;
+//       }
+//       if (!user.password) {
+//          throw new Error("Password is required for signup");
+//       }
       
-      const hashedPassword = await bcrypt.hash(user.password, 10); 
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+//       const hashedPassword = await bcrypt.hash(user.password, 10); 
+//       const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-      await this._otpRepo.createOtp(user.email, otp, {
-        name: user.name,
-        email: user.email,
-        password: hashedPassword,
-        role: user.role,
-      });
+//       await this._otpRepo.createOtp(user.email, otp, {
+//         name: user.name,
+//         email: user.email,
+//         password: hashedPassword,
+//         role: user.role,
+//       });
 
-      await sendOtpMail(user.email, otp);
-      return { message: "OTP sent to your email" };
-    } catch (error) {
-      console.error("Signup error:", error);
-      if(error instanceof Error){
-         throw error;
-      }else{
-         throw new Error("Failed to sign up");
-      }
+//       await sendOtpMail(user.email, otp);
+//       return { message: "OTP sent to your email" };
+//     } catch (error) {
+//       console.error("Signup error:", error);
+//       if(error instanceof Error){
+//          throw error;
+//       }else{
+//          throw new Error("Failed to sign up");
+//       }
+//     }
+//   }
+
+
+
+
+async signup(userDto: SignupRequestDTO): Promise<{ message: string }> {
+  try {
+    const existingUser = await this._userRepo.findByEmail(userDto.email);
+    if (existingUser) {
+      const error = new Error("User already exists");
+      (error as any).statusCode = 409;
+      throw error;
     }
+
+    if (!userDto.password) {
+      throw new Error("Password is required for signup");
+    }
+
+    const hashedPassword = await bcrypt.hash(userDto.password, 10);
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const signupData = mapSignupRequestToData(userDto, hashedPassword);
+
+    await this._otpRepo.createOtp(userDto.email, otp, signupData);
+    await sendOtpMail(userDto.email, otp);
+
+    return { message: "OTP sent to your email" };
+  } catch (error) {
+    console.error("Signup error:", error);
+    if (error instanceof Error) throw error;
+    throw new Error("Failed to sign up");
   }
+}
 
 
 

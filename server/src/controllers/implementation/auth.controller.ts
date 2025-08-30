@@ -39,32 +39,63 @@ export class AuthController implements IAuthController {
 }
 
   
-  async signup(req: Request, res: Response, next: NextFunction) {
-    try {
-      const validated = signupSchema.parse(req.body);
-      const data = await this._authService.signup({
-        name: validated.name,
-        email: validated.email,
-        password: validated.password,
-        role: validated.role,
-        isBlocked: false,
-      });
-      res.status(StatusCode.OK).json(data);
+  // async signup(req: Request, res: Response, next: NextFunction) {
+  //   try {
+  //     const validated = signupSchema.parse(req.body);
+  //     const data = await this._authService.signup({
+  //       name: validated.name,
+  //       email: validated.email,
+  //       password: validated.password,
+  //       role: validated.role,
+  //       isBlocked: false,
+  //     });
+  //     res.status(StatusCode.OK).json(data);
+  //     return;
+  //   }catch (error: any) {
+  //     if (error?.statusCode) {
+  //       res.status(error.statusCode).json({ message: error.message });
+  //       return;
+  //     }
+  //     if (error.name === "ZodError") {
+  //       res
+  //         .status(StatusCode.BAD_REQUEST)
+  //         .json({ message: error.errors.map((e: any) => e.message).join(", ") });
+  //       return;
+  //     }
+  //     next(error);
+  //   }
+  // }
+
+
+
+  // controllers/auth.controller.ts
+async signup(req: Request, res: Response, next: NextFunction) {
+  try {
+    const validated = signupSchema.parse(req.body);
+
+    const data = await this._authService.signup({
+      name: validated.name,
+      email: validated.email,
+      password: validated.password,
+      role: validated.role,
+    });
+
+    res.status(StatusCode.OK).json(data);
+  } catch (error: any) {
+    if (error?.statusCode) {
+      res.status(error.statusCode).json({ message: error.message });
       return;
-    }catch (error: any) {
-      if (error?.statusCode) {
-        res.status(error.statusCode).json({ message: error.message });
-        return;
-      }
-      if (error.name === "ZodError") {
-        res
-          .status(StatusCode.BAD_REQUEST)
-          .json({ message: error.errors.map((e: any) => e.message).join(", ") });
-        return;
-      }
-      next(error);
     }
+    if (error.name === "ZodError") {
+      res.status(StatusCode.BAD_REQUEST).json({
+        message: error.errors.map((e: any) => e.message).join(", "),
+      });
+      return;
+    }
+    next(error);
   }
+}
+
 
   
 

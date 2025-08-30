@@ -2,23 +2,30 @@
 import { IUser } from "../../types/user.type";
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
+import { CreateUserDTO, UpdateDoctorProfileDTO, UpdatePatientProfileDTO, UserWithProfileResponseDTO } from "../../utils/reverseMapper/adminService/IAdminService";
 
 
 
+
+
+// export interface CreateUserOrDoctorInput {
+//   userData: Partial<IUser>;
+//   profileData: Partial<IPatientProfile> | Partial<IDoctorProfile>;
+//   files?: UploadedFiles;
+// }
 
 
 export interface CreateUserOrDoctorInput {
-  userData: Partial<IUser>;
-  profileData: Partial<IPatientProfile> | Partial<IDoctorProfile>;
+  userData: CreateUserDTO;
+  profileData: UpdatePatientProfileDTO | UpdateDoctorProfileDTO;
   files?: UploadedFiles;
 }
-
 
 export interface IAdminService {
 
 
   getAllByRole(role: string, page: number, limit: number, search: string, specialty: string): Promise<{
-    items: IUserWithProfileResponse[];
+    items: UserWithProfileResponseDTO[];
     currentPage: number;
     totalPages: number;
     totalItems: number;
