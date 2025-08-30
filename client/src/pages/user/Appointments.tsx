@@ -60,18 +60,20 @@ function generateSlots(
       const [fromHour, fromMinute] = timeRange.from.split(":").map(Number);
       const [toHour, toMinute] = timeRange.to.split(":").map(Number);
 
+      
       let from = new Date(currentDate);
       from.setHours(fromHour, fromMinute, 0, 0);
-
+    
       const to = new Date(currentDate);
       to.setHours(toHour, toMinute, 0, 0);
+     
 
-      while (from < to) {
+      while (from < to ) {
         const timeStr = formatTime24to12(
           `${from.getHours().toString().padStart(2, "0")}:${from.getMinutes().toString().padStart(2, "0")}`
         );
 
-        
+      
         if (!booked.has(timeStr)) {
           daySlots.push(timeStr);
         }
@@ -106,7 +108,7 @@ const Appointment: React.FC = () => {
   const handleBooking = async () => {
   if (!doctorId || !slots[activeSlotIndex] || !activeTime) return;
 
-  console.log("active time : ", activeTime);
+  
   const selectedSlot = slots[activeSlotIndex];
 
  
@@ -195,6 +197,7 @@ const Appointment: React.FC = () => {
         };
 
         setDoctor(transformedDoctor);
+
 
         const generatedSlots = generateSlots(
           transformedDoctor.availability,

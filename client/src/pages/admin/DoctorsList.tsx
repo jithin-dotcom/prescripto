@@ -40,7 +40,7 @@ const DoctorsList: React.FC = () => {
       const res = await axiosInstance.get(
         `${APIRoutes.ADMIN_GET_USERS}?role=doctor&page=${page}&limit=${limit}&search=${query}&specialty=${selectedSpecialty}`
       );
-      console.log("doctors : ", res.data.data.items);
+      
       setDoctors(res.data.data.items);
       setTotalPages(res.data.data.totalPages);
     } catch (error) {
