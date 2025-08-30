@@ -85,7 +85,7 @@ export  class PatientProfileService implements IPatientProfileService{
        const updatedUser = await this._userRepo.updatePhoto(userId, url);
        return updatedUser;
       
-    }catch (error: any) {
+    }catch (error) {
       console.error("Error uploading profile photo:", error);
       throw new Error("Failed to upload profile photo");
     }

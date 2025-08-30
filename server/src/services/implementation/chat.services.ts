@@ -100,7 +100,7 @@ export class ChatService implements IChatService {
         read: false,
       });
 
-      const updateChat = await this._chatRepo.updateById(chatId,{lastMessage:{
+       await this._chatRepo.updateById(chatId,{lastMessage:{
         content,
       }});
      

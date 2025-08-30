@@ -227,8 +227,13 @@ async createUserOrDoctor(
       message: `${userData.role} created successfully`,
       userId,
     };
-  } catch (error: any) {
-    if (error.code === 11000 && error.keyPattern?.email) {
+  } catch (error) {
+   
+    if (
+      error instanceof Error &&
+      (error as { code?: number; keyPattern?: Record<string, unknown> }).code === 11000 &&
+      (error as { keyPattern?: { email?: number } }).keyPattern?.email
+    ) {
       throw new Error(`User with email ${userData.email} already exists`);
     }
 
@@ -247,55 +252,64 @@ async updateUserOrDoctor(
   profileData?: Partial<IPatientProfile> | Partial<IDoctorProfile>,
   files?: UploadedFiles
 ): Promise<string> {
-  const user = await this._adminRepo.findById(userId);
-  if (!user) throw new Error("User not found");
+  try{
 
-  if (userData.password) {
-    const saltRounds = 10;
-    userData.password = await bcrypt.hash(userData.password, saltRounds);
-  }
+    const user = await this._adminRepo.findById(userId);
+    if (!user) throw new Error("User not found");
 
-  if (files?.photo?.[0]) {
-    const photoUrl = await uploadToCloudinary(files.photo[0].buffer, "profile_photos");  
-    userData.photo = photoUrl;
-  }
-
-  if (files?.signature?.[0] && user.role === "doctor") {
-    const signatureUrl = await uploadToCloudinary(files.signature[0].buffer, "signatures"); 
-    userData.signature = signatureUrl;
-  }
-
-  if (files?.proofDocument?.length && user.role === "doctor") {
-    const proofUrls: string[] = [];
-    for (const file of files.proofDocument) {
-      const url = await uploadToCloudinary(file.buffer, "proof_documents");
-      proofUrls.push(url);
+    if (userData.password) {
+      const saltRounds = 10;
+      userData.password = await bcrypt.hash(userData.password, saltRounds);
     }
-    (profileData as Partial<IDoctorProfile>).proofDocuments = proofUrls;
-  }
+
+    if (files?.photo?.[0]) {
+      const photoUrl = await uploadToCloudinary(files.photo[0].buffer, "profile_photos");  
+      userData.photo = photoUrl;
+    }
+
+    if (files?.signature?.[0] && user.role === "doctor") {
+      const signatureUrl = await uploadToCloudinary(files.signature[0].buffer, "signatures"); 
+      userData.signature = signatureUrl;
+    }
+
+    if (files?.proofDocument?.length && user.role === "doctor") {
+      const proofUrls: string[] = [];
+      for (const file of files.proofDocument) {
+        const url = await uploadToCloudinary(file.buffer, "proof_documents");
+        proofUrls.push(url);
+      }
+      (profileData as Partial<IDoctorProfile>).proofDocuments = proofUrls;
+    }
 
  
-  await this._adminRepo.updateById(userId, userData);
+    await this._adminRepo.updateById(userId, userData);
 
-  const objectId = new mongoose.Types.ObjectId(userId);
+    const objectId = new mongoose.Types.ObjectId(userId);
 
-  if (user.role === "user" && profileData) {
-    const existingProfile = await this._patientProfileRepo.findByPatientId(objectId);
-    if (existingProfile) {
-      await this._patientProfileRepo.updateByPatientId(objectId, profileData as Partial<IPatientProfile>);
-    } else {
-      await this._patientProfileRepo.create({ patientId: objectId, ...(profileData as Partial<IPatientProfile>) });
+    if (user.role === "user" && profileData) {
+      const existingProfile = await this._patientProfileRepo.findByPatientId(objectId);
+      if (existingProfile) {
+        await this._patientProfileRepo.updateByPatientId(objectId, profileData as Partial<IPatientProfile>);
+      } else {
+        await this._patientProfileRepo.create({ patientId: objectId, ...(profileData as Partial<IPatientProfile>) });
+      }
+    } else if (user.role === "doctor" && profileData) {
+      const existingProfile = await this._doctorProfileRepo.findByDoctorId(objectId);
+      if (existingProfile) {
+        await this._doctorProfileRepo.updateByDoctorId(objectId, profileData as Partial<IDoctorProfile>);
+      } else {
+        await this._doctorProfileRepo.create({ doctorId: objectId, ...(profileData as Partial<IDoctorProfile>) });
+      }
     }
-  } else if (user.role === "doctor" && profileData) {
-    const existingProfile = await this._doctorProfileRepo.findByDoctorId(objectId);
-    if (existingProfile) {
-      await this._doctorProfileRepo.updateByDoctorId(objectId, profileData as Partial<IDoctorProfile>);
-    } else {
-      await this._doctorProfileRepo.create({ doctorId: objectId, ...(profileData as Partial<IDoctorProfile>) });
-    }
-  }
 
-  return `${user.role} updated successfully`;
+    return `${user.role} updated successfully`;
+ }catch(error){
+    if(error instanceof Error){
+       throw error;
+    }else{
+       throw new Error("Failed to update");
+    }
+ } 
 }
 
 

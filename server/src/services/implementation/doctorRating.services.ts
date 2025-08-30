@@ -18,7 +18,7 @@ export class DoctorRatingService implements IDoctorRatingService{
 
     async rateDoctor(data: IData): Promise<void> {
         try {
-           console.log("entered into rateDoctor services");
+          
             const {userId, doctorId, appointmentId, rating, review} = data;
             const rated = await this._doctorRatingRepo.findOne({appointmentId});
             if(rated){
@@ -49,7 +49,7 @@ export class DoctorRatingService implements IDoctorRatingService{
             if(!updatedDoctor){
                 throw new Error("Failed to update doctor");
             }
-            console.log("updated doctor : ",updatedDoctor);
+            
 
         }catch (error) {
             if(error instanceof Error){
