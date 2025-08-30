@@ -187,6 +187,8 @@ export class AuthService implements IAuthService {
     }
   }
 
+
+  
   async refreshToken(token: string): Promise<{ accessToken: string; refreshToken: string; user: ISafeUser }> {
     try {
       if (!token) throw new Error("Refresh token is required");
@@ -430,7 +432,7 @@ async logout(refreshToken: string): Promise<void> {
 
       await redisClient.del(`refreshTokenLookup:${refreshToken}`);
 
-      console.log(` Logged out user ${userId} (session: ${sessionId}) from Redis`);
+      
     } else {
       console.warn(' Refresh token not found in Redis (may already be expired)');
     }

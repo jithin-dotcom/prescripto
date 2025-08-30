@@ -337,7 +337,7 @@ async deleteUserOrDoctor(userId: string): Promise<{ message: string }> {
       if (!user) throw new Error("User not found");
 
       const isBlocked = !user.isBlocked;
-      const updatedUser = await this._adminRepo.updateById(userId, { isBlocked });
+      await this._adminRepo.updateById(userId, { isBlocked });
 
       
       const cacheKey = `user:${userId}:blocked`;
