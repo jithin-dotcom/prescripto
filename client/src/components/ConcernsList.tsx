@@ -226,7 +226,7 @@ const ConcernsList: React.FC<ConcernsListProps> = ({
         isOpen={isModalOpen}
         onRequestClose={onCloseModal}
         className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto my-20"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+        overlayClassName="fixed inset-0 bg-white/20  backdrop-blur-[2px]  flex justify-center items-center"
       >
         <h2 className="text-xl font-semibold mb-4">
           Provide Reason for {newStatus === 'resolved' ? 'Resolving' : 'Rejecting'} Concern
