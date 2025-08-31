@@ -17,46 +17,46 @@ export class DoctorRatingService implements IDoctorRatingService{
     ){}
 
     async rateDoctor(data: IDataDTO): Promise<void> {
-        try {
+      try {
           
-            const {userId, doctorId, appointmentId, rating, review} = data;
-            const rated = await this._doctorRatingRepo.findOne({appointmentId});
-            if(rated){
-               throw new Error("You have already rated this doctor for this appointment");
-            }
-            const createRating = await this._doctorRatingRepo.create({
-                 patientId: new mongoose.Types.ObjectId(userId),
-                 doctorId: new mongoose.Types.ObjectId(doctorId),
-                 appointmentId: new mongoose.Types.ObjectId(appointmentId),
-                 rating,
-                 review,
-            })
-            if(!createRating){
-                throw new Error("Failed to create Rating");
-            }
-             
-            const doctorProfile = await this._doctorProfileRepo.findOne({doctorId});
-            if(!doctorProfile){
-                throw new Error("Doctor profile not found");
-            }
-            
-            const oldAvg = doctorProfile?.averageRating || 0;
-            const oldCount = doctorProfile?.ratingCount || 0;
-            const newCount = oldCount + 1;
-            const newAvg = parseFloat(((oldAvg * oldCount + rating) / newCount).toFixed(2));
-
-            const updatedDoctor = await this._doctorProfileRepo.updateByDoctorId(doctorId,{averageRating: newAvg, ratingCount: newCount});
-            if(!updatedDoctor){
-                throw new Error("Failed to update doctor");
-            }
-            
-        }catch (error) {
-            if(error instanceof Error){
-                throw error;
-            }else{
-                throw new Error("Something went wrong");
-            }
+        const {userId, doctorId, appointmentId, rating, review} = data;
+        const rated = await this._doctorRatingRepo.findOne({appointmentId});
+        if(rated){
+            throw new Error("You have already rated this doctor for this appointment");
         }
+        const createRating = await this._doctorRatingRepo.create({
+            patientId: new mongoose.Types.ObjectId(userId),
+            doctorId: new mongoose.Types.ObjectId(doctorId),
+            appointmentId: new mongoose.Types.ObjectId(appointmentId),
+            rating,
+            review,
+        })
+        if(!createRating){
+            throw new Error("Failed to create Rating");
+        }
+             
+        const doctorProfile = await this._doctorProfileRepo.findOne({doctorId});
+        if(!doctorProfile){
+            throw new Error("Doctor profile not found");
+        }
+            
+        const oldAvg = doctorProfile?.averageRating || 0;
+        const oldCount = doctorProfile?.ratingCount || 0;
+        const newCount = oldCount + 1;
+        const newAvg = parseFloat(((oldAvg * oldCount + rating) / newCount).toFixed(2));
+
+        const updatedDoctor = await this._doctorProfileRepo.updateByDoctorId(doctorId,{averageRating: newAvg, ratingCount: newCount});
+        if(!updatedDoctor){
+            throw new Error("Failed to update doctor");
+        }
+            
+      }catch (error) {
+        if(error instanceof Error){
+            throw error;
+        }else{
+            throw new Error("Something went wrong");
+        }
+      }
     }
 
 

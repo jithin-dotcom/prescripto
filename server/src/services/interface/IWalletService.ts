@@ -5,7 +5,6 @@ import mongoose from "mongoose";
 import { IWalletHistory } from "../../models/walletHistory/IWalletHistory";
 
 
- 
 
 export interface IWalletServiceResponse {
   userId: mongoose.Types.ObjectId;

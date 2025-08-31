@@ -1,6 +1,6 @@
 
 
-import { IWalletServiceResponse, IWalletService } from "../interface/IWalletService";
+import { IWalletService } from "../interface/IWalletService";
 import { IWalletRepository } from "../../repositories/interface/IWalletRepository";
 import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
 import { IAppointmentRepository } from "../../repositories/interface/IAppointmentRepository";
@@ -20,51 +20,6 @@ export class WalletService implements IWalletService {
         private _chatRepo: IChatRepository,
         private _paymentRepo: IPaymentRepository,
     ){}
-
-
-    // async getWallet(
-    //  userId: string,
-    //  role: "user" | "doctor",
-    //  page: number,
-    //  limit: number
-    // ): Promise<IWalletServiceResponse> {
-    //   try {
-    //     let wallet = await this._walletRepo.findOne({ userId });
-
-    //     if (!wallet) {
-    //       wallet = await this._walletRepo.create({
-    //       userId: new mongoose.Types.ObjectId(userId),
-    //       role,
-    //       balance: 0,
-    //     });
-    //    }
-
-    //    if (!wallet) {
-    //      throw new Error("Failed to create Wallet");
-    //    }
-
-    //    const walletId = wallet._id;
-
-    //    const [walletHistory, totalCount] = await this._walletHistoryRepo.findPaginated(
-    //      walletId as mongoose.Types.ObjectId,
-    //      page,
-    //      limit
-    //    );
-
-    //    return {
-    //      userId: wallet.userId,
-    //      role,
-    //      balance: wallet.balance,
-    //      expense: wallet.expense || 0,
-    //      history: walletHistory,
-    //      page,
-    //      totalPages: Math.ceil(totalCount / limit),
-    //      totalTransactions: totalCount
-    //    };
-    //   }catch (error) {
-    //     throw error instanceof Error ? error : new Error("Failed to fetch wallet");
-    //   }
-    // }
 
 
 

@@ -37,15 +37,3 @@ export const mapPartialPrescriptionDTO = (dto: Partial<PrescriptionDTO>): Partia
 
 
 
-
-// export const toDTO = (doc: IPrescription): PrescriptionDTO => {
-//   return {
-//     appointmentId: doc.appointmentId.toString(),
-//     doctorId: doc.doctorId.toString(),
-//     patientId: doc.patientId.toString(),
-//     diagnosis: doc.diagnosis,
-//     notes: doc.notes,
-//     medicines: doc.medicines,
-//     followUpDate: doc.followUpDate,
-//   };
-// };

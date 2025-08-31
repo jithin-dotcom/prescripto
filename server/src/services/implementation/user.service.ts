@@ -3,20 +3,19 @@ import { IUserService } from "../interface/IUserService";
 import { IPatientProfileRepository } from "../../repositories/interface/IPatientProfileRepository";
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
-import { IUser } from "../../types/user.type";
-import { IPatientProfile } from "../../models/patient/IPatientProfile";
+
 import { UserDTO, PatientProfileDTO, DoctorProfileDTO } from "../../utils/reverseMapper/userService/IUserService";
 import { mapPatientProfileDTOToPersistence, mapDoctorProfileDTOToPersistence } from "../../utils/reverseMapper/userService/userService"; 
 import { mapGetProfileUserDTO, mapGetProfileDoctorProfileDTO, mapGetProfilePatientProfileDTO } from "../../utils/reverseMapper/userService/userServiceGetUser";
 import { GetProfileUserDTO, GetProfileDoctorProfileDTO, GetProfilePatientProfileDTO } from "../../utils/reverseMapper/userService/IUserServiceGetUser";
-import { GetAllDoctorsDoctorProfileDTO, GetAllDoctorsUserDTO } from "../../utils/reverseMapper/userService/IUserService.getAllDoctors";
+import { GetAllDoctorsDoctorProfileDTO} from "../../utils/reverseMapper/userService/IUserService.getAllDoctors";
 import { mapGetAllDoctorsDoctorProfileDTO, mapGetAllDoctorsUserDTO } from "../../utils/reverseMapper/userService/userService.getAllDoctors";
 
 
 
-import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
+
 import bcrypt from "bcrypt";
-import mongoose,{ Document} from "mongoose";
+import mongoose from "mongoose";
 import { UserModel } from "../../models/user.models";
 
 

@@ -1,12 +1,12 @@
 
-import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
+
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 import { IDoctorProfileService } from "../interface/IDoctorService";
 import { mapDoctorProfiles } from "../../utils/mapper/doctorProfileServices";
 import { IDoctorProfileDashboardClean } from "../../utils/mapper/doctorProfileServices";
 import { CreateDoctorProfileDTO } from "../../utils/reverseMapper/doctorProfileService/IDoctorProfileService";
 import { mapCreateDoctorProfileDTOToEntity } from "../../utils/reverseMapper/doctorProfileService/doctorProfileService";
-import mongoose from "mongoose";
+
 
 export  class DoctorProfileService implements IDoctorProfileService{
     constructor( private _DoctorRepo : IDoctorProfileRepository) {}

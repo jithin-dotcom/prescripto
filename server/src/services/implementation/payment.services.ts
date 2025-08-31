@@ -17,7 +17,7 @@ import { IWalletRepository } from "../../repositories/interface/IWalletRepositor
 import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
 import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IPayoutRepository } from "../../repositories/interface/IPayoutRepository";
-import { IPayout } from "../../models/payout/IPayout";
+
 import { mapPayouts } from "../../utils/mapper/paymentService.mapper";
 import axios from "axios";
 
