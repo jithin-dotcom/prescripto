@@ -52,31 +52,6 @@ export interface CreateUserDTO {
   signature?: string;
 }
 
-// dtos/CreatePatientProfileDTO.ts
-// export interface CreatePatientProfileDTO {
-//   dateOfBirth?: string;
-//   gender?: "male" | "female" | "others";
-//   houseName?: string;
-//   city?: string;
-//   state?: string;
-//   country?: string;
-//   pin?: number;
-// }
-
-// dtos/CreateDoctorProfileDTO.ts
-// export interface CreateDoctorProfileDTO {
-//   educationDetails?: string;
-//   specialization?: string;
-//   registrationNumber?: string;
-//   registrationYear?: string;
-//   yearOfExperience?: number;
-//   signature?: string;
-//   proofDocuments?: string[];
-//   fee?: number;
-//   about?: string;
-//   availability?: IAvailabilitySlot[];
-//   slotDuration?: number;
-// }
 
 
 

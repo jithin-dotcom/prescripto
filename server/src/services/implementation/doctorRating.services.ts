@@ -4,9 +4,9 @@
 
 import { IDoctorRatingRepository } from "../../repositories/interface/IDoctorRatingRepository";
 import mongoose from "mongoose";
-import { IData, IDoctorRatingService, IRatingByDoctorPaginated } from "../interface/IDoctorRatingService";
-import { IRatingByDoctor } from "../interface/IDoctorRatingService";
+import { IDataDTO, IDoctorRatingService, IRatingByDoctorPaginated } from "../interface/IDoctorRatingService";
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
+import { mapDoctorRatings } from "../../utils/mapper/doctorRating";
 
 
 export class DoctorRatingService implements IDoctorRatingService{
@@ -16,7 +16,7 @@ export class DoctorRatingService implements IDoctorRatingService{
         
     ){}
 
-    async rateDoctor(data: IData): Promise<void> {
+    async rateDoctor(data: IDataDTO): Promise<void> {
         try {
           
             const {userId, doctorId, appointmentId, rating, review} = data;
@@ -50,7 +50,6 @@ export class DoctorRatingService implements IDoctorRatingService{
                 throw new Error("Failed to update doctor");
             }
             
-
         }catch (error) {
             if(error instanceof Error){
                 throw error;
@@ -78,15 +77,7 @@ async getRatingByDoctor(
   const { ratings, total } = await this._doctorRatingRepo.getDoctorRating(doctorId, skip, limit);
   const stats = await this._doctorRatingRepo.getDoctorRatingStats(doctorId);
 
-  const result: IRatingByDoctor[] = ratings.map((rating) => {
-    const patient = rating.patientId as unknown as { name: string };
-    return {
-      userName: patient.name || "Unknown",
-      rating: rating.rating,
-      review: rating.review,
-      time: rating.createdAt,
-    };
-  });
+  const result = mapDoctorRatings(ratings);
 
   return {
     currentPage: page,

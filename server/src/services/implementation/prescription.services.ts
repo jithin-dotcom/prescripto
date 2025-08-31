@@ -1,6 +1,6 @@
 
 
-import { IPatientHistoryClean, IPatientHistoryPopulated, IPrescription, IPrescriptionClean } from "../../models/prescription/IPrescription";
+import { IPatientHistoryClean, IPrescriptionClean } from "../../models/prescription/IPrescription";
 import { IPrescriptionRepository } from "../../repositories/interface/IPrescriptionRepository";
 import mongoose from "mongoose";
 import { IPrescriptionService, IPrescriptionDownload } from "../interface/IPrescriptionService";
@@ -9,6 +9,8 @@ import fs from "fs";
 import path from "path";
 import { mapPatientHistoryDTO, mapPrescription } from "../../utils/mapper/prescriptionService.mapper";
 import axios from "axios";
+import { PrescriptionDTO } from "../../utils/reverseMapper/prescriptionService/IPrescriptionService";
+import { mapPrescriptionDTO, mapPartialPrescriptionDTO } from "../../utils/reverseMapper/prescriptionService/prescriptionService";
 
 
 async function fetchImageBuffer(url: string): Promise<Buffer> {
@@ -21,105 +23,108 @@ export class PrescriptionService implements IPrescriptionService{
         private _prescriptionRepo: IPrescriptionRepository,
     ){}
 
-    async createPrescription(data: IPrescription): Promise<{message: string}> {
-        try {
-            const existingPrescription = await this._prescriptionRepo.findOne({appointmentId: data.appointmentId});
-            if(existingPrescription){
-                throw new Error("Prescription already Exists Please Edit Prescription");
-            }
-            const prescription = await this._prescriptionRepo.create(data);
-            if(!prescription){
-                throw new Error("Failed to create Prescription");
-            }
-            return {message: "Prescription created Successfully"};
-            
-        } catch (error) {
-            if(error instanceof Error){
-                throw error;
-            }else{
-                throw new Error("Something went wrong");
-            }
-        }
+    
+
+
+    async createPrescription(data: PrescriptionDTO): Promise<{ message: string }> {
+    try {
+      const exists = await this._prescriptionRepo.findOne({ appointmentId: data.appointmentId });
+      if (exists) {
+        throw new Error("Prescription already Exists Please Edit Prescription");
+      }
+
+      const persistenceData = mapPrescriptionDTO(data);
+
+      const prescription = await this._prescriptionRepo.create(persistenceData);
+      if (!prescription) {
+        throw new Error("Failed to create Prescription");
+      }
+
+      return { message: "Prescription created Successfully" };
+    } catch (error) {
+      if (error instanceof Error) throw error;
+      throw new Error("Something went wrong");
     }
+  }
 
 
     async getPrescription(appointmentId: string): Promise<IPrescriptionClean | null> {
-        try {
-            if(!appointmentId){
-                throw new Error("AppointmentId missing");
-            }
-            const appId = new mongoose.Types.ObjectId(appointmentId);
-            const prescription = await this._prescriptionRepo.getPrescription(appId);
-            
-            if (!prescription) {
-              return null; 
-            }
-           
-            return mapPrescription(prescription);
-        } catch (error) {
-            if(error instanceof Error){
-                throw error;
-            }else{
-                throw new Error("Something went wrong");
-            }
+      try {
+        if(!appointmentId){
+            throw new Error("AppointmentId missing");
         }
+        const appId = new mongoose.Types.ObjectId(appointmentId);
+        const prescription = await this._prescriptionRepo.getPrescription(appId);
+            
+        if (!prescription) {
+          return null; 
+        }
+           
+        return mapPrescription(prescription);
+      } catch (error) {
+        if(error instanceof Error){
+          throw error;
+        }else{
+          throw new Error("Something went wrong");
+        }
+      }
     }
 
 
 
     
     async getEditPrescription(appointmentId: string): Promise<IPrescriptionClean | null> {
-        try {
-            if(!appointmentId){
-                throw new Error("AppointmentId missing");
-            }
-            const appId = new mongoose.Types.ObjectId(appointmentId);
-            const prescription = await this._prescriptionRepo.getPrescription(appId);
-            if(!prescription){
-                throw new Error("Prescription not found");
-            }
-            return mapPrescription(prescription);
-        } catch (error) {
-            if(error instanceof Error){
-                throw error;
-            }else{
-                throw new Error("Something went wrong");
-            }
+      try {
+        if(!appointmentId){
+          throw new Error("AppointmentId missing");
         }
+        const appId = new mongoose.Types.ObjectId(appointmentId);
+        const prescription = await this._prescriptionRepo.getPrescription(appId);
+        if(!prescription){
+          throw new Error("Prescription not found");
+        }
+        return mapPrescription(prescription);
+      } catch (error) {
+        if(error instanceof Error){
+          throw error;
+        }else{
+          throw new Error("Something went wrong");
+        }
+      }
     }
    
 
 
-    async editPrescription(appointmentId: string, data: Partial<IPrescription>): Promise<{message: string}> {
-        try {
-            
-            if(!appointmentId){
-                throw new Error("AppointmentId required");
-            }
-            const appId = new mongoose.Types.ObjectId(appointmentId);
+  async editPrescription(
+    appointmentId: string,
+    data: Partial<PrescriptionDTO>
+  ): Promise<{ message: string }> {
+    try {
+      if (!appointmentId) {
+        throw new Error("AppointmentId required");
+      }
 
-            const prescription = await this._prescriptionRepo.findOne({appointmentId:appId});
-            
-            if(!prescription){
-               throw new Error("No Prescription Found");
-            
-            }
-            
-            const result = await this._prescriptionRepo.updatePrescription(appId,data);
-            
-            if(!result){
-                throw new Error("Failed to update Prescription");
-            }
-            return {message: "Prescription Updated Successfully"};
-        } catch (error) {
-            if(error instanceof Error){
-                throw error;
-            }else{
-                throw new Error("Something went wrong");
-            }
-        }
+      const appId = new mongoose.Types.ObjectId(appointmentId);
+
+      const prescription = await this._prescriptionRepo.findOne({ appointmentId: appId });
+      if (!prescription) {
+        throw new Error("No Prescription Found");
+      }
+
+      const persistenceData = mapPartialPrescriptionDTO(data);
+
+      const result = await this._prescriptionRepo.updatePrescription(appId, persistenceData);
+
+      if (!result) {
+        throw new Error("Failed to update Prescription");
+      }
+
+      return { message: "Prescription Updated Successfully" };
+    } catch (error) {
+      if (error instanceof Error) throw error;
+      throw new Error("Something went wrong");
     }
-
+  }
 
 
 
@@ -209,7 +214,7 @@ async generatePrescriptionPDF(prescription: IPrescriptionDownload): Promise<Buff
 
 
 
-  async getPatientHistory(
+async getPatientHistory(
   patientId: string,
   page: number,
   limit: number

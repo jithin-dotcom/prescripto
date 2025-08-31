@@ -3,7 +3,7 @@ import { IUserService } from "../interface/IUserService";
 import { IPatientProfileRepository } from "../../repositories/interface/IPatientProfileRepository";
 import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorProfileRepository";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
-import { IUser, ITopDoctorClean } from "../../types/user.type";
+import { IUser } from "../../types/user.type";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
 
 
@@ -148,6 +148,12 @@ async getAllDoctors(
     throw new Error(`Failed to fetch profile`);
   }
 }
+
+
+
+
+
+
 
 
 async updateUserOrDoctor(

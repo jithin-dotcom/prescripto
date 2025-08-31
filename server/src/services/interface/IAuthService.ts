@@ -15,7 +15,7 @@ export interface AuthResult {
 
 
 export interface IAuthService{
-    //  signup(user: IUser): Promise<object>; 
+   
      signup(user: SignupRequestDTO): Promise<object>; 
      login(email: string,password:string): Promise<{accessToken: string; refreshToken: string; user: any}>;
      verifyOtpAndRegister(email: string, otp: string): Promise<AuthResult>;

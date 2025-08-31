@@ -37,11 +37,6 @@ export const mapCreateUserDtoToDb = (dto: CreateUserDTO): Partial<IUser> => ({
   signature: dto.signature,
 });
 
-// export const mapPatientProfileDtoToDb = (dto: CreatePatientProfileDTO) => ({ ...dto });
-
-// export const mapDoctorProfileDtoToDb = (dto: CreateDoctorProfileDTO) => ({ ...dto });
-
-
 
 
 export const mapUserToDTOResponse = (

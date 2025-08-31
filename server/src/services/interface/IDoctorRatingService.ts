@@ -1,6 +1,6 @@
 
 
-export interface IData {
+export interface IDataDTO {
     appointmentId: string;
     userId: string;
     doctorId: string;
@@ -9,7 +9,7 @@ export interface IData {
 
 } 
 
-export interface IRatingByDoctor {
+export interface IRatingByDoctorDTO {
     userName: string;
     rating: number;
     review?: string;
@@ -21,11 +21,11 @@ export interface IRatingByDoctorPaginated {
     totalPages: number;
     totalItems: number;
     itemsPerPage: number;
-    data: IRatingByDoctor[];
+    data: IRatingByDoctorDTO[];
 }
 
 
 export interface IDoctorRatingService {
-     rateDoctor(data: IData): Promise<void>;
+     rateDoctor(data: IDataDTO): Promise<void>;
      getRatingByDoctor(doctorId: string, page: number, limit: number): Promise<IRatingByDoctorPaginated>;
 }

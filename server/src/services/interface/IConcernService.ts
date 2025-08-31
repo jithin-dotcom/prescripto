@@ -16,12 +16,6 @@ export interface IConcernService {
 
 
 
-
-
-
-
-
-
 export interface IConcernPopulated {
   _id: string;
   appointmentId: {
@@ -69,3 +63,7 @@ export interface IConcernPopulated {
   createdAt: string;
   updatedAt: string;
 }
+
+
+
+

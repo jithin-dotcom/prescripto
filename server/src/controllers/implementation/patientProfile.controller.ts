@@ -5,34 +5,40 @@ import { IPatientProfileService } from "../../services/interface/IPatientService
 import { patientProfileSchema } from "../../validations/patientProfile.schema";
 import { StatusCode } from "../../constants/statusCode.enum";
 import { StatusMessage } from "../../constants/statusMessage";
+import { PatientProfileDTO } from "../../utils/reverseMapper/patientProfileServices/IPatientProfileService";
 
 
 export class PatientProfileController implements IPatientProfileController {
     constructor (private _patientProfileService: IPatientProfileService){};
 
-    async createProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
-       try{
-           const { patientId } = req.params;
 
-           const validatedData = patientProfileSchema.parse({
-               ...req.body,
-               patientId
-           });
 
-           const profile = await this._patientProfileService.createPatientProfile(patientId, validatedData);
-           res.status(StatusCode.CREATED).json(profile);
 
-       }catch (error: any) {
-           if (error?.name === "ZodError") {
-               res.status(StatusCode.BAD_REQUEST).json({
-                   message: error.errors.map((e: any) => e.message).join(", ")
-               });
-               return;
-           }
+  async createProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { patientId } = req.params;
 
-           res.status(StatusCode.BAD_REQUEST).json({ message: error.message || "Failed to create profile" });
+      const validatedData: PatientProfileDTO = patientProfileSchema.parse(req.body);
+
+      const profile = await this._patientProfileService.createPatientProfile(
+        patientId,
+        validatedData
+      );
+
+      res.status(StatusCode.CREATED).json(profile);
+    } catch (error: any) {
+      if (error?.name === "ZodError") {
+        res.status(StatusCode.BAD_REQUEST).json({
+          message: error.errors.map((e: any) => e.message).join(", "),
+        });
+        return;
       }
+
+      res
+        .status(StatusCode.BAD_REQUEST)
+        .json({ message: error.message || "Failed to create profile" });
     }
+  }
 
 
     async editProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -50,20 +56,6 @@ export class PatientProfileController implements IPatientProfileController {
       }
     }
 
-
-    async deleteProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
-     try {
-        const { patientId } = req.params;
-        if(!patientId){
-            res.send(StatusCode.BAD_REQUEST).json({message: StatusMessage.MISSING_ID});
-        }
-        await this._patientProfileService.deletePatientProfile(patientId);
-        res.status(StatusCode.NO_CONTENT).json({message: StatusMessage.NO_CONTENT});
-      }catch (error: any) {
-        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: error.message || StatusMessage.INTERNAL_SERVER_ERROR});
-      }
-
-    }
 
 
   async uploadPhoto (req: Request, res: Response, next: NextFunction): Promise<void> {

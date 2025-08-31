@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { generateTokens } from "../../utils/jwt";
 import { IAuthService } from "../interface/IAuthService";
-import { ISafeUser, IUser } from "../../types/user.type";
+import { ISafeUser } from "../../types/user.type";
 import { sendOtpMail } from "../../utils/mailer";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { IOtpRepository } from "../../repositories/interface/IOtpRepository";
@@ -278,42 +278,6 @@ async googleAuth(userObj: any): Promise<{ user: any; accessToken: string; refres
 
 
 
-// async signup(user: IUser): Promise<{ message: string }> {
-//    try {
-//       const existingUser = await this._userRepo.findByEmail(user.email);
-//       if (existingUser) {
-//         const error = new Error("User already exists");
-//         (error as any).statusCode = 409;
-//         throw error;
-//       }
-//       if (!user.password) {
-//          throw new Error("Password is required for signup");
-//       }
-      
-//       const hashedPassword = await bcrypt.hash(user.password, 10); 
-//       const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-//       await this._otpRepo.createOtp(user.email, otp, {
-//         name: user.name,
-//         email: user.email,
-//         password: hashedPassword,
-//         role: user.role,
-//       });
-
-//       await sendOtpMail(user.email, otp);
-//       return { message: "OTP sent to your email" };
-//     } catch (error) {
-//       console.error("Signup error:", error);
-//       if(error instanceof Error){
-//          throw error;
-//       }else{
-//          throw new Error("Failed to sign up");
-//       }
-//     }
-//   }
-
-
-
 
 async signup(userDto: SignupRequestDTO): Promise<{ message: string }> {
   try {
@@ -343,7 +307,6 @@ async signup(userDto: SignupRequestDTO): Promise<{ message: string }> {
     throw new Error("Failed to sign up");
   }
 }
-
 
 
 
@@ -450,7 +413,6 @@ async signup(userDto: SignupRequestDTO): Promise<{ message: string }> {
       }
     }
   }
-
 
 
 

@@ -1,9 +1,11 @@
 
 import { IPrescription, IPrescriptionClean, IPatientHistoryClean } from "../../models/prescription/IPrescription"
+import { PrescriptionDTO } from "../../utils/reverseMapper/prescriptionService/IPrescriptionService";
 
 export interface IPrescriptionService {
-    createPrescription(data: Partial<IPrescription>): Promise<{message: string}>;
-    editPrescription(appointmentId: string, data: Partial<IPrescription>): Promise<{message: string}>;
+   
+    createPrescription(data: Partial<PrescriptionDTO>): Promise<{message: string}>;
+    editPrescription(appointmentId: string, data: Partial<PrescriptionDTO>): Promise<{message: string}>;
     generatePrescriptionPDF(prescription: any): Promise<Buffer>;
     getEditPrescription(appointmentId: string): Promise<IPrescriptionClean | null>; 
     getPrescription(appointmentId: string): Promise<IPrescriptionClean | null>;

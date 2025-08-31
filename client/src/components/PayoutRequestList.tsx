@@ -54,7 +54,7 @@ const PayoutRequestList: React.FC<PayoutRequestListProps> = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
-                className="bg-white rounded-xl shadow-md p-4 sm:p-5 hover:shadow-lg transition-all duration-300 border-l-4 border-indigo-500 min-h-[250px] flex flex-col justify-between"
+                className="bg-white rounded-xl shadow-2xl p-4 sm:p-5 hover:scale-102 transition duration-300 border-l-4 border-indigo-500 min-h-[250px] flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">

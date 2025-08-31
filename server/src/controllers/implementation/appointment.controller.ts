@@ -7,43 +7,39 @@ import { IAppointmentService } from "../../services/interface/IAppointmentServic
 import { appointmentSchema } from "../../validations/appointment.schema";
 import { StatusCode } from "../../constants/statusCode.enum";
 import { StatusMessage } from "../../constants/statusMessage";
-import mongoose from "mongoose";
+
 
 
 export class AppointmentController implements IAppointmentController {
   constructor(private  _appointmentService: IAppointmentService) {}
 
-  async createAppointment(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const userId = req.user?.id; 
-     
-      if (!userId) {
-        res.status(StatusCode.UNAUTHORIZED).json({ message: StatusMessage.UNAUTHORIZED });
-        return;
-      }
 
+async createAppointment(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = req.user?.id; 
+    if (!userId) {
+      res.status(StatusCode.UNAUTHORIZED).json({ message: StatusMessage.UNAUTHORIZED });
+      return;
+    }
 
-      const validatedData = appointmentSchema.parse({
-        ...req.body,
-        userId,
-      });
+    const validatedData = appointmentSchema.parse({
+      ...req.body,
+      userId,
+    });
 
-      const appointment = await this._appointmentService.createAppointment({
-        userId: new mongoose.Types.ObjectId(validatedData.userId),
-        doctorId: new mongoose.Types.ObjectId(validatedData.doctorId),
-        day: validatedData.date,
-        time: validatedData.time,
-        transactionId: validatedData.transactionId
-          ? new mongoose.Types.ObjectId(validatedData.transactionId)
-          : undefined,
-      });
+    const appointment = await this._appointmentService.createAppointment({
+      userId: validatedData.userId,
+      doctorId: validatedData.doctorId,
+      day: validatedData.date,
+      time: validatedData.time,
+      transactionId: validatedData.transactionId,
+    });
 
-      res.status(StatusCode.CREATED).json(appointment);
-    }catch (error) {
-       next(error);
-   }
-
- }
+    res.status(StatusCode.CREATED).json(appointment);
+  } catch (error) {
+    next(error);
+  }
+}
 
  async getCreateAppointment(req: Request, res: Response, next: NextFunction): Promise<void> {
      try {

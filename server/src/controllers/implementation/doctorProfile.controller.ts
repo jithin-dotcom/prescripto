@@ -11,29 +11,28 @@ export class DoctorProfileController implements IDoctorProfileController {
     constructor (private _doctorProfileService: IDoctorProfileService){};
 
     async createProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
-       try{
-           const { doctorId } = req.params;
+      try{
+        const { doctorId } = req.params;
 
-           const validatedData = doctorProfileSchema.parse({
-               ...req.body,
-               doctorId
-           });
+        const validatedData = doctorProfileSchema.parse({
+            ...req.body,
+            doctorId
+        });
 
-           const profile = await this._doctorProfileService.createDoctorProfile(doctorId, validatedData);
-           res.status(StatusCode.CREATED).json(profile);
+        const profile = await this._doctorProfileService.createDoctorProfile(doctorId, validatedData);
+        res.status(StatusCode.CREATED).json(profile);
 
-       }catch (error: any) {
-           if (error?.name === "ZodError") {
-               res.status(StatusCode.BAD_REQUEST).json({
-                   message: error.errors.map((e: any) => e.message).join(", ")
-               });
-               return;
+      }catch (error: any) {
+        if (error?.name === "ZodError") {
+            res.status(StatusCode.BAD_REQUEST).json({
+              message: error.errors.map((e: any) => e.message).join(", ")
+            });
+            return;
            }
 
-           res.status(StatusCode.BAD_REQUEST).json({ message: error.message || "Failed to create profile" });
+        res.status(StatusCode.BAD_REQUEST).json({ message: error.message || "Failed to create profile" });
       }
     }
-
 
 
     
@@ -52,31 +51,18 @@ export class DoctorProfileController implements IDoctorProfileController {
       }
     }
 
-    async deleteProfile(req: Request, res: Response, next: NextFunction): Promise<void> {
-     try {
-        const { doctorId } = req.params;
-        if(!doctorId){
-            res.send(StatusCode.BAD_REQUEST).json({message: StatusMessage.MISSING_ID});
-        }
-        await this._doctorProfileService.deleteDoctorProfile(doctorId);
-        res.status(StatusCode.NO_CONTENT).json({message: StatusMessage.NO_CONTENT});
-     }catch (error: any) {
-        res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: error.message || StatusMessage.INTERNAL_SERVER_ERROR});
-     }
-
-    }
     
     async findDoctorWithRating(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const response = await this._doctorProfileService.findDoctorProfileWithRatings();
-            if(!response){
-                res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: "Doctors not found"});
-                return;
-            }
+          const response = await this._doctorProfileService.findDoctorProfileWithRatings();
+          if(!response){
+            res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: "Doctors not found"});
+            return;
+          }
             
-            res.status(StatusCode.OK).json(response);
+          res.status(StatusCode.OK).json(response);
         } catch (error) {
-            next(error);
+          next(error);
         }
     }
 }

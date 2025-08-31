@@ -7,6 +7,8 @@ import { IAppointmentRepository } from "../../repositories/interface/IAppointmen
 import { IChatRepository } from "../../repositories/interface/IChatRepository";
 import { IPaymentRepository } from "../../repositories/interface/IPaymentRepository";
 import mongoose from "mongoose";
+import { WalletDTO } from "../interface/IWalletService";
+import { mapWalletDTO } from "../../utils/mapper/walletService.mapper";
 
 
 export class WalletService implements IWalletService {
@@ -20,49 +22,83 @@ export class WalletService implements IWalletService {
     ){}
 
 
-    async getWallet(
-     userId: string,
-     role: "user" | "doctor",
-     page: number,
-     limit: number
-    ): Promise<IWalletServiceResponse> {
-      try {
-        let wallet = await this._walletRepo.findOne({ userId });
+    // async getWallet(
+    //  userId: string,
+    //  role: "user" | "doctor",
+    //  page: number,
+    //  limit: number
+    // ): Promise<IWalletServiceResponse> {
+    //   try {
+    //     let wallet = await this._walletRepo.findOne({ userId });
 
-        if (!wallet) {
-          wallet = await this._walletRepo.create({
+    //     if (!wallet) {
+    //       wallet = await this._walletRepo.create({
+    //       userId: new mongoose.Types.ObjectId(userId),
+    //       role,
+    //       balance: 0,
+    //     });
+    //    }
+
+    //    if (!wallet) {
+    //      throw new Error("Failed to create Wallet");
+    //    }
+
+    //    const walletId = wallet._id;
+
+    //    const [walletHistory, totalCount] = await this._walletHistoryRepo.findPaginated(
+    //      walletId as mongoose.Types.ObjectId,
+    //      page,
+    //      limit
+    //    );
+
+    //    return {
+    //      userId: wallet.userId,
+    //      role,
+    //      balance: wallet.balance,
+    //      expense: wallet.expense || 0,
+    //      history: walletHistory,
+    //      page,
+    //      totalPages: Math.ceil(totalCount / limit),
+    //      totalTransactions: totalCount
+    //    };
+    //   }catch (error) {
+    //     throw error instanceof Error ? error : new Error("Failed to fetch wallet");
+    //   }
+    // }
+
+
+
+  async getWallet(
+    userId: string,
+    role: "user" | "doctor",
+    page: number,
+    limit: number
+  ): Promise<WalletDTO> {
+    try {
+      let wallet = await this._walletRepo.findOne({ userId });
+
+      if (!wallet) {
+        wallet = await this._walletRepo.create({
           userId: new mongoose.Types.ObjectId(userId),
           role,
           balance: 0,
         });
-       }
-
-       if (!wallet) {
-         throw new Error("Failed to create Wallet");
-       }
-
-       const walletId = wallet._id;
-
-       const [walletHistory, totalCount] = await this._walletHistoryRepo.findPaginated(
-         walletId as mongoose.Types.ObjectId,
-         page,
-         limit
-       );
-
-       return {
-         userId: wallet.userId,
-         role,
-         balance: wallet.balance,
-         expense: wallet.expense || 0,
-         history: walletHistory,
-         page,
-         totalPages: Math.ceil(totalCount / limit),
-         totalTransactions: totalCount
-       };
-      }catch (error) {
-        throw error instanceof Error ? error : new Error("Failed to fetch wallet");
       }
+
+      if (!wallet) {
+        throw new Error("Failed to create Wallet");
+      }
+
+      const walletId = wallet._id;
+
+      const [walletHistory, totalCount] =
+        await this._walletHistoryRepo.findPaginated(walletId as mongoose.Types.ObjectId, page, limit);
+
+      return mapWalletDTO(wallet, walletHistory, page, limit, totalCount);
+    } catch (error) {
+      throw error instanceof Error ? error : new Error("Failed to fetch wallet");
     }
+}
 
 
 
@@ -86,7 +122,7 @@ async makeWalletPayment(userId: string, appointmentId: string): Promise<{ messag
 
     const patientId = appointment.userId instanceof mongoose.Types.ObjectId
       ? appointment.userId
-      : new mongoose.Types.ObjectId((appointment.userId as any)._id ?? appointment.userId);
+      : new mongoose.Types.ObjectId(appointment.userId._id ?? appointment.userId);
 
    
     let walletDoctor = await this._walletRepo.findOne({ userId: doctorId });

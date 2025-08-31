@@ -55,7 +55,8 @@ export interface IDoctorProfile {
   slotDuration: number;
   averageRating: number;
   ratingCount: number;
-  availability: Array<{ day: string; startTime: string; endTime: string }>;
+  availability: Array<{ day: string; slots: { from: string; to: string }[] }>;
+  signature?:string;
   createdAt?: Date;
   updatedAt?: Date;
   __v?: number;
@@ -65,3 +66,6 @@ export interface ITopDoctorClean {
   user: Omit<IUser, "updatedAt" | "__v">;
   profile: Omit<IDoctorProfile, "updatedAt" | "__v"> | null;
 }
+
+
+

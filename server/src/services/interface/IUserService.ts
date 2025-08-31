@@ -1,15 +1,13 @@
 
 
-import { IUser, ITopDoctorClean } from "../../types/user.type";
+import { IUser } from "../../types/user.type";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 
 
 
-
 export interface IUserService {
-   
-   
+    
     getAllDoctors(
      page: number,
      limit: number,
@@ -23,7 +21,9 @@ export interface IUserService {
      page: number;
     }>;
 
+
     getProfile(userId: string): Promise<{user: IUser, profile: IPatientProfile | IDoctorProfile | null}|null>;
+
     
     updateUserOrDoctor(
       userId: string,
@@ -37,3 +37,6 @@ export interface IUserService {
 
     getUserById(userId:string): Promise<IUser | null>;
 }
+
+
+

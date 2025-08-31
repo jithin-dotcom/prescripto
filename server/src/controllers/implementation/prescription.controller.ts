@@ -5,7 +5,6 @@ import { IPrescriptionService } from "../../services/interface/IPrescriptionServ
 import { IPrescriptionController } from "../interface/IPrescriptionController";
 import { StatusCode } from "../../constants/statusCode.enum";
 import { StatusMessage } from "../../constants/statusMessage";
-import mongoose from "mongoose";
 import { prescriptionSchema } from "../../validations/prescription.schema";
 import z from "zod"
 
@@ -23,15 +22,7 @@ async createPrescription(req: Request, res: Response, next: NextFunction): Promi
 
     const parsedData = prescriptionSchema.parse(req.body);
  
-    const convertedData = {
-      ...parsedData,
-      appointmentId: new mongoose.Types.ObjectId(parsedData.appointmentId),
-      doctorId: new mongoose.Types.ObjectId(parsedData.doctorId),
-      patientId: new mongoose.Types.ObjectId(parsedData.patientId),
-      followUpDate: parsedData.followUpDate ? new Date(parsedData.followUpDate) : undefined,
-    };
-
-    const newPrescription = await this._prescriptionService.createPrescription(convertedData);
+    const newPrescription = await this._prescriptionService.createPrescription(parsedData);
 
     res.status(StatusCode.CREATED).json({
       status: "success",
@@ -69,8 +60,6 @@ async createPrescription(req: Request, res: Response, next: NextFunction): Promi
   }
 
 
-
-
   
   async getEditPrescription(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -104,17 +93,10 @@ async editPrescription(req: Request, res: Response, next: NextFunction): Promise
     }
 
     const parsedData = prescriptionSchema.parse(req.body);
-    const convertedData = {
-      ...parsedData,
-      appointmentId: new mongoose.Types.ObjectId(parsedData.appointmentId),
-      doctorId: new mongoose.Types.ObjectId(parsedData.doctorId),
-      patientId: new mongoose.Types.ObjectId(parsedData.patientId),
-      followUpDate: parsedData.followUpDate ? new Date(parsedData.followUpDate) : undefined,
-    };
 
     const updatedPrescription = await this._prescriptionService.editPrescription(
       appointmentId,
-      convertedData 
+      parsedData 
     );
 
     res.status(StatusCode.OK).json({

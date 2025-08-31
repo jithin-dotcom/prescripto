@@ -4,42 +4,42 @@ import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorPr
 import { IDoctorProfileService } from "../interface/IDoctorService";
 import { mapDoctorProfiles } from "../../utils/mapper/doctorProfileServices";
 import { IDoctorProfileDashboardClean } from "../../utils/mapper/doctorProfileServices";
+import { CreateDoctorProfileDTO } from "../../utils/reverseMapper/doctorProfileService/IDoctorProfileService";
+import { mapCreateDoctorProfileDTOToEntity } from "../../utils/reverseMapper/doctorProfileService/doctorProfileService";
 import mongoose from "mongoose";
 
 export  class DoctorProfileService implements IDoctorProfileService{
     constructor( private _DoctorRepo : IDoctorProfileRepository) {}
 
- 
-    async createDoctorProfile(
-       DoctorId: string,
-       data: Partial<IDoctorProfile>
-     ): Promise<{message: string}> {
-        try {
-           if (!DoctorId) {
-               throw new Error("Doctor ID is required");
-           }
 
-           const existing = await this._DoctorRepo.findByDoctorId(DoctorId);
-           if (existing) {
-               throw new Error("Profile already exists");
-           }
 
-           const profileData = {
-               ...data,
-               DoctorId: new mongoose.Types.ObjectId(DoctorId),
-           };
 
-           await this._DoctorRepo.create(profileData);
-           return {message: "profile created successfully"};
+  async createDoctorProfile(
+    doctorId: string,
+    data: CreateDoctorProfileDTO
+  ): Promise<{ message: string }> {
+    try {
+      if (!doctorId) {
+        throw new Error("Doctor ID is required");
+      }
 
-        }catch (error) {
-           console.error("Error in creating profile:", error);
-           throw error;
-       }
+      const existing = await this._DoctorRepo.findByDoctorId(doctorId);
+      if (existing) {
+        throw new Error("Profile already exists");
+      }
+
+      const profileData = mapCreateDoctorProfileDTOToEntity(doctorId, data);
+
+      await this._DoctorRepo.create(profileData);
+      return { message: "Profile created successfully" };
+    } catch (error) {
+      console.error("Error in creating profile:", error);
+      throw error;
     }
+  }
 
 
-    async editDoctorProfile(DoctorId: string, data: Partial<IDoctorProfile>): Promise<{message: string}> {
+    async editDoctorProfile(DoctorId: string, data: Partial<CreateDoctorProfileDTO>): Promise<{message: string}> {
        try {
          const existing = await this._DoctorRepo.findByDoctorId(DoctorId);
          if (!existing) {
@@ -59,19 +59,6 @@ export  class DoctorProfileService implements IDoctorProfileService{
        }
     }
 
-    async deleteDoctorProfile(DoctorId: string): Promise<void> {
-        try {
-            const existing = await this._DoctorRepo.findByDoctorId(DoctorId);
-            if(!existing){
-                throw new Error("Doctor profile not found");
-            }
-            await this._DoctorRepo.deleteById(existing._id  as mongoose.Types.ObjectId);
-
-        } catch (error) {
-            console.error("error deleting the Doctor : ",error);
-            throw error;
-        }
-    }
 
 
 

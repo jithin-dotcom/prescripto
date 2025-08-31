@@ -1,6 +1,6 @@
 import { IAppointment } from "../../models/appointment/IAppointment";
 import { IAppointmentRepository } from "../../repositories/interface/IAppointmentRepository";
-import { IAppointmentService, IAppointmentResponse, IDoctorUser, IAppointmentFullResponse, ICreateAppointment, ICreateAppointmentResponse} from "../interface/IAppointmentService";
+import { IAppointmentService, IAppointmentResponseDTO, IDoctorUser, IAppointmentFullResponse, ICreateAppointment, ICreateAppointmentResponse} from "../interface/IAppointmentService";
 import mongoose from "mongoose";
 import { IAvailabilitySlot } from "../../models/doctor/IDoctorProfile";
 
@@ -13,6 +13,8 @@ import { IWalletRepository } from "../../repositories/interface/IWalletRepositor
 import { IWalletHistoryRepository } from "../../repositories/interface/IWalletHistoryRepository";
 import { mapAppointmentToDTO } from "../../utils/mapper/appointmentService.mapper";
 import { IPatientUser } from "../../models/appointment/IAppointment";
+import { CreateAppointmentDTO } from "../../utils/reverseMapper/appointmentService/IAppointmentService";
+import { toAppointmentEntity } from "../../utils/reverseMapper/appointmentService/appointmentService";
 
 
 export class AppointmentService implements IAppointmentService {
@@ -28,41 +30,27 @@ export class AppointmentService implements IAppointmentService {
 
 
 
-async createAppointment(data: Partial<IAppointment>): Promise<{ message: string }> {
+async createAppointment(data: CreateAppointmentDTO): Promise<{ message: string }> {
   try {
     if (!data.userId || !data.doctorId || !data.day || !data.time) {
       throw new Error("Missing required fields");
     }
 
-   
-    const doctorId = data.doctorId instanceof mongoose.Types.ObjectId
-      ? data.doctorId
-      : new mongoose.Types.ObjectId((data.doctorId as IDoctorUser)._id);
-
-   
-    const doctor = await this._doctorRepo.findOne({ doctorId });
+    const doctor = await this._doctorRepo.findOne({ doctorId: data.doctorId });
     if (!doctor) throw new Error("Doctor not found");
 
-    const patientProfile = await this._patientRepo.findOne({patientId:data.userId});
-    if(!patientProfile){
-       throw new Error("Please complete your Profile to Book Appointments");
-    }
-  
-    if (doctor.fee) {
-      data.fee = doctor.fee;
+    const patientProfile = await this._patientRepo.findOne({ patientId: data.userId });
+    if (!patientProfile) {
+      throw new Error("Please complete your Profile to Book Appointments");
     }
 
-    
-    data.appointmentNo = Math.floor(100000 + Math.random() * 900000);
+    const appointmentNo = Math.floor(100000 + Math.random() * 900000);
 
-   
     const [dayStr, monthStr, yearStr] = data.day.split("/");
     const selectedDate = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
 
-   
     const appointmentWeekday = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
 
-   
     const availabilitySlot = doctor.availability?.find(
       (slot): slot is IAvailabilitySlot => slot.day === appointmentWeekday
     );
@@ -71,7 +59,6 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
       throw new Error(`Doctor is not available on ${appointmentWeekday}`);
     }
 
-   
     const timeToMinutes = (timeStr: string): number => {
       const [time, period] = timeStr.split(" ");
       let [hour, minute] = time.split(":").map(Number);
@@ -93,32 +80,27 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
       throw new Error(`Doctor is not available at ${data.time} on ${appointmentWeekday}`);
     }
 
-    
-    const existingAppointments = await this._appointmentRepo.findAll({ doctorId });
+    const existingAppointments = await this._appointmentRepo.findAll({ doctorId: data.doctorId });
     const isSlotTaken = existingAppointments.some(app => {
-      if(app.status !== "cancelled" ){
-         return app.day === data.day && app.time === data.time;
+      if (app.status !== "cancelled") {
+        return app.day === data.day && app.time === data.time;
       }
-      
     });
 
     if (isSlotTaken) {
       throw new Error("Slot not available for the selected date and time");
     }
 
-    
-    const appointmentData: IAppointment = {
+   
+    const appointmentEntity = toAppointmentEntity({
       ...data,
-      userId: new mongoose.Types.ObjectId(data.userId as mongoose.Types.ObjectId),
-      doctorId,
-      status: "pending",
-      payment: "not paid",
-    } as IAppointment;
+      fee: doctor.fee,
+      appointmentNo,
+    });
 
-    await this._appointmentRepo.create(appointmentData);
+    await this._appointmentRepo.create(appointmentEntity);
 
     return { message: "successfully created" };
-
   } catch (error) {
     console.error("Error creating appointment:", error);
     if (error instanceof Error) throw error;
@@ -130,14 +112,13 @@ async createAppointment(data: Partial<IAppointment>): Promise<{ message: string 
 
 
 
-
 async getAppointmentsByUser(
   userId: string,
   page: number,
   limit: number,
   status?: string
 ): Promise<{
-  data: IAppointmentResponse[];
+  data: IAppointmentResponseDTO[];
   totalDocs: number;
   totalPages: number;
   page: number;
@@ -154,7 +135,7 @@ async getAppointmentsByUser(
     const totalDocs = await this._appointmentRepo.countAllFiltered(filter);
     const appointments = await this._appointmentRepo.findUserFilteredPaginated(skip, limit, filter);
 
-    const responses: IAppointmentResponse[] = [];
+    const responses: IAppointmentResponseDTO[] = [];
 
     for (const appointment of appointments) {
       const doctorUser = appointment.doctorId as IDoctorInfo;

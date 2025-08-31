@@ -39,10 +39,33 @@ getWallet(
    role: "user" | "doctor",
    page: number,
    limit: number
-): Promise<IWalletServiceResponse>;
+): Promise<WalletDTO>;
 
 
 makeWalletPayment(userId: string, appointmentId: string): Promise<{message: string}>
 
+}
 
+
+
+export interface WalletHistoryDTO {
+  appointmentId?: string;
+  transactionId?: string;
+  amount: number;
+  type: "credit" | "debit";
+  source: "refund" | "consultation" | "admin_adjustment" | "cancel appointment" | "payout";
+  status: "success" | "pending" | "failed";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface WalletDTO {
+  userId: string;
+  role: "user" | "doctor";
+  balance: number;
+  expense: number;
+  history: WalletHistoryDTO[];
+  page: number;
+  totalPages: number;
+  totalTransactions: number;
 }

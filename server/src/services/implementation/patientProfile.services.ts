@@ -1,10 +1,13 @@
 
-import { IPatientProfile } from "../../models/patient/IPatientProfile";
+
 import { IPatientProfileRepository } from "../../repositories/interface/IPatientProfileRepository";
 import { IPatientProfileService } from "../interface/IPatientService";
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
-import mongoose from "mongoose";
+
 import {uploadToCloudinary} from "../../config/cloudinary";
+import { PatientProfileDTO } from "../../utils/reverseMapper/patientProfileServices/IPatientProfileService";
+import { toPatientProfilePersistence } from "../../utils/reverseMapper/patientProfileServices/patientService";
+
 
 export  class PatientProfileService implements IPatientProfileService{
     constructor( 
@@ -13,43 +16,46 @@ export  class PatientProfileService implements IPatientProfileService{
     ) {}
 
  
+
+
     async createPatientProfile(
-       patientId: string,
-       data: Partial<IPatientProfile>
-     ): Promise<{message: string}> {
-        try {
-           if (!patientId) {
-               throw new Error("Patient ID is required");
-           }
+      patientId: string,
+      data: PatientProfileDTO
+    ): Promise<{ message: string }> {
+      try {
+        if (!patientId) {
+          throw new Error("Patient ID is required");
+        }
 
-           const existing = await this._patientRepo.findByPatientId(patientId);
-           if (existing) {
-               throw new Error("Profile already exists");
-           }
+        const existing = await this._patientRepo.findByPatientId(patientId);
+        if (existing) {
+          throw new Error("Profile already exists");
+        }
 
-           const profileData = {
-               ...data,
-               patientId: new mongoose.Types.ObjectId(patientId),
-           };
+    
+        const profileData = toPatientProfilePersistence(patientId, data);
 
-           await this._patientRepo.create(profileData);
-           return {message: "Successfully Created Profile"};
+        await this._patientRepo.create(profileData);
 
-        }catch (error) {
-           console.error("Error in creating profile:", error);
-           throw error;
-       }
+        return { message: "Successfully Created Profile" };
+      } catch (error) {
+        console.error("Error in creating profile:", error);
+        throw error;
+      }
     }
 
 
-    async editPatientProfile(patientId: string, data: Partial<IPatientProfile>): Promise<{message: string}> {
+    async editPatientProfile(patientId: string, data: PatientProfileDTO): Promise<{message: string}> {
        try {
          const existing = await this._patientRepo.findByPatientId(patientId);
          if (!existing) {
            throw new Error("Profile not found");
          }
 
-         const updated = await this._patientRepo.updateByPatientId(patientId, data);
+     
+         const profileData = toPatientProfilePersistence(patientId, data);
+
+         const updated = await this._patientRepo.create(profileData);
          if (!updated) {
            throw new Error("Failed to update profile");
          }
@@ -63,22 +69,8 @@ export  class PatientProfileService implements IPatientProfileService{
     }
 
 
-    async deletePatientProfile(patientId: string): Promise<void> {
-        try {
-            const existing = await this._patientRepo.findByPatientId(patientId);
-            if(!existing){
-                throw new Error("Patient profile not found");
-            }
-            await this._patientRepo.deleteById(existing._id  as mongoose.Types.ObjectId);
 
-        } catch (error) {
-            console.error("error deleting the patient : ",error);
-            throw error;
-        }
-    }
-
-
-    async uploadProfilePhoto(userId: string, file: Express.Multer.File) {
+  async uploadProfilePhoto(userId: string, file: Express.Multer.File) {
     try {
 
        const url = await uploadToCloudinary(file.buffer, "telecare/profile_photos");
@@ -90,7 +82,5 @@ export  class PatientProfileService implements IPatientProfileService{
       throw new Error("Failed to upload profile photo");
     }
   }
-
-
 
 }

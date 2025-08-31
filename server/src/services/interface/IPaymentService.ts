@@ -17,6 +17,14 @@ export interface IRazorpayOrderResponse {
   status: string;
 }
 
+export interface IData {
+   doctorId: mongoose.Types.ObjectId;
+   amount: number;
+   reason: string;
+}
+
+
+
 export interface IPaymentService {
   createRazorpayOrder(data: RazorpayOrderInput): Promise<IRazorpayOrderResponse>;
   verifyPaymentSignature(
@@ -34,16 +42,6 @@ export interface IPaymentService {
   
   initiatePayout(payoutId: string, amount: number, doctorId: string): Promise<void>;
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

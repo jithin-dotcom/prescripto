@@ -1,7 +1,7 @@
 
 
 import { IAppointment } from "../../models/appointment/IAppointment";
-import { IDoctorUser, IAppointmentResponse } from "../../services/interface/IAppointmentService";
+import { IDoctorUser, IAppointmentResponseDTO } from "../../services/interface/IAppointmentService";
 import { IDoctorProfile } from "../../models/doctor/IDoctorProfile";
 import mongoose from "mongoose";
 
@@ -9,7 +9,7 @@ export function mapAppointmentToDTO(
   appointment: IAppointment,
   doctorUser: IDoctorUser,
   profile: IDoctorProfile
-): IAppointmentResponse {
+): IAppointmentResponseDTO {
   return {
     _id: (appointment?._id as mongoose.Types.ObjectId).toString(),
     doctor: {

@@ -2,41 +2,52 @@
 
 
 import mongoose from "mongoose";
-import { IConcern, IConcernDocPopulated } from "../../models/concern/IConcern";
 import { IConcernRepository } from "../../repositories/interface/IConcernRepository";
 import { IConcernService } from "../interface/IConcernService";
 import { FilterQuery } from "mongoose";
 import { IConcernPopulated } from "../interface/IConcernService";
 import { mapConcernsClean } from "../../utils/mapper/concernService.mapper";
+import { CreateConcernDTO } from "../../utils/reverseMapper/concernService/IConcernService";
+import { mapCreateConcernToEntity } from "../../utils/reverseMapper/concernService/concernService";
+import { Document } from "mongoose";
 
 export class ConcernService implements IConcernService {
     constructor(
         private _concernRepo: IConcernRepository, 
     ){}
 
-    async createConcern(data: Partial<IConcern>): Promise<{success: true}> {
-        try {
-            
-            if(!data.appointmentId || !data.userId || !data.doctorId || !data.title || !data.description){
-                throw new Error("Data is missing");
-            }
-            if(data.description.trim().length < 10){
-                throw new Error("Description should have at least 10 letters");
-            }
-            const existing = await this._concernRepo.findOne({appointmentId: data.appointmentId});
-            if(existing){
-                throw new Error("You have already raised Concern for this appointment");
-            }
-            await this._concernRepo.create(data);
-            return {success: true};
-        } catch (error) {
-            if(error instanceof Error){
-                throw error;
-            }else{ 
-                throw new Error("Something went wrong in creating concern");
-            }
-        }
+    
+    
+
+  async createConcern(data: CreateConcernDTO): Promise<{ success: true }> {
+    try {
+      if (!data.appointmentId || !data.userId || !data.doctorId || !data.title || !data.description) {
+        throw new Error("Data is missing");
+      }
+
+      if (data.description.trim().length < 10) {
+        throw new Error("Description should have at least 10 letters");
+      }
+
+      const existing = await this._concernRepo.findOne({ appointmentId: data.appointmentId });
+      if (existing) {
+        throw new Error("You have already raised Concern for this appointment");
+      }
+
+      
+      const concernEntity = mapCreateConcernToEntity(data);
+
+      await this._concernRepo.create(concernEntity);
+
+      return { success: true };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      } else {
+        throw new Error("Something went wrong in creating concern");
+      }
     }
+  }
 
 
 
@@ -55,7 +66,7 @@ export class ConcernService implements IConcernService {
 
     
     
-    let query: FilterQuery<IConcern> = {};
+    let query: FilterQuery<Document> = {};
     if (search) {
       query.$or = [
         { "title": { $regex: search, $options: "i" } },
@@ -125,7 +136,7 @@ export class ConcernService implements IConcernService {
     const userId = new mongoose.Types.ObjectId(id);
     const doctorId = new mongoose.Types.ObjectId(id);
    
-    let query: FilterQuery<IConcern> = {};
+    let query: FilterQuery<Document> = {};
     if(role === "user"){
        query = {userId};
     }else{

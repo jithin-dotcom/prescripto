@@ -1,6 +1,5 @@
 
 
-// mappers/auth.mapper.ts
 import { SignupRequestDTO, SignupData } from "./IAuthService";
 
 export const mapSignupRequestToData = (

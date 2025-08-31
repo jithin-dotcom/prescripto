@@ -69,42 +69,6 @@ export class AdminController implements IAdminController {
 
 
 
-// async createUserOrDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
-//   try {
-//     const { userData, profileData } = req.body;
-
-//     if (!userData || !profileData) {
-//       res.status(StatusCode.BAD_REQUEST).json({ 
-//         success: false, 
-//         message: StatusMessage.MISSING_DATA 
-//       });
-//       return;
-//     }
-
-//     const parsedUserData = JSON.parse(userData);
-//     const parsedProfileData = JSON.parse(profileData);
-
-   
-//     const files = req.files as UploadedFiles;
-
-//     const result = await this._adminService.createUserOrDoctor({
-//       userData: parsedUserData,
-//       profileData: parsedProfileData,
-//       files,
-//     });
-
-//     res.status(StatusCode.CREATED).json({
-//       success: true,
-//       message: result.message,
-//       userId: result.userId,
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// }
-
-
-
 
 async createUserOrDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
@@ -130,46 +94,6 @@ async createUserOrDoctor(req: Request, res: Response, next: NextFunction): Promi
     next(error);
   }
 };
-
-
-
-
-
-// async updateUserOrDoctor(req: Request, res: Response, next: NextFunction): Promise<void> {
-//   try {
-//     const userId = req.params.id;
-//     const { userData, profileData } = req.body;
-
-//     if (!userData || !profileData) {
-//       res.status(StatusCode.BAD_REQUEST).json({ 
-//         success: false, 
-//         message: StatusMessage.MISSING_DATA 
-//       });
-//       return;
-//     }
-
-//     const parsedUserData = JSON.parse(userData);
-//     const parsedProfileData = JSON.parse(profileData);
-
-   
-//     const files = req.files as UploadedFiles;
-
-//     const message = await this._adminService.updateUserOrDoctor(
-//       userId,
-//       parsedUserData,
-//       parsedProfileData,
-//       files
-//     );
-
-//     res.status(StatusCode.OK).json({
-//       success: true,
-//       message,
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// }
-
 
 
 

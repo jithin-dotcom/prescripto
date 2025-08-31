@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
 
-
-
 export interface CallLogDTO {
   doctorId:  mongoose.Types.ObjectId;
   patientId: mongoose.Types.ObjectId;

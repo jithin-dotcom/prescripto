@@ -8,13 +8,6 @@ import { CreateUserDTO, UpdateDoctorProfileDTO, UpdatePatientProfileDTO, UserWit
 
 
 
-// export interface CreateUserOrDoctorInput {
-//   userData: Partial<IUser>;
-//   profileData: Partial<IPatientProfile> | Partial<IDoctorProfile>;
-//   files?: UploadedFiles;
-// }
-
-
 export interface CreateUserOrDoctorInput {
   userData: CreateUserDTO;
   profileData: UpdatePatientProfileDTO | UpdateDoctorProfileDTO;

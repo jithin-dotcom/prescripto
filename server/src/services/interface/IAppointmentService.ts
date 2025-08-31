@@ -1,8 +1,7 @@
 
 
-import { IAppointment } from "../../models/appointment/IAppointment";
 
-
+import { CreateAppointmentDTO } from "../../utils/reverseMapper/appointmentService/IAppointmentService";
 
 
 
@@ -21,7 +20,7 @@ export interface IDoctorInfo {
   fee: number;
 }
 
-export interface IAppointmentResponse {
+export interface IAppointmentResponseDTO {
   _id: string;
   doctor: IDoctorInfo;
   userId: string;
@@ -155,9 +154,9 @@ export interface IAppointmentFullResponse {
 
 export interface IAppointmentService {
   
-  createAppointment(data: Partial<IAppointment>): Promise<{message:string}>;
+  createAppointment(data: CreateAppointmentDTO): Promise<{ message: string }>
   
-   getAppointmentsByDoctor(
+  getAppointmentsByDoctor(
     doctorId: string,
     page: number,
     limit: number,
@@ -185,7 +184,7 @@ export interface IAppointmentService {
     limit: number,
     status?: string
   ): Promise<{
-    data: IAppointmentResponse[];
+    data: IAppointmentResponseDTO[];
     totalDocs: number;
     totalPages: number;
     page: number;

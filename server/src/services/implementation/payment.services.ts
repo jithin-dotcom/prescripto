@@ -7,6 +7,7 @@ import PDFDocument from "pdfkit";
 import fs from "fs";
 import path from "path";
 import { Buffer } from "buffer";
+import { IData } from "../interface/IPaymentService";
 
 
 import { IPaymentService, RazorpayOrderInput, IRazorpayOrderResponse, IPayoutClean } from "../interface/IPaymentService";
@@ -67,12 +68,14 @@ export class PaymentService implements IPaymentService {
     };
   }
 
+
+
   async verifyPaymentSignature(
     razorpayOrderId: string,
     razorpayPaymentId: string,
     razorpaySignature: string
   ): Promise<{ success: boolean; message: string }> {
-    console.log("entered into verify razorpay")
+    
     const secret = process.env.RAZORPAY_SECRET_KEY;
     if (!secret) {
       throw new Error("RAZORPAY_SECRET_KEY is not set in environment variables.");
@@ -166,7 +169,7 @@ export class PaymentService implements IPaymentService {
        if(wallet?.balance && amount > wallet?.balance){
           throw new Error("Request amount is greater than wallet balance");
        }
-       const data: Partial<IPayout> = {
+       const data: Partial<IData> = {
          doctorId: newDoctorId,
          amount,
          reason,

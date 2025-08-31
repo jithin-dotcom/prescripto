@@ -1,6 +1,6 @@
 
 
-import { IUser, IDoctorProfile, ITopDoctorClean } from "../../types/user.type";
+import { IUser, ITopDoctorClean , IDoctorProfile} from "../../types/user.type";
 import mongoose from "mongoose";
 
 
@@ -40,3 +40,6 @@ export const mapTopDoctors = (
 ): ITopDoctorClean[] => {
   return users.map((user, index) => mapTopDoctor(user, profiles[index]));
 };
+
+
+
