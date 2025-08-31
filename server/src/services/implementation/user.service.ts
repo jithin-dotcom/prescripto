@@ -5,6 +5,12 @@ import { IDoctorProfileRepository } from "../../repositories/interface/IDoctorPr
 import { IUserRepository } from "../../repositories/interface/IUserRepository";
 import { IUser } from "../../types/user.type";
 import { IPatientProfile } from "../../models/patient/IPatientProfile";
+import { UserDTO, PatientProfileDTO, DoctorProfileDTO } from "../../utils/reverseMapper/userService/IUserService";
+import { mapPatientProfileDTOToPersistence, mapDoctorProfileDTOToPersistence } from "../../utils/reverseMapper/userService/userService"; 
+import { mapGetProfileUserDTO, mapGetProfileDoctorProfileDTO, mapGetProfilePatientProfileDTO } from "../../utils/reverseMapper/userService/userServiceGetUser";
+import { GetProfileUserDTO, GetProfileDoctorProfileDTO, GetProfilePatientProfileDTO } from "../../utils/reverseMapper/userService/IUserServiceGetUser";
+import { GetAllDoctorsDoctorProfileDTO, GetAllDoctorsUserDTO } from "../../utils/reverseMapper/userService/IUserService.getAllDoctors";
+import { mapGetAllDoctorsDoctorProfileDTO, mapGetAllDoctorsUserDTO } from "../../utils/reverseMapper/userService/userService.getAllDoctors";
 
 
 
@@ -24,23 +30,24 @@ interface IQuery  {
 
 export class UserService implements IUserService {
 
-    constructor(
-        private _userRepo: IUserRepository,
-        private _patientRepo: IPatientProfileRepository,
-        private _doctorRepo: IDoctorProfileRepository,
+  constructor(
+    private _userRepo: IUserRepository,
+    private _patientRepo: IPatientProfileRepository,
+    private _doctorRepo: IDoctorProfileRepository,
         
-    ){}
+  ){}
 
 
-    
+
+
 async getAllDoctors(
   page: number = 1,
   limit: number = 4,
   search: string = "",
   sort: string = "createdAt",
-  specialty: string = "",
+  specialty: string = ""
 ): Promise<{
-  data: ({ profile: IDoctorProfile[] } & IUser)[];
+  data: any[];
   total: number;
   totalPages: number;
   page: number;
@@ -48,42 +55,43 @@ async getAllDoctors(
   try {
     const skip = (page - 1) * limit;
 
-    const baseQuery: IQuery = {
+    const baseQuery: any = {
       role: "doctor",
       isBlocked: false,
       isVerified: true,
       name: { $regex: search, $options: "i" },
     };
 
-    let users: (IUser & Document)[] = [];
+    let users: any[] = [];
 
     if (specialty) {
-      
       const profiles = await this._doctorRepo.findAll({ specialization: specialty });
       const userIds = profiles.map((p) => p.doctorId);
 
-      
       users = await this._userRepo.findAll({
         _id: { $in: userIds },
         ...baseQuery,
       });
     } else {
-      
       users = await this._userRepo.findAll(baseQuery);
     }
 
-   
     const doctorsWithProfiles = await Promise.all(
-      users.map(async (user) => {
-        const profile = await this._doctorRepo.findAll({ doctorId: user._id });
+      users.map(async (userDoc) => {
+        const profiles = await this._doctorRepo.findAll({ doctorId: userDoc._id });
+        const mappedProfiles = profiles
+          .map(mapGetAllDoctorsDoctorProfileDTO)
+          .filter(Boolean) as GetAllDoctorsDoctorProfileDTO[];
+
+       
         return {
-          ...user.toObject(),
-          profile,
+          ...mapGetAllDoctorsUserDTO(userDoc), 
+          profile: mappedProfiles,
+          isVerified: userDoc.isVerified,
         };
       })
     );
 
-   
     const sortField = sort.startsWith("-") ? sort.slice(1) : sort;
     const sortOrder = sort.startsWith("-") ? "asc" : "desc";
 
@@ -98,8 +106,8 @@ async getAllDoctors(
         valA = a.profile?.[0]?.averageRating ?? 0;
         valB = b.profile?.[0]?.averageRating ?? 0;
       } else {
-        valA = a[sortField] ?? 0;
-        valB = b[sortField] ?? 0;
+        valA = (a as any)[sortField] ?? 0;
+        valB = (b as any)[sortField] ?? 0;
       }
 
       return sortOrder === "asc" ? valA - valB : valB - valA;
@@ -107,6 +115,7 @@ async getAllDoctors(
 
     const total = sortedDoctors.length;
     const paginated = sortedDoctors.slice(skip, skip + limit);
+
 
     return {
       data: paginated,
@@ -123,93 +132,79 @@ async getAllDoctors(
 
 
 
- async getProfile(userId: string): Promise<{user: IUser, profile: IPatientProfile | IDoctorProfile | null}|null> {
+
+async getProfile(
+  userId: string
+): Promise<{ user: GetProfileUserDTO; profile: GetProfilePatientProfileDTO | GetProfileDoctorProfileDTO | null } | null> {
   try {
-    const user = await this._userRepo.findById(userId);
+    const userDoc = await this._userRepo.findById(userId);
+    if (!userDoc) return null;
 
-    if (!user) return null;
-
-    
     let profile = null;
-    if(user.role === "user"){
-       profile = await this._patientRepo.findOne({patientId: userId});
-    }else if(user.role === "doctor"){
-        profile = await this._doctorRepo.findOne({doctorId: userId});
+    if (userDoc.role === "user") {
+      const patientProfileDoc = await this._patientRepo.findOne({ patientId: userId });
+      profile = mapGetProfilePatientProfileDTO(patientProfileDoc);
+    } else if (userDoc.role === "doctor") {
+      const doctorProfileDoc = await this._doctorRepo.findOne({ doctorId: userId });
+      profile = mapGetProfileDoctorProfileDTO(doctorProfileDoc);
     }
-    
 
     return {
-       user,
-       profile
-    }
-
+      user: mapGetProfileUserDTO(userDoc),
+      profile,
+    };
   } catch (error) {
     console.error(error);
-    throw new Error(`Failed to fetch profile`);
+    throw new Error("Failed to fetch profile");
   }
 }
 
 
 
 
-
-
-
-
 async updateUserOrDoctor(
   userId: string,
-  userData: Partial<IUser>,
-  profileData?: Partial<IPatientProfile> | Partial<IDoctorProfile>
+  userData: Partial<UserDTO>,
+  profileData?: Partial<PatientProfileDTO> | Partial<DoctorProfileDTO>
 ): Promise<string> {
   try {
-    const user = await this._userRepo.findById(userId);
-    if (!user) throw new Error("User not found");
+    const userDoc = await this._userRepo.findById(userId);
+    if (!userDoc) throw new Error("User not found");
 
+   
     if (userData.password) {
       const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
-      userData.password = hashedPassword;
+      userData.password = await bcrypt.hash(userData.password, saltRounds);
     }
 
-    console.log("profileData : ",profileData);
-    if (profileData && 'photo' in profileData && profileData.photo) {
+    
+    if (profileData && "photo" in profileData && profileData.photo) {
       await this._userRepo.updateById(userId, { photo: profileData.photo });
       delete (profileData as any).photo;
     }
 
+    
     await this._userRepo.updateById(userId, userData);
 
-    const objectId = new mongoose.Types.ObjectId(userId);
-
-    if (user.role === "user" && profileData) {
-      const existingProfile = await this._patientRepo.findByPatientId(objectId);
-
-      const patientProfileData: Partial<IPatientProfile> = {
-        ...(profileData as Partial<IPatientProfile>),
-      };
+    if (userDoc.role === "user" && profileData) {
+      const existingProfile = await this._patientRepo.findByPatientId(new mongoose.Types.ObjectId(userId));
+      const persistenceData = mapPatientProfileDTOToPersistence(profileData as Partial<PatientProfileDTO>, userId);
 
       if (existingProfile) {
-        await this._patientRepo.updateByPatientId(objectId, patientProfileData);
+        await this._patientRepo.updateByPatientId(existingProfile.patientId, persistenceData);
       } else {
-        await this._patientRepo.create({
-          patientId: objectId,
-          ...patientProfileData,
-        });
+        await this._patientRepo.create(persistenceData);
       }
-    } else if (user.role === "doctor" && profileData) {
-      const existingProfile = await this._doctorRepo.findByDoctorId(objectId);
+    }
 
-      const doctorProfileData: Partial<IDoctorProfile> = {
-        ...(profileData as Partial<IDoctorProfile>),
-      };
+    if (userDoc.role === "doctor" && profileData) {
+      const existingProfile = await this._doctorRepo.findByDoctorId(new mongoose.Types.ObjectId(userId));
+      const persistenceData = mapDoctorProfileDTOToPersistence(profileData as Partial<DoctorProfileDTO>, userId);
 
       if (existingProfile) {
-        await this._doctorRepo.updateByDoctorId(objectId, doctorProfileData);
+        await this._doctorRepo.updateByDoctorId(existingProfile.doctorId, persistenceData);
       } else {
-        await this._doctorRepo.create({
-          doctorId: objectId,
-          ...doctorProfileData,
-        });
+        await this._doctorRepo.create(persistenceData);
       }
     }
 
@@ -219,6 +214,10 @@ async updateUserOrDoctor(
     throw new Error(error instanceof Error && error.message ? error.message : "Something went wrong while updating");
   }
 }
+
+
+
+
 
 async changePassword(userId: string, oldPassword: string, newPassword: string):Promise<void>{
    try {
@@ -251,6 +250,8 @@ async changePassword(userId: string, oldPassword: string, newPassword: string):P
    
   
 }
+
+
 
 async changeEmail(userId: string, password: string, newEmail: string):Promise<void>{
     try {
@@ -286,15 +287,6 @@ async changeEmail(userId: string, password: string, newEmail: string):Promise<vo
 }
 
 
-async getUserById(userId:string): Promise<IUser | null> {
-  try {
-     const id = new mongoose.Types.ObjectId(userId); 
-     const user = await this._userRepo.findById(id);
-     return user;
-  }catch (error) {
-    throw new Error("Failed to get User");
-  }
-}
 
 
 }

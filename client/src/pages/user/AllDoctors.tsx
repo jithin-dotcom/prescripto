@@ -68,6 +68,7 @@ const AllDoctors = () => {
       const res = await axiosInstance.get(
         `${APIUserRoutes.ALL_DOCTORS}?page=${page}&limit=${pageSize}&search=${debouncedSearchInput}&specialty=${specialty}&sortBy=${sortBy}`
       );
+      
       setDoctors(res.data.data);
       setTotalPages(res.data.totalPages);
     } catch (error) {
@@ -76,6 +77,8 @@ const AllDoctors = () => {
       setLoading(false);
     }
   };
+
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex flex-col">
@@ -184,9 +187,11 @@ const AllDoctors = () => {
                   return (
                     <motion.div
                       variants={itemVariants}
-                      key={doctor._id}
+                      // key={doctor._id}
+                      key={doctor.id}
                       whileHover={{ scale: 1.03 }}
-                      onClick={() => navigate(`/appointment/${doctor._id}`)}
+                      // onClick={() => navigate(`/appointment/${doctor._id}`)}
+                       onClick={() => navigate(`/appointment/${doctor.id}`)}
                       className="flex flex-col border border-[#C9D8FF] rounded-xl bg-white shadow-2xl overflow-hidden transition group cursor-pointer"
                     >
                       <div className="w-full aspect-[4/3] bg-[#EAEFFF] hover:bg-[#5F6FFF] transition duration-300">
