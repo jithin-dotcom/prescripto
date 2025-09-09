@@ -3,7 +3,7 @@
 import { DoctorProfileDTO, PatientProfileDTO, UserDTO } from "../../utils/reverseMapper/userService/IUserService";
 import { GetProfileUserDTO, GetProfileDoctorProfileDTO, GetProfilePatientProfileDTO } from "../../utils/reverseMapper/userService/IUserServiceGetUser";
 import { GetAllDoctorsDoctorProfileDTO, GetAllDoctorsUserDTO } from "../../utils/reverseMapper/userService/IUserService.getAllDoctors";
-
+import { IUser } from "../../types/user.type";
 
 export interface IUserService {
     
@@ -37,6 +37,7 @@ export interface IUserService {
     changePassword(userId: string, oldPassword: string, newPassword: string):Promise<void>;
 
     changeEmail(userId: string, password: string, newEmail: string):Promise<void>;
+    getUserById(userId:string): Promise<IUser | null>
 
 }
 

@@ -128,6 +128,7 @@ export const videoCallSocketHandler = (io: Namespace, socket: Socket) => {
       const duration = Math.floor((endTime.getTime() - session.startTime.getTime()) / 1000);
 
       try {
+        
         await callLogService.logCall({
           doctorId: new mongoose.Types.ObjectId(session.doctorId),
           patientId: new mongoose.Types.ObjectId(session.patientId),

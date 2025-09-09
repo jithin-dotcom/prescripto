@@ -16,7 +16,7 @@ export interface ICallLogService {
 export interface IWalletHistoryDTO {
   _id: string;
   walletId: string;
-  appointmentId: string;
+  appointmentId?: string;
   amount: number;
   type: string;
   source: string;

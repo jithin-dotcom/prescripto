@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 export interface CallLogDTO {
   doctorId:  mongoose.Types.ObjectId;
   patientId: mongoose.Types.ObjectId;
-  appointmentId: mongoose.Types.ObjectId;
+  appointmentId?: mongoose.Types.ObjectId;
   startTime: Date;
   endTime: Date;
   duration: number;

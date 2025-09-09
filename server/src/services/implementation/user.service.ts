@@ -10,7 +10,7 @@ import { mapGetProfileUserDTO, mapGetProfileDoctorProfileDTO, mapGetProfilePatie
 import { GetProfileUserDTO, GetProfileDoctorProfileDTO, GetProfilePatientProfileDTO } from "../../utils/reverseMapper/userService/IUserServiceGetUser";
 import { GetAllDoctorsDoctorProfileDTO} from "../../utils/reverseMapper/userService/IUserService.getAllDoctors";
 import { mapGetAllDoctorsDoctorProfileDTO, mapGetAllDoctorsUserDTO } from "../../utils/reverseMapper/userService/userService.getAllDoctors";
-
+import { IUser } from "../../types/user.type";
 
 
 
@@ -285,6 +285,17 @@ async changeEmail(userId: string, password: string, newEmail: string):Promise<vo
     }
 }
 
+
+
+async getUserById(userId:string): Promise<IUser | null> {
+  try {
+     const id = new mongoose.Types.ObjectId(userId); 
+     const user = await this._userRepo.findById(id);
+     return user;
+  }catch (error) {
+    throw new Error("Failed to get User");
+  }
+}
 
 
 
