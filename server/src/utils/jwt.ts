@@ -2,8 +2,11 @@ import jwt from "jsonwebtoken";
 import env from '../config/env.config';
 
 export const generateTokens = (payload: object) => {
-  const accessToken = jwt.sign(payload,env.JWT_ACCESS_SECRET!, { expiresIn: "2h" });
-  const refreshToken = jwt.sign(payload,env.JWT_REFRESH_SECRET!, { expiresIn: "7d" });
+
+  const accessExpiry = env.JWT_ACCESS_EXPIRES;   
+  const refreshExpiry = env.JWT_REFRESH_EXPIRES; 
+  const accessToken = jwt.sign(payload,env.JWT_ACCESS_SECRET!, { expiresIn: accessExpiry as jwt.SignOptions["expiresIn"]});
+  const refreshToken = jwt.sign(payload,env.JWT_REFRESH_SECRET!, { expiresIn: refreshExpiry as jwt.SignOptions["expiresIn"]});
   return { accessToken,refreshToken };
 };
 

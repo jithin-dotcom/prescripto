@@ -21,6 +21,8 @@ const envSchema = z.object({
     REDIS_PORT: z.string().min(1, 'REDIS_PORT is required!'),
     REDIS_PASSWORD: z.string().min(1, 'REDIS_PASSWORD is required!'),
     REDIS_URL: z.string().min(1, 'REDIS_PASSWORD is required!'),
+    JWT_ACCESS_EXPIRES: z.string().default("2h"),
+    JWT_REFRESH_EXPIRES: z.string().default("7d"),
 })
 
 const env = envSchema.parse(process.env);

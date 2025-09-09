@@ -20,7 +20,7 @@ export class BaseRepository<T extends  Document> implements IBaseRepository<T> {
   }
 
   async findAll(filter: FilterQuery<T> = {}): Promise<T[]> {
-    return await this.model.find(filter);
+    return await this.model.find(filter).sort({createdAt:-1});
   }
 
   async findOne(filter: FilterQuery<T> = {}): Promise<T | null> {
