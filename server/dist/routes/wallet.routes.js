@@ -9,6 +9,7 @@ const appointment_repositories_1 = require("../repositories/implementation/appoi
 const auth_middleware_1 = require("../middlewares/auth.middleware");
 const chat_repositories_1 = require("../repositories/implementation/chat.repositories");
 const payment_repositories_1 = require("../repositories/implementation/payment.repositories");
+const role_middleware_1 = require("../middlewares/role.middleware");
 const router = (0, express_1.Router)();
 const walletRepository = new wallet_repository_1.WalletRepository();
 const walletHistoryRepository = new walletHistory_repository_1.WalletHistoryRepository();
@@ -18,6 +19,6 @@ const paymentRepository = new payment_repositories_1.PaymentRepository();
 const walletService = new wallet_services_1.WalletService(walletRepository, walletHistoryRepository, appointmentRepository, chatRepository, paymentRepository);
 const walletController = new wallet_controller_1.WalletController(walletService);
 router.use(auth_middleware_1.verifyAccessToken);
-router.get("/get-wallet", walletController.getWallet.bind(walletController));
-router.get("/wallet-payment/:appointmentId", walletController.makeWalletPayment.bind(walletController));
+router.get("/get-wallet", (0, role_middleware_1.checkRole)("user", "doctor"), walletController.getWallet.bind(walletController));
+router.get("/wallet-payment/:appointmentId", (0, role_middleware_1.checkRole)("user"), walletController.makeWalletPayment.bind(walletController));
 exports.default = router;

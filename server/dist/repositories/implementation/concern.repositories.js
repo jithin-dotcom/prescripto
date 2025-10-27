@@ -23,6 +23,7 @@ class ConcernRepository extends base_repositories_1.BaseRepository {
                 .populate("appointmentId userId doctorId")
                 .skip(skip)
                 .limit(limit)
+                .sort({ createdAt: -1 })
                 .exec();
             return result;
         });
@@ -32,9 +33,9 @@ class ConcernRepository extends base_repositories_1.BaseRepository {
             return this.model.countDocuments(query).exec();
         });
     }
-    updateStatusIfPending(id, status) {
+    updateStatusIfPending(id, status, reason) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.model.findOneAndUpdate({ _id: id, status: "pending" }, { status }, { new: true });
+            return yield this.model.findOneAndUpdate({ _id: id, status: "pending" }, { status, reason }, { new: true });
         });
     }
 }

@@ -7,8 +7,10 @@ exports.verifyRefreshToken = exports.verifyAccessToken = exports.generateTokens 
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const env_config_1 = __importDefault(require("../config/env.config"));
 const generateTokens = (payload) => {
-    const accessToken = jsonwebtoken_1.default.sign(payload, env_config_1.default.JWT_ACCESS_SECRET, { expiresIn: "2h" });
-    const refreshToken = jsonwebtoken_1.default.sign(payload, env_config_1.default.JWT_REFRESH_SECRET, { expiresIn: "7d" });
+    const accessExpiry = env_config_1.default.JWT_ACCESS_EXPIRES;
+    const refreshExpiry = env_config_1.default.JWT_REFRESH_EXPIRES;
+    const accessToken = jsonwebtoken_1.default.sign(payload, env_config_1.default.JWT_ACCESS_SECRET, { expiresIn: accessExpiry });
+    const refreshToken = jsonwebtoken_1.default.sign(payload, env_config_1.default.JWT_REFRESH_SECRET, { expiresIn: refreshExpiry });
     return { accessToken, refreshToken };
 };
 exports.generateTokens = generateTokens;

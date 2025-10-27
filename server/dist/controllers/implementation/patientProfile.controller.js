@@ -22,18 +22,20 @@ class PatientProfileController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const { patientId } = req.params;
-                const validatedData = patientProfile_schema_1.patientProfileSchema.parse(Object.assign(Object.assign({}, req.body), { patientId }));
+                const validatedData = patientProfile_schema_1.patientProfileSchema.parse(req.body);
                 const profile = yield this._patientProfileService.createPatientProfile(patientId, validatedData);
                 res.status(statusCode_enum_1.StatusCode.CREATED).json(profile);
             }
             catch (error) {
                 if ((error === null || error === void 0 ? void 0 : error.name) === "ZodError") {
                     res.status(statusCode_enum_1.StatusCode.BAD_REQUEST).json({
-                        message: error.errors.map((e) => e.message).join(", ")
+                        message: error.errors.map((e) => e.message).join(", "),
                     });
                     return;
                 }
-                res.status(statusCode_enum_1.StatusCode.BAD_REQUEST).json({ message: error.message || "Failed to create profile" });
+                res
+                    .status(statusCode_enum_1.StatusCode.BAD_REQUEST)
+                    .json({ message: error.message || "Failed to create profile" });
             }
         });
     }
@@ -51,21 +53,6 @@ class PatientProfileController {
             }
             catch (error) {
                 res.status(statusCode_enum_1.StatusCode.BAD_REQUEST).json({ message: error.message || "Error updating profile" });
-            }
-        });
-    }
-    deleteProfile(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { patientId } = req.params;
-                if (!patientId) {
-                    res.send(statusCode_enum_1.StatusCode.BAD_REQUEST).json({ message: statusMessage_1.StatusMessage.MISSING_ID });
-                }
-                yield this._patientProfileService.deletePatientProfile(patientId);
-                res.status(statusCode_enum_1.StatusCode.NO_CONTENT).json({ message: statusMessage_1.StatusMessage.NO_CONTENT });
-            }
-            catch (error) {
-                res.status(statusCode_enum_1.StatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message || statusMessage_1.StatusMessage.INTERNAL_SERVER_ERROR });
             }
         });
     }

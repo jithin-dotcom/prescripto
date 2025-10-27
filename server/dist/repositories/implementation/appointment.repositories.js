@@ -87,5 +87,10 @@ class AppointmentRepository extends base_repositories_1.BaseRepository {
             return res.modifiedCount > 0;
         });
     }
+    findAppointmentById(appointmentId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.model.findById(appointmentId).populate("userId");
+        });
+    }
 }
 exports.AppointmentRepository = AppointmentRepository;

@@ -43,10 +43,8 @@ class AuthController {
                     email: validated.email,
                     password: validated.password,
                     role: validated.role,
-                    isBlocked: false,
                 });
                 res.status(statusCode_enum_1.StatusCode.OK).json(data);
-                return;
             }
             catch (error) {
                 if (error === null || error === void 0 ? void 0 : error.statusCode) {
@@ -54,9 +52,9 @@ class AuthController {
                     return;
                 }
                 if (error.name === "ZodError") {
-                    res
-                        .status(statusCode_enum_1.StatusCode.BAD_REQUEST)
-                        .json({ message: error.errors.map((e) => e.message).join(", ") });
+                    res.status(statusCode_enum_1.StatusCode.BAD_REQUEST).json({
+                        message: error.errors.map((e) => e.message).join(", "),
+                    });
                     return;
                 }
                 next(error);
@@ -132,7 +130,6 @@ class AuthController {
                 };
                 res.cookie("refreshToken", result.refreshToken, cookieOptions);
                 res.status(statusCode_enum_1.StatusCode.OK).json(result);
-                return;
             }
             catch (error) {
                 next(error);
@@ -158,7 +155,6 @@ class AuthController {
                 const validated = auth_schema_1.verifyForgotPasswordSchema.parse(req.body);
                 const result = yield this._authService.forgotPassword(validated.email);
                 res.status(statusCode_enum_1.StatusCode.OK).json(result);
-                return;
             }
             catch (error) {
                 next(error);
@@ -213,11 +209,9 @@ class AuthController {
                     accessToken,
                     user,
                 });
-                return;
             }
             catch (error) {
-                res.status(statusCode_enum_1.StatusCode.FORBIDDEN).json({ message: "Invalid or expired refresh token" });
-                return;
+                next(error);
             }
         });
     }
@@ -239,7 +233,6 @@ class AuthController {
                 };
                 res.clearCookie("refreshToken", cookieOptions);
                 res.json({ message: "Logged out successfully" });
-                return;
             }
             catch (error) {
                 next(error);
@@ -264,7 +257,7 @@ class AuthController {
                 res.status(statusCode_enum_1.StatusCode.OK).json(user);
             }
             catch (err) {
-                res.status(statusCode_enum_1.StatusCode.INTERNAL_SERVER_ERROR).json({ message: statusMessage_1.StatusMessage.INTERNAL_SERVER_ERROR });
+                next(err);
             }
         });
     }

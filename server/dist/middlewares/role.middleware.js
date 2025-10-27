@@ -10,18 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkRole = void 0;
-const user_repositories_1 = require("../repositories/implementation/user.repositories");
-const checkRole = (requiredRole) => {
+const checkRole = (...allowedRoles) => {
     return (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
+        var _a, _b;
         const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+        const role = (_b = req.user) === null || _b === void 0 ? void 0 : _b.role;
         if (!userId) {
             res.status(401).json({ message: "Unauthorized: Missing user" });
             return;
         }
-        const userRepo = new user_repositories_1.UserRepository();
-        const user = yield userRepo.findById(userId);
-        if (!user || user.role !== requiredRole) {
+        if (role && !allowedRoles.includes(role)) {
             res.status(403).json({ message: "Forbidden: Insufficient permissions" });
             return;
         }

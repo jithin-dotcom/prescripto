@@ -20,6 +20,12 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const buffer_1 = require("buffer");
 const paymentService_mapper_1 = require("../../utils/mapper/paymentService.mapper");
+const axios_1 = __importDefault(require("axios"));
+const DECENTRO_CLIENT_ID = process.env.DECENTRO_CLIENT_ID;
+const DECENTRO_CLIENT_SECRET = process.env.DECENTRO_CLIENT_SECRET;
+const DECENTRO_MODULE_SECRET = process.env.DECENTRO_MODULE_SECRET;
+const DECENTRO_PROVIDER_SECRET = process.env.DECENTRO_PROVIDER_SECRET;
+const DECENTRO_API_URL = process.env.DECENTRO_BASE_URL;
 class PaymentService {
     constructor(_paymentRepo, _razorpayInstance, _appointmentRepo, _walletRepo, _walletHistoryRepo, _chatRepo, _payoutRepo) {
         this._paymentRepo = _paymentRepo;
@@ -58,7 +64,6 @@ class PaymentService {
     }
     verifyPaymentSignature(razorpayOrderId, razorpayPaymentId, razorpaySignature) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("entered into verify razorpay");
             const secret = process.env.RAZORPAY_SECRET_KEY;
             if (!secret) {
                 throw new Error("RAZORPAY_SECRET_KEY is not set in environment variables.");
@@ -78,7 +83,7 @@ class PaymentService {
                     status: "paid",
                 });
                 if (payment.appointmentId && payment._id) {
-                    yield this._appointmentRepo.updateById(payment.appointmentId, { status: "confirmed", payment: "paid" });
+                    yield this._appointmentRepo.updateById(payment.appointmentId, { status: "confirmed", payment: "paid", method: "razorpay" });
                 }
                 let doctorWallet = yield this._walletRepo.findOne({ userId: payment.doctorId });
                 if (!doctorWallet) {
@@ -103,7 +108,6 @@ class PaymentService {
                     throw new Error("Failed to create doctor history");
                 }
                 const updateDoctor = yield this._walletRepo.updateById(doctorWallet._id, { $inc: { balance: amount } });
-                console.log("updateDoctor : ", updateDoctor);
                 if (!updateDoctor) {
                     throw new Error("Failed to update wallet balance");
                 }
@@ -163,7 +167,6 @@ class PaymentService {
                 const skip = (page - 1) * limit;
                 const { payouts, total } = yield this._payoutRepo.getAllPayout(skip, limit);
                 const totalPages = Math.ceil(total / limit);
-                // console.log({payouts, total, totalPages});
                 const cleanedPayouts = (0, paymentService_mapper_1.mapPayouts)(payouts);
                 return { payouts: cleanedPayouts, total, totalPages };
             }
@@ -202,28 +205,56 @@ class PaymentService {
                 const payment = new mongoose_1.default.Types.ObjectId(payoutId);
                 const payout = yield this._payoutRepo.findById(payoutId);
                 if (!payout) {
-                    throw new Error("Payout request not found");
+                    throw new Error('Payout request not found');
                 }
-                if (payout.status !== "pending") {
-                    throw new Error("Payment request already processed");
+                if (payout.status !== 'pending') {
+                    throw new Error('Payment request already processed');
                 }
                 const wallet = yield this._walletRepo.findOne({ userId: doctorId });
                 if (!wallet || wallet.balance < amount) {
                     throw new Error("Wallet don't have sufficient balance for Payout");
                 }
-                const approve = yield this._payoutRepo.updateById(payoutId, {
-                    status: "approved",
-                    approvedAt: new Date(),
+                const decentroPayload = {
+                    reference_id: `payout_${payoutId}_${Date.now()}`,
+                    purpose_message: 'Payout for doctor services',
+                    from_account: '462515267984680740',
+                    to_account: '111111111111111',
+                    transfer_type: 'NEFT',
+                    transfer_amount: amount.toString(),
+                    beneficiary_details: {
+                        email_address: 'test1@company.com',
+                        mobile_number: '8888888888',
+                        ifsc_code: 'YESB0CMSNOC',
+                        payee_name: 'Test Name',
+                    },
+                };
+                const decentroResponse = yield axios_1.default.post(`${DECENTRO_API_URL}/core_banking/money_transfer/initiate`, decentroPayload, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        client_id: DECENTRO_CLIENT_ID,
+                        client_secret: DECENTRO_CLIENT_SECRET,
+                        module_secret: DECENTRO_MODULE_SECRET,
+                        provider_secret: DECENTRO_PROVIDER_SECRET,
+                    },
                 });
-                this._walletRepo.updateById(wallet._id, {
-                    $inc: { balance: -amount },
+                if (decentroResponse.data.status !== 'pending' ||
+                    decentroResponse.data.responseCode !== 'S00000') {
+                    throw new Error(`Decentro payout failed: ${decentroResponse.data.message}`);
+                }
+                yield this._payoutRepo.updateById(payoutId, {
+                    status: 'approved',
+                    approvedAt: new Date(),
+                    decentroTxnId: decentroResponse.data.decentroTxnId,
+                });
+                yield this._walletRepo.updateById(wallet._id, {
+                    $inc: { balance: -amount, expense: amount },
                 });
                 yield this._walletHistoryRepo.create({
                     walletId: wallet._id,
                     amount: amount,
-                    type: "debit",
-                    source: "payout",
-                    status: "success",
+                    type: 'debit',
+                    source: 'payout',
+                    status: 'success',
                     transactionId: new mongoose_1.default.Types.ObjectId(payoutId),
                 });
             }
@@ -232,7 +263,7 @@ class PaymentService {
                     throw error;
                 }
                 else {
-                    throw new Error("Failed to initiate payout");
+                    throw new Error("Payout Failed");
                 }
             }
         });
@@ -309,75 +340,3 @@ class PaymentService {
     }
 }
 exports.PaymentService = PaymentService;
-// import express from "express";
-// import Razorpay from "razorpay";
-// import axiosInstance from "../utils/axios"; // Your existing axios instance
-// const router = express.Router();
-// const razorpay = new Razorpay({
-//   key_id: "rzp_test_YOUR_TEST_KEY_ID",
-//   key_secret: "YOUR_TEST_KEY_SECRET",
-// });
-// router.post("/payout", async (req, res) => {
-//   try {
-//     const { doctorId, amount } = req.body; // Amount in paise (e.g., 10000 = ₹100)
-//     // Mock beneficiary details for test mode
-//     const beneficiary = {
-//       account_number: "7878787878787878", // Test account number
-//       ifsc: "RAZORTEST", // Test IFSC code
-//       fund_account_id: "FA1234567890", // Mock fund account ID (optional)
-//     };
-//     // Simulate payout creation (test mode)
-//     const payout = await razorpay.payouts.create({
-//       account_number: beneficiary.account_number,
-//       ifsc: beneficiary.ifsc,
-//       amount: amount, // In paise
-//       currency: "INR",
-//       mode: "IMPS", // Test mode supports IMPS
-//       purpose: "consultation_earnings",
-//       queue_if_low_balance: true, // Optional
-//     });
-//     // Update wallet or database (mock deduction)
-//     await updateWallet(doctorId, amount);
-//     res.status(200).json({
-//       status: "success",
-//       data: payout,
-//       message: "Payout simulated successfully in test mode",
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       status: "fail",
-//       message: error.message || "Error processing test payout",
-//     });
-//   }
-// });
-// // Helper function (mock implementation)
-// async function updateWallet(doctorId: string, amount: number) {
-//   // Simulate wallet deduction (e.g., update database)
-//   // Example: await axiosInstance.patch(`/wallet/${doctorId}`, { amount, status: "paid" });
-//   console.log(`Mock deducted ₹${amount / 100} from wallet for doctor ${doctorId}`);
-// }
-// export default router;
-// async getPayout(): Promise<IPayout[] | []> {
-//    try {
-//       const payout = await this._payoutRepo.getAllPayout();
-//       return payout;
-//    }catch (error) {
-//       if(error instanceof Error){
-//         throw error;
-//       }else{
-//         throw new Error("Failed to fetch Payouts");
-//       }    
-//    }
-// }
-//   async getDoctorPayout(doctorId: string): Promise<IPayout[] | []> {
-//    try {
-//       const payout = await this._payoutRepo.findAll({doctorId});
-//       return payout;
-//    }catch (error) {
-//       if(error instanceof Error){
-//         throw error;
-//       }else{
-//         throw new Error("Failed to fetch Payouts");
-//       }    
-//    }
-// }

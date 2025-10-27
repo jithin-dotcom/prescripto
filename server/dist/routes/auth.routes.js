@@ -11,6 +11,7 @@ const otp_repositories_1 = require("../repositories/implementation/otp.repositor
 const refreshToken_repositories_1 = require("../repositories/implementation/refreshToken.repositories");
 const passport_1 = __importDefault(require("passport"));
 require("../config/passport");
+const rateLimiter_middlewarw_1 = require("../middlewares/rateLimiter.middlewarw");
 const auth_middleware_1 = require("../middlewares/auth.middleware");
 const router = (0, express_1.Router)();
 const userRepository = new user_repositories_1.UserRepository();
@@ -19,8 +20,8 @@ const refreshTokenRepository = new refreshToken_repositories_1.RefreshTokenRepos
 const authService = new auth_services_1.AuthService(userRepository, otpRepository, refreshTokenRepository);
 const authController = new auth_controller_1.AuthController(authService);
 router.use(passport_1.default.initialize());
-router.post("/signup", authController.signup.bind(authController));
-router.post("/login", authController.login.bind(authController));
+router.post("/signup", rateLimiter_middlewarw_1.authRateLimiter, authController.signup.bind(authController));
+router.post("/login", rateLimiter_middlewarw_1.authRateLimiter, authController.login.bind(authController));
 router.post("/verify-otp", authController.verifyOtpAndRegister.bind(authController));
 router.post("/resend-otp", authController.resendOtp.bind(authController));
 router.post("/forgot-password", authController.forgotPassword.bind(authController));

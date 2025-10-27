@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConcernService = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const concernService_mapper_1 = require("../../utils/mapper/concernService.mapper");
+const concernService_1 = require("../../utils/reverseMapper/concernService/concernService");
 class ConcernService {
     constructor(_concernRepo) {
         this._concernRepo = _concernRepo;
@@ -32,7 +33,8 @@ class ConcernService {
                 if (existing) {
                     throw new Error("You have already raised Concern for this appointment");
                 }
-                yield this._concernRepo.create(data);
+                const concernEntity = (0, concernService_1.mapCreateConcernToEntity)(data);
+                yield this._concernRepo.create(concernEntity);
                 return { success: true };
             }
             catch (error) {
@@ -56,6 +58,7 @@ class ConcernService {
                 if (search) {
                     query.$or = [
                         { "title": { $regex: search, $options: "i" } },
+                        { "reason": { $regex: search, $options: "i" } },
                         { "description": { $regex: search, $options: "i" } },
                         { "doctorName": { $regex: search, $options: "i" } }
                     ];
@@ -76,12 +79,11 @@ class ConcernService {
             }
         });
     }
-    changeConcernStatus(id, status) {
+    changeConcernStatus(id, status, reason) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const concernId = new mongoose_1.default.Types.ObjectId(id);
-                const updatedConcern = yield this._concernRepo.updateStatusIfPending(concernId, status);
-                // console.log("updatedConcern : ",updatedConcern);
+                const updatedConcern = yield this._concernRepo.updateStatusIfPending(concernId, status, reason);
                 if (!updatedConcern) {
                     throw new Error("Failed to update Status");
                 }
@@ -113,10 +115,10 @@ class ConcernService {
                 else {
                     query = { doctorId };
                 }
-                console.log("role : ", role);
                 if (search) {
                     query.$or = [
                         { "title": { $regex: search, $options: "i" } },
+                        { "reason": { $regex: search, $options: "i" } },
                         { "description": { $regex: search, $options: "i" } },
                         { "doctorName": { $regex: search, $options: "i" } }
                     ];

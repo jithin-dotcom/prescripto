@@ -21,6 +21,8 @@ const googleAuth_1 = require("../../utils/googleAuth");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const AppError_1 = require("../../utils/AppError");
 const redisClient_1 = __importDefault(require("../../config/redisClient"));
+const authService_mapper_1 = require("../../utils/mapper/authService.mapper");
+const authService_1 = require("../../utils/reverseMapper/authService/authService");
 class AuthService {
     constructor(_userRepo, _otpRepo, _refreshTokenRepo) {
         this._userRepo = _userRepo;
@@ -55,14 +57,18 @@ class AuthService {
                 yield redisClient_1.default.set(redisLookupKey, `${userId}:${sessionId}`, {
                     EX: 7 * 24 * 60 * 60,
                 });
-                // Cache block status
                 const cacheKey = `user:${userId}:blocked`;
-                yield redisClient_1.default.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
-                return { user, accessToken, refreshToken };
+                yield redisClient_1.default.setEx(cacheKey, 3600, user.isBlocked.toString());
+                return { user: (0, authService_mapper_1.mapUser)(user), accessToken, refreshToken };
             }
             catch (error) {
                 console.log("Login error:", error);
-                throw error;
+                if (error instanceof Error) {
+                    throw error;
+                }
+                else {
+                    throw new Error("Something went wrong");
+                }
             }
         });
     }
@@ -73,7 +79,7 @@ class AuthService {
                 const { name, email, picture } = yield (0, googleAuth_1.verifyGoogleToken)(token);
                 let user = yield this._userRepo.findByEmail(email);
                 if ((user === null || user === void 0 ? void 0 : user.isBlocked) === true) {
-                    throw new Error("You are Blocked by Admin");
+                    throw new AppError_1.AppError("You are Blocked by Admin", 403);
                 }
                 if (!user) {
                     user = yield this._userRepo.createUser({
@@ -102,7 +108,7 @@ class AuthService {
                     EX: 7 * 24 * 60 * 60,
                 });
                 const cacheKey = `user:${userId}:blocked`;
-                yield redisClient_1.default.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
+                yield redisClient_1.default.setEx(cacheKey, 3600, user.isBlocked.toString());
                 return {
                     message: "Google login successful",
                     tokens,
@@ -117,7 +123,12 @@ class AuthService {
             }
             catch (error) {
                 console.error("Error in loginWithGoogle:", error);
-                throw new Error(error.message || "Something went wrong during Google login.");
+                if (error instanceof Error) {
+                    throw error;
+                }
+                else {
+                    throw new Error("Something went wrong");
+                }
             }
         });
     }
@@ -144,14 +155,18 @@ class AuthService {
                 yield redisClient_1.default.set(redisLookupKey, `${userId}:${sessionId}`, {
                     EX: 7 * 24 * 60 * 60,
                 });
-                // Cache block status
                 const cacheKey = `user:${userId}:blocked`;
-                yield redisClient_1.default.setEx(cacheKey, 3600, newUser.isBlocked.toString()); // Cache for 1 hour
+                yield redisClient_1.default.setEx(cacheKey, 3600, newUser.isBlocked.toString());
                 return Object.assign({ user: newUser }, tokens);
             }
             catch (error) {
                 console.error("Verify OTP error:", error);
-                throw error;
+                if (error instanceof Error) {
+                    throw error;
+                }
+                else {
+                    throw new Error("something went wrong");
+                }
             }
         });
     }
@@ -187,17 +202,21 @@ class AuthService {
                 yield redisClient_1.default.set(`refreshTokenLookup:${newRefreshToken}`, `${userId}:${newSessionId}`, {
                     EX: 7 * 24 * 60 * 60,
                 });
-                // Cache block status
                 const cacheKey = `user:${userId}:blocked`;
-                yield redisClient_1.default.setEx(cacheKey, 3600, user.isBlocked.toString()); // Cache for 1 hour
+                yield redisClient_1.default.setEx(cacheKey, 3600, user.isBlocked.toString());
                 return {
                     accessToken: newAccessToken,
                     refreshToken: newRefreshToken,
-                    user,
+                    user: (0, authService_mapper_1.mapUser)(user),
                 };
             }
             catch (error) {
-                throw new Error(error.message || "Failed to refresh token");
+                if (error instanceof Error) {
+                    throw error;
+                }
+                else {
+                    throw new Error("Failed to refresh token");
+                }
             }
         });
     }
@@ -217,32 +236,30 @@ class AuthService {
             }
         });
     }
-    signup(user) {
+    signup(userDto) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const existingUser = yield this._userRepo.findByEmail(user.email);
+                const existingUser = yield this._userRepo.findByEmail(userDto.email);
                 if (existingUser) {
                     const error = new Error("User already exists");
                     error.statusCode = 409;
                     throw error;
                 }
-                if (!user.password) {
+                if (!userDto.password) {
                     throw new Error("Password is required for signup");
                 }
-                const hashedPassword = yield bcrypt_1.default.hash(user.password, 10);
+                const hashedPassword = yield bcrypt_1.default.hash(userDto.password, 10);
                 const otp = Math.floor(100000 + Math.random() * 900000).toString();
-                yield this._otpRepo.createOtp(user.email, otp, {
-                    name: user.name,
-                    email: user.email,
-                    password: hashedPassword,
-                    role: user.role,
-                });
-                yield (0, mailer_1.sendOtpMail)(user.email, otp);
+                const signupData = (0, authService_1.mapSignupRequestToData)(userDto, hashedPassword);
+                yield this._otpRepo.createOtp(userDto.email, otp, signupData);
+                yield (0, mailer_1.sendOtpMail)(userDto.email, otp);
                 return { message: "OTP sent to your email" };
             }
             catch (error) {
                 console.error("Signup error:", error);
-                throw error;
+                if (error instanceof Error)
+                    throw error;
+                throw new Error("Failed to sign up");
             }
         });
     }
@@ -259,7 +276,12 @@ class AuthService {
             }
             catch (error) {
                 console.error("Resend OTP error:", error);
-                throw error;
+                if (error instanceof Error) {
+                    throw error;
+                }
+                else {
+                    throw new Error("Failed to resend OTP");
+                }
             }
         });
     }
@@ -288,7 +310,12 @@ class AuthService {
             }
             catch (error) {
                 console.error("Forgot password error:", error);
-                throw error;
+                if (error instanceof Error) {
+                    throw error;
+                }
+                else {
+                    throw new Error("Something went wrong");
+                }
             }
         });
     }
@@ -302,7 +329,12 @@ class AuthService {
             }
             catch (error) {
                 console.error("OTP verification failed:", error);
-                throw error;
+                if (error instanceof Error) {
+                    throw error;
+                }
+                else {
+                    throw new Error("Something went wrong");
+                }
             }
         });
     }
@@ -323,7 +355,12 @@ class AuthService {
             }
             catch (error) {
                 console.error("Update password error:", error);
-                throw error;
+                if (error instanceof Error) {
+                    throw error;
+                }
+                else {
+                    throw new Error("Something went wrong");
+                }
             }
         });
     }
@@ -335,7 +372,6 @@ class AuthService {
                     const [userId, sessionId] = lookup.split(':');
                     yield redisClient_1.default.del(`refreshToken:${userId}:${sessionId}`);
                     yield redisClient_1.default.del(`refreshTokenLookup:${refreshToken}`);
-                    console.log(` Logged out user ${userId} (session: ${sessionId}) from Redis`);
                 }
                 else {
                     console.warn(' Refresh token not found in Redis (may already be expired)');
@@ -343,7 +379,12 @@ class AuthService {
             }
             catch (error) {
                 console.error(' Redis logout error:', error);
-                throw error;
+                if (error instanceof Error) {
+                    throw error;
+                }
+                else {
+                    throw new Error("Failed to log out");
+                }
             }
         });
     }
@@ -354,47 +395,3 @@ class AuthService {
     }
 }
 exports.AuthService = AuthService;
-// async  refreshToken(token: string): Promise<{ accessToken: string; refreshToken: string; user: any }> {
-//   if (!token) throw new Error("Refresh token is required");
-//   const lookup = await redisClient.get(`refreshTokenLookup:${token}`);
-//   if (!lookup) throw new Error("Refresh token not found or has been invalidated");
-//   const [userId, sessionId] = lookup.split(':');
-//   let decoded;
-//   try {
-//     decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as {
-//       id: string;
-//       email: string;
-//       role: string;
-//     };
-//   } catch (err) {
-//     throw new Error("Invalid or expired refresh token");
-//   }
-//   const userRepo = new UserRepository(); 
-//   const user = await userRepo.findById(decoded.id);
-//   if (!user) throw new Error("User not found");
-//   if (user.isBlocked) throw new Error("You are Blocked by Admin");
-//   const newAccessToken = jwt.sign(
-//     { id: user._id, email: user.email, role: user.role },
-//     process.env.JWT_ACCESS_SECRET!,
-//     { expiresIn: "15m" }
-//   );
-//   const newRefreshToken = jwt.sign(
-//     { id: user._id, email: user.email, role: user.role },
-//     process.env.JWT_REFRESH_SECRET!,
-//     { expiresIn: "7d" }
-//   );
-//   await redisClient.del(`refreshToken:${userId}:${sessionId}`);
-//   await redisClient.del(`refreshTokenLookup:${token}`);
-//   const newSessionId = crypto.randomUUID();
-//   await redisClient.set(`refreshToken:${userId}:${newSessionId}`, newRefreshToken, {
-//     EX: 7 * 24 * 60 * 60,
-//   });
-//   await redisClient.set(`refreshTokenLookup:${newRefreshToken}`, `${userId}:${newSessionId}`, {
-//     EX: 7 * 24 * 60 * 60,
-//   });
-//   return {
-//     accessToken: newAccessToken,
-//     refreshToken: newRefreshToken,
-//     user,
-//   };
-// }

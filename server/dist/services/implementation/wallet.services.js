@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WalletService = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
+const walletService_mapper_1 = require("../../utils/mapper/walletService.mapper");
 class WalletService {
     constructor(_walletRepo, _walletHistoryRepo, _appointmentRepo, _chatRepo, _paymentRepo) {
         this._walletRepo = _walletRepo;
@@ -38,15 +39,7 @@ class WalletService {
                 }
                 const walletId = wallet._id;
                 const [walletHistory, totalCount] = yield this._walletHistoryRepo.findPaginated(walletId, page, limit);
-                return {
-                    userId: wallet.userId,
-                    role,
-                    balance: wallet.balance,
-                    history: walletHistory,
-                    page,
-                    totalPages: Math.ceil(totalCount / limit),
-                    totalTransactions: totalCount
-                };
+                return (0, walletService_mapper_1.mapWalletDTO)(wallet, walletHistory, page, limit, totalCount);
             }
             catch (error) {
                 throw error instanceof Error ? error : new Error("Failed to fetch wallet");
@@ -55,7 +48,7 @@ class WalletService {
     }
     makeWalletPayment(userId, appointmentId) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b, _c, _d;
+            var _a, _b;
             try {
                 const walletUser = yield this._walletRepo.findOne({ userId });
                 if (!walletUser) {
@@ -65,45 +58,48 @@ class WalletService {
                 if (!appointment) {
                     throw new Error("No appointment Found");
                 }
-                let walletDoctor = yield this._walletRepo.findOne({ userId: appointment.doctorId });
-                const doctorIdRaw = typeof appointment.doctorId === "string"
+                const doctorId = appointment.doctorId instanceof mongoose_1.default.Types.ObjectId
                     ? appointment.doctorId
-                    : (_b = (_a = appointment.doctorId._id) === null || _a === void 0 ? void 0 : _a.toString) === null || _b === void 0 ? void 0 : _b.call(_a);
-                if (!doctorIdRaw) {
-                    throw new Error("Invalid doctorId");
-                }
+                    : new mongoose_1.default.Types.ObjectId((_a = appointment.doctorId._id) !== null && _a !== void 0 ? _a : appointment.doctorId);
+                const patientId = appointment.userId instanceof mongoose_1.default.Types.ObjectId
+                    ? appointment.userId
+                    : new mongoose_1.default.Types.ObjectId((_b = appointment.userId._id) !== null && _b !== void 0 ? _b : appointment.userId);
+                let walletDoctor = yield this._walletRepo.findOne({ userId: doctorId });
                 if (!walletDoctor) {
                     walletDoctor = yield this._walletRepo.create({
-                        userId: new mongoose_1.default.Types.ObjectId(doctorIdRaw),
+                        userId: doctorId,
                         role: "doctor",
                     });
                     if (!walletDoctor) {
                         throw new Error("Failed to create Doctor wallet");
                     }
                 }
-                if (appointment.fee && walletUser.balance < (appointment === null || appointment === void 0 ? void 0 : appointment.fee)) {
-                    throw new Error("Wallet don't have  sufficient Balance");
+                if (appointment.fee && walletUser.balance < appointment.fee) {
+                    throw new Error("Wallet doesn't have sufficient Balance");
                 }
-                const updateAppointment = yield this._appointmentRepo.updateById(appointmentId, { status: "confirmed", payment: "paid" });
+                const updateAppointment = yield this._appointmentRepo.updateById(appointmentId, {
+                    status: "confirmed",
+                    payment: "paid",
+                    method: "wallet",
+                });
                 if (!updateAppointment) {
                     throw new Error("Failed to update appointment");
                 }
                 const walletHistoryUser = yield this._walletHistoryRepo.create({
-                    walletId: walletUser === null || walletUser === void 0 ? void 0 : walletUser._id,
+                    walletId: walletUser._id,
                     appointmentId: new mongoose_1.default.Types.ObjectId(appointmentId),
-                    amount: appointment === null || appointment === void 0 ? void 0 : appointment.fee,
+                    amount: appointment.fee,
                     type: "debit",
                     source: "consultation",
                     transactionId: appointment === null || appointment === void 0 ? void 0 : appointment.transactionId,
                 });
                 if (!walletHistoryUser) {
-                    throw new Error("failed to create Wallet History");
+                    throw new Error("failed to create Wallet History for user");
                 }
-                const DoctorId = new mongoose_1.default.Types.ObjectId(typeof appointment.doctorId === "string" ? appointment.doctorId : appointment.doctorId._id);
                 const createPayment = yield this._paymentRepo.create({
                     appointmentId: new mongoose_1.default.Types.ObjectId(appointmentId),
-                    doctorId: DoctorId,
-                    userId: appointment.userId,
+                    doctorId,
+                    userId: patientId,
                     amount: appointment.fee,
                     currency: "INR",
                     status: "paid",
@@ -114,35 +110,35 @@ class WalletService {
                     throw new Error("Failed to create Payment");
                 }
                 if (appointment.fee) {
-                    const amount = Math.floor(appointment.fee - (appointment.fee / 10));
+                    const amount = Math.floor(appointment.fee - appointment.fee / 10);
                     const walletHistoryDoctor = yield this._walletHistoryRepo.create({
-                        walletId: walletDoctor === null || walletDoctor === void 0 ? void 0 : walletDoctor._id,
+                        walletId: walletDoctor._id,
                         appointmentId: new mongoose_1.default.Types.ObjectId(appointmentId),
-                        amount: amount,
+                        amount,
                         type: "credit",
                         source: "consultation",
                         transactionId: appointment === null || appointment === void 0 ? void 0 : appointment.transactionId,
                     });
                     if (!walletHistoryDoctor) {
-                        throw new Error("failed to create Wallet History");
+                        throw new Error("failed to create Wallet History for doctor");
                     }
+                    yield this._walletRepo.updateById(walletDoctor._id, {
+                        $inc: { balance: amount },
+                    });
                 }
-                if (walletDoctor._id && (appointment === null || appointment === void 0 ? void 0 : appointment.fee)) {
-                    const amount = Math.floor(appointment.fee - (appointment.fee / 10));
-                    yield this._walletRepo.updateById(walletDoctor === null || walletDoctor === void 0 ? void 0 : walletDoctor._id, { $inc: { balance: amount } });
-                }
-                let updatedWallet = null;
                 if (walletUser._id && (appointment === null || appointment === void 0 ? void 0 : appointment.fee)) {
-                    updatedWallet = yield this._walletRepo.updateById(walletUser === null || walletUser === void 0 ? void 0 : walletUser._id, { $inc: { balance: -appointment.fee } });
+                    yield this._walletRepo.updateById(walletUser._id, {
+                        $inc: { balance: -appointment.fee, expense: appointment.fee },
+                    });
                 }
                 const existing = yield this._chatRepo.findByAppointmentId(appointmentId);
                 if (!existing) {
-                    const chat = yield this._chatRepo.createChat({
+                    yield this._chatRepo.createChat({
                         appointmentId: new mongoose_1.default.Types.ObjectId(appointmentId),
-                        participants: [new mongoose_1.default.Types.ObjectId(appointment.userId), new mongoose_1.default.Types.ObjectId((_c = appointment.doctorId._id) !== null && _c !== void 0 ? _c : appointment.doctorId)],
+                        participants: [patientId, doctorId],
                         isActive: true,
-                        doctorId: new mongoose_1.default.Types.ObjectId((_d = appointment.doctorId._id) !== null && _d !== void 0 ? _d : appointment.doctorId),
-                        userId: new mongoose_1.default.Types.ObjectId(appointment.userId),
+                        doctorId,
+                        userId: patientId,
                     });
                 }
                 return { message: "Wallet Payment made successfully" };

@@ -1,0 +1,38 @@
+
+# version: "3.9"
+
+# services:
+#   backend:
+#     image: prescripto-backend
+#     build: .
+#     ports:
+#       - "5000:5000"
+#     env_file:
+#       - .env
+#     restart: always
+
+
+
+
+
+
+
+version: "3.9"
+
+services:
+  backend:
+    image: prescripto-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    networks:
+      - prescripto-network
+    env_file:
+      - .env
+    restart: always
+
+networks:
+  prescripto-network:
+    external: true

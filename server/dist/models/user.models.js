@@ -51,5 +51,6 @@ const UserSchema = new mongoose_1.Schema({
     refreshToken: { type: String, required: false },
     photo: { type: String, required: false },
     isBlocked: { type: Boolean, default: false },
+    signature: { type: String },
 }, { timestamps: true });
 exports.UserModel = mongoose_1.default.model("User", UserSchema);

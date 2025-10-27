@@ -22,6 +22,7 @@ function mapUserToDTO(user, profile) {
         isBlocked: user.isBlocked,
         authProvider: user.authProvider,
         photo: user.photo,
+        signature: user.signature,
         profile: profile
             ? profile.map((p) => {
                 const _a = p.toObject(), { _id, createdAt, updatedAt, __v } = _a, rest = __rest(_a, ["_id", "createdAt", "updatedAt", "__v"]);

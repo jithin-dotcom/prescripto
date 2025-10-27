@@ -39,9 +39,7 @@ class ChatController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                console.log("entered into getUserChat controller");
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
-                console.log("user Id : ", userId);
                 if (!userId) {
                     res.status(statusCode_enum_1.StatusCode.UNAUTHORIZED).json({ message: statusMessage_1.StatusMessage.UNAUTHORIZED });
                     return;

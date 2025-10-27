@@ -26,7 +26,7 @@ class BaseRepository {
     }
     findAll() {
         return __awaiter(this, arguments, void 0, function* (filter = {}) {
-            return yield this.model.find(filter);
+            return yield this.model.find(filter).sort({ createdAt: -1 });
         });
     }
     findOne() {

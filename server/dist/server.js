@@ -24,6 +24,7 @@ const wallet_routes_1 = __importDefault(require("./routes/wallet.routes"));
 const doctorRating_routes_1 = __importDefault(require("./routes/doctorRating.routes"));
 const prescription_routes_1 = __importDefault(require("./routes/prescription.routes"));
 const concern_routes_1 = __importDefault(require("./routes/concern.routes"));
+const xirsys_1 = __importDefault(require("./utils/xirsys"));
 const requestLogger_middleware_1 = require("./middlewares/requestLogger.middleware");
 const errorHandler_middleware_1 = require("./middlewares/errorHandler.middleware");
 const socketAuth_middleware_1 = require("./middlewares/socketAuth.middleware");
@@ -53,7 +54,7 @@ videoNamespace.on("connection", (socket) => {
 app.use((0, cors_1.default)({
     origin: (origin, callback) => {
         if (!origin)
-            return callback(null, true); // Allow non-browser requests like Postman, curl
+            return callback(null, true);
         if (allowedOrigins.includes(origin)) {
             callback(null, true);
         }
@@ -81,6 +82,7 @@ app.use("/api", wallet_routes_1.default);
 app.use("/api", doctorRating_routes_1.default);
 app.use("/api", prescription_routes_1.default);
 app.use("/api", concern_routes_1.default);
+app.use("/api", xirsys_1.default);
 app.use(notFound_middleware_1.notFound);
 app.use(errorHandler_middleware_1.errorHandler);
 const PORT = env_config_1.default.PORT || 8000;

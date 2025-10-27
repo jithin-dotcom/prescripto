@@ -57,6 +57,7 @@ const DoctorProfileSchema = new mongoose_1.Schema({
     registrationNumber: { type: String, required: true },
     registrationYear: { type: String, required: true },
     yearOfExperience: { type: Number, required: true },
+    signature: { type: String },
     proofDocuments: [{ type: String }],
     fee: { type: Number, required: true },
     about: { type: String, required: true },

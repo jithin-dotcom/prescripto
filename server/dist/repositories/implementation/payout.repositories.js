@@ -26,6 +26,7 @@ class PayoutRepository extends base_repositories_1.BaseRepository {
                 this.model
                     .find()
                     .populate("doctorId")
+                    .sort({ createdAt: -1 })
                     .skip(skip)
                     .limit(limit)
                     .lean()
@@ -40,6 +41,7 @@ class PayoutRepository extends base_repositories_1.BaseRepository {
             const [payouts, total] = yield Promise.all([
                 this.model.find({ doctorId: new mongoose_1.default.Types.ObjectId(doctorId) })
                     .populate("doctorId")
+                    .sort({ createdAt: -1 })
                     .skip(skip)
                     .limit(limit)
                     .lean()

@@ -5,13 +5,14 @@ const concern_repositories_1 = require("../repositories/implementation/concern.r
 const concern_service_1 = require("../services/implementation/concern.service");
 const concern_controller_1 = require("../controllers/implementation/concern.controller");
 const auth_middleware_1 = require("../middlewares/auth.middleware");
+const role_middleware_1 = require("../middlewares/role.middleware");
 const router = (0, express_1.Router)();
 const concernRepository = new concern_repositories_1.ConcernRepository();
 const concernService = new concern_service_1.ConcernService(concernRepository);
 const concernController = new concern_controller_1.ConcernController(concernService);
 router.use(auth_middleware_1.verifyAccessToken);
-router.post("/raise-concern", concernController.createConcern.bind(concernController));
-router.get("/get-allConcerns", concernController.getAllConcerns.bind(concernController));
-router.patch("/update-concern/:id", concernController.updateStatus.bind(concernController));
-router.get("/user-concerns", concernController.getConcernsByUser.bind(concernController));
+router.post("/raise-concern", (0, role_middleware_1.checkRole)("user"), concernController.createConcern.bind(concernController));
+router.get("/get-allConcerns", (0, role_middleware_1.checkRole)("admin"), concernController.getAllConcerns.bind(concernController));
+router.patch("/update-concern/:id", (0, role_middleware_1.checkRole)("admin"), concernController.updateStatus.bind(concernController));
+router.get("/user-concerns", (0, role_middleware_1.checkRole)("user", "doctor"), concernController.getConcernsByUser.bind(concernController));
 exports.default = router;

@@ -17,6 +17,8 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const redisClient_1 = __importDefault(require("../../config/redisClient"));
 const adminService_mapper_1 = require("../../utils/mapper/adminService.mapper");
+const cloudinary_1 = require("../../config/cloudinary");
+const adminService_1 = require("../../utils/reverseMapper/adminService/adminService");
 class AdminService {
     constructor(_adminRepo, _patientProfileRepo, _doctorProfileRepo) {
         this._adminRepo = _adminRepo;
@@ -27,6 +29,9 @@ class AdminService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = yield this._adminRepo.findById(userId);
+                if (!user) {
+                    throw new Error("User not Found");
+                }
                 let profile = null;
                 if (!user)
                     throw new Error("user not found");
@@ -36,15 +41,15 @@ class AdminService {
                 else if (user.role === "doctor") {
                     profile = yield this._doctorProfileRepo.findAll({ doctorId: userId });
                 }
-                // console.log({...user.toObject(),profile});
-                // return {
-                //   ...user.toObject(),
-                //   profile
-                // }
                 return (0, adminService_mapper_1.mapUserToDTO)(user, profile);
             }
             catch (error) {
-                throw new Error("Failed in fetching user");
+                if (error instanceof Error) {
+                    throw error;
+                }
+                else {
+                    throw new Error("Failed to fetch user");
+                }
             }
         });
     }
@@ -77,76 +82,41 @@ class AdminService {
                 const safePage = Math.max(1, page);
                 const safeLimit = Math.max(1, limit);
                 const skip = (safePage - 1) * safeLimit;
-                if (specialty === "") {
-                    const [items, totalItems] = yield Promise.all([
-                        this._adminRepo.getAllByRole(role, safeLimit, skip, search),
-                        this._adminRepo.countByRole(role),
-                    ]);
-                    const itemsWithProfiles = yield Promise.all(items.map((user) => __awaiter(this, void 0, void 0, function* () {
-                        const profile = role === "doctor"
-                            ? yield this._doctorProfileRepo.findAll({ doctorId: user._id })
-                            : yield this._patientProfileRepo.findAll({ patientId: user._id });
-                        // return {
-                        //   ...user.toObject(),
-                        //   profile,
-                        // };
-                        return (0, adminService_mapper_1.mapUserToDTO)(user, profile);
-                    })));
-                    return {
-                        items: itemsWithProfiles,
-                        currentPage: safePage,
-                        totalPages: Math.ceil(totalItems / safeLimit),
-                        totalItems,
-                    };
-                }
+                let items = [];
+                let totalItems = 0;
                 if (role === "doctor" && specialty !== "") {
                     const profiles = yield this._doctorProfileRepo.findAll({ specialization: specialty });
                     const matchedDoctors = yield Promise.all(profiles.map((profile) => __awaiter(this, void 0, void 0, function* () {
                         const user = yield this._adminRepo.findOne({ _id: profile.doctorId });
                         if (!user)
                             return null;
-                        const nameMatches = user.name
-                            .toLowerCase()
-                            .includes(search.trim().toLowerCase());
-                        if (!nameMatches)
+                        if (!user.name.toLowerCase().includes(search.trim().toLowerCase()))
                             return null;
-                        // return {
-                        //   ...user.toObject(),
-                        //   profile: [profile],
-                        // };
                         return (0, adminService_mapper_1.mapUserToDTO)(user, [profile]);
                     })));
                     const filtered = matchedDoctors.filter(Boolean);
-                    ;
-                    const paginated = filtered.slice(skip, skip + safeLimit);
-                    return {
-                        items: paginated,
-                        currentPage: safePage,
-                        totalPages: Math.ceil(filtered.length / safeLimit),
-                        totalItems: filtered.length,
-                    };
+                    items = filtered.slice(skip, skip + safeLimit);
+                    totalItems = filtered.length;
                 }
-                if (role === "user") {
-                    const [items, totalItems] = yield Promise.all([
+                else {
+                    const [users, count] = yield Promise.all([
                         this._adminRepo.getAllByRole(role, safeLimit, skip, search),
                         this._adminRepo.countByRole(role),
                     ]);
-                    const itemsWithProfiles = yield Promise.all(items.map((user) => __awaiter(this, void 0, void 0, function* () {
-                        const profile = yield this._patientProfileRepo.findAll({ patientId: user._id });
-                        // return {
-                        //   ...user.toObject(),
-                        //   profile,
-                        // };
+                    totalItems = count;
+                    items = yield Promise.all(users.map((user) => __awaiter(this, void 0, void 0, function* () {
+                        const profile = role === "doctor"
+                            ? yield this._doctorProfileRepo.findAll({ doctorId: user._id })
+                            : yield this._patientProfileRepo.findAll({ patientId: user._id });
                         return (0, adminService_mapper_1.mapUserToDTO)(user, profile);
                     })));
-                    return {
-                        items: itemsWithProfiles,
-                        currentPage: safePage,
-                        totalPages: Math.ceil(totalItems / safeLimit),
-                        totalItems,
-                    };
                 }
-                return { items: [], currentPage: 1, totalPages: 0, totalItems: 0 };
+                return {
+                    items,
+                    currentPage: safePage,
+                    totalPages: Math.ceil(totalItems / safeLimit),
+                    totalItems,
+                };
             }
             catch (error) {
                 console.error(`Error fetching ${role}s:`, error);
@@ -154,83 +124,106 @@ class AdminService {
             }
         });
     }
+    ;
     createUserOrDoctor(_a) {
-        return __awaiter(this, arguments, void 0, function* ({ userData, profileData }) {
-            var _b;
+        return __awaiter(this, arguments, void 0, function* ({ userData, profileData, files, }) {
+            var _b, _c, _d, _e;
             try {
                 if (!userData.role || !["user", "doctor"].includes(userData.role)) {
                     throw new Error("Invalid role. Only 'user' or 'doctor' are allowed.");
                 }
                 if (userData.password) {
                     const saltRounds = 10;
-                    const hashedPassword = yield bcrypt_1.default.hash(userData.password, saltRounds);
-                    userData.password = hashedPassword;
+                    userData.password = yield bcrypt_1.default.hash(userData.password, saltRounds);
                 }
-                const user = yield this._adminRepo.create(userData);
-                const userId = user._id;
-                if (profileData.photo) {
-                    yield this._adminRepo.updateById(userId, { photo: profileData.photo });
-                    delete profileData.photo;
+                if ((_b = files === null || files === void 0 ? void 0 : files.photo) === null || _b === void 0 ? void 0 : _b[0]) {
+                    userData.photo = yield (0, cloudinary_1.uploadToCloudinary)(files.photo[0].buffer, "profile_photos");
                 }
+                if (((_c = files === null || files === void 0 ? void 0 : files.signature) === null || _c === void 0 ? void 0 : _c[0]) && userData.role === "doctor") {
+                    userData.signature = yield (0, cloudinary_1.uploadToCloudinary)(files.signature[0].buffer, "signatures");
+                }
+                if (((_d = files === null || files === void 0 ? void 0 : files.proofDocument) === null || _d === void 0 ? void 0 : _d.length) && userData.role === "doctor") {
+                    const proofUrls = [];
+                    for (const file of files.proofDocument) {
+                        proofUrls.push(yield (0, cloudinary_1.uploadToCloudinary)(file.buffer, "proof_documents"));
+                    }
+                    profileData.proofDocuments = proofUrls;
+                }
+                const userDb = (0, adminService_1.mapCreateUserDtoToDb)(userData);
+                const user = yield this._adminRepo.create(userDb);
+                const userId = user._id.toString();
                 if (userData.role === "user") {
-                    yield this._patientProfileRepo.create(Object.assign({ patientId: new mongoose_1.default.Types.ObjectId(userId) }, profileData));
+                    const profileDb = (0, adminService_1.mapPatientProfileDtoToDb)(profileData);
+                    yield this._patientProfileRepo.create(Object.assign({ patientId: new mongoose_1.default.Types.ObjectId(userId) }, profileDb));
                 }
                 else if (userData.role === "doctor") {
-                    yield this._doctorProfileRepo.create(Object.assign({ doctorId: new mongoose_1.default.Types.ObjectId(userId) }, profileData));
+                    const profileDb = (0, adminService_1.mapDoctorProfileDtoToDb)(profileData);
+                    yield this._doctorProfileRepo.create(Object.assign({ doctorId: new mongoose_1.default.Types.ObjectId(userId) }, profileDb));
                 }
-                return {
-                    message: `${userData.role} created successfully`,
-                    userId,
-                };
+                return { message: `${userData.role} created successfully`, userId };
             }
             catch (error) {
-                if (error.code === 11000 && ((_b = error.keyPattern) === null || _b === void 0 ? void 0 : _b.email)) {
+                if (error instanceof Error &&
+                    error.code === 11000 &&
+                    ((_e = error.keyPattern) === null || _e === void 0 ? void 0 : _e.email)) {
                     throw new Error(`User with email ${userData.email} already exists`);
                 }
-                console.error("Error creating user/doctor:", error);
-                throw new Error("Failed to create user/doctor");
+                console.error("Error creating user:", error);
+                throw new Error("Failed to create user");
             }
         });
     }
-    updateUserOrDoctor(userId, userData, profileData) {
+    ;
+    updateUserOrDoctor(userId, userDTO, profileDTO, files) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a, _b, _c;
             const user = yield this._adminRepo.findById(userId);
             if (!user)
                 throw new Error("User not found");
-            if (userData.password) {
+            if (userDTO.password) {
                 const saltRounds = 10;
-                const hashedPassword = yield bcrypt_1.default.hash(userData.password, saltRounds);
-                userData.password = hashedPassword;
+                userDTO.password = yield bcrypt_1.default.hash(userDTO.password, saltRounds);
             }
-            if (profileData && 'photo' in profileData && profileData.photo) {
-                yield this._adminRepo.updateById(userId, { photo: profileData.photo });
-                delete profileData.photo;
+            if ((_a = files === null || files === void 0 ? void 0 : files.photo) === null || _a === void 0 ? void 0 : _a[0]) {
+                userDTO.photo = yield (0, cloudinary_1.uploadToCloudinary)(files.photo[0].buffer, "profile_photos");
             }
+            if (((_b = files === null || files === void 0 ? void 0 : files.signature) === null || _b === void 0 ? void 0 : _b[0]) && user.role === "doctor") {
+                userDTO.signature = yield (0, cloudinary_1.uploadToCloudinary)(files.signature[0].buffer, "signatures");
+            }
+            if (((_c = files === null || files === void 0 ? void 0 : files.proofDocument) === null || _c === void 0 ? void 0 : _c.length) && user.role === "doctor") {
+                const proofUrls = [];
+                for (const file of files.proofDocument) {
+                    proofUrls.push(yield (0, cloudinary_1.uploadToCloudinary)(file.buffer, "proof_documents"));
+                }
+                profileDTO.proofDocuments = proofUrls;
+            }
+            const userData = (0, adminService_1.mapUserDtoToDb)(userDTO);
             yield this._adminRepo.updateById(userId, userData);
             const objectId = new mongoose_1.default.Types.ObjectId(userId);
-            if (user.role === "user" && profileData) {
+            if (user.role === "user" && profileDTO) {
+                const profileData = (0, adminService_1.mapPatientProfileDtoToDb)(profileDTO);
                 const existingProfile = yield this._patientProfileRepo.findByPatientId(objectId);
-                const patientProfileData = Object.assign({}, profileData);
                 if (existingProfile) {
-                    yield this._patientProfileRepo.updateByPatientId(objectId, patientProfileData);
+                    yield this._patientProfileRepo.updateByPatientId(objectId, profileData);
                 }
                 else {
-                    yield this._patientProfileRepo.create(Object.assign({ patientId: objectId }, patientProfileData));
+                    yield this._patientProfileRepo.create(Object.assign({ patientId: objectId }, profileData));
                 }
             }
-            else if (user.role === "doctor" && profileData) {
+            else if (user.role === "doctor" && profileDTO) {
+                const profileData = (0, adminService_1.mapDoctorProfileDtoToDb)(profileDTO);
                 const existingProfile = yield this._doctorProfileRepo.findByDoctorId(objectId);
-                const doctorProfileData = Object.assign({}, profileData);
                 if (existingProfile) {
-                    yield this._doctorProfileRepo.updateByDoctorId(objectId, doctorProfileData);
+                    yield this._doctorProfileRepo.updateByDoctorId(objectId, profileData);
                 }
                 else {
-                    yield this._doctorProfileRepo.create(Object.assign({ doctorId: objectId }, doctorProfileData));
+                    yield this._doctorProfileRepo.create(Object.assign({ doctorId: objectId }, profileData));
                 }
             }
             return `${user.role} updated successfully`;
         });
     }
+    ;
     deleteUserOrDoctor(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -262,7 +255,7 @@ class AdminService {
                 if (!user)
                     throw new Error("User not found");
                 const isBlocked = !user.isBlocked;
-                const updatedUser = yield this._adminRepo.updateById(userId, { isBlocked });
+                yield this._adminRepo.updateById(userId, { isBlocked });
                 const cacheKey = `user:${userId}:blocked`;
                 yield redisClient_1.default.setEx(cacheKey, 3600, isBlocked.toString());
                 if (isBlocked) {

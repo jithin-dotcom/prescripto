@@ -24,6 +24,8 @@ const envSchema = zod_1.z.object({
     REDIS_PORT: zod_1.z.string().min(1, 'REDIS_PORT is required!'),
     REDIS_PASSWORD: zod_1.z.string().min(1, 'REDIS_PASSWORD is required!'),
     REDIS_URL: zod_1.z.string().min(1, 'REDIS_PASSWORD is required!'),
+    JWT_ACCESS_EXPIRES: zod_1.z.string().default("2h"),
+    JWT_REFRESH_EXPIRES: zod_1.z.string().default("7d"),
 });
 const env = envSchema.parse(process.env);
 exports.default = env;

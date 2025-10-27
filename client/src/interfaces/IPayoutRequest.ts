@@ -2,10 +2,10 @@
 
 
 
-import mongoose from "mongoose";
+// import mongoose from "mongoose";
 
 export interface IUser {
-  _id: mongoose.Types.ObjectId;
+  _id: string;
   name: string;
   email: string;
   password: string;

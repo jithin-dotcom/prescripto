@@ -8,13 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PatientProfileService = void 0;
-const mongoose_1 = __importDefault(require("mongoose"));
 const cloudinary_1 = require("../../config/cloudinary");
+const patientService_1 = require("../../utils/reverseMapper/patientProfileServices/patientService");
 class PatientProfileService {
     constructor(_patientRepo, _userRepo) {
         this._patientRepo = _patientRepo;
@@ -30,7 +27,7 @@ class PatientProfileService {
                 if (existing) {
                     throw new Error("Profile already exists");
                 }
-                const profileData = Object.assign(Object.assign({}, data), { patientId: new mongoose_1.default.Types.ObjectId(patientId) });
+                const profileData = (0, patientService_1.toPatientProfilePersistence)(patientId, data);
                 yield this._patientRepo.create(profileData);
                 return { message: "Successfully Created Profile" };
             }
@@ -47,7 +44,8 @@ class PatientProfileService {
                 if (!existing) {
                     throw new Error("Profile not found");
                 }
-                const updated = yield this._patientRepo.updateByPatientId(patientId, data);
+                const profileData = (0, patientService_1.toPatientProfilePersistence)(patientId, data);
+                const updated = yield this._patientRepo.create(profileData);
                 if (!updated) {
                     throw new Error("Failed to update profile");
                 }
@@ -55,21 +53,6 @@ class PatientProfileService {
             }
             catch (error) {
                 console.error("Error in editing profile: ", error);
-                throw error;
-            }
-        });
-    }
-    deletePatientProfile(patientId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const existing = yield this._patientRepo.findByPatientId(patientId);
-                if (!existing) {
-                    throw new Error("Patient profile not found");
-                }
-                yield this._patientRepo.deleteById(existing._id);
-            }
-            catch (error) {
-                console.error("error deleting the patient : ", error);
                 throw error;
             }
         });

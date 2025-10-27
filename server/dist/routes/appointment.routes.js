@@ -11,6 +11,7 @@ const user_repositories_1 = require("../repositories/implementation/user.reposit
 const chat_repositories_1 = require("../repositories/implementation/chat.repositories");
 const wallet_repository_1 = require("../repositories/implementation/wallet.repository");
 const walletHistory_repository_1 = require("../repositories/implementation/walletHistory.repository");
+const role_middleware_1 = require("../middlewares/role.middleware");
 const router = (0, express_1.Router)();
 const appointmentRepository = new appointment_repositories_1.AppointmentRepository();
 const doctorProfileRepository = new doctorProfile_repositories_1.DoctorProfileRepository();
@@ -22,10 +23,11 @@ const walletHistoryRepository = new walletHistory_repository_1.WalletHistoryRepo
 const appointmentService = new appointment_services_1.AppointmentService(appointmentRepository, doctorProfileRepository, patientProfileRepository, userRepository, chatRepository, walletRepository, walletHistoryRepository);
 const appointmentController = new appointment_controller_1.AppointmentController(appointmentService);
 router.use(auth_middleware_1.verifyAccessToken);
-router.post("/create-appointment", appointmentController.createAppointment.bind(appointmentController));
-router.get("/all-createAppointments/:doctorId", appointmentController.getCreateAppointment.bind(appointmentController));
-router.get("/user-appointments/:userId", appointmentController.getUserAppointments.bind(appointmentController));
-router.get("/doctor-appointments", appointmentController.getDoctorAppointments.bind(appointmentController));
-router.get("/all-appointments", appointmentController.getAllAppointments.bind(appointmentController));
-router.patch("/cancel-appointment/:appointmentId", appointmentController.updateStatus.bind(appointmentController));
+router.post("/create-appointment", (0, role_middleware_1.checkRole)("user"), appointmentController.createAppointment.bind(appointmentController));
+router.get("/all-createAppointments/:doctorId", (0, role_middleware_1.checkRole)("user"), appointmentController.getCreateAppointment.bind(appointmentController));
+router.get("/user-appointments", (0, role_middleware_1.checkRole)("user"), appointmentController.getUserAppointments.bind(appointmentController));
+router.get("/doctor-appointments", (0, role_middleware_1.checkRole)("doctor"), appointmentController.getDoctorAppointments.bind(appointmentController));
+router.get("/all-appointments", (0, role_middleware_1.checkRole)("admin"), appointmentController.getAllAppointments.bind(appointmentController));
+router.patch("/cancel-appointment/:appointmentId", (0, role_middleware_1.checkRole)("doctor", "user", "admin"), appointmentController.updateStatus.bind(appointmentController));
+router.get("/appointment/:appointmentId", (0, role_middleware_1.checkRole)("doctor"), appointmentController.getAppointmentById.bind(appointmentController));
 exports.default = router;

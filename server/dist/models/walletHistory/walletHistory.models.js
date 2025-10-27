@@ -44,7 +44,6 @@ const WalletHistorySchema = new mongoose_1.Schema({
     appointmentId: {
         type: mongoose_1.default.Schema.Types.ObjectId,
         ref: "Appointment",
-        // required: true,
     },
     transactionId: {
         type: mongoose_1.default.Schema.Types.ObjectId,

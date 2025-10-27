@@ -37,8 +37,7 @@ class DoctorProfileRepository extends base_repositories_1.BaseRepository {
             return yield this.model
                 .find()
                 .populate("doctorId")
-                .sort({ averageRating: -1 })
-                .limit(4);
+                .sort({ averageRating: -1 });
         });
     }
 }

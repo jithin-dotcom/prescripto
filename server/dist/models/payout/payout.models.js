@@ -63,6 +63,9 @@ const PayoutSchema = new mongoose_1.Schema({
     },
     reason: {
         type: String,
+    },
+    decentroTxnId: {
+        type: String,
     }
 }, { timestamps: true });
 exports.PayoutModel = mongoose_1.default.model("Payout", PayoutSchema);

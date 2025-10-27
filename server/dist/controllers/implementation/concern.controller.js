@@ -21,7 +21,6 @@ class ConcernController {
     createConcern(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // console.log("enter into consern controller");
                 const validateData = concernValidation_schema_1.concernValidationSchema.parse(req.body);
                 const data = {
                     appointmentId: validateData.appointmentId,
@@ -31,7 +30,6 @@ class ConcernController {
                     title: validateData.title,
                     description: validateData.description,
                 };
-                // console.log("data : ",data);
                 const response = yield this._concernService.createConcern(data);
                 if (!response) {
                     res.status(statusCode_enum_1.StatusCode.INTERNAL_SERVER_ERROR).json(statusMessage_1.StatusMessage.INTERNAL_SERVER_ERROR);
@@ -101,7 +99,6 @@ class ConcernController {
                     res.status(statusCode_enum_1.StatusCode.BAD_REQUEST).json({ message: "userId missing" });
                     return;
                 }
-                console.log("search : ", search);
                 const { data, total, page: currentPage, pages } = yield this._concernService.getConcernByUser(id, role, page, limit, search, status);
                 res.status(statusCode_enum_1.StatusCode.OK).json({
                     status: "success",
@@ -130,14 +127,13 @@ class ConcernController {
     updateStatus(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("entered into controller");
                 const { id } = req.params;
-                const { status } = req.body;
-                if (!id || (status !== "resolved" && status !== "rejected")) {
+                const { status, reason } = req.body;
+                if (!id || (status !== "resolved" && status !== "rejected") || !reason) {
                     res.status(statusCode_enum_1.StatusCode.BAD_REQUEST).json(statusMessage_1.StatusMessage.BAD_REQUEST);
                     return;
                 }
-                const response = yield this._concernService.changeConcernStatus(id, status);
+                const response = yield this._concernService.changeConcernStatus(id, status, reason);
                 if (response) {
                     res.status(statusCode_enum_1.StatusCode.OK).json(response);
                     return;

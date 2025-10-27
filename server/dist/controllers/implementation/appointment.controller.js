@@ -8,15 +8,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppointmentController = void 0;
 const appointment_schema_1 = require("../../validations/appointment.schema");
 const statusCode_enum_1 = require("../../constants/statusCode.enum");
 const statusMessage_1 = require("../../constants/statusMessage");
-const mongoose_1 = __importDefault(require("mongoose"));
 class AppointmentController {
     constructor(_appointmentService) {
         this._appointmentService = _appointmentService;
@@ -25,23 +21,18 @@ class AppointmentController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                console.log("entered into controller");
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
-                console.log("userId : ", userId);
                 if (!userId) {
                     res.status(statusCode_enum_1.StatusCode.UNAUTHORIZED).json({ message: statusMessage_1.StatusMessage.UNAUTHORIZED });
                     return;
                 }
-                console.log("req.body : ", req.body);
                 const validatedData = appointment_schema_1.appointmentSchema.parse(Object.assign(Object.assign({}, req.body), { userId }));
                 const appointment = yield this._appointmentService.createAppointment({
-                    userId: new mongoose_1.default.Types.ObjectId(validatedData.userId),
-                    doctorId: new mongoose_1.default.Types.ObjectId(validatedData.doctorId),
+                    userId: validatedData.userId,
+                    doctorId: validatedData.doctorId,
                     day: validatedData.date,
                     time: validatedData.time,
-                    transactionId: validatedData.transactionId
-                        ? new mongoose_1.default.Types.ObjectId(validatedData.transactionId)
-                        : undefined,
+                    transactionId: validatedData.transactionId,
                 });
                 res.status(statusCode_enum_1.StatusCode.CREATED).json(appointment);
             }
@@ -136,6 +127,32 @@ class AppointmentController {
                 }
                 yield this._appointmentService.updateStatus(appointmentId, status);
                 res.status(statusCode_enum_1.StatusCode.OK).json({ message: `Appointment ${status} successfully` });
+            }
+            catch (error) {
+                next(error);
+            }
+        });
+    }
+    getAppointmentById(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                const { appointmentId } = req.params;
+                const doctorId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+                if (!doctorId) {
+                    res.status(statusCode_enum_1.StatusCode.BAD_REQUEST).json(statusMessage_1.StatusMessage.BAD_REQUEST);
+                    return;
+                }
+                if (!appointmentId) {
+                    res.status(statusCode_enum_1.StatusCode.BAD_REQUEST).json({ message: "AppointmentId missing" });
+                    return;
+                }
+                const result = yield this._appointmentService.getAppointmentById(appointmentId, doctorId);
+                if (!result) {
+                    res.status(statusCode_enum_1.StatusCode.NOT_FOUND).json(statusMessage_1.StatusMessage.NOT_FOUND);
+                    return;
+                }
+                res.status(statusCode_enum_1.StatusCode.OK).json(result);
             }
             catch (error) {
                 next(error);

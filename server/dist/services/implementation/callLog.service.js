@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CallLogService = void 0;
 const callLogService_mapper_1 = require("../../utils/mapper/callLogService.mapper");
+const callLogService_1 = require("../../utils/reverseMapper/callLogService/callLogService");
 class CallLogService {
     constructor(_callLogRepo, _appointmentRepo, _walletRepo, _WalletHistoryRepo) {
         this._callLogRepo = _callLogRepo;
@@ -26,9 +27,12 @@ class CallLogService {
                     throw new Error("AppointmentId missing");
                 }
                 if (data.callStatus === "completed") {
-                    yield this._appointmentRepo.updateById(appointmentId, { status: "completed" });
+                    yield this._appointmentRepo.updateById(appointmentId, {
+                        status: "completed",
+                    });
                 }
-                yield this._callLogRepo.createLog(data);
+                const entity = (0, callLogService_1.toCallLogEntity)(data);
+                yield this._callLogRepo.createLog(entity);
             }
             catch (error) {
                 throw error;
@@ -40,13 +44,14 @@ class CallLogService {
             try {
                 const userId = data.userId;
                 if (!userId) {
-                    throw new Error("UserId required  for creating Wallet");
+                    throw new Error("UserId required for creating Wallet");
                 }
                 let existingWallet = yield this._walletRepo.findOne({ userId });
                 if (!existingWallet) {
-                    existingWallet = yield this._walletRepo.create(data);
+                    const entity = (0, callLogService_1.mapWalletToEntity)(data);
+                    existingWallet = yield this._walletRepo.create(entity);
                 }
-                return existingWallet;
+                return (0, callLogService_1.mapWalletToDTO)(existingWallet);
             }
             catch (error) {
                 console.log("error in paymentDoctor : ", error);
@@ -63,49 +68,35 @@ class CallLogService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const appointmentId = data.appointmentId;
-                if (!appointmentId) {
-                    throw new Error("AppointmentId  required for PaymentHistory");
-                }
-                if (!data.walletId) {
+                if (!appointmentId)
+                    throw new Error("AppointmentId required for PaymentHistory");
+                if (!data.walletId)
                     throw new Error("WalletId required for PaymentHistory");
-                }
                 const appointment = yield this._appointmentRepo.findById(appointmentId);
-                if (!appointment) {
+                if (!appointment)
                     throw new Error("No appointment exists");
-                }
-                if (appointment.payment !== "paid") {
+                if (appointment.payment !== "paid")
                     throw new Error("Payment is not done");
-                }
                 let amount = 0;
                 if (appointment.fee) {
                     amount = appointment.fee - Math.floor(appointment.fee / 10);
                 }
-                console.log("amount : ", amount);
-                const walletHistory = yield this._WalletHistoryRepo.create({
-                    walletId: data.walletId,
-                    appointmentId,
-                    amount,
-                    type: "credit",
-                    source: "consultation",
-                    transactionId: appointment.transactionId,
-                });
-                if (!walletHistory) {
+                const walletHistoryEntity = (0, callLogService_1.mapToWalletHistoryEntity)(data, amount, appointment.transactionId);
+                const walletHistory = yield this._WalletHistoryRepo.create(walletHistoryEntity);
+                if (!walletHistory)
                     throw new Error("Failed to create Wallet History");
-                }
-                const updatedBalance = yield this._walletRepo.updateById(data.walletId, { $inc: { balance: amount } });
-                if (!updatedBalance) {
+                const updatedBalance = yield this._walletRepo.updateById(data.walletId, {
+                    $inc: { balance: amount },
+                });
+                if (!updatedBalance)
                     throw new Error("Failed to update Wallet Balance");
-                }
                 return (0, callLogService_mapper_1.mapWalletHistoryToDTO)(walletHistory);
             }
             catch (error) {
                 console.log("error in doctorPaymentHistory : ", error);
-                if (error instanceof Error) {
+                if (error instanceof Error)
                     throw error;
-                }
-                else {
-                    throw new Error("Something went wrong in creating Wallet history");
-                }
+                throw new Error("Something went wrong in creating Wallet history");
             }
         });
     }

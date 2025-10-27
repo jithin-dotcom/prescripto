@@ -18,6 +18,7 @@ function mapPayouts(data) {
         amount: payout.amount,
         status: payout.status,
         reason: payout.reason,
+        decentroTxnId: payout.decentroTxnId,
         requestedAt: payout.requestedAt.toISOString(),
         createdAt: payout.createdAt.toISOString()
     }));

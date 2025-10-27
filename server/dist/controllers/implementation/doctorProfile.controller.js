@@ -54,21 +54,6 @@ class DoctorProfileController {
             }
         });
     }
-    deleteProfile(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const { doctorId } = req.params;
-                if (!doctorId) {
-                    res.send(statusCode_enum_1.StatusCode.BAD_REQUEST).json({ message: statusMessage_1.StatusMessage.MISSING_ID });
-                }
-                yield this._doctorProfileService.deleteDoctorProfile(doctorId);
-                res.status(statusCode_enum_1.StatusCode.NO_CONTENT).json({ message: statusMessage_1.StatusMessage.NO_CONTENT });
-            }
-            catch (error) {
-                res.status(statusCode_enum_1.StatusCode.INTERNAL_SERVER_ERROR).json({ message: error.message || statusMessage_1.StatusMessage.INTERNAL_SERVER_ERROR });
-            }
-        });
-    }
     findDoctorWithRating(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {

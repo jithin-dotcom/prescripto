@@ -37,7 +37,6 @@ class ChatService {
                     doctorId: new mongoose_1.default.Types.ObjectId(participants[0]),
                     userId: new mongoose_1.default.Types.ObjectId(participants[1]),
                 });
-                // return chat;
                 return (0, chatService_mapper_1.mapToChatDTO)(chat);
             }
             catch (error) {
@@ -78,7 +77,6 @@ class ChatService {
     getChatById(chatId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                // return await this._chatRepo.findByAppointmentId(appointmentId);
                 const result = yield this._chatRepo.findById(chatId);
                 return result ? (0, chatService_mapper_1.mapToChatDTO)(result) : null;
             }
@@ -102,7 +100,7 @@ class ChatService {
                     timestamp: new Date(),
                     read: false,
                 });
-                const updateChat = yield this._chatRepo.updateById(chatId, { lastMessage: {
+                yield this._chatRepo.updateById(chatId, { lastMessage: {
                         content,
                     } });
                 return message;
@@ -129,7 +127,6 @@ class ChatService {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield this._chatRepo.getChatsByUser(userId);
-                console.log("result getUserChat : ", result);
                 return result;
             }
             catch (error) {

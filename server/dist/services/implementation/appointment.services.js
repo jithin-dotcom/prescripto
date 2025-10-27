@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppointmentService = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const appointmentService_mapper_1 = require("../../utils/mapper/appointmentService.mapper");
+const appointmentService_1 = require("../../utils/reverseMapper/appointmentService/appointmentService");
 class AppointmentService {
     constructor(_appointmentRepo, _doctorRepo, _patientRepo, _userRepo, _chatRepo, _walletRepo, _walletHistoryRepo) {
         this._appointmentRepo = _appointmentRepo;
@@ -32,20 +33,14 @@ class AppointmentService {
                 if (!data.userId || !data.doctorId || !data.day || !data.time) {
                     throw new Error("Missing required fields");
                 }
-                const doctorId = data.doctorId instanceof mongoose_1.default.Types.ObjectId
-                    ? data.doctorId
-                    : new mongoose_1.default.Types.ObjectId(data.doctorId._id);
-                const doctor = yield this._doctorRepo.findOne({ doctorId });
+                const doctor = yield this._doctorRepo.findOne({ doctorId: data.doctorId });
                 if (!doctor)
                     throw new Error("Doctor not found");
                 const patientProfile = yield this._patientRepo.findOne({ patientId: data.userId });
                 if (!patientProfile) {
                     throw new Error("Please complete your Profile to Book Appointments");
                 }
-                if (doctor.fee) {
-                    data.fee = doctor.fee;
-                }
-                data.appointmentNo = Math.floor(100000 + Math.random() * 900000);
+                const appointmentNo = Math.floor(100000 + Math.random() * 900000);
                 const [dayStr, monthStr, yearStr] = data.day.split("/");
                 const selectedDate = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
                 const appointmentWeekday = selectedDate.toLocaleDateString("en-US", { weekday: "long" });
@@ -71,7 +66,7 @@ class AppointmentService {
                 if (!validSlot) {
                     throw new Error(`Doctor is not available at ${data.time} on ${appointmentWeekday}`);
                 }
-                const existingAppointments = yield this._appointmentRepo.findAll({ doctorId });
+                const existingAppointments = yield this._appointmentRepo.findAll({ doctorId: data.doctorId });
                 const isSlotTaken = existingAppointments.some(app => {
                     if (app.status !== "cancelled") {
                         return app.day === data.day && app.time === data.time;
@@ -80,8 +75,8 @@ class AppointmentService {
                 if (isSlotTaken) {
                     throw new Error("Slot not available for the selected date and time");
                 }
-                const appointmentData = Object.assign(Object.assign({}, data), { userId: new mongoose_1.default.Types.ObjectId(data.userId), doctorId, status: "pending", payment: "not paid" });
-                yield this._appointmentRepo.create(appointmentData);
+                const appointmentEntity = (0, appointmentService_1.toAppointmentEntity)(Object.assign(Object.assign({}, data), { fee: doctor.fee, appointmentNo }));
+                yield this._appointmentRepo.create(appointmentEntity);
                 return { message: "successfully created" };
             }
             catch (error) {
@@ -322,6 +317,7 @@ class AppointmentService {
                         time: appointment.time,
                         status: appointment.status,
                         payment: appointment.payment,
+                        method: appointment === null || appointment === void 0 ? void 0 : appointment.method,
                         appointmentNo: appointment.appointmentNo || 0,
                         transactionId: (_a = appointment.transactionId) === null || _a === void 0 ? void 0 : _a.toString(),
                         timeArray,
@@ -377,9 +373,7 @@ class AppointmentService {
                     if (!appointment) {
                         throw new Error("Appointment not found");
                     }
-                    console.log("appointment : ", appointment);
                     if ((appointment === null || appointment === void 0 ? void 0 : appointment.payment) === "paid") {
-                        console.log("entered into appointnt if");
                         const userId = appointment.userId;
                         const doctorId = appointment.doctorId;
                         let walletDoctor = yield this._walletRepo.findOne({ userId: doctorId });
@@ -414,7 +408,6 @@ class AppointmentService {
                             throw new Error("Failed to create Doctor Wallet History");
                         }
                         const updateDoctor = yield this._walletRepo.updateById(walletDoctor._id, { $inc: { balance: -amount } });
-                        console.log("updateDoctor : ", updateDoctor);
                         if (!updateDoctor) {
                             throw new Error("Failed to update wallet balance");
                         }
@@ -436,7 +429,6 @@ class AppointmentService {
                             source: "refund",
                             transactionId: appointment === null || appointment === void 0 ? void 0 : appointment.transactionId,
                         });
-                        console.log("walletHistory : ", walletHistory);
                         if (!walletHistory) {
                             throw new Error("failed to create Wallet History");
                         }
@@ -449,13 +441,11 @@ class AppointmentService {
                 }
                 else {
                     const update = yield this._appointmentRepo.updateById(appointmentId, { status });
-                    console.log("update: ", update);
                     const appId = update === null || update === void 0 ? void 0 : update._id;
                     const userId = update === null || update === void 0 ? void 0 : update.userId;
                     const doctorId = update === null || update === void 0 ? void 0 : update.doctorId;
                     const participants = [userId, doctorId];
                     const existingChat = yield this._chatRepo.findByAppointmentId(appointmentId);
-                    console.log("existing chat : ", existingChat);
                     if (!existingChat) {
                         yield this._chatRepo.createChat({ appointmentId: appId, userId, doctorId, participants });
                     }
@@ -475,6 +465,60 @@ class AppointmentService {
                 else {
                     throw new Error("Something went wrong");
                 }
+            }
+        });
+    }
+    getAppointmentById(appointmentId, doctorId) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                if (!appointmentId) {
+                    throw new Error("AppointmentId missing");
+                }
+                const appointment = yield this._appointmentRepo.findAppointmentById(appointmentId);
+                if (!appointment) {
+                    throw new Error("Appointment not found");
+                }
+                let responses = null;
+                const user = appointment.userId;
+                if (!user || !user._id) {
+                    throw new Error("User not found");
+                }
+                const patientProfile = yield this._patientRepo.findOne({ patientId: user._id });
+                const doctorProfile = yield this._doctorRepo.findOne({ doctorId });
+                if (!doctorProfile)
+                    throw new Error("Doctor profile missing");
+                responses = {
+                    _id: appointment._id.toString(),
+                    doctorId: appointment.doctorId.toString(),
+                    user: {
+                        _id: user._id.toString(),
+                        name: user.name,
+                        email: user.email,
+                        photo: user.photo,
+                        isVerified: user.isVerified,
+                        isBlocked: user.isBlocked,
+                        dateOfBirth: patientProfile === null || patientProfile === void 0 ? void 0 : patientProfile.dateOfBirth,
+                        gender: patientProfile === null || patientProfile === void 0 ? void 0 : patientProfile.gender,
+                        houseName: patientProfile === null || patientProfile === void 0 ? void 0 : patientProfile.houseName,
+                        city: patientProfile === null || patientProfile === void 0 ? void 0 : patientProfile.city,
+                        state: patientProfile === null || patientProfile === void 0 ? void 0 : patientProfile.state,
+                        country: patientProfile === null || patientProfile === void 0 ? void 0 : patientProfile.country,
+                        pin: patientProfile === null || patientProfile === void 0 ? void 0 : patientProfile.pin,
+                    },
+                    fee: appointment.fee || doctorProfile.fee,
+                    date: appointment.day,
+                    time: appointment.time,
+                    appointmentNo: appointment.appointmentNo || 0,
+                    status: appointment.status,
+                    payment: appointment.payment,
+                    transactionId: (_a = appointment.transactionId) === null || _a === void 0 ? void 0 : _a.toString(),
+                };
+                return responses;
+            }
+            catch (error) {
+                console.error("Error in getAppointmentsByDoctor:", error);
+                throw new Error("Failed to fetch appointments for doctor");
             }
         });
     }

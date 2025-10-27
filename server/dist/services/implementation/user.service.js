@@ -13,6 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
+const userService_1 = require("../../utils/reverseMapper/userService/userService");
+const userServiceGetUser_1 = require("../../utils/reverseMapper/userService/userServiceGetUser");
+const userService_getAllDoctors_1 = require("../../utils/reverseMapper/userService/userService.getAllDoctors");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const user_models_1 = require("../../models/user.models");
@@ -41,9 +44,12 @@ class UserService {
                 else {
                     users = yield this._userRepo.findAll(baseQuery);
                 }
-                const doctorsWithProfiles = yield Promise.all(users.map((user) => __awaiter(this, void 0, void 0, function* () {
-                    const profile = yield this._doctorRepo.findAll({ doctorId: user._id });
-                    return Object.assign(Object.assign({}, user.toObject()), { profile });
+                const doctorsWithProfiles = yield Promise.all(users.map((userDoc) => __awaiter(this, void 0, void 0, function* () {
+                    const profiles = yield this._doctorRepo.findAll({ doctorId: userDoc._id });
+                    const mappedProfiles = profiles
+                        .map(userService_getAllDoctors_1.mapGetAllDoctorsDoctorProfileDTO)
+                        .filter(Boolean);
+                    return Object.assign(Object.assign({}, (0, userService_getAllDoctors_1.mapGetAllDoctorsUserDTO)(userDoc)), { profile: mappedProfiles, isVerified: userDoc.isVerified });
                 })));
                 const sortField = sort.startsWith("-") ? sort.slice(1) : sort;
                 const sortOrder = sort.startsWith("-") ? "asc" : "desc";
@@ -83,63 +89,62 @@ class UserService {
     getProfile(userId) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield this._userRepo.findById(userId);
-                if (!user)
+                const userDoc = yield this._userRepo.findById(userId);
+                if (!userDoc)
                     return null;
                 let profile = null;
-                if (user.role === "user") {
-                    profile = yield this._patientRepo.findOne({ patientId: userId });
+                if (userDoc.role === "user") {
+                    const patientProfileDoc = yield this._patientRepo.findOne({ patientId: userId });
+                    profile = (0, userServiceGetUser_1.mapGetProfilePatientProfileDTO)(patientProfileDoc);
                 }
-                else if (user.role === "doctor") {
-                    profile = yield this._doctorRepo.findOne({ doctorId: userId });
+                else if (userDoc.role === "doctor") {
+                    const doctorProfileDoc = yield this._doctorRepo.findOne({ doctorId: userId });
+                    profile = (0, userServiceGetUser_1.mapGetProfileDoctorProfileDTO)(doctorProfileDoc);
                 }
                 return {
-                    user,
-                    profile
+                    user: (0, userServiceGetUser_1.mapGetProfileUserDTO)(userDoc),
+                    profile,
                 };
             }
             catch (error) {
                 console.error(error);
-                throw new Error(`Failed to fetch profile`);
+                throw new Error("Failed to fetch profile");
             }
         });
     }
     updateUserOrDoctor(userId, userData, profileData) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield this._userRepo.findById(userId);
-                if (!user)
+                const userDoc = yield this._userRepo.findById(userId);
+                if (!userDoc)
                     throw new Error("User not found");
                 if (userData.password) {
                     const saltRounds = 10;
-                    const hashedPassword = yield bcrypt_1.default.hash(userData.password, saltRounds);
-                    userData.password = hashedPassword;
+                    userData.password = yield bcrypt_1.default.hash(userData.password, saltRounds);
                 }
-                console.log("profileData : ", profileData);
-                if (profileData && 'photo' in profileData && profileData.photo) {
+                if (profileData && "photo" in profileData && profileData.photo) {
                     yield this._userRepo.updateById(userId, { photo: profileData.photo });
                     delete profileData.photo;
                 }
                 yield this._userRepo.updateById(userId, userData);
-                const objectId = new mongoose_1.default.Types.ObjectId(userId);
-                if (user.role === "user" && profileData) {
-                    const existingProfile = yield this._patientRepo.findByPatientId(objectId);
-                    const patientProfileData = Object.assign({}, profileData);
+                if (userDoc.role === "user" && profileData) {
+                    const existingProfile = yield this._patientRepo.findByPatientId(new mongoose_1.default.Types.ObjectId(userId));
+                    const persistenceData = (0, userService_1.mapPatientProfileDTOToPersistence)(profileData, userId);
                     if (existingProfile) {
-                        yield this._patientRepo.updateByPatientId(objectId, patientProfileData);
+                        yield this._patientRepo.updateByPatientId(existingProfile.patientId, persistenceData);
                     }
                     else {
-                        yield this._patientRepo.create(Object.assign({ patientId: objectId }, patientProfileData));
+                        yield this._patientRepo.create(persistenceData);
                     }
                 }
-                else if (user.role === "doctor" && profileData) {
-                    const existingProfile = yield this._doctorRepo.findByDoctorId(objectId);
-                    const doctorProfileData = Object.assign({}, profileData);
+                if (userDoc.role === "doctor" && profileData) {
+                    const existingProfile = yield this._doctorRepo.findByDoctorId(new mongoose_1.default.Types.ObjectId(userId));
+                    const persistenceData = (0, userService_1.mapDoctorProfileDTOToPersistence)(profileData, userId);
                     if (existingProfile) {
-                        yield this._doctorRepo.updateByDoctorId(objectId, doctorProfileData);
+                        yield this._doctorRepo.updateByDoctorId(existingProfile.doctorId, persistenceData);
                     }
                     else {
-                        yield this._doctorRepo.create(Object.assign({ doctorId: objectId }, doctorProfileData));
+                        yield this._doctorRepo.create(persistenceData);
                     }
                 }
                 return `User with ID ${userId} updated successfully`;

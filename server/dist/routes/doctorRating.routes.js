@@ -5,11 +5,12 @@ const doctorRating_repository_1 = require("../repositories/implementation/doctor
 const doctorRating_controller_1 = require("../controllers/implementation/doctorRating.controller");
 const doctorRating_services_1 = require("../services/implementation/doctorRating.services");
 const doctorProfile_repositories_1 = require("../repositories/implementation/doctorProfile.repositories");
+const role_middleware_1 = require("../middlewares/role.middleware");
 const router = (0, express_1.Router)();
 const doctorRatingRepository = new doctorRating_repository_1.DoctorRatingRepository();
 const doctorProfileRepository = new doctorProfile_repositories_1.DoctorProfileRepository();
 const doctorRatingService = new doctorRating_services_1.DoctorRatingService(doctorRatingRepository, doctorProfileRepository);
 const doctorRatingController = new doctorRating_controller_1.DoctorRatingController(doctorRatingService);
-router.post("/rate-doctor", doctorRatingController.rateDoctor.bind(doctorRatingController));
-router.get("/get-rating/:doctorId", doctorRatingController.getRatingByDoctor.bind(doctorRatingController));
+router.post("/rate-doctor", (0, role_middleware_1.checkRole)("user"), doctorRatingController.rateDoctor.bind(doctorRatingController));
+router.get("/get-rating/:doctorId", (0, role_middleware_1.checkRole)("user", "doctor", "admin"), doctorRatingController.getRatingByDoctor.bind(doctorRatingController));
 exports.default = router;

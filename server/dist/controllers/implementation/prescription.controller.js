@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.PrescriptionController = void 0;
 const statusCode_enum_1 = require("../../constants/statusCode.enum");
 const statusMessage_1 = require("../../constants/statusMessage");
-const mongoose_1 = __importDefault(require("mongoose"));
 const prescription_schema_1 = require("../../validations/prescription.schema");
 const zod_1 = __importDefault(require("zod"));
 class PrescriptionController {
@@ -26,8 +25,7 @@ class PrescriptionController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const parsedData = prescription_schema_1.prescriptionSchema.parse(req.body);
-                const convertedData = Object.assign(Object.assign({}, parsedData), { appointmentId: new mongoose_1.default.Types.ObjectId(parsedData.appointmentId), doctorId: new mongoose_1.default.Types.ObjectId(parsedData.doctorId), patientId: new mongoose_1.default.Types.ObjectId(parsedData.patientId), followUpDate: parsedData.followUpDate ? new Date(parsedData.followUpDate) : undefined });
-                const newPrescription = yield this._prescriptionService.createPrescription(convertedData);
+                const newPrescription = yield this._prescriptionService.createPrescription(parsedData);
                 res.status(statusCode_enum_1.StatusCode.CREATED).json({
                     status: "success",
                     message: "Prescription created successfully",
@@ -95,8 +93,7 @@ class PrescriptionController {
                     return;
                 }
                 const parsedData = prescription_schema_1.prescriptionSchema.parse(req.body);
-                const convertedData = Object.assign(Object.assign({}, parsedData), { appointmentId: new mongoose_1.default.Types.ObjectId(parsedData.appointmentId), doctorId: new mongoose_1.default.Types.ObjectId(parsedData.doctorId), patientId: new mongoose_1.default.Types.ObjectId(parsedData.patientId), followUpDate: parsedData.followUpDate ? new Date(parsedData.followUpDate) : undefined });
-                const updatedPrescription = yield this._prescriptionService.editPrescription(appointmentId, convertedData);
+                const updatedPrescription = yield this._prescriptionService.editPrescription(appointmentId, parsedData);
                 res.status(statusCode_enum_1.StatusCode.OK).json({
                     status: "success",
                     message: "Prescription Updated Successfully",
@@ -133,6 +130,24 @@ class PrescriptionController {
             }
             catch (error) {
                 console.error(error);
+                next(error);
+            }
+        });
+    }
+    getPatientHistory(req, res, next) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { patientId } = req.params;
+                const page = parseInt(req.query.page) || 1;
+                const limit = parseInt(req.query.limit) || 10;
+                if (!patientId) {
+                    res.status(statusCode_enum_1.StatusCode.BAD_REQUEST).json(statusMessage_1.StatusMessage.BAD_REQUEST);
+                    return;
+                }
+                const result = yield this._prescriptionService.getPatientHistory(patientId, page, limit);
+                res.status(statusCode_enum_1.StatusCode.OK).json(result);
+            }
+            catch (error) {
                 next(error);
             }
         });

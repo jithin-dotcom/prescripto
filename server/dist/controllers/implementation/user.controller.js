@@ -41,11 +41,19 @@ class UserController {
     }
     getProfile(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
-                const userId = req.params.id;
+                const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
+                if (!userId) {
+                    res.status(statusCode_enum_1.StatusCode.BAD_REQUEST).json(statusMessage_1.StatusMessage.BAD_REQUEST);
+                    return;
+                }
                 const result = yield this._userService.getProfile(userId);
+                if (!result) {
+                    res.status(statusCode_enum_1.StatusCode.NOT_FOUND).json(statusMessage_1.StatusMessage.NOT_FOUND);
+                    return;
+                }
                 res.status(statusCode_enum_1.StatusCode.OK).json({ message: statusMessage_1.StatusMessage.OK, data: result });
-                return;
             }
             catch (error) {
                 next(error);
@@ -93,7 +101,6 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                console.log("entered into changePassword controller");
                 const { password, newPassword } = req.body;
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
                 if (!userId) {
@@ -105,7 +112,6 @@ class UserController {
                     return;
                 }
                 yield this._userService.changePassword(userId, password, newPassword);
-                console.log("changed password successfully");
                 res.status(statusCode_enum_1.StatusCode.OK).json({ message: "Password changed successfully" });
             }
             catch (error) {
@@ -117,7 +123,6 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                console.log("entered into controller");
                 const { password, newEmail } = req.body;
                 const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a.id;
                 if (!userId) {

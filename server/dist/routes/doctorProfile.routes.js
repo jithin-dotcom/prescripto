@@ -5,13 +5,13 @@ const doctorProfile_repositories_1 = require("../repositories/implementation/doc
 const doctorProfile_services_1 = require("../services/implementation/doctorProfile.services");
 const doctorProfile_controller_1 = require("../controllers/implementation/doctorProfile.controller");
 const auth_middleware_1 = require("../middlewares/auth.middleware");
+const role_middleware_1 = require("../middlewares/role.middleware");
 const router = (0, express_1.Router)();
 const doctorProfileRepository = new doctorProfile_repositories_1.DoctorProfileRepository();
 const doctorProfileService = new doctorProfile_services_1.DoctorProfileService(doctorProfileRepository);
 const doctorProfileController = new doctorProfile_controller_1.DoctorProfileController(doctorProfileService);
 router.use(auth_middleware_1.verifyAccessToken);
-router.post("/create-doctor-profile/:doctorId", doctorProfileController.createProfile.bind(doctorProfileController));
-router.put("/edit-doctor-profile/:doctorId", doctorProfileController.editProfile.bind(doctorProfileController));
-router.delete("/delete-doctor-profile/:doctorId", doctorProfileController.deleteProfile.bind(doctorProfileController));
-router.get("/top-doctor-rating", doctorProfileController.findDoctorWithRating.bind(doctorProfileController));
+router.post("/create-doctor-profile/:doctorId", (0, role_middleware_1.checkRole)("doctor"), doctorProfileController.createProfile.bind(doctorProfileController));
+router.put("/edit-doctor-profile/:doctorId", (0, role_middleware_1.checkRole)("doctor"), doctorProfileController.editProfile.bind(doctorProfileController));
+router.get("/top-doctor-rating", (0, role_middleware_1.checkRole)("user"), doctorProfileController.findDoctorWithRating.bind(doctorProfileController));
 exports.default = router;

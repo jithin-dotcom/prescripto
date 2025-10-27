@@ -7,14 +7,14 @@ const patientProfile_controller_1 = require("../controllers/implementation/patie
 const auth_middleware_1 = require("../middlewares/auth.middleware");
 const user_repositories_1 = require("../repositories/implementation/user.repositories");
 const multer_middleware_1 = require("../middlewares/multer.middleware");
+const role_middleware_1 = require("../middlewares/role.middleware");
 const router = (0, express_1.Router)();
 const patientProfileRepository = new patientProfile_repositories_1.PatientProfileRepository();
 const userRepository = new user_repositories_1.UserRepository();
 const patientProfileService = new patientProfile_services_1.PatientProfileService(patientProfileRepository, userRepository);
 const patientProfileController = new patientProfile_controller_1.PatientProfileController(patientProfileService);
 router.use(auth_middleware_1.verifyAccessToken);
-router.post("/create-patientProfile/:patientId", patientProfileController.createProfile.bind(patientProfileController));
-router.put("/edit-patientProfile/:patientId", patientProfileController.editProfile.bind(patientProfileController));
-router.delete("/delete-patientProfile/:patientId", patientProfileController.deleteProfile.bind(patientProfileController));
-router.post('/upload-photo', multer_middleware_1.upload.single('photo'), patientProfileController.uploadPhoto.bind(patientProfileController));
+router.post("/create-patientProfile/:patientId", (0, role_middleware_1.checkRole)("user"), patientProfileController.createProfile.bind(patientProfileController));
+router.put("/edit-patientProfile/:patientId", (0, role_middleware_1.checkRole)("user"), patientProfileController.editProfile.bind(patientProfileController));
+router.post('/upload-photo', multer_middleware_1.upload.single('photo'), (0, role_middleware_1.checkRole)("user", "doctor"), patientProfileController.uploadPhoto.bind(patientProfileController));
 exports.default = router;

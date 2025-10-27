@@ -43,5 +43,6 @@ const concernSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
     status: { type: String, enum: ["pending", "resolved", "rejected"], default: "pending" },
+    reason: { type: String },
 }, { timestamps: true });
 exports.ConcernModel = mongoose_1.default.model("Concern", concernSchema);

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DoctorRatingService = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
+const doctorRating_1 = require("../../utils/mapper/doctorRating");
 class DoctorRatingService {
     constructor(_doctorRatingRepo, _doctorProfileRepo) {
         this._doctorRatingRepo = _doctorRatingRepo;
@@ -22,7 +23,6 @@ class DoctorRatingService {
     rateDoctor(data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                console.log("entered into rateDoctor services");
                 const { userId, doctorId, appointmentId, rating, review } = data;
                 const rated = yield this._doctorRatingRepo.findOne({ appointmentId });
                 if (rated) {
@@ -50,7 +50,6 @@ class DoctorRatingService {
                 if (!updatedDoctor) {
                     throw new Error("Failed to update doctor");
                 }
-                console.log("updated doctor : ", updatedDoctor);
             }
             catch (error) {
                 if (error instanceof Error) {
@@ -69,15 +68,7 @@ class DoctorRatingService {
             const skip = (page - 1) * limit;
             const { ratings, total } = yield this._doctorRatingRepo.getDoctorRating(doctorId, skip, limit);
             const stats = yield this._doctorRatingRepo.getDoctorRatingStats(doctorId);
-            const result = ratings.map((rating) => {
-                const patient = rating.patientId;
-                return {
-                    userName: patient.name || "Unknown",
-                    rating: rating.rating,
-                    review: rating.review,
-                    time: rating.createdAt,
-                };
-            });
+            const result = (0, doctorRating_1.mapDoctorRatings)(ratings);
             return {
                 currentPage: page,
                 totalPages: Math.ceil(total / limit),

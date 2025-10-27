@@ -4,7 +4,7 @@ exports.mapAppointmentToDTO = mapAppointmentToDTO;
 function mapAppointmentToDTO(appointment, doctorUser, profile) {
     var _a;
     return {
-        _id: appointment._id.toString(),
+        _id: (appointment === null || appointment === void 0 ? void 0 : appointment._id).toString(),
         doctor: {
             _id: doctorUser._id.toString(),
             name: doctorUser.name,

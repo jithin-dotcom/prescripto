@@ -49,6 +49,10 @@ const WalletSchema = new mongoose_1.Schema({
         type: Number,
         required: true,
         default: 0,
+    },
+    expense: {
+        type: Number,
+        default: 0,
     }
 }, { timestamps: true });
 exports.WalletModel = mongoose_1.default.model("Wallet", WalletSchema);

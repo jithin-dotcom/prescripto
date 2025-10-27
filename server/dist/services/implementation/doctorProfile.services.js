@@ -8,30 +8,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DoctorProfileService = void 0;
 const doctorProfileServices_1 = require("../../utils/mapper/doctorProfileServices");
-const mongoose_1 = __importDefault(require("mongoose"));
+const doctorProfileService_1 = require("../../utils/reverseMapper/doctorProfileService/doctorProfileService");
 class DoctorProfileService {
     constructor(_DoctorRepo) {
         this._DoctorRepo = _DoctorRepo;
     }
-    createDoctorProfile(DoctorId, data) {
+    createDoctorProfile(doctorId, data) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                if (!DoctorId) {
+                if (!doctorId) {
                     throw new Error("Doctor ID is required");
                 }
-                const existing = yield this._DoctorRepo.findByDoctorId(DoctorId);
+                const existing = yield this._DoctorRepo.findByDoctorId(doctorId);
                 if (existing) {
                     throw new Error("Profile already exists");
                 }
-                const profileData = Object.assign(Object.assign({}, data), { DoctorId: new mongoose_1.default.Types.ObjectId(DoctorId) });
+                const profileData = (0, doctorProfileService_1.mapCreateDoctorProfileDTOToEntity)(doctorId, data);
                 yield this._DoctorRepo.create(profileData);
-                return { message: "profile created successfully" };
+                return { message: "Profile created successfully" };
             }
             catch (error) {
                 console.error("Error in creating profile:", error);
@@ -58,28 +55,13 @@ class DoctorProfileService {
             }
         });
     }
-    deleteDoctorProfile(DoctorId) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const existing = yield this._DoctorRepo.findByDoctorId(DoctorId);
-                if (!existing) {
-                    throw new Error("Doctor profile not found");
-                }
-                yield this._DoctorRepo.deleteById(existing._id);
-            }
-            catch (error) {
-                console.error("error deleting the Doctor : ", error);
-                throw error;
-            }
-        });
-    }
     findDoctorProfileWithRatings() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const doctorProfiles = yield this._DoctorRepo.findTopDoctorsWithRating();
-                console.log("doctorProfile : ", doctorProfiles);
                 const nonNullProfiles = doctorProfiles.filter((profile) => profile !== null && profile.doctorId.isVerified === true);
-                return (0, doctorProfileServices_1.mapDoctorProfiles)(nonNullProfiles);
+                const topFourProfile = nonNullProfiles.slice(0, 4);
+                return (0, doctorProfileServices_1.mapDoctorProfiles)(topFourProfile);
             }
             catch (error) {
                 console.error("Error in findDoctorProfileWithRatings:", error);

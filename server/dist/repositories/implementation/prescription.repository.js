@@ -32,12 +32,31 @@ class PrescriptionRepository extends base_repositories_1.BaseRepository {
             return yield this.model.find({ patientId })
                 .populate("appointmentId")
                 .populate("doctorId")
-                .populate("patientId");
+                .populate("patientId")
+                .exec();
         });
     }
     updatePrescription(appointmentId, data) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.model.findOneAndUpdate({ appointmentId }, data, { new: true });
+        });
+    }
+    getPatientHistory(patientId, page, limit) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const skip = (page - 1) * limit;
+            const [histories, total] = yield Promise.all([
+                this.model
+                    .find({ patientId })
+                    .populate("patientId")
+                    .populate("appointmentId")
+                    .skip(skip)
+                    .limit(limit)
+                    .sort({ createdAt: -1 })
+                    .lean()
+                    .exec(),
+                this.model.countDocuments({ patientId })
+            ]);
+            return { histories, total };
         });
     }
 }

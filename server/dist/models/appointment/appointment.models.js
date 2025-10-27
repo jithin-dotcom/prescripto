@@ -75,6 +75,9 @@ const appointmentSchema = new mongoose_1.Schema({
         type: String,
         enum: ["paid", "not paid", "refund"],
         default: "not paid"
+    },
+    method: {
+        type: String,
     }
 }, { timestamps: true });
 exports.AppointmentModel = mongoose_1.default.model("Appointment", appointmentSchema);
